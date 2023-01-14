@@ -7,9 +7,9 @@ class DocumentUploadState extends Equatable {
   final Map<int, DocumentType> documentTypes;
 
   const DocumentUploadState({
-    required this.tags,
-    required this.correspondents,
-    required this.documentTypes,
+    this.tags = const {},
+    this.correspondents = const {},
+    this.documentTypes = const {},
   });
 
   @override

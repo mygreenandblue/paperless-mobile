@@ -309,7 +309,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Suggestions: ",
+          S.of(context).documentEditPageSuggestionsLabel,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         SizedBox(

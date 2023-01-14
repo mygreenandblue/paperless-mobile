@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'query_type.dart';
@@ -5,7 +6,7 @@ import 'query_type.dart';
 part 'text_query.g.dart';
 
 @JsonSerializable()
-class TextQuery {
+class TextQuery extends Equatable {
   final QueryType queryType;
   final String? queryText;
 
@@ -61,4 +62,7 @@ class TextQuery {
 
   factory TextQuery.fromJson(Map<String, dynamic> json) =>
       _$TextQueryFromJson(json);
+
+  @override
+  List<Object?> get props => [queryType, queryText];
 }

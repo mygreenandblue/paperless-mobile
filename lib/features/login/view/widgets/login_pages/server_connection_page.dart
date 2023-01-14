@@ -58,8 +58,12 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            TextButton(
+              child: Text("Test connection"),
+              onPressed: _updateReachability,
+            ),
             FilledButton(
               child: Text(S.of(context).loginPageContinueLabel),
               onPressed: _reachabilityStatus == ReachabilityStatus.reachable
@@ -76,6 +80,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     setState(() {
       _isCheckingConnection = true;
     });
+
     final status = await context
         .read<ConnectivityStatusService>()
         .isPaperlessServerReachable(

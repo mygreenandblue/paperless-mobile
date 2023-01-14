@@ -32,6 +32,7 @@ import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/util.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:path/path.dart' as p;
+import 'package:responsive_builder/responsive_builder.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -165,42 +166,112 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ],
-      child: Scaffold(
-        key: rootScaffoldKey,
-        bottomNavigationBar: BottomNavBar(
-          selectedIndex: _currentIndex,
-          onNavigationChanged: (index) {
-            if (_currentIndex != index) {
-              setState(() => _currentIndex = index);
-            }
-          },
-        ),
-        drawer: const InfoDrawer(),
-        body: [
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => DocumentsCubit(
-                  context.read<PaperlessDocumentsApi>(),
-                  context.read<SavedViewRepository>(),
+      child: ResponsiveBuilder(
+        builder: (context, sizingInformation) {
+          if (!sizingInformation.isMobile) {
+            return Scaffold(
+              key: rootScaffoldKey,
+              drawer: const InfoDrawer(),
+              body: Row(children: [
+                NavigationRail(
+                  labelType: NavigationRailLabelType.all,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.description_outlined),
+                      selectedIcon: Icon(
+                        Icons.description,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      label: Text(S.of(context).bottomNavDocumentsPageLabel),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.document_scanner_outlined),
+                      selectedIcon: Icon(
+                        Icons.document_scanner,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      label: Text(S.of(context).bottomNavScannerPageLabel),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.sell_outlined),
+                      selectedIcon: Icon(
+                        Icons.sell,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      label: Text(S.of(context).bottomNavLabelsPageLabel),
+                    ),
+                  ],
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: _onNavigationChanged,
                 ),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(
+                    child: [
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => DocumentsCubit(
+                          context.read<PaperlessDocumentsApi>(),
+                          context.read<SavedViewRepository>(),
+                        ),
+                      ),
+                      BlocProvider(
+                        create: (context) => SavedViewCubit(
+                          context.read<SavedViewRepository>(),
+                        ),
+                      ),
+                    ],
+                    child: const DocumentsPage(),
+                  ),
+                  BlocProvider.value(
+                    value: _scannerCubit,
+                    child: const ScannerPage(),
+                  ),
+                  const LabelsPage(),
+                ][_currentIndex]),
+              ]),
+            );
+          }
+          return Scaffold(
+            key: rootScaffoldKey,
+            bottomNavigationBar: BottomNavBar(
+              selectedIndex: _currentIndex,
+              onNavigationChanged: _onNavigationChanged,
+            ),
+            drawer: const InfoDrawer(),
+            body: [
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => DocumentsCubit(
+                      context.read<PaperlessDocumentsApi>(),
+                      context.read<SavedViewRepository>(),
+                    ),
+                  ),
+                  BlocProvider(
+                    create: (context) => SavedViewCubit(
+                      context.read<SavedViewRepository>(),
+                    ),
+                  ),
+                ],
+                child: const DocumentsPage(),
               ),
-              BlocProvider(
-                create: (context) => SavedViewCubit(
-                  context.read<SavedViewRepository>(),
-                ),
+              BlocProvider.value(
+                value: _scannerCubit,
+                child: const ScannerPage(),
               ),
-            ],
-            child: const DocumentsPage(),
-          ),
-          BlocProvider.value(
-            value: _scannerCubit,
-            child: const ScannerPage(),
-          ),
-          const LabelsPage(),
-        ][_currentIndex],
+              const LabelsPage(),
+            ][_currentIndex],
+          );
+        },
       ),
     );
+  }
+
+  void _onNavigationChanged(index) {
+    if (_currentIndex != index) {
+      setState(() => _currentIndex = index);
+    }
   }
 
   void _initializeData(BuildContext context) {

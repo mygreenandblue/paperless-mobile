@@ -113,8 +113,9 @@ void main() async {
     authApi,
     sessionManager,
   );
-  await authCubit
-      .restoreSessionState(appSettingsCubit.state.isLocalAuthenticationEnabled);
+  await authCubit.restoreSessionState(
+    appSettingsCubit.state.isLocalAuthenticationEnabled,
+  );
 
   if (authCubit.state.isAuthenticated) {
     final auth = authCubit.state.authentication!;

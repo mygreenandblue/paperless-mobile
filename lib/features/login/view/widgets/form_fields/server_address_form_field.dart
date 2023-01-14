@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -6,7 +8,7 @@ import 'package:paperless_mobile/generated/l10n.dart';
 class ServerAddressFormField extends StatefulWidget {
   static const String fkServerAddress = "serverAddress";
 
-  final void Function(String address) onDone;
+  final void Function(String? address) onDone;
   const ServerAddressFormField({
     Key? key,
     required this.onDone,
@@ -31,7 +33,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
     });
   }
 
-  final TextEditingController _textEditingController = TextEditingController();
+  final _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
         labelText: S.of(context).loginPageServerUrlFieldLabel,
         suffixIcon: _canClear
             ? IconButton(
-                icon: Icon(Icons.clear),
+                icon: const Icon(Icons.clear),
                 color: Theme.of(context).iconTheme.color,
                 onPressed: () {
                   _textEditingController.clear();
@@ -64,18 +66,14 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
               )
             : null,
       ),
-      onSubmitted: (value) {
-        if (value == null) return;
-        // Remove trailing slash if it is a valid address.
-        String address = value.trim();
-        address = _replaceTrailingSlashes(address);
-        _textEditingController.text = address;
-        widget.onDone(address);
-      },
+      onSubmitted: (_) => _formatInput(),
     );
   }
 
-  String _replaceTrailingSlashes(String src) {
-    return src.replaceAll(RegExp(r'^\/+|\/+$'), '');
+  void _formatInput() {
+    String address = _textEditingController.text.trim();
+    address = address.replaceAll(RegExp(r'^\/+|\/+$'), '');
+    _textEditingController.text = address;
+    widget.onDone(address);
   }
 }

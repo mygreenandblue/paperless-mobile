@@ -35,13 +35,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         _tagRepository = tagRepository,
         _correspondentRepository = correspondentRepository,
         _documentTypeRepository = documentTypeRepository,
-        super(
-          const DocumentUploadState(
-            tags: {},
-            correspondents: {},
-            documentTypes: {},
-          ),
-        ) {
+        super(const DocumentUploadState()) {
     _subs.add(_tagRepository.values.listen(
       (tags) => emit(state.copyWith(tags: tags?.values)),
     ));

@@ -142,31 +142,29 @@ class _ScannerPageState extends State<ScannerPage>
     final file = await _assembleFileBytes(
       context.read<DocumentScannerCubit>().state,
     );
-    final taskId = await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => LabelRepositoriesProvider(
-              child: BlocProvider(
-                create: (context) => DocumentUploadCubit(
-                  localVault: context.read<LocalVault>(),
-                  documentApi: context.read<PaperlessDocumentsApi>(),
-                  correspondentRepository: context.read<
-                      LabelRepository<Correspondent,
-                          CorrespondentRepositoryState>>(),
-                  documentTypeRepository: context.read<
-                      LabelRepository<DocumentType,
-                          DocumentTypeRepositoryState>>(),
-                  tagRepository:
-                      context.read<LabelRepository<Tag, TagRepositoryState>>(),
-                ),
-                child: DocumentUploadPreparationPage(
-                  fileBytes: file.bytes,
-                  fileExtension: file.extension,
-                ),
-              ),
+    final taskId = await Navigator.of(context).push<String?>(
+      MaterialPageRoute(
+        builder: (_) => LabelRepositoriesProvider(
+          child: BlocProvider(
+            create: (context) => DocumentUploadCubit(
+              localVault: context.read<LocalVault>(),
+              documentApi: context.read<PaperlessDocumentsApi>(),
+              correspondentRepository: context.read<
+                  LabelRepository<Correspondent,
+                      CorrespondentRepositoryState>>(),
+              documentTypeRepository: context.read<
+                  LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+              tagRepository:
+                  context.read<LabelRepository<Tag, TagRepositoryState>>(),
+            ),
+            child: DocumentUploadPreparationPage(
+              fileBytes: file.bytes,
+              fileExtension: file.extension,
             ),
           ),
-        ) ??
-        false;
+        ),
+      ),
+    );
     if (taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();

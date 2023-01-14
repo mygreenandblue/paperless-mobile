@@ -36,62 +36,60 @@ class DocumentListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: ListTile(
-        dense: true,
-        selected: isSelected,
-        onTap: () => _onTap(),
-        selectedTileColor: Theme.of(context).colorScheme.inversePrimary,
-        onLongPress: () => onSelected?.call(document),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Row(
-              children: [
-                AbsorbPointer(
-                  absorbing: isAtLeastOneSelected,
-                  child: CorrespondentWidget(
-                    isClickable: isLabelClickable,
-                    correspondentId: document.correspondent,
-                    onSelected: onCorrespondentSelected,
-                  ),
+    return ListTile(
+      dense: true,
+      selected: isSelected,
+      onTap: () => _onTap(),
+      selectedTileColor: Theme.of(context).colorScheme.inversePrimary,
+      onLongPress: () => onSelected?.call(document),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            children: [
+              AbsorbPointer(
+                absorbing: isAtLeastOneSelected,
+                child: CorrespondentWidget(
+                  isClickable: isLabelClickable,
+                  correspondentId: document.correspondent,
+                  onSelected: onCorrespondentSelected,
                 ),
-              ],
-            ),
-            Text(
-              document.title,
-              overflow: TextOverflow.ellipsis,
-              maxLines: document.tags.isEmpty ? 2 : 1,
-            ),
-          ],
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: AbsorbPointer(
-            absorbing: isAtLeastOneSelected,
-            child: TagsWidget(
-              isClickable: isLabelClickable,
-              tagIds: document.tags,
-              isMultiLine: false,
-              isSelectedPredicate: isTagSelectedPredicate,
-              onTagSelected: (id) => onTagSelected?.call(id),
-            ),
+              ),
+            ],
           ),
-        ),
-        isThreeLine: document.tags.isNotEmpty,
-        leading: AspectRatio(
-          aspectRatio: _a4AspectRatio,
-          child: GestureDetector(
-            child: DocumentPreview(
-              id: document.id,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-            ),
+          Text(
+            document.title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: document.tags.isEmpty ? 2 : 1,
           ),
-        ),
-        contentPadding: const EdgeInsets.all(8.0),
+        ],
       ),
+      subtitle: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: AbsorbPointer(
+          absorbing: isAtLeastOneSelected,
+          child: TagsWidget(
+            isClickable: isLabelClickable,
+            tagIds: document.tags,
+            isMultiLine: false,
+            isSelectedPredicate: isTagSelectedPredicate,
+            onTagSelected: (id) => onTagSelected?.call(id),
+          ),
+        ),
+      ),
+      isThreeLine: document.tags.isNotEmpty,
+      leading: AspectRatio(
+        aspectRatio: _a4AspectRatio,
+        child: GestureDetector(
+          child: DocumentPreview(
+            id: document.id,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          ),
+        ),
+      ),
+      contentPadding: const EdgeInsets.all(8.0),
     );
   }
 

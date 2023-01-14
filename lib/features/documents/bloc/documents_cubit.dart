@@ -219,6 +219,11 @@ class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
     }
   }
 
+  Future<Iterable<String>> autocomplete(String query) async {
+    final res = await _api.autocomplete(query);
+    return res;
+  }
+
   void unselectView() {
     emit(state.copyWith(selectedSavedViewId: null));
   }

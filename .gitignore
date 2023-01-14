@@ -60,3 +60,5 @@ untranslated_messages.txt
 
 #lakos generated files
 **/dot_images/*
+
+docker/

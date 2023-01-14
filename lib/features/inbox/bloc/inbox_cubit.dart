@@ -122,6 +122,19 @@ class InboxCubit extends HydratedCubit<InboxState> {
     }
   }
 
+  Future<void> assignAsn(DocumentModel document) async {
+    if (document.archiveSerialNumber == null) {
+      final int asn = await _documentsApi.findNextAsn();
+      final updatedDocument = await _documentsApi
+          .update(document.copyWith(archiveSerialNumber: asn));
+      emit(
+        state.copyWith(
+            inboxItems: state.inboxItems
+                .map((e) => e.id == document.id ? updatedDocument : e)),
+      );
+    }
+  }
+
   void acknowledgeHint() {
     emit(state.copyWith(isHintAcknowledged: true));
   }

@@ -7,6 +7,8 @@ class TagWidget extends StatelessWidget {
   final VoidCallback onSelected;
   final bool isSelected;
   final bool isClickable;
+  final bool showShortName;
+  final bool dense;
 
   const TagWidget({
     super.key,
@@ -15,6 +17,8 @@ class TagWidget extends StatelessWidget {
     this.isClickable = true,
     required this.onSelected,
     required this.isSelected,
+    this.showShortName = false,
+    this.dense = false,
   });
 
   @override
@@ -24,13 +28,18 @@ class TagWidget extends StatelessWidget {
       child: AbsorbPointer(
         absorbing: !isClickable,
         child: FilterChip(
+          labelPadding:
+              dense ? const EdgeInsets.symmetric(horizontal: 2) : null,
+          padding: dense ? const EdgeInsets.all(4) : null,
           selected: isSelected,
           selectedColor: tag.color,
           onSelected: (_) => onSelected(),
           visualDensity: const VisualDensity(vertical: -2),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           label: Text(
-            tag.name,
+            showShortName && tag.name.length > 6
+                ? '${tag.name.substring(0, 6)}...'
+                : tag.name,
             style: TextStyle(color: tag.textColor),
           ),
           checkmarkColor: tag.textColor,

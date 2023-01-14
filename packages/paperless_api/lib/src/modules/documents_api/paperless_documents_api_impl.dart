@@ -219,12 +219,12 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       final response = await client.get(
         '/api/search/autocomplete/',
         queryParameters: {
-          'query': query,
+          'term': query,
           'limit': limit,
         },
       );
       if (response.statusCode == 200) {
-        return response.data as List<String>;
+        return (response.data as List).cast<String>();
       }
       throw const PaperlessServerException(ErrorCode.autocompleteQueryError);
     } on DioError catch (err) {

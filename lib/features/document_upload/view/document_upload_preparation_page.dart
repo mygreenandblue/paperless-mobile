@@ -236,8 +236,10 @@ class _DocumentUploadPreparationPageState
 
         final taskId = await cubit.upload(
           widget.fileBytes,
-          filename:
-              _padWithPdfExtension(_formKey.currentState?.value[fkFileName]),
+          filename: _padWithExtension(
+            _formKey.currentState?.value[fkFileName],
+            widget.fileExtension,
+          ),
           title: title,
           documentType: docType.id,
           correspondent: correspondent.id,
@@ -261,11 +263,12 @@ class _DocumentUploadPreparationPageState
     }
   }
 
-  String _padWithPdfExtension(String source) {
-    return source.endsWith(".pdf") ? source : '$source.pdf';
+  String _padWithExtension(String source, [String? extension]) {
+    final ext = extension ?? '.pdf';
+    return source.endsWith(ext) ? source : '$source$ext';
   }
 
   String _formatFilename(String source) {
-    return source.replaceAll(RegExp(r"[\W_]"), "_");
+    return source.replaceAll(RegExp(r"[\W_]"), "_").toLowerCase();
   }
 }

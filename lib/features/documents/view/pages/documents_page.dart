@@ -50,7 +50,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   double _offset = 0;
   double _last = 0;
 
-  static const double _savedViewWidgetHeight = 78 + 16;
+  static const double _savedViewWidgetHeight = 80 + 16;
 
   @override
   void initState() {

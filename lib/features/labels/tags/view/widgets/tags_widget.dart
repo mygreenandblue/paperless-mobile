@@ -6,13 +6,15 @@ import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/tag_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_widget.dart';
 
-class TagsWidget extends StatefulWidget {
+class TagsWidget extends StatelessWidget {
   final Iterable<int> tagIds;
   final bool isMultiLine;
   final VoidCallback? afterTagTapped;
   final void Function(int tagId)? onTagSelected;
   final bool isClickable;
   final bool Function(int id) isSelectedPredicate;
+  final bool showShortNames;
+  final bool dense;
 
   const TagsWidget({
     Key? key,
@@ -21,32 +23,31 @@ class TagsWidget extends StatefulWidget {
     this.isMultiLine = true,
     this.isClickable = true,
     required this.isSelectedPredicate,
-    required this.onTagSelected,
+    this.onTagSelected,
+    this.showShortNames = false,
+    this.dense = false,
   }) : super(key: key);
 
-  @override
-  State<TagsWidget> createState() => _TagsWidgetState();
-}
-
-class _TagsWidgetState extends State<TagsWidget> {
   @override
   Widget build(BuildContext context) {
     return TagBlocProvider(
       child: BlocBuilder<LabelCubit<Tag>, LabelState<Tag>>(
         builder: (context, state) {
-          final children = widget.tagIds
+          final children = tagIds
               .where((id) => state.labels.containsKey(id))
               .map(
                 (id) => TagWidget(
                   tag: state.getLabel(id)!,
-                  afterTagTapped: widget.afterTagTapped,
-                  isClickable: widget.isClickable,
-                  isSelected: widget.isSelectedPredicate(id),
-                  onSelected: () => widget.onTagSelected?.call(id),
+                  afterTagTapped: afterTagTapped,
+                  isClickable: isClickable,
+                  isSelected: isSelectedPredicate(id),
+                  onSelected: () => onTagSelected?.call(id),
+                  showShortName: showShortNames,
+                  dense: dense,
                 ),
               )
               .toList();
-          if (widget.isMultiLine) {
+          if (isMultiLine) {
             return Wrap(
               runAlignment: WrapAlignment.start,
               children: children,

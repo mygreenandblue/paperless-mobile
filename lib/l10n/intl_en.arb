@@ -563,5 +563,6 @@
   "verifyIdentityPageTitle": "Verify your identity",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Verify Identity",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
+  "inboxPageAssignAsnLabel": "Assign ASN"
 }
