@@ -220,6 +220,7 @@ class _DocumentUploadPreparationPageState
                           .uploadPageAutomaticallInferredFieldsHintText,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+                SizedBox(height: 300),
               ].padded(),
             ),
           );
