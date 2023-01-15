@@ -8,6 +8,7 @@ part of 'field_suggestions.dart';
 
 FieldSuggestions _$FieldSuggestionsFromJson(Map<String, dynamic> json) =>
     FieldSuggestions(
+      documentId: json['document_id'] as int?,
       correspondents:
           (json['correspondents'] as List<dynamic>?)?.map((e) => e as int) ??
               const [],
@@ -25,6 +26,7 @@ FieldSuggestions _$FieldSuggestionsFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$FieldSuggestionsToJson(FieldSuggestions instance) =>
     <String, dynamic>{
+      'document_id': instance.documentId,
       'correspondents': instance.correspondents.toList(),
       'tags': instance.tags.toList(),
       'document_types': instance.documentTypes.toList(),

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
@@ -22,11 +23,14 @@ import 'package:paperless_mobile/features/labels/correspondent/view/widgets/corr
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:badges/badges.dart' as b;
+
+import '../../../../core/repository/state/impl/document_type_repository_state.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final bool allowEdit;
@@ -284,7 +288,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   content: document.archiveSerialNumber != null
                       ? Text(document.archiveSerialNumber.toString())
                       : TextButton.icon(
-                          icon: const Icon(Icons.archive),
+                          icon: const Icon(Icons.archive_outlined),
                           label: Text(S
                               .of(context)
                               .documentDetailsPageAssignAsnButtonLabel),
@@ -369,37 +373,35 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return ListView(
       children: [
         _DetailsItem(
+          label: S.of(context).documentTitlePropertyLabel,
           content: HighlightedText(
             text: document.title,
             highlights: widget.titleAndContentQueryString?.split(" ") ?? [],
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          label: S.of(context).documentTitlePropertyLabel,
         ).paddedOnly(bottom: 16),
         _DetailsItem.text(
-          DateFormat.yMMMd().format(document.created),
+          DateFormat.yMMMMd().format(document.created),
           context: context,
           label: S.of(context).documentCreatedPropertyLabel,
         ).paddedSymmetrically(vertical: 16),
         Visibility(
           visible: document.documentType != null,
           child: _DetailsItem(
-            content: DocumentTypeWidget(
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              isClickable: widget.isLabelClickable,
-              documentTypeId: document.documentType,
-            ),
             label: S.of(context).documentDocumentTypePropertyLabel,
+            content: LabelText<DocumentType, DocumentTypeRepositoryState>(
+              style: Theme.of(context).textTheme.bodyLarge,
+              id: document.documentType,
+            ),
           ).paddedSymmetrically(vertical: 16),
         ),
         Visibility(
           visible: document.correspondent != null,
           child: _DetailsItem(
             label: S.of(context).documentCorrespondentPropertyLabel,
-            content: CorrespondentWidget(
-              textStyle: Theme.of(context).textTheme.bodyLarge,
-              isClickable: widget.isLabelClickable,
-              correspondentId: document.correspondent,
+            content: LabelText<Correspondent, CorrespondentRepositoryState>(
+              style: Theme.of(context).textTheme.bodyLarge,
+              id: document.correspondent,
             ),
           ).paddedSymmetrically(vertical: 16),
         ),
@@ -521,8 +523,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 class _DetailsItem extends StatelessWidget {
   final String label;
   final Widget content;
-  const _DetailsItem({Key? key, required this.label, required this.content})
-      : super(key: key);
+  const _DetailsItem({
+    Key? key,
+    required this.label,
+    required this.content,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -545,7 +550,10 @@ class _DetailsItem extends StatelessWidget {
     String text, {
     required this.label,
     required BuildContext context,
-  }) : content = Text(text, style: Theme.of(context).textTheme.bodyLarge);
+  }) : content = Text(
+          text,
+          style: Theme.of(context).textTheme.bodyLarge,
+        );
 }
 
 class ColoredTabBar extends Container implements PreferredSizeWidget {

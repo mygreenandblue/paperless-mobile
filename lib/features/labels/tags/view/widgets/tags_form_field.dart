@@ -194,7 +194,8 @@ class _TagFormFieldState extends State<TagFormField> {
               Wrap(
                 alignment: WrapAlignment.start,
                 runAlignment: WrapAlignment.start,
-                spacing: 8.0,
+                spacing: 4.0,
+                runSpacing: 4.0,
                 children: ((field.value as IdsTagsQuery).queries)
                     .map(
                       (query) => _buildTag(

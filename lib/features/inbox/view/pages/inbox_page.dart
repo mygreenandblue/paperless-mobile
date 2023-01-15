@@ -24,7 +24,6 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage> {
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-
   @override
   void initState() {
     super.initState();
@@ -40,9 +39,8 @@ class _InboxPageState extends State<InboxPage> {
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(14),
-          child: BlocBuilder<InboxCubit, InboxState>(
+        actions: [
+          BlocBuilder<InboxCubit, InboxState>(
             builder: (context, state) {
               return Align(
                 alignment: Alignment.centerRight,
@@ -59,8 +57,8 @@ class _InboxPageState extends State<InboxPage> {
                 ),
               );
             },
-          ).paddedSymmetrically(horizontal: 8.0),
-        ),
+          ).paddedSymmetrically(horizontal: 8)
+        ],
       ),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
@@ -79,7 +77,11 @@ class _InboxPageState extends State<InboxPage> {
           );
         },
       ),
-      body: BlocBuilder<InboxCubit, InboxState>(
+      body: BlocConsumer<InboxCubit, InboxState>(
+        listenWhen: (previous, current) =>
+            !previous.isLoaded && current.isLoaded,
+        listener: (context, state) =>
+            context.read<InboxCubit>().loadSuggestions(),
         builder: (context, state) {
           if (!state.isLoaded) {
             return const DocumentsListLoadingWidget();
@@ -121,7 +123,8 @@ class _InboxPageState extends State<InboxPage> {
                 ],
               )
               .flattened
-              .toList();
+              .toList()
+            ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
 
           return RefreshIndicator(
             onRefresh: () => context.read<InboxCubit>().initializeInbox(),

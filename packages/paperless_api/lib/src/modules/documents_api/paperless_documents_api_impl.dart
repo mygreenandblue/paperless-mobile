@@ -259,7 +259,8 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       final response =
           await client.get("/api/documents/${document.id}/suggestions/");
       if (response.statusCode == 200) {
-        return FieldSuggestions.fromJson(response.data);
+        return FieldSuggestions.fromJson(response.data)
+            .forDocumentId(document.id);
       }
       throw const PaperlessServerException(ErrorCode.suggestionsQueryError);
     } on DioError catch (err) {

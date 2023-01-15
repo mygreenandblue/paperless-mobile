@@ -5,17 +5,24 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'inbox_state.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(
+  ignoreUnannotated: true,
+)
 class InboxState with EquatableMixin {
-  @JsonKey(ignore: true)
   final bool isLoaded;
 
-  @JsonKey(ignore: true)
   final Iterable<int> inboxTags;
 
-  @JsonKey(ignore: true)
   final Iterable<DocumentModel> inboxItems;
 
+  final Map<int, Tag> availableTags;
+
+  final Map<int, DocumentType> availableDocumentTypes;
+
+  final Map<int, Correspondent> availableCorrespondents;
+
+  final Map<int, FieldSuggestions> suggestions;
+  @JsonKey()
   final bool isHintAcknowledged;
 
   const InboxState({
@@ -23,6 +30,10 @@ class InboxState with EquatableMixin {
     this.inboxTags = const [],
     this.inboxItems = const [],
     this.isHintAcknowledged = false,
+    this.availableTags = const {},
+    this.availableDocumentTypes = const {},
+    this.availableCorrespondents = const {},
+    this.suggestions = const {},
   });
 
   @override
@@ -31,6 +42,10 @@ class InboxState with EquatableMixin {
         inboxTags,
         inboxItems,
         isHintAcknowledged,
+        availableTags,
+        availableDocumentTypes,
+        availableCorrespondents,
+        suggestions,
       ];
 
   InboxState copyWith({
@@ -38,12 +53,22 @@ class InboxState with EquatableMixin {
     Iterable<int>? inboxTags,
     Iterable<DocumentModel>? inboxItems,
     bool? isHintAcknowledged,
+    Map<int, Tag>? availableTags,
+    Map<int, Correspondent>? availableCorrespondents,
+    Map<int, DocumentType>? availableDocumentTypes,
+    Map<int, FieldSuggestions>? suggestions,
   }) {
     return InboxState(
       isLoaded: isLoaded ?? this.isLoaded,
       inboxItems: inboxItems ?? this.inboxItems,
       inboxTags: inboxTags ?? this.inboxTags,
       isHintAcknowledged: isHintAcknowledged ?? this.isHintAcknowledged,
+      availableCorrespondents:
+          availableCorrespondents ?? this.availableCorrespondents,
+      availableDocumentTypes:
+          availableDocumentTypes ?? this.availableDocumentTypes,
+      availableTags: availableTags ?? this.availableTags,
+      suggestions: suggestions ?? this.suggestions,
     );
   }
 

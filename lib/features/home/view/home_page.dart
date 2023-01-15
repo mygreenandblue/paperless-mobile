@@ -19,6 +19,7 @@ import 'package:paperless_mobile/features/document_upload/cubit/document_upload_
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
+import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/home/view/widget/bottom_navigation_bar.dart';
 import 'package:paperless_mobile/features/home/view/widget/info_drawer.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
@@ -145,6 +146,71 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final destinations = [
+      RouteDescription(
+        icon: const Icon(Icons.description_outlined),
+        selectedIcon: Icon(
+          Icons.description,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context).bottomNavDocumentsPageLabel,
+      ),
+      RouteDescription(
+        icon: const Icon(Icons.document_scanner_outlined),
+        selectedIcon: Icon(
+          Icons.document_scanner,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context).bottomNavScannerPageLabel,
+      ),
+      RouteDescription(
+        icon: const Icon(Icons.sell_outlined),
+        selectedIcon: Icon(
+          Icons.sell,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context).bottomNavLabelsPageLabel,
+      ),
+      // RouteDescription(
+      //   icon: const Icon(Icons.inbox_outlined),
+      //   selectedIcon: Icon(
+      //     Icons.inbox,
+      //     color: Theme.of(context).colorScheme.primary,
+      //   ),
+      //   label: S.of(context).bottomNavInboxPageLabel,
+      // ),
+      // RouteDescription(
+      //   icon: const Icon(Icons.settings_outlined),
+      //   selectedIcon: Icon(
+      //     Icons.settings,
+      //     color: Theme.of(context).colorScheme.primary,
+      //   ),
+      //   label: S.of(context).appDrawerSettingsLabel,
+      // ),
+    ];
+    final routes = <Widget>[
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => DocumentsCubit(
+              context.read<PaperlessDocumentsApi>(),
+              context.read<SavedViewRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => SavedViewCubit(
+              context.read<SavedViewRepository>(),
+            ),
+          ),
+        ],
+        child: const DocumentsPage(),
+      ),
+      BlocProvider.value(
+        value: _scannerCubit,
+        child: const ScannerPage(),
+      ),
+      const LabelsPage(),
+    ];
     return MultiBlocListener(
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
@@ -172,96 +238,35 @@ class _HomePageState extends State<HomePage> {
             return Scaffold(
               key: rootScaffoldKey,
               drawer: const InfoDrawer(),
-              body: Row(children: [
-                NavigationRail(
-                  labelType: NavigationRailLabelType.all,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.description_outlined),
-                      selectedIcon: Icon(
-                        Icons.description,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      label: Text(S.of(context).bottomNavDocumentsPageLabel),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.document_scanner_outlined),
-                      selectedIcon: Icon(
-                        Icons.document_scanner,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      label: Text(S.of(context).bottomNavScannerPageLabel),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.sell_outlined),
-                      selectedIcon: Icon(
-                        Icons.sell,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      label: Text(S.of(context).bottomNavLabelsPageLabel),
-                    ),
-                  ],
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: _onNavigationChanged,
-                ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(
-                    child: [
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => DocumentsCubit(
-                          context.read<PaperlessDocumentsApi>(),
-                          context.read<SavedViewRepository>(),
-                        ),
-                      ),
-                      BlocProvider(
-                        create: (context) => SavedViewCubit(
-                          context.read<SavedViewRepository>(),
-                        ),
-                      ),
-                    ],
-                    child: const DocumentsPage(),
+              body: Row(
+                children: [
+                  NavigationRail(
+                    labelType: NavigationRailLabelType.all,
+                    destinations: destinations
+                        .map((e) => e.toNavigationRailDestination())
+                        .toList(),
+                    selectedIndex: _currentIndex,
+                    onDestinationSelected: _onNavigationChanged,
                   ),
-                  BlocProvider.value(
-                    value: _scannerCubit,
-                    child: const ScannerPage(),
+                  const VerticalDivider(thickness: 1, width: 1),
+                  Expanded(
+                    child: routes[_currentIndex],
                   ),
-                  const LabelsPage(),
-                ][_currentIndex]),
-              ]),
+                ],
+              ),
             );
           }
           return Scaffold(
             key: rootScaffoldKey,
-            bottomNavigationBar: BottomNavBar(
+            bottomNavigationBar: NavigationBar(
+              elevation: 4.0,
               selectedIndex: _currentIndex,
-              onNavigationChanged: _onNavigationChanged,
+              onDestinationSelected: _onNavigationChanged,
+              destinations:
+                  destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
             drawer: const InfoDrawer(),
-            body: [
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) => DocumentsCubit(
-                      context.read<PaperlessDocumentsApi>(),
-                      context.read<SavedViewRepository>(),
-                    ),
-                  ),
-                  BlocProvider(
-                    create: (context) => SavedViewCubit(
-                      context.read<SavedViewRepository>(),
-                    ),
-                  ),
-                ],
-                child: const DocumentsPage(),
-              ),
-              BlocProvider.value(
-                value: _scannerCubit,
-                child: const ScannerPage(),
-              ),
-              const LabelsPage(),
-            ][_currentIndex],
+            body: routes[_currentIndex],
           );
         },
       ),

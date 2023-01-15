@@ -42,6 +42,22 @@ class BottomNavBar extends StatelessWidget {
           ),
           label: S.of(context).bottomNavLabelsPageLabel,
         ),
+        NavigationDestination(
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: Icon(
+            Icons.inbox,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context).bottomNavInboxPageLabel,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.settings_outlined),
+          selectedIcon: Icon(
+            Icons.settings,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context).appDrawerSettingsLabel,
+        ),
       ],
     );
   }

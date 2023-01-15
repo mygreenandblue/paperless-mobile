@@ -307,8 +307,10 @@ class _InfoDrawerState extends State<InfoDrawer> {
         builder: (_) => LabelRepositoriesProvider(
           child: BlocProvider(
             create: (context) => InboxCubit(
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
-              context.read<PaperlessDocumentsApi>(),
+              context.read(),
+              context.read(),
+              context.read(),
+              context.read(),
             )..initializeInbox(),
             child: const InboxPage(),
           ),

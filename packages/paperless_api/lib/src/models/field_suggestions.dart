@@ -4,6 +4,7 @@ part 'field_suggestions.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class FieldSuggestions {
+  final int? documentId;
   final Iterable<int> correspondents;
   final Iterable<int> tags;
   final Iterable<int> documentTypes;
@@ -11,6 +12,7 @@ class FieldSuggestions {
   final Iterable<DateTime> dates;
 
   const FieldSuggestions({
+    this.documentId,
     this.correspondents = const [],
     this.tags = const [],
     this.documentTypes = const [],
@@ -37,6 +39,15 @@ class FieldSuggestions {
       (documentTypes.isNotEmpty ? 1 : 0) +
       (storagePaths.isNotEmpty ? 1 : 0) +
       (dates.isNotEmpty ? 1 : 0);
+
+  FieldSuggestions forDocumentId(int id) => FieldSuggestions(
+        documentId: id,
+        correspondents: correspondents,
+        dates: dates,
+        documentTypes: documentTypes,
+        tags: tags,
+        storagePaths: storagePaths,
+      );
 
   factory FieldSuggestions.fromJson(Map<String, dynamic> json) =>
       _$FieldSuggestionsFromJson(json);
