@@ -115,9 +115,24 @@ class _InboxPageState extends State<InboxPage> {
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       childCount: entry.value.length,
-                      (context, index) => _buildListItem(
-                        entry.value[index],
-                      ),
+                      (context, index) {
+                        if (index < entry.value.length - 1) {
+                          return Column(
+                            children: [
+                              _buildListItem(
+                                entry.value[index],
+                              ),
+                              const Divider(
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                            ],
+                          );
+                        }
+                        return _buildListItem(
+                          entry.value[index],
+                        );
+                      },
                     ),
                   ),
                 ],

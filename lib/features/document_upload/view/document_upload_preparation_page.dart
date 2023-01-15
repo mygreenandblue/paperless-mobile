@@ -11,6 +11,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/type/types.dart';
+import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
@@ -148,11 +149,14 @@ class _DocumentUploadPreparationPageState
                       }
                     }
                   },
-                  title: Text(S
-                      .of(context)
-                      .documentUploadPageSynchronizeTitleAndFilenameLabel), //TODO: INTL
+                  title: Text(
+                    S
+                        .of(context)
+                        .documentUploadPageSynchronizeTitleAndFilenameLabel,
+                  ), //TODO: INTL
                 ),
                 FormBuilderDateTimePicker(
+                  enabled: false,
                   autovalidateMode: AutovalidateMode.always,
                   format: DateFormat("dd. MMMM yyyy"), //TODO: INTL
                   inputType: InputType.date,
@@ -163,6 +167,11 @@ class _DocumentUploadPreparationPageState
                     labelText:
                         S.of(context).documentCreatedPropertyLabel + " *",
                   ),
+                ),
+                const HintCard(
+                  hintText:
+                      "Due to an apparent parsing bug with Paperless, setting the 'created at' date will cause the document consumption to fail! Therefore this field is disabled for now until this is fixed or I find a workaround!",
+                  show: true,
                 ),
                 LabelFormField<DocumentType>(
                   notAssignedSelectable: false,

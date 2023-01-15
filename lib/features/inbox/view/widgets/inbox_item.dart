@@ -1,9 +1,14 @@
+import 'dart:developer';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
+import 'package:paperless_mobile/extensions/date_time_extensions.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
@@ -14,6 +19,7 @@ import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/util.dart';
 
 class InboxItem extends StatefulWidget {
   static const _a4AspectRatio = 1 / 1.4142;
@@ -36,6 +42,7 @@ class _InboxItemState extends State<InboxItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: () async {
         final returnedDocument = await Navigator.push<DocumentModel?>(
           context,
@@ -57,8 +64,7 @@ class _InboxItemState extends State<InboxItem> {
           widget.onDocumentUpdated(returnedDocument);
         }
       },
-      child: Container(
-        padding: const EdgeInsets.all(4),
+      child: SizedBox(
         height: 180,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,29 +80,31 @@ class _InboxItemState extends State<InboxItem> {
                       alignment: Alignment.topCenter,
                       enableHero: false,
                     ),
-                  ),
+                  ).padded(),
                   Flexible(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildTitle(),
+                        _buildTitle().paddedOnly(left: 8, right: 8, top: 8),
                         const Spacer(),
-                        _buildCorrespondent(context),
-                        _buildDocumentType(context),
+                        _buildCorrespondent(context)
+                            .paddedSymmetrically(horizontal: 8),
+                        _buildDocumentType(context)
+                            .paddedSymmetrically(horizontal: 8),
                         const Spacer(),
-                        _buildTags(),
+                        _buildTags().paddedOnly(left: 8, bottom: 8),
                       ],
-                    ).padded(),
+                    ),
                   ),
                 ],
               ),
             ),
             SizedBox(
-              height: 48,
+              height: 56,
               child: _buildActions(context),
             ),
           ],
-        ).padded(),
+        ).paddedOnly(left: 8, top: 8, bottom: 8),
       ),
     );
   }
@@ -127,25 +135,51 @@ class _InboxItemState extends State<InboxItem> {
     ];
     return BlocBuilder<InboxCubit, InboxState>(
       builder: (context, state) {
-        return ListView(
-          scrollDirection: Axis.horizontal,
+        return Row(
           children: [
-            ...actions,
-            if (state.suggestions[widget.document.id] != null) ...[
-              SizedBox(width: 4),
-              ..._buildSuggestionChips(
-                chipShape,
-                state.suggestions[widget.document.id]!,
-                state,
-              )
-            ]
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.bolt_outlined),
+                SizedBox(
+                  width: 40,
+                  child: Text(
+                    S.of(context).inboxPageQuickActionsLabel,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+                const VerticalDivider(
+                  indent: 16,
+                  endIndent: 16,
+                ),
+              ],
+            ),
+            const SizedBox(width: 4.0),
+            Expanded(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  ...actions,
+                  if (state.suggestions[widget.document.id] != null) ...[
+                    const SizedBox(width: 4),
+                    ..._buildSuggestionChips(
+                      chipShape,
+                      state.suggestions[widget.document.id]!,
+                      state,
+                    )
+                  ]
+                ],
+              ),
+            ),
           ],
         );
       },
     );
   }
 
-  ActionChip _buildAssignAsnAction(
+  Widget _buildAssignAsnAction(
     RoundedRectangleBorder chipShape,
     BuildContext context,
   ) {
@@ -247,6 +281,7 @@ class _InboxItemState extends State<InboxItem> {
   ) {
     return [
       ...suggestions.correspondents
+          .whereNot((e) => widget.document.correspondent == e)
           .map(
             (e) => ActionChip(
               avatar: const Icon(Icons.person_outline),
@@ -258,28 +293,78 @@ class _InboxItemState extends State<InboxItem> {
                     .updateDocument(widget.document.copyWith(
                       correspondent: e,
                       overwriteCorrespondent: true,
-                    ));
+                    ))
+                    .then((value) => showSnackBar(
+                        context,
+                        S
+                            .of(context)
+                            .inboxPageSuggestionSuccessfullyAppliedMessage));
               },
             ),
           )
           .toList(),
       ...suggestions.documentTypes
+          .whereNot((e) => widget.document.documentType == e)
           .map(
             (e) => ActionChip(
               avatar: const Icon(Icons.description_outlined),
               shape: chipShape,
               label: Text(state.availableDocumentTypes[e]?.name ?? ''),
+              onPressed: () => context
+                  .read<InboxCubit>()
+                  .updateDocument(widget.document
+                      .copyWith(documentType: e, overwriteDocumentType: true))
+                  .then((value) => showSnackBar(
+                      context,
+                      S
+                          .of(context)
+                          .inboxPageSuggestionSuccessfullyAppliedMessage)),
+            ),
+          )
+          .toList(),
+      ...suggestions.tags
+          .whereNot((e) => widget.document.tags.contains(e))
+          .map(
+            (e) => ActionChip(
+              avatar: const Icon(Icons.label_outline),
+              shape: chipShape,
+              label: Text(state.availableTags[e]?.name ?? ''),
               onPressed: () {
                 context
                     .read<InboxCubit>()
                     .updateDocument(widget.document.copyWith(
-                      documentType: e,
-                      overwriteDocumentType: true,
-                    ));
+                      tags: {...widget.document.tags, e}.toList(),
+                      overwriteTags: true,
+                    ))
+                    .then((value) => showSnackBar(
+                        context,
+                        S
+                            .of(context)
+                            .inboxPageSuggestionSuccessfullyAppliedMessage));
               },
             ),
           )
           .toList(),
-    ];
+      ...suggestions.dates
+          .whereNot((e) => widget.document.created.isEqualToIgnoringDate(e))
+          .map(
+            (e) => ActionChip(
+              avatar: const Icon(Icons.calendar_today_outlined),
+              shape: chipShape,
+              label: Text(
+                "${S.of(context).documentCreatedPropertyLabel}: ${DateFormat.yMd().format(e)}",
+              ),
+              onPressed: () => context
+                  .read<InboxCubit>()
+                  .updateDocument(widget.document.copyWith(created: e))
+                  .then((value) => showSnackBar(
+                      context,
+                      S
+                          .of(context)
+                          .inboxPageSuggestionSuccessfullyAppliedMessage)),
+            ),
+          )
+          .toList(),
+    ].expand((element) => [element, const SizedBox(width: 4)]).toList();
   }
 }

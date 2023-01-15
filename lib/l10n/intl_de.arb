@@ -364,6 +364,8 @@
   "@genericActionUploadLabel": {},
   "genericMessageOfflineText": "Du bist offline.",
   "@genericMessageOfflineText": {},
+  "inboxPageAssignAsnLabel": "",
+  "@inboxPageAssignAsnLabel": {},
   "inboxPageDocumentRemovedMessageText": "Dokument aus Posteingang entfernt.",
   "@inboxPageDocumentRemovedMessageText": {},
   "inboxPageMarkAllAsSeenConfirmationDialogText": "Bist Du sicher, dass Du alle Dokumente als gesehen markieren möchtest? Dadurch wird eine Massenbearbeitung durchgeführt, bei der alle Posteingangs-Tags von den Dokumenten entfernt werden. Diese Aktion kann nicht rückgängig gemacht werden! Möchtest Du trotzdem fortfahren?",
@@ -378,6 +380,10 @@
   "@inboxPageNoNewDocumentsRefreshLabel": {},
   "inboxPageNoNewDocumentsText": "Du hast keine ungesehenen Dokumente.",
   "@inboxPageNoNewDocumentsText": {},
+  "inboxPageQuickActionsLabel": "Schnell Aktion",
+  "@inboxPageQuickActionsLabel": {},
+  "inboxPageSuggestionSuccessfullyAppliedMessage": "Vorschlag wurde erfolgreich angewendet.",
+  "@inboxPageSuggestionSuccessfullyAppliedMessage": {},
   "inboxPageTodayText": "Heute",
   "@inboxPageTodayText": {},
   "inboxPageUndoRemoveText": "Undo",
@@ -563,6 +569,5 @@
   "verifyIdentityPageTitle": "Verifiziere deine Identität",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Identität verifizieren",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
-  "inboxPageAssignAsnLabel": "Assign ASN"
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
 }

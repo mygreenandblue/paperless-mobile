@@ -364,6 +364,8 @@
   "@genericActionUploadLabel": {},
   "genericMessageOfflineText": "You're offline.",
   "@genericMessageOfflineText": {},
+  "inboxPageAssignAsnLabel": "Assign ASN",
+  "@inboxPageAssignAsnLabel": {},
   "inboxPageDocumentRemovedMessageText": "Document removed from inbox.",
   "@inboxPageDocumentRemovedMessageText": {},
   "inboxPageMarkAllAsSeenConfirmationDialogText": "Are you sure you want to mark all documents as seen? This will perform a bulk edit operation removing all inbox tags from the documents. This action is not reversible! Are you sure you want to continue?",
@@ -378,6 +380,10 @@
   "@inboxPageNoNewDocumentsRefreshLabel": {},
   "inboxPageNoNewDocumentsText": "You do not have unseen documents.",
   "@inboxPageNoNewDocumentsText": {},
+  "inboxPageQuickActionsLabel": "Quick Action",
+  "@inboxPageQuickActionsLabel": {},
+  "inboxPageSuggestionSuccessfullyAppliedMessage": "Suggestion successfully applied.",
+  "@inboxPageSuggestionSuccessfullyAppliedMessage": {},
   "inboxPageTodayText": "Today",
   "@inboxPageTodayText": {},
   "inboxPageUndoRemoveText": "Undo",
@@ -563,6 +569,5 @@
   "verifyIdentityPageTitle": "Verify your identity",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Verify Identity",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
-  "inboxPageAssignAsnLabel": "Assign ASN"
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
 }

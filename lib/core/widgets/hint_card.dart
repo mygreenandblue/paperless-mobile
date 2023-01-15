@@ -6,12 +6,12 @@ import 'package:paperless_mobile/generated/l10n.dart';
 class HintCard extends StatelessWidget {
   final String hintText;
   final double elevation;
-  final VoidCallback onHintAcknowledged;
+  final VoidCallback? onHintAcknowledged;
   final bool show;
   const HintCard({
     super.key,
     required this.hintText,
-    required this.onHintAcknowledged,
+    this.onHintAcknowledged,
     this.elevation = 1,
     required this.show,
   });
@@ -43,13 +43,16 @@ class HintCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: TextButton(
-                child: Text(S.of(context).genericAcknowledgeLabel),
-                onPressed: onHintAcknowledged,
-              ),
-            ),
+            if (onHintAcknowledged != null)
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  child: Text(S.of(context).genericAcknowledgeLabel),
+                  onPressed: onHintAcknowledged,
+                ),
+              )
+            else
+              Padding(padding: EdgeInsets.only(bottom: 24)),
           ],
         ).padded(),
       ).padded(),

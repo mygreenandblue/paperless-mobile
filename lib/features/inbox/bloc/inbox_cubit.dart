@@ -64,7 +64,6 @@ class InboxCubit extends HydratedCubit<InboxState> {
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> initializeInbox() async {
-    if (state.isLoaded) return;
     final inboxTags = await _tagsRepository.findAll().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );
@@ -206,13 +205,14 @@ class InboxCubit extends HydratedCubit<InboxState> {
   }
 
   void loadSuggestions() {
-    Future.wait(state.inboxItems
+    state.inboxItems
         .whereNot((doc) => state.suggestions.containsKey(doc.id))
-        .map((e) => _documentsApi.findSuggestions(e))).then((results) {
-      emit(state.copyWith(suggestions: {
-        ...state.suggestions,
-        for (var r in results) r.documentId!: r
-      }));
+        .map((e) => _documentsApi.findSuggestions(e))
+        .forEach((suggestion) async {
+      final s = await suggestion;
+      emit(state.copyWith(
+        suggestions: {...state.suggestions, s.documentId!: s},
+      ));
     });
   }
 

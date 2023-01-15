@@ -364,6 +364,8 @@
   "@genericActionUploadLabel": {},
   "genericMessageOfflineText": "Jste offline.",
   "@genericMessageOfflineText": {},
+  "inboxPageAssignAsnLabel": "",
+  "@inboxPageAssignAsnLabel": {},
   "inboxPageDocumentRemovedMessageText": "Dokument odstraněn z inboxu.",
   "@inboxPageDocumentRemovedMessageText": {},
   "inboxPageMarkAllAsSeenConfirmationDialogText": "Opravdu chcete označit všechny dokumenty jako shlédnuté? Toto provede hromadnou úpravu a odstraní inbox tag u všech dokumentů.\nToto je nevratná akce! Opravdu chcete pokračovat?",
@@ -378,6 +380,10 @@
   "@inboxPageNoNewDocumentsRefreshLabel": {},
   "inboxPageNoNewDocumentsText": "Nemáte neshlédnuté dokumenty.",
   "@inboxPageNoNewDocumentsText": {},
+  "inboxPageQuickActionsLabel": "",
+  "@inboxPageQuickActionsLabel": {},
+  "inboxPageSuggestionSuccessfullyAppliedMessage": "",
+  "@inboxPageSuggestionSuccessfullyAppliedMessage": {},
   "inboxPageTodayText": "Dnes",
   "@inboxPageTodayText": {},
   "inboxPageUndoRemoveText": "VRÁTIT",
@@ -563,6 +569,5 @@
   "verifyIdentityPageTitle": "",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
-  "inboxPageAssignAsnLabel": "Assign ASN"
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
 }
