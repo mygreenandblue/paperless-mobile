@@ -11,8 +11,8 @@ DocumentType _$DocumentTypeFromJson(Map<String, dynamic> json) => DocumentType(
       name: json['name'] as String,
       slug: json['slug'] as String?,
       match: json['match'] as String?,
-      matchingAlgorithm: $enumDecodeNullable(
-          _$MatchingAlgorithmEnumMap, json['matching_algorithm']),
+      matchingAlgorithm:
+          $enumDecode(_$MatchingAlgorithmEnumMap, json['matching_algorithm']),
       isInsensitive: json['is_insensitive'] as bool?,
       documentCount: json['document_count'] as int?,
     );
@@ -30,8 +30,8 @@ Map<String, dynamic> _$DocumentTypeToJson(DocumentType instance) {
   val['name'] = instance.name;
   writeNotNull('slug', instance.slug);
   writeNotNull('match', instance.match);
-  writeNotNull('matching_algorithm',
-      _$MatchingAlgorithmEnumMap[instance.matchingAlgorithm]);
+  val['matching_algorithm'] =
+      _$MatchingAlgorithmEnumMap[instance.matchingAlgorithm]!;
   writeNotNull('is_insensitive', instance.isInsensitive);
   writeNotNull('document_count', instance.documentCount);
   return val;
@@ -42,6 +42,6 @@ const _$MatchingAlgorithmEnumMap = {
   MatchingAlgorithm.allWords: 2,
   MatchingAlgorithm.exactMatch: 3,
   MatchingAlgorithm.regex: 4,
-  MatchingAlgorithm.similarWord: 5,
+  MatchingAlgorithm.fuzzy: 5,
   MatchingAlgorithm.auto: 6,
 };

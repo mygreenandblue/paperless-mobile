@@ -1,7 +1,11 @@
 {
   "@@locale": "en",
-  "aboutDialogDevelopedByText": "Developed by",
-  "@aboutDialogDevelopedByText": {},
+  "aboutDialogDevelopedByText": "Developed by {name}",
+  "@aboutDialogDevelopedByText": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "addCorrespondentPageTitle": "New Correspondent",
   "@addCorrespondentPageTitle": {},
   "addDocumentTypePageTitle": "New Document Type",
@@ -46,7 +50,7 @@
   "@deleteViewDialogContentText": {},
   "deleteViewDialogTitleText": "Delete view ",
   "@deleteViewDialogTitleText": {},
-  "documentAddedPropertyLabel": "Added At",
+  "documentAddedPropertyLabel": "Added at",
   "@documentAddedPropertyLabel": {},
   "documentArchiveSerialNumberPropertyLongLabel": "Archive Serial Number",
   "@documentArchiveSerialNumberPropertyLongLabel": {},
@@ -54,7 +58,7 @@
   "@documentArchiveSerialNumberPropertyShortLabel": {},
   "documentCorrespondentPropertyLabel": "Correspondent",
   "@documentCorrespondentPropertyLabel": {},
-  "documentCreatedPropertyLabel": "Created At",
+  "documentCreatedPropertyLabel": "Created at",
   "@documentCreatedPropertyLabel": {},
   "documentDeleteSuccessMessage": "Document successfully deleted.",
   "@documentDeleteSuccessMessage": {},
@@ -104,7 +108,7 @@
   "@documentMetaDataOriginalFileSizeLabel": {},
   "documentMetaDataOriginalMimeTypeLabel": "Original MIME-Type",
   "@documentMetaDataOriginalMimeTypeLabel": {},
-  "documentModifiedPropertyLabel": "Modified At",
+  "documentModifiedPropertyLabel": "Modified at",
   "@documentModifiedPropertyLabel": {},
   "documentPreviewPageTitle": "Preview",
   "@documentPreviewPageTitle": {},
@@ -128,10 +132,6 @@
   "@documentsFilterPageAdvancedLabel": {},
   "documentsFilterPageApplyFilterLabel": "Apply",
   "@documentsFilterPageApplyFilterLabel": {},
-  "documentsFilterPageDateRangeFieldEndLabel": "To",
-  "@documentsFilterPageDateRangeFieldEndLabel": {},
-  "documentsFilterPageDateRangeFieldStartLabel": "From",
-  "@documentsFilterPageDateRangeFieldStartLabel": {},
   "documentsFilterPageDateRangeLastMonthLabel": "Last Month",
   "@documentsFilterPageDateRangeLastMonthLabel": {},
   "documentsFilterPageDateRangeLastSevenDaysLabel": "Last 7 Days",
@@ -294,8 +294,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerFromLabel": "From",
-  "@extendedDateRangePickerFromLabel": {},
   "extendedDateRangePickerLastDaysLabel": "{count, plural, zero{} one{Yesterday} other{Last {count} days}}",
   "@extendedDateRangePickerLastDaysLabel": {
     "placeholders": {
@@ -328,8 +326,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerToLabel": "To",
-  "@extendedDateRangePickerToLabel": {},
   "extendedDateRangePickerWeekText": "{count, plural, zero{} one{week} other{weeks}}",
   "@extendedDateRangePickerWeekText": {
     "placeholders": {
@@ -492,6 +488,18 @@
   "@loginPageUsernameLabel": {},
   "loginPageUsernameValidatorMessageText": "Username must not be empty.",
   "@loginPageUsernameValidatorMessageText": {},
+  "matchingAlgorithmAllDescription": "All: Document contains all of these words",
+  "@matchingAlgorithmAllDescription": {},
+  "matchingAlgorithmAnyDescription": "Any: Document contains any of these words",
+  "@matchingAlgorithmAnyDescription": {},
+  "matchingAlgorithmAutoDescription": "Auto: Learn matching automatically",
+  "@matchingAlgorithmAutoDescription": {},
+  "matchingAlgorithmExactDescription": "Exact: Document contains this string",
+  "@matchingAlgorithmExactDescription": {},
+  "matchingAlgorithmFuzzyDescription": "Fuzzy: Document contains a word similar to this word",
+  "@matchingAlgorithmFuzzyDescription": {},
+  "matchingAlgorithmRegexDescription": "Regular Expression: Document matches this regular expression",
+  "@matchingAlgorithmRegexDescription": {},
   "offlineWidgetText": "An internet connection could not be established.",
   "@offlineWidgetText": {},
   "onboardingDoneButtonLabel": "Done",

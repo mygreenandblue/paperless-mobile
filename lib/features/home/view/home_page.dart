@@ -8,7 +8,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/logic/error_code_localization_mapper.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _initializeData(context);
+    context.read<ConnectivityCubit>().reload();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
     });

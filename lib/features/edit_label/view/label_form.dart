@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -81,10 +81,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               onChanged: (val) => setState(() => _errors = {}),
             ),
             FormBuilderDropdown<int?>(
-              //TODO: Extract to own widget.
               name: Label.matchingAlgorithmKey,
-              initialValue: widget.initialValue?.matchingAlgorithm?.value ??
-                  MatchingAlgorithm.allWords.value,
+              initialValue: widget.initialValue?.matchingAlgorithm.value ??
+                  MatchingAlgorithm.auto.value,
               decoration: InputDecoration(
                 labelText: S.of(context).labelMatchingAlgorithmPropertyLabel,
                 errorText: _errors[Label.matchingAlgorithmKey],
@@ -93,7 +92,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               items: MatchingAlgorithm.values
                   .map(
                     (algo) => DropdownMenuItem<int?>(
-                      child: Text(algo.name), //TODO: INTL
+                      child: Text(translateMatchingAlgorithm(context, algo)),
                       value: algo.value,
                     ),
                   )

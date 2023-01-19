@@ -1,7 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
+part 'document_model.g.dart';
+
+@LocalDateTimeJsonConverter()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class DocumentModel extends Equatable {
   static const idKey = 'id';
   static const titleKey = 'title';
@@ -47,50 +53,18 @@ class DocumentModel extends Equatable {
     this.storagePath,
   });
 
-  DocumentModel.fromJson(Map<String, dynamic> json)
-      : id = json[idKey],
-        title = json[titleKey],
-        content = json[contentKey],
-        created = DateTime.parse(json[createdKey]),
-        modified = DateTime.parse(json[modifiedKey]),
-        added = DateTime.parse(json[addedKey]),
-        archiveSerialNumber = json[asnKey],
-        originalFileName = json[originalFileNameKey],
-        archivedFileName = json[archivedFileNameKey],
-        tags = (json[tagsKey] as List<dynamic>).cast<int>(),
-        correspondent = json[correspondentKey],
-        documentType = json[documentTypeKey],
-        storagePath = json[storagePathKey];
+  factory DocumentModel.fromJson(Map<String, dynamic> json) =>
+      _$DocumentModelFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    return {
-      idKey: id,
-      titleKey: title,
-      asnKey: archiveSerialNumber,
-      archivedFileNameKey: archivedFileName,
-      contentKey: content,
-      correspondentKey: correspondent,
-      documentTypeKey: documentType,
-      createdKey: created.toIso8601String(),
-      modifiedKey: modified.toIso8601String(),
-      addedKey: added.toIso8601String(),
-      originalFileNameKey: originalFileName,
-      tagsKey: tags.toList(),
-      storagePathKey: storagePath,
-    };
-  }
+  Map<String, dynamic> toJson() => _$DocumentModelToJson(this);
 
   DocumentModel copyWith({
     String? title,
     String? content,
-    bool overwriteTags = false,
     Iterable<int>? tags,
-    bool overwriteDocumentType = false,
-    int? documentType,
-    bool overwriteCorrespondent = false,
-    int? correspondent,
-    bool overwriteStoragePath = false,
-    int? storagePath,
+    int? Function()? documentType,
+    int? Function()? correspondent,
+    int? Function()? storagePath,
     DateTime? created,
     DateTime? modified,
     DateTime? added,
@@ -102,11 +76,10 @@ class DocumentModel extends Equatable {
       id: id,
       title: title ?? this.title,
       content: content ?? this.content,
-      documentType: overwriteDocumentType ? documentType : this.documentType,
-      correspondent:
-          overwriteCorrespondent ? correspondent : this.correspondent,
-      storagePath: overwriteDocumentType ? storagePath : this.storagePath,
-      tags: overwriteTags ? tags ?? [] : this.tags,
+      documentType: documentType?.call() ?? this.documentType,
+      correspondent: correspondent?.call() ?? this.correspondent,
+      storagePath: storagePath?.call() ?? this.storagePath,
+      tags: tags ?? this.tags,
       created: created ?? this.created,
       modified: modified ?? this.modified,
       added: added ?? this.added,

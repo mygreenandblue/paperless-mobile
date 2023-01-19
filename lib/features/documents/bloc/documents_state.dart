@@ -1,72 +1,25 @@
-import 'dart:developer';
-
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
 
-class DocumentsState extends Equatable {
-  final bool isLoading;
-  final bool hasLoaded;
-  final DocumentFilter filter;
-  final List<PagedSearchResult<DocumentModel>> value;
+class DocumentsState extends DocumentsPagedState {
   final int? selectedSavedViewId;
 
   @JsonKey(ignore: true)
   final List<DocumentModel> selection;
 
   const DocumentsState({
-    this.hasLoaded = false,
-    this.isLoading = false,
-    this.value = const [],
-    this.filter = const DocumentFilter(),
     this.selection = const [],
     this.selectedSavedViewId,
+    super.value = const [],
+    super.filter = const DocumentFilter(),
+    super.hasLoaded = false,
+    super.isLoading = false,
   });
 
   List<int> get selectedIds => selection.map((e) => e.id).toList();
 
-  int get currentPageNumber {
-    return filter.page;
-  }
-
-  int? get nextPageNumber {
-    return isLastPageLoaded ? null : currentPageNumber + 1;
-  }
-
-  int get count {
-    if (value.isEmpty) {
-      return 0;
-    }
-    return value.first.count;
-  }
-
-  bool get isLastPageLoaded {
-    if (!hasLoaded) {
-      return false;
-    }
-    if (value.isNotEmpty) {
-      return value.last.next == null;
-    }
-    return true;
-  }
-
-  int inferPageCount({required int pageSize}) {
-    if (!hasLoaded) {
-      return 100000;
-    }
-    if (value.isEmpty) {
-      return 0;
-    }
-    return value.first.inferPageCount(pageSize: pageSize);
-  }
-
-  List<DocumentModel> get documents {
-    return value.fold(
-        [], (previousValue, element) => [...previousValue, ...element.results]);
-  }
-
   DocumentsState copyWith({
-    bool overwrite = false,
     bool? hasLoaded,
     bool? isLoading,
     List<PagedSearchResult<DocumentModel>>? value,
@@ -116,6 +69,21 @@ class DocumentsState extends Equatable {
               PagedSearchResult.fromJsonT(e, DocumentModelJsonConverter()))
           .toList(),
       filter: DocumentFilter.fromJson(json['filter']),
+    );
+  }
+
+  @override
+  DocumentsState copyWithPaged({
+    bool? hasLoaded,
+    bool? isLoading,
+    List<PagedSearchResult<DocumentModel>>? value,
+    DocumentFilter? filter,
+  }) {
+    return copyWith(
+      filter: filter,
+      hasLoaded: hasLoaded,
+      isLoading: isLoading,
+      value: value,
     );
   }
 }

@@ -18,6 +18,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'en': 'English',
     'de': 'Deutsch',
     'cs': 'Česky',
+    'tr': 'Türkçe',
   };
   @override
   Widget build(BuildContext context) {
@@ -42,6 +43,10 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
                 RadioOption(
                   value: 'cs',
                   label: _languageOptions['cs']!,
+                ),
+                RadioOption(
+                  value: 'tr',
+                  label: _languageOptions['tr']!,
                 )
               ],
               initialValue: context

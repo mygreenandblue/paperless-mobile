@@ -1,6 +1,14 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/models/document_model.dart';
+import 'package:paperless_api/src/models/search_hit.dart';
 
+part 'similar_document_model.g.dart';
+
+@LocalDateTimeJsonConverter()
+@JsonSerializable()
 class SimilarDocumentModel extends DocumentModel {
+  @JsonKey(name: '__search_hit__')
   final SearchHit searchHit;
 
   const SimilarDocumentModel({
@@ -20,39 +28,9 @@ class SimilarDocumentModel extends DocumentModel {
     super.tags,
   });
 
+  factory SimilarDocumentModel.fromJson(Map<String, dynamic> json) =>
+      _$SimilarDocumentModelFromJson(json);
+
   @override
-  Map<String, dynamic> toJson() {
-    final json = super.toJson();
-    json['__search_hit__'] = searchHit.toJson();
-    return json;
-  }
-
-  SimilarDocumentModel.fromJson(Map<String, dynamic> json)
-      : searchHit = SearchHit.fromJson(json),
-        super.fromJson(json);
-}
-
-class SearchHit {
-  final double? score;
-  final String? highlights;
-  final int? rank;
-
-  SearchHit({
-    this.score,
-    required this.highlights,
-    required this.rank,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'score': score,
-      'highlights': highlights,
-      'rank': rank,
-    };
-  }
-
-  SearchHit.fromJson(Map<String, dynamic> json)
-      : score = json['score'],
-        highlights = json['highlights'],
-        rank = json['rank'];
+  Map<String, dynamic> toJson() => _$SimilarDocumentModelToJson(this);
 }

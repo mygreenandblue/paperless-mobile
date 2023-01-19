@@ -2,10 +2,14 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/constants.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
 class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
+  static const _dateTimeConverter = LocalDateTimeJsonConverter();
+
   final Dio client;
 
   PaperlessDocumentsApiImpl(this.client);
@@ -21,16 +25,19 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     int? correspondent,
     Iterable<int> tags = const [],
   }) async {
-    final formData = FormData()
-      ..files.add(
-        MapEntry(
-          'document',
-          MultipartFile.fromBytes(documentBytes, filename: filename),
-        ),
-      )
-      ..fields.add(MapEntry('title', title));
+    final formData = FormData();
+    formData.files.add(
+      MapEntry(
+        'document',
+        MultipartFile.fromBytes(documentBytes, filename: filename),
+      ),
+    );
+    formData.fields.add(MapEntry('title', title));
+
     if (createdAt != null) {
-      formData.fields.add(MapEntry('created', apiDateFormat.format(createdAt)));
+      formData.fields.add(
+        MapEntry('created', apiDateFormat.format(createdAt)),
+      );
     }
     if (correspondent != null) {
       formData.fields.add(MapEntry('correspondent', jsonEncode(correspondent)));
@@ -42,8 +49,10 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       formData.fields.add(MapEntry('tags', tag.toString()));
     }
     try {
-      final response =
-          await client.post('/api/documents/post_document/', data: formData);
+      final response = await client.post(
+        '/api/documents/post_document/',
+        data: formData,
+      );
       if (response.statusCode == 200) {
         if (response.data is String && response.data != "OK") {
           return response.data;

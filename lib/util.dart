@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/logic/error_code_localization_mapper.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/service/github_issue_service.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:permission_handler/permission_handler.dart';

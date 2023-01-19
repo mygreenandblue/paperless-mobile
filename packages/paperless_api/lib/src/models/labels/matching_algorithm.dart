@@ -6,7 +6,7 @@ enum MatchingAlgorithm {
   allWords(2, "All: Match all of the following words"),
   exactMatch(3, "Exact: Match the following string"),
   regex(4, "Regex: Match the regular expression"),
-  similarWord(5, "Similar: Match a similar word"),
+  fuzzy(5, "Similar: Match a similar word"),
   auto(6, "Auto: Learn automatic assignment");
 
   final int value;

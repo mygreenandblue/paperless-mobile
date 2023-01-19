@@ -27,7 +27,7 @@ class Tag extends Label {
     super.documentCount,
     super.isInsensitive,
     super.match,
-    super.matchingAlgorithm,
+    required super.matchingAlgorithm,
     super.slug,
     Color? color,
     this.textColor,
@@ -84,13 +84,14 @@ class Tag extends Label {
         match,
       ];
 
+  //FIXME: Why is this not generated?!
   factory Tag.fromJson(Map<String, dynamic> json) {
     const $MatchingAlgorithmEnumMap = {
       MatchingAlgorithm.anyWord: 1,
       MatchingAlgorithm.allWords: 2,
       MatchingAlgorithm.exactMatch: 3,
       MatchingAlgorithm.regex: 4,
-      MatchingAlgorithm.similarWord: 5,
+      MatchingAlgorithm.fuzzy: 5,
       MatchingAlgorithm.auto: 6,
     };
 
@@ -100,8 +101,8 @@ class Tag extends Label {
       documentCount: json['document_count'] as int?,
       isInsensitive: json['is_insensitive'] as bool?,
       match: json['match'] as String?,
-      matchingAlgorithm: $enumDecodeNullable(
-          $MatchingAlgorithmEnumMap, json['matching_algorithm']),
+      matchingAlgorithm:
+          $enumDecode($MatchingAlgorithmEnumMap, json['matching_algorithm']),
       slug: json['slug'] as String?,
       textColor: _colorFromJson(json['text_color']),
       isInboxTag: json['is_inbox_tag'] as bool?,
@@ -118,7 +119,7 @@ class Tag extends Label {
       MatchingAlgorithm.allWords: 2,
       MatchingAlgorithm.exactMatch: 3,
       MatchingAlgorithm.regex: 4,
-      MatchingAlgorithm.similarWord: 5,
+      MatchingAlgorithm.fuzzy: 5,
       MatchingAlgorithm.auto: 6,
     };
 

@@ -45,6 +45,8 @@ class PagedSearchResult<T> extends Equatable {
     return 1;
   }
 
+  int get pageSize => results.length;
+
   const PagedSearchResult({
     required this.count,
     required this.next,
@@ -80,11 +82,11 @@ class PagedSearchResult<T> extends Equatable {
     return PagedSearchResult.fromJsonT(serializer.json, serializer.converter);
   }
 
-  PagedSearchResult copyWith({
+  PagedSearchResult<T> copyWith({
     int? count,
     String? next,
     String? previous,
-    List<DocumentModel>? results,
+    List<T>? results,
   }) {
     return PagedSearchResult(
       count: count ?? this.count,

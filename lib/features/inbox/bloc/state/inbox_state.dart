@@ -1,19 +1,14 @@
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
 
 part 'inbox_state.g.dart';
 
 @JsonSerializable(
   ignoreUnannotated: true,
 )
-class InboxState with EquatableMixin {
-  final bool isLoaded;
-
+class InboxState extends DocumentsPagedState {
   final Iterable<int> inboxTags;
-
-  final Iterable<DocumentModel> inboxItems;
 
   final Map<int, Tag> availableTags;
 
@@ -21,37 +16,41 @@ class InboxState with EquatableMixin {
 
   final Map<int, Correspondent> availableCorrespondents;
 
-  final Map<int, FieldSuggestions> suggestions;
   @JsonKey()
   final bool isHintAcknowledged;
 
   const InboxState({
-    this.isLoaded = false,
+    super.hasLoaded = false,
+    super.isLoading = false,
+    super.value = const [],
+    super.filter = const DocumentFilter(),
     this.inboxTags = const [],
-    this.inboxItems = const [],
     this.isHintAcknowledged = false,
     this.availableTags = const {},
     this.availableDocumentTypes = const {},
     this.availableCorrespondents = const {},
-    this.suggestions = const {},
   });
 
   @override
   List<Object?> get props => [
-        isLoaded,
+        hasLoaded,
+        isLoading,
+        value,
+        filter,
         inboxTags,
-        inboxItems,
+        documents,
         isHintAcknowledged,
         availableTags,
         availableDocumentTypes,
         availableCorrespondents,
-        suggestions,
       ];
 
   InboxState copyWith({
-    bool? isLoaded,
+    bool? hasLoaded,
+    bool? isLoading,
     Iterable<int>? inboxTags,
-    Iterable<DocumentModel>? inboxItems,
+    List<PagedSearchResult<DocumentModel>>? value,
+    DocumentFilter? filter,
     bool? isHintAcknowledged,
     Map<int, Tag>? availableTags,
     Map<int, Correspondent>? availableCorrespondents,
@@ -59,8 +58,9 @@ class InboxState with EquatableMixin {
     Map<int, FieldSuggestions>? suggestions,
   }) {
     return InboxState(
-      isLoaded: isLoaded ?? this.isLoaded,
-      inboxItems: inboxItems ?? this.inboxItems,
+      hasLoaded: hasLoaded ?? super.hasLoaded,
+      isLoading: isLoading ?? super.isLoading,
+      value: value ?? super.value,
       inboxTags: inboxTags ?? this.inboxTags,
       isHintAcknowledged: isHintAcknowledged ?? this.isHintAcknowledged,
       availableCorrespondents:
@@ -68,7 +68,7 @@ class InboxState with EquatableMixin {
       availableDocumentTypes:
           availableDocumentTypes ?? this.availableDocumentTypes,
       availableTags: availableTags ?? this.availableTags,
-      suggestions: suggestions ?? this.suggestions,
+      filter: filter ?? super.filter,
     );
   }
 
@@ -76,4 +76,20 @@ class InboxState with EquatableMixin {
       _$InboxStateFromJson(json);
 
   Map<String, dynamic> toJson() => _$InboxStateToJson(this);
+
+  @override
+  InboxState copyWithPaged({
+    bool? hasLoaded,
+    bool? isLoading,
+    List<PagedSearchResult<DocumentModel>>? value,
+    DocumentFilter?
+        filter, // Ignored as filter does not change while inbox is open
+  }) {
+    return copyWith(
+      hasLoaded: hasLoaded,
+      isLoading: isLoading,
+      value: value,
+      filter: filter,
+    );
+  }
 }

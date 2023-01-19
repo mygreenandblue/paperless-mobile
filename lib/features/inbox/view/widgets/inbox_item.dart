@@ -1,25 +1,18 @@
-import 'dart:developer';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/extensions/date_time_extensions.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
-import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
 
 class InboxItem extends StatefulWidget {
   static const _a4AspectRatio = 1 / 1.4142;
@@ -37,6 +30,8 @@ class InboxItem extends StatefulWidget {
 }
 
 class _InboxItemState extends State<InboxItem> {
+  // late final Future<FieldSuggestions> _fieldSuggestions;
+
   bool _isAsnAssignLoading = false;
 
   @override
@@ -65,7 +60,7 @@ class _InboxItemState extends State<InboxItem> {
         }
       },
       child: SizedBox(
-        height: 180,
+        height: 200,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -128,54 +123,66 @@ class _InboxItemState extends State<InboxItem> {
               ) ??
               false;
           if (shouldDelete) {
-            context.read<InboxCubit>().deleteDocument(widget.document);
+            context.read<InboxCubit>().delete(widget.document);
           }
         },
       ),
     ];
-    return BlocBuilder<InboxCubit, InboxState>(
-      builder: (context, state) {
-        return Row(
+    // return FutureBuilder<FieldSuggestions>(
+    //   future: _fieldSuggestions,
+    //   builder: (context, snapshot) {
+    //     List<Widget>? suggestions;
+    //     if (!snapshot.hasData) {
+    //       suggestions = [
+    //         const SizedBox(width: 4),
+    //       ];
+    //     } else {
+    //       if (snapshot.data!.hasSuggestions) {
+    //         suggestions = [
+    //           const SizedBox(width: 4),
+    //           ..._buildSuggestionChips(
+    //             chipShape,
+    //             snapshot.data!,
+    //             context.watch<InboxCubit>().state,
+    //           ),
+    //         ];
+    //       }
+    //     }
+
+    return Row(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.bolt_outlined),
-                SizedBox(
-                  width: 40,
-                  child: Text(
-                    S.of(context).inboxPageQuickActionsLabel,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                ),
-                const VerticalDivider(
-                  indent: 16,
-                  endIndent: 16,
-                ),
-              ],
-            ),
-            const SizedBox(width: 4.0),
-            Expanded(
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  ...actions,
-                  if (state.suggestions[widget.document.id] != null) ...[
-                    const SizedBox(width: 4),
-                    ..._buildSuggestionChips(
-                      chipShape,
-                      state.suggestions[widget.document.id]!,
-                      state,
-                    )
-                  ]
-                ],
+            const Icon(Icons.bolt_outlined),
+            SizedBox(
+              width: 40,
+              child: Text(
+                S.of(context).inboxPageQuickActionsLabel,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
+            const VerticalDivider(
+              indent: 16,
+              endIndent: 16,
+            ),
           ],
-        );
-      },
+        ),
+        const SizedBox(width: 4.0),
+        Expanded(
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              ...actions,
+              // if (suggestions != null) ...suggestions,
+            ],
+          ),
+        ),
+      ],
+      // );
+      // },
     );
   }
 
@@ -274,97 +281,103 @@ class _InboxItemState extends State<InboxItem> {
     );
   }
 
-  List<Widget> _buildSuggestionChips(
-    OutlinedBorder chipShape,
-    FieldSuggestions suggestions,
-    InboxState state,
-  ) {
-    return [
-      ...suggestions.correspondents
-          .whereNot((e) => widget.document.correspondent == e)
-          .map(
-            (e) => ActionChip(
-              avatar: const Icon(Icons.person_outline),
-              shape: chipShape,
-              label: Text(state.availableCorrespondents[e]?.name ?? ''),
-              onPressed: () {
-                context
-                    .read<InboxCubit>()
-                    .updateDocument(widget.document.copyWith(
-                      correspondent: e,
-                      overwriteCorrespondent: true,
-                    ))
-                    .then((value) => showSnackBar(
-                        context,
-                        S
-                            .of(context)
-                            .inboxPageSuggestionSuccessfullyAppliedMessage));
-              },
-            ),
-          )
-          .toList(),
-      ...suggestions.documentTypes
-          .whereNot((e) => widget.document.documentType == e)
-          .map(
-            (e) => ActionChip(
-              avatar: const Icon(Icons.description_outlined),
-              shape: chipShape,
-              label: Text(state.availableDocumentTypes[e]?.name ?? ''),
-              onPressed: () => context
-                  .read<InboxCubit>()
-                  .updateDocument(widget.document
-                      .copyWith(documentType: e, overwriteDocumentType: true))
-                  .then((value) => showSnackBar(
-                      context,
-                      S
-                          .of(context)
-                          .inboxPageSuggestionSuccessfullyAppliedMessage)),
-            ),
-          )
-          .toList(),
-      ...suggestions.tags
-          .whereNot((e) => widget.document.tags.contains(e))
-          .map(
-            (e) => ActionChip(
-              avatar: const Icon(Icons.label_outline),
-              shape: chipShape,
-              label: Text(state.availableTags[e]?.name ?? ''),
-              onPressed: () {
-                context
-                    .read<InboxCubit>()
-                    .updateDocument(widget.document.copyWith(
-                      tags: {...widget.document.tags, e}.toList(),
-                      overwriteTags: true,
-                    ))
-                    .then((value) => showSnackBar(
-                        context,
-                        S
-                            .of(context)
-                            .inboxPageSuggestionSuccessfullyAppliedMessage));
-              },
-            ),
-          )
-          .toList(),
-      ...suggestions.dates
-          .whereNot((e) => widget.document.created.isEqualToIgnoringDate(e))
-          .map(
-            (e) => ActionChip(
-              avatar: const Icon(Icons.calendar_today_outlined),
-              shape: chipShape,
-              label: Text(
-                "${S.of(context).documentCreatedPropertyLabel}: ${DateFormat.yMd().format(e)}",
-              ),
-              onPressed: () => context
-                  .read<InboxCubit>()
-                  .updateDocument(widget.document.copyWith(created: e))
-                  .then((value) => showSnackBar(
-                      context,
-                      S
-                          .of(context)
-                          .inboxPageSuggestionSuccessfullyAppliedMessage)),
-            ),
-          )
-          .toList(),
-    ].expand((element) => [element, const SizedBox(width: 4)]).toList();
-  }
+  // List<Widget> _buildSuggestionChips(
+  //   OutlinedBorder chipShape,
+  //   FieldSuggestions suggestions,
+  //   InboxState state,
+  // ) {
+  //   return [
+  //     ...suggestions.correspondents
+  //         .whereNot((e) => widget.document.correspondent == e)
+  //         .map(
+  //           (e) => ActionChip(
+  //             avatar: const Icon(Icons.person_outline),
+  //             shape: chipShape,
+  //             label: Text(state.availableCorrespondents[e]?.name ?? ''),
+  //             onPressed: () {
+  //               context
+  //                   .read<InboxCubit>()
+  //                   .update(
+  //                     widget.document.copyWith(correspondent: () => e),
+  //                   )
+  //                   .then((value) => showSnackBar(
+  //                       context,
+  //                       S
+  //                           .of(context)
+  //                           .inboxPageSuggestionSuccessfullyAppliedMessage));
+  //             },
+  //           ),
+  //         )
+  //         .toList(),
+  //     ...suggestions.documentTypes
+  //         .whereNot((e) => widget.document.documentType == e)
+  //         .map(
+  //           (e) => ActionChip(
+  //             avatar: const Icon(Icons.description_outlined),
+  //             shape: chipShape,
+  //             label: Text(state.availableDocumentTypes[e]?.name ?? ''),
+  //             onPressed: () => context
+  //                 .read<InboxCubit>()
+  //                 .update(
+  //                   widget.document.copyWith(documentType: () => e),
+  //                   shouldReload: false,
+  //                 )
+  //                 .then((value) => showSnackBar(
+  //                     context,
+  //                     S
+  //                         .of(context)
+  //                         .inboxPageSuggestionSuccessfullyAppliedMessage)),
+  //           ),
+  //         )
+  //         .toList(),
+  //     ...suggestions.tags
+  //         .whereNot((e) => widget.document.tags.contains(e))
+  //         .map(
+  //           (e) => ActionChip(
+  //             avatar: const Icon(Icons.label_outline),
+  //             shape: chipShape,
+  //             label: Text(state.availableTags[e]?.name ?? ''),
+  //             onPressed: () {
+  //               context
+  //                   .read<InboxCubit>()
+  //                   .update(
+  //                     widget.document.copyWith(
+  //                       tags: {...widget.document.tags, e}.toList(),
+  //                     ),
+  //                     shouldReload: false,
+  //                   )
+  //                   .then((value) => showSnackBar(
+  //                       context,
+  //                       S
+  //                           .of(context)
+  //                           .inboxPageSuggestionSuccessfullyAppliedMessage));
+  //             },
+  //           ),
+  //         )
+  //         .toList(),
+  //     ...suggestions.dates
+  //         .whereNot((e) => widget.document.created.isEqualToIgnoringDate(e))
+  //         .map(
+  //           (e) => ActionChip(
+  //             avatar: const Icon(Icons.calendar_today_outlined),
+  //             shape: chipShape,
+  //             label: Text(
+  //               "${S.of(context).documentCreatedPropertyLabel}: ${DateFormat.yMd().format(e)}",
+  //             ),
+  //             onPressed: () => context
+  //                 .read<InboxCubit>()
+  //                 .update(
+  //                   widget.document.copyWith(created: e),
+  //                   shouldReload: false,
+  //                 )
+  //                 .then((value) => showSnackBar(
+  //                     context,
+  //                     S
+  //                         .of(context)
+  //                         .inboxPageSuggestionSuccessfullyAppliedMessage)),
+  //           ),
+  //         )
+  //         .toList(),
+  //   ].expand((element) => [element, const SizedBox(width: 4)]).toList();
+  // }
 }

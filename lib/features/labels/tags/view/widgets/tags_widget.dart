@@ -25,7 +25,7 @@ class TagsWidget extends StatelessWidget {
     required this.isSelectedPredicate,
     this.onTagSelected,
     this.showShortNames = false,
-    this.dense = false,
+    this.dense = true,
   }) : super(key: key);
 
   @override

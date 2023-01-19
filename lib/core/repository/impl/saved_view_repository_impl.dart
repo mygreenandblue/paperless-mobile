@@ -8,8 +8,8 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   SavedViewRepositoryImpl(this._api) : super(const SavedViewRepositoryState());
 
   @override
-  Future<SavedView> create(SavedView view) async {
-    final created = await _api.save(view);
+  Future<SavedView> create(SavedView object) async {
+    final created = await _api.save(object);
     final updatedState = {...state.values}
       ..putIfAbsent(created.id!, () => created);
     emit(SavedViewRepositoryState(values: updatedState, hasLoaded: true));

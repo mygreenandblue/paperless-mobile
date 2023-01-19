@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
+import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
@@ -64,6 +65,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           floatingActionButton: widget.allowEdit
               ? BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
                   builder: (context, state) {
+                    final _filteredSuggestions =
+                        state.suggestions.documentDifference(state.document);
                     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
                       builder: (context, connectivityState) {
                         if (!connectivityState.isConnected) {
@@ -71,13 +74,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         }
                         return b.Badge(
                           position: b.BadgePosition.topEnd(top: -12, end: -6),
-                          showBadge: state.suggestions.hasSuggestions,
+                          showBadge: _filteredSuggestions.hasSuggestions,
                           child: FloatingActionButton(
                             child: const Icon(Icons.edit),
                             onPressed: () => _onEdit(state.document),
                           ),
                           badgeContent: Text(
-                            '${state.suggestions.suggestionsCount}',
+                            '${_filteredSuggestions.suggestionsCount}',
                             style: const TextStyle(
                               color: Colors.white,
                             ),
@@ -106,16 +109,27 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ? () => _onDelete(state.document)
                               : null,
                         ).paddedSymmetrically(horizontal: 4),
-                        DocumentDownloadButton(
-                          document: state.document,
-                          enabled: isConnected,
+                        Tooltip(
+                          message: "Download",
+                          child: DocumentDownloadButton(
+                            document: state.document,
+                            enabled: isConnected,
+                          ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.open_in_new),
+                          icon: const Icon(Icons.visibility),
                           onPressed: isConnected
                               ? () => _onOpen(state.document)
                               : null,
                         ).paddedOnly(right: 4.0),
+                        // IconButton(
+                        //   icon: const Icon(Icons.open_in_new),
+                        //   onPressed: isConnected
+                        //       ? context
+                        //           .read<DocumentDetailsCubit>()
+                        //           .openDocumentInSystemViewer
+                        //       : null,
+                        // ).paddedOnly(right: 4.0),
                         IconButton(
                           icon: const Icon(Icons.share),
                           onPressed: isConnected

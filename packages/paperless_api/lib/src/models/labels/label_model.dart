@@ -21,7 +21,7 @@ abstract class Label extends Equatable implements Comparable {
   @JsonKey()
   final String? match;
   @JsonKey()
-  final MatchingAlgorithm? matchingAlgorithm;
+  final MatchingAlgorithm matchingAlgorithm;
   @JsonKey()
   final bool? isInsensitive;
   @JsonKey()
@@ -30,8 +30,8 @@ abstract class Label extends Equatable implements Comparable {
   const Label({
     required this.id,
     required this.name,
+    required this.matchingAlgorithm,
     this.match,
-    this.matchingAlgorithm,
     this.isInsensitive,
     this.documentCount,
     this.slug,

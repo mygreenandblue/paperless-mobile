@@ -153,12 +153,11 @@ class _DocumentUploadPreparationPageState
                     S
                         .of(context)
                         .documentUploadPageSynchronizeTitleAndFilenameLabel,
-                  ), //TODO: INTL
+                  ),
                 ),
                 FormBuilderDateTimePicker(
-                  enabled: false,
                   autovalidateMode: AutovalidateMode.always,
-                  format: DateFormat("dd. MMMM yyyy"), //TODO: INTL
+                  format: DateFormat.yMMMMd(),
                   inputType: InputType.date,
                   name: DocumentModel.createdKey,
                   initialValue: null,
@@ -167,11 +166,6 @@ class _DocumentUploadPreparationPageState
                     labelText:
                         S.of(context).documentCreatedPropertyLabel + " *",
                   ),
-                ),
-                const HintCard(
-                  hintText:
-                      "Due to an apparent parsing bug with Paperless, setting the 'created at' date will cause the document consumption to fail! Therefore this field is disabled for now until this is fixed or I find a workaround!",
-                  show: true,
                 ),
                 LabelFormField<DocumentType>(
                   notAssignedSelectable: false,

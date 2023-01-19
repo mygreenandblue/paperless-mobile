@@ -1,7 +1,11 @@
 {
   "@@locale": "de",
   "aboutDialogDevelopedByText": "Entwickelt von",
-  "@aboutDialogDevelopedByText": {},
+  "@aboutDialogDevelopedByText": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "addCorrespondentPageTitle": "Neuer Korrespondent",
   "@addCorrespondentPageTitle": {},
   "addDocumentTypePageTitle": "Neuer Dokumenttyp",
@@ -128,10 +132,6 @@
   "@documentsFilterPageAdvancedLabel": {},
   "documentsFilterPageApplyFilterLabel": "Anwenden",
   "@documentsFilterPageApplyFilterLabel": {},
-  "documentsFilterPageDateRangeFieldEndLabel": "Bis",
-  "@documentsFilterPageDateRangeFieldEndLabel": {},
-  "documentsFilterPageDateRangeFieldStartLabel": "Von",
-  "@documentsFilterPageDateRangeFieldStartLabel": {},
   "documentsFilterPageDateRangeLastMonthLabel": "Letzter Monat",
   "@documentsFilterPageDateRangeLastMonthLabel": {},
   "documentsFilterPageDateRangeLastSevenDaysLabel": "Letzte 7 Tage",
@@ -294,8 +294,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerFromLabel": "Von",
-  "@extendedDateRangePickerFromLabel": {},
   "extendedDateRangePickerLastDaysLabel": "{count, plural, zero{} one{Gestern} other{Letzte {count} Tage}}",
   "@extendedDateRangePickerLastDaysLabel": {
     "placeholders": {
@@ -328,8 +326,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerToLabel": "Bis",
-  "@extendedDateRangePickerToLabel": {},
   "extendedDateRangePickerWeekText": "{count, plural, zero{} one{Woche} other{Wochen}}",
   "@extendedDateRangePickerWeekText": {
     "placeholders": {
@@ -364,7 +360,7 @@
   "@genericActionUploadLabel": {},
   "genericMessageOfflineText": "Du bist offline.",
   "@genericMessageOfflineText": {},
-  "inboxPageAssignAsnLabel": "",
+  "inboxPageAssignAsnLabel": "ASN zuweisen",
   "@inboxPageAssignAsnLabel": {},
   "inboxPageDocumentRemovedMessageText": "Dokument aus Posteingang entfernt.",
   "@inboxPageDocumentRemovedMessageText": {},
@@ -492,6 +488,18 @@
   "@loginPageUsernameLabel": {},
   "loginPageUsernameValidatorMessageText": "Nutzername darf nicht leer sein.",
   "@loginPageUsernameValidatorMessageText": {},
+  "matchingAlgorithmAllDescription": "Alle: Dokument enthält alle folgenden Wörter",
+  "@matchingAlgorithmAllDescription": {},
+  "matchingAlgorithmAnyDescription": "Irgendein Wort: Dokument enthält eins der folgenden Wörter",
+  "@matchingAlgorithmAnyDescription": {},
+  "matchingAlgorithmAutoDescription": "Auto: Zuweisung automatisch erlernen",
+  "@matchingAlgorithmAutoDescription": {},
+  "matchingAlgorithmExactDescription": "Exakt: Dokument enthält die folgende Zeichenkette",
+  "@matchingAlgorithmExactDescription": {},
+  "matchingAlgorithmFuzzyDescription": "Ungenau: Dokument enthält ein zum folgenden Wort ähnliches Wort",
+  "@matchingAlgorithmFuzzyDescription": {},
+  "matchingAlgorithmRegexDescription": "Regulärer Ausdruck: Dokument passt zum folgenden Ausdruck",
+  "@matchingAlgorithmRegexDescription": {},
   "offlineWidgetText": "Es konte keine Verbindung zum Internet hergestellt werden.",
   "@offlineWidgetText": {},
   "onboardingDoneButtonLabel": "Fertig",

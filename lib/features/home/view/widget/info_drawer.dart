@@ -361,7 +361,7 @@ class _InfoDrawerState extends State<InfoDrawer> {
       applicationName: 'Paperless Mobile',
       applicationVersion: snapshot.version + '+' + snapshot.buildNumber,
       children: [
-        Text('${S.of(context).aboutDialogDevelopedByText} Anton Stubenbord'),
+        Text(S.of(context).aboutDialogDevelopedByText('Anton Stubenbord')),
         Link(
           uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
           builder: (context, followLink) => GestureDetector(

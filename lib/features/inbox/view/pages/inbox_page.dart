@@ -23,71 +23,104 @@ class InboxPage extends StatefulWidget {
 }
 
 class _InboxPageState extends State<InboxPage> {
+  final ScrollController _scrollController = ScrollController();
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting();
+    _scrollController.addListener(_listenForLoadNewData);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_listenForLoadNewData);
+    super.dispose();
+  }
+
+  void _listenForLoadNewData() {
+    final currState = context.read<InboxCubit>().state;
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent * 0.75 &&
+        !currState.isLoading &&
+        !currState.isLastPageLoaded) {
+      try {
+        context.read<InboxCubit>().loadMore();
+      } on PaperlessServerException catch (error, stackTrace) {
+        showErrorMessage(context, error, stackTrace);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    const _progressBarHeight = 4.0;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).bottomNavInboxPageLabel),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
+      appBar: PreferredSize(
+        preferredSize:
+            const Size.fromHeight(kToolbarHeight + _progressBarHeight),
+        child: BlocBuilder<InboxCubit, InboxState>(
+          builder: (context, state) {
+            return AppBar(
+              title: Text(S.of(context).bottomNavInboxPageLabel),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+              actions: [
+                if (state.hasLoaded)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: ColoredBox(
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        child: Text(
+                          state.value.isEmpty
+                              ? '0'
+                              : '${state.value.first.count} ' +
+                                  S.of(context).inboxPageUnseenText,
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ).paddedSymmetrically(horizontal: 4.0),
+                      ),
+                    ),
+                  ).paddedSymmetrically(horizontal: 8)
+              ],
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(4),
+                child: state.isLoading && state.hasLoaded
+                    ? const LinearProgressIndicator()
+                    : const SizedBox(height: _progressBarHeight),
+              ),
+            );
+          },
         ),
-        actions: [
-          BlocBuilder<InboxCubit, InboxState>(
-            builder: (context, state) {
-              return Align(
-                alignment: Alignment.centerRight,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: ColoredBox(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Text(
-                      '${state.inboxItems.length} ${S.of(context).inboxPageUnseenText}',
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ).paddedSymmetrically(horizontal: 4.0),
-                  ),
-                ),
-              );
-            },
-          ).paddedSymmetrically(horizontal: 8)
-        ],
       ),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
-          if (!state.isLoaded || state.inboxItems.isEmpty) {
+          if (!state.hasLoaded || state.documents.isEmpty) {
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(
             label: Text(S.of(context).inboxPageMarkAllAsSeenLabel),
             icon: const Icon(Icons.done_all),
-            onPressed: state.isLoaded && state.inboxItems.isNotEmpty
+            onPressed: state.hasLoaded && state.documents.isNotEmpty
                 ? () => _onMarkAllAsSeen(
-                      state.inboxItems,
+                      state.documents,
                       state.inboxTags,
                     )
                 : null,
           );
         },
       ),
-      body: BlocConsumer<InboxCubit, InboxState>(
-        listenWhen: (previous, current) =>
-            !previous.isLoaded && current.isLoaded,
-        listener: (context, state) =>
-            context.read<InboxCubit>().loadSuggestions(),
+      body: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
-          if (!state.isLoaded) {
+          if (!state.hasLoaded) {
             return const DocumentsListLoadingWidget();
           }
 
-          if (state.inboxItems.isEmpty) {
+          if (state.documents.isEmpty) {
             return InboxEmptyWidget(
               emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
             );
@@ -95,7 +128,7 @@ class _InboxPageState extends State<InboxPage> {
 
           // Build a list of slivers alternating between SliverToBoxAdapter
           // (group header) and a SliverList (inbox items).
-          final List<Widget> slivers = _groupByDate(state.inboxItems)
+          final List<Widget> slivers = _groupByDate(state.documents)
               .entries
               .map(
                 (entry) => [
@@ -148,6 +181,7 @@ class _InboxPageState extends State<InboxPage> {
               children: [
                 Expanded(
                   child: CustomScrollView(
+                    controller: _scrollController,
                     slivers: [
                       SliverToBoxAdapter(
                         child: HintCard(
@@ -157,7 +191,7 @@ class _InboxPageState extends State<InboxPage> {
                               context.read<InboxCubit>().acknowledgeHint(),
                         ),
                       ),
-                      ...slivers
+                      ...slivers,
                     ],
                   ),
                 ),
@@ -234,7 +268,7 @@ class _InboxPageState extends State<InboxPage> {
 
   Future<bool> _onItemDismissed(DocumentModel doc) async {
     try {
-      final removedTags = await context.read<InboxCubit>().remove(doc);
+      final removedTags = await context.read<InboxCubit>().removeFromInbox(doc);
       showSnackBar(
         context,
         S.of(context).inboxPageDocumentRemovedMessageText,
@@ -261,7 +295,9 @@ class _InboxPageState extends State<InboxPage> {
     Iterable<int> removedTags,
   ) async {
     try {
-      await context.read<InboxCubit>().undoRemove(document, removedTags);
+      await context
+          .read<InboxCubit>()
+          .undoRemoveFromInbox(document, removedTags);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

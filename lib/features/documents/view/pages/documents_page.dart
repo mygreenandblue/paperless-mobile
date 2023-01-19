@@ -63,13 +63,13 @@ class _DocumentsPageState extends State<DocumentsPage> {
     }
     _scrollController
       ..addListener(_listenForScrollChanges)
-      ..addListener(_listenForLoadDataTrigger);
+      ..addListener(_listenForLoadNewData);
   }
 
-  void _listenForLoadDataTrigger() {
+  void _listenForLoadNewData() {
     final currState = context.read<DocumentsCubit>().state;
     if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+            _scrollController.position.maxScrollExtent * 0.75 &&
         !currState.isLoading &&
         !currState.isLastPageLoaded) {
       _loadNewPage();
@@ -173,7 +173,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                       bottom: PreferredSize(
                         preferredSize: const Size.fromHeight(
                             linearProgressIndicatorHeight),
-                        child: state.isLoading
+                        child: state.isLoading && state.hasLoaded
                             ? const LinearProgressIndicator()
                             : const SizedBox(height: 4.0),
                       ),

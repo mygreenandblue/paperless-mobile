@@ -10,7 +10,7 @@ class DocumentType extends Label {
     required super.name,
     super.slug,
     super.match,
-    super.matchingAlgorithm,
+    required super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
   });

@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/request_utils.dart';
 import 'task_status.dart';
 
 part 'task.g.dart';
 
+@LocalDateTimeJsonConverter()
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Task extends Equatable {
   final int id;

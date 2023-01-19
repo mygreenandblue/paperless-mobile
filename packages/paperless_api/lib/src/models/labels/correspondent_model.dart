@@ -1,9 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/models/labels/label_model.dart';
 import 'package:paperless_api/src/models/labels/matching_algorithm.dart';
 
 part 'correspondent_model.g.dart';
 
+@LocalDateTimeJsonConverter()
 @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
 class Correspondent extends Label {
   final DateTime? lastCorrespondence;
@@ -13,7 +15,7 @@ class Correspondent extends Label {
     required super.name,
     super.slug,
     super.match,
-    super.matchingAlgorithm,
+    required super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
     this.lastCorrespondence,

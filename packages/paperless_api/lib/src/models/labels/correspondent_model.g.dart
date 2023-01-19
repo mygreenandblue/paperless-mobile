@@ -12,13 +12,13 @@ Correspondent _$CorrespondentFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       slug: json['slug'] as String?,
       match: json['match'] as String?,
-      matchingAlgorithm: $enumDecodeNullable(
-          _$MatchingAlgorithmEnumMap, json['matching_algorithm']),
+      matchingAlgorithm:
+          $enumDecode(_$MatchingAlgorithmEnumMap, json['matching_algorithm']),
       isInsensitive: json['is_insensitive'] as bool?,
       documentCount: json['document_count'] as int?,
-      lastCorrespondence: json['last_correspondence'] == null
-          ? null
-          : DateTime.parse(json['last_correspondence'] as String),
+      lastCorrespondence: _$JsonConverterFromJson<String, DateTime>(
+          json['last_correspondence'],
+          const LocalDateTimeJsonConverter().fromJson),
     );
 
 Map<String, dynamic> _$CorrespondentToJson(Correspondent instance) {
@@ -34,12 +34,14 @@ Map<String, dynamic> _$CorrespondentToJson(Correspondent instance) {
   val['name'] = instance.name;
   writeNotNull('slug', instance.slug);
   writeNotNull('match', instance.match);
-  writeNotNull('matching_algorithm',
-      _$MatchingAlgorithmEnumMap[instance.matchingAlgorithm]);
+  val['matching_algorithm'] =
+      _$MatchingAlgorithmEnumMap[instance.matchingAlgorithm]!;
   writeNotNull('is_insensitive', instance.isInsensitive);
   writeNotNull('document_count', instance.documentCount);
   writeNotNull(
-      'last_correspondence', instance.lastCorrespondence?.toIso8601String());
+      'last_correspondence',
+      _$JsonConverterToJson<String, DateTime>(instance.lastCorrespondence,
+          const LocalDateTimeJsonConverter().toJson));
   return val;
 }
 
@@ -48,6 +50,18 @@ const _$MatchingAlgorithmEnumMap = {
   MatchingAlgorithm.allWords: 2,
   MatchingAlgorithm.exactMatch: 3,
   MatchingAlgorithm.regex: 4,
-  MatchingAlgorithm.similarWord: 5,
+  MatchingAlgorithm.fuzzy: 5,
   MatchingAlgorithm.auto: 6,
 };
+
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) =>
+    value == null ? null : toJson(value);

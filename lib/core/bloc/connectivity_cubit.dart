@@ -26,6 +26,18 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     }
   }
 
+  void reload() async {
+    if (_sub == null) {
+      initialize();
+    } else {
+      final bool isConnected =
+          await connectivityStatusService.isConnectedToInternet();
+      emit(isConnected
+          ? ConnectivityState.connected
+          : ConnectivityState.notConnected);
+    }
+  }
+
   @override
   Future<void> close() {
     _sub?.cancel();

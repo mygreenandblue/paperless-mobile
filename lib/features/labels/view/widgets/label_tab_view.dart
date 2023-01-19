@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
@@ -70,8 +71,12 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                     .map(
                       (l) => LabelItem<T>(
                         name: l.name,
-                        content:
-                            contentBuilder?.call(l) ?? Text(l.match ?? '-'),
+                        content: contentBuilder?.call(l) ??
+                            Text(
+                              "${translateMatchingAlgorithm(context, l.matchingAlgorithm)}\n"
+                              "${l.match}",
+                              maxLines: 2,
+                            ),
                         onOpenEditPage: onEdit,
                         filterBuilder: filterBuilder,
                         leading: leadingBuilder?.call(l),

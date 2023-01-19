@@ -1,7 +1,11 @@
 {
   "@@locale": "cs",
   "aboutDialogDevelopedByText": "Vyvíjí",
-  "@aboutDialogDevelopedByText": {},
+  "@aboutDialogDevelopedByText": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "addCorrespondentPageTitle": "Nový korespondent",
   "@addCorrespondentPageTitle": {},
   "addDocumentTypePageTitle": "Nový typ dokumentu",
@@ -128,10 +132,6 @@
   "@documentsFilterPageAdvancedLabel": {},
   "documentsFilterPageApplyFilterLabel": "Použít",
   "@documentsFilterPageApplyFilterLabel": {},
-  "documentsFilterPageDateRangeFieldEndLabel": "Do",
-  "@documentsFilterPageDateRangeFieldEndLabel": {},
-  "documentsFilterPageDateRangeFieldStartLabel": "Od",
-  "@documentsFilterPageDateRangeFieldStartLabel": {},
   "documentsFilterPageDateRangeLastMonthLabel": "Minulý měsíc",
   "@documentsFilterPageDateRangeLastMonthLabel": {},
   "documentsFilterPageDateRangeLastSevenDaysLabel": "Posledních 7 dní",
@@ -294,8 +294,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerFromLabel": "Od",
-  "@extendedDateRangePickerFromLabel": {},
   "extendedDateRangePickerLastDaysLabel": "{count, plural, zero{} one{} few{} many{} other{Posledních 7 dní}}",
   "@extendedDateRangePickerLastDaysLabel": {
     "placeholders": {
@@ -328,8 +326,6 @@
       "count": {}
     }
   },
-  "extendedDateRangePickerToLabel": "Do",
-  "@extendedDateRangePickerToLabel": {},
   "extendedDateRangePickerWeekText": "{count, plural, other{}}",
   "@extendedDateRangePickerWeekText": {
     "placeholders": {
@@ -492,6 +488,18 @@
   "@loginPageUsernameLabel": {},
   "loginPageUsernameValidatorMessageText": "Jméno uživatele nesmí být prázdné.",
   "@loginPageUsernameValidatorMessageText": {},
+  "matchingAlgorithmAllDescription": "",
+  "@matchingAlgorithmAllDescription": {},
+  "matchingAlgorithmAnyDescription": "",
+  "@matchingAlgorithmAnyDescription": {},
+  "matchingAlgorithmAutoDescription": "",
+  "@matchingAlgorithmAutoDescription": {},
+  "matchingAlgorithmExactDescription": "",
+  "@matchingAlgorithmExactDescription": {},
+  "matchingAlgorithmFuzzyDescription": "",
+  "@matchingAlgorithmFuzzyDescription": {},
+  "matchingAlgorithmRegexDescription": "",
+  "@matchingAlgorithmRegexDescription": {},
   "offlineWidgetText": "Nezdařilo se vytvořit připojení k internetu.",
   "@offlineWidgetText": {},
   "onboardingDoneButtonLabel": "Hotovo",

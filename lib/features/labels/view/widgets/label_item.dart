@@ -30,6 +30,7 @@ class LabelItem<T extends Label> extends StatelessWidget {
       leading: leading,
       onTap: () => onOpenEditPage(label),
       trailing: _buildReferencedDocumentsWidget(context),
+      isThreeLine: true,
     );
   }
 

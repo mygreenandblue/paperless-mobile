@@ -16,8 +16,6 @@ import 'package:paperless_mobile/features/edit_document/cubit/edit_document_cubi
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -44,6 +42,15 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   bool _isSubmitLoading = false;
+
+  late final FieldSuggestions _filteredSuggestions;
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredSuggestions = widget.suggestions
+        .documentDifference(context.read<EditDocumentCubit>().state.document);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,25 +106,35 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                       excludeAllowed: false,
                       name: fkTags,
                       selectableOptions: state.tags,
-                      suggestions: widget.suggestions.hasSuggestedTags
+                      suggestions: _filteredSuggestions.tags
+                              .toSet()
+                              .difference(state.document.tags.toSet())
+                              .isNotEmpty
                           ? _buildSuggestionsSkeleton<int>(
-                              suggestions: widget.suggestions.storagePaths,
-                              itemBuilder: (context, itemData) => ActionChip(
-                                label: Text(state.tags[itemData]!.name),
-                                onPressed: () {
-                                  final currentTags = _formKey.currentState
-                                      ?.fields[fkTags] as TagsQuery;
-                                  if (currentTags is IdsTagsQuery) {
-                                    _formKey.currentState?.fields[fkTags]
-                                        ?.didChange((IdsTagsQuery.fromIds(
-                                            [...currentTags.ids, itemData])));
-                                  } else {
-                                    _formKey.currentState?.fields[fkTags]
-                                        ?.didChange(
-                                            (IdsTagsQuery.fromIds([itemData])));
-                                  }
-                                },
-                              ),
+                              suggestions: _filteredSuggestions.tags,
+                              itemBuilder: (context, itemData) {
+                                final tag = state.tags[itemData]!;
+                                return ActionChip(
+                                  label: Text(
+                                    tag.name,
+                                    style: TextStyle(color: tag.textColor),
+                                  ),
+                                  backgroundColor: tag.color,
+                                  onPressed: () {
+                                    final currentTags = _formKey.currentState
+                                        ?.fields[fkTags]?.value as TagsQuery;
+                                    if (currentTags is IdsTagsQuery) {
+                                      _formKey.currentState?.fields[fkTags]
+                                          ?.didChange((IdsTagsQuery.fromIds(
+                                              {...currentTags.ids, itemData})));
+                                    } else {
+                                      _formKey.currentState?.fields[fkTags]
+                                          ?.didChange((IdsTagsQuery.fromIds(
+                                              {itemData})));
+                                    }
+                                  },
+                                );
+                              },
                             )
                           : null,
                     ).padded(),
@@ -151,15 +168,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkStoragePath,
           prefixIcon: const Icon(Icons.folder_outlined),
         ),
-        if (widget.suggestions.hasSuggestedStoragePaths)
-          _buildSuggestionsSkeleton<int>(
-            suggestions: widget.suggestions.storagePaths,
-            itemBuilder: (context, itemData) => ActionChip(
-              label: Text(options[itemData]!.name),
-              onPressed: () => _formKey.currentState?.fields[fkStoragePath]
-                  ?.didChange((IdQueryParameter.fromId(itemData))),
-            ),
-          ),
       ],
     );
   }
@@ -182,9 +190,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkCorrespondent,
           prefixIcon: const Icon(Icons.person_outlined),
         ),
-        if (widget.suggestions.hasSuggestedCorrespondents)
+        if (_filteredSuggestions.hasSuggestedCorrespondents)
           _buildSuggestionsSkeleton<int>(
-            suggestions: widget.suggestions.correspondents,
+            suggestions: _filteredSuggestions.correspondents,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(options[itemData]!.name),
               onPressed: () => _formKey.currentState?.fields[fkCorrespondent]
@@ -217,9 +225,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkDocumentType,
           prefixIcon: const Icon(Icons.description_outlined),
         ),
-        if (widget.suggestions.hasSuggestedDocumentTypes)
+        if (_filteredSuggestions.hasSuggestedDocumentTypes)
           _buildSuggestionsSkeleton<int>(
-            suggestions: widget.suggestions.documentTypes,
+            suggestions: _filteredSuggestions.documentTypes,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(options[itemData]!.name),
               onPressed: () => _formKey.currentState?.fields[fkDocumentType]
@@ -236,13 +244,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       var mergedDocument = document.copyWith(
         title: values[fkTitle],
         created: values[fkCreatedDate],
-        overwriteDocumentType: true,
-        documentType: (values[fkDocumentType] as IdQueryParameter).id,
-        overwriteCorrespondent: true,
-        correspondent: (values[fkCorrespondent] as IdQueryParameter).id,
-        overwriteStoragePath: true,
-        storagePath: (values[fkStoragePath] as IdQueryParameter).id,
-        overwriteTags: true,
+        documentType: () => (values[fkDocumentType] as IdQueryParameter).id,
+        correspondent: () => (values[fkCorrespondent] as IdQueryParameter).id,
+        storagePath: () => (values[fkStoragePath] as IdQueryParameter).id,
         tags: (values[fkTags] as IdsTagsQuery).includedIds,
       );
       setState(() {
@@ -288,9 +292,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           format: DateFormat("dd. MMMM yyyy"), //TODO: Localized date format
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
-        if (widget.suggestions.hasSuggestedDates)
+        if (_filteredSuggestions.hasSuggestedDates)
           _buildSuggestionsSkeleton<DateTime>(
-            suggestions: widget.suggestions.dates,
+            suggestions: _filteredSuggestions.dates,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(DateFormat.yMMMd().format(itemData)),
               onPressed: () => _formKey.currentState?.fields[fkCreatedDate]

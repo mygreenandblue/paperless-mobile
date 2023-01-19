@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/constants.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
 import 'date_range_query.dart';
 import 'date_range_query_field.dart';
@@ -8,7 +9,10 @@ part 'absolute_date_range_query.g.dart';
 
 @JsonSerializable()
 class AbsoluteDateRangeQuery extends DateRangeQuery {
+  @LocalDateTimeJsonConverter()
   final DateTime? after;
+
+  @LocalDateTimeJsonConverter()
   final DateTime? before;
 
   const AbsoluteDateRangeQuery({this.after, this.before});

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -108,8 +110,8 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
           context.read<EditLabelCubit<T>>().delete(label);
         } on PaperlessServerException catch (error) {
           showErrorMessage(context, error);
-        } catch (error) {
-          print(error);
+        } catch (error, stackTrace) {
+          log("An error occurred!", error: error, stackTrace: stackTrace);
         }
         Navigator.pop(context);
       }

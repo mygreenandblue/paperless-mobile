@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/constants.dart';
+import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
 import 'query_parameters/tags_query/any_assigned_tags_query.dart';
 import 'query_parameters/tags_query/exclude_tag_id_query.dart';
@@ -13,6 +14,7 @@ part 'filter_rule_model.g.dart';
 
 @JsonSerializable()
 class FilterRule with EquatableMixin {
+  static const _dateTimeConverter = LocalDateTimeJsonConverter();
   static const int titleRule = 0;
   static const int asnRule = 2;
   static const int correspondentRule = 3;
@@ -95,66 +97,72 @@ class FilterRule with EquatableMixin {
         if (filter.created is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             created: (filter.created as AbsoluteDateRangeQuery)
-                .copyWith(before: DateTime.parse(value!)),
+                .copyWith(before: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            created: AbsoluteDateRangeQuery(before: DateTime.parse(value!)),
+            created: AbsoluteDateRangeQuery(
+                before: _dateTimeConverter.fromJson(value!)),
           );
         }
       case createdAfterRule:
         if (filter.created is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             created: (filter.created as AbsoluteDateRangeQuery)
-                .copyWith(after: DateTime.parse(value!)),
+                .copyWith(after: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            created: AbsoluteDateRangeQuery(after: DateTime.parse(value!)),
+            created: AbsoluteDateRangeQuery(
+                after: _dateTimeConverter.fromJson(value!)),
           );
         }
       case addedBeforeRule:
         if (filter.added is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             added: (filter.added as AbsoluteDateRangeQuery)
-                .copyWith(before: DateTime.parse(value!)),
+                .copyWith(before: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            added: AbsoluteDateRangeQuery(before: DateTime.parse(value!)),
+            added: AbsoluteDateRangeQuery(
+                before: _dateTimeConverter.fromJson(value!)),
           );
         }
       case addedAfterRule:
         if (filter.added is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             added: (filter.added as AbsoluteDateRangeQuery)
-                .copyWith(after: DateTime.parse(value!)),
+                .copyWith(after: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            added: AbsoluteDateRangeQuery(after: DateTime.parse(value!)),
+            added: AbsoluteDateRangeQuery(
+                after: _dateTimeConverter.fromJson(value!)),
           );
         }
       case modifiedBeforeRule:
         if (filter.modified is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             modified: (filter.modified as AbsoluteDateRangeQuery)
-                .copyWith(before: DateTime.parse(value!)),
+                .copyWith(before: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            modified: AbsoluteDateRangeQuery(before: DateTime.parse(value!)),
+            modified: AbsoluteDateRangeQuery(
+                before: _dateTimeConverter.fromJson(value!)),
           );
         }
       case modifiedAfterRule:
         if (filter.modified is AbsoluteDateRangeQuery) {
           return filter.copyWith(
             modified: (filter.modified as AbsoluteDateRangeQuery)
-                .copyWith(after: DateTime.parse(value!)),
+                .copyWith(after: _dateTimeConverter.fromJson(value!)),
           );
         } else {
           return filter.copyWith(
-            added: AbsoluteDateRangeQuery(after: DateTime.parse(value!)),
+            added: AbsoluteDateRangeQuery(
+                after: _dateTimeConverter.fromJson(value!)),
           );
         }
       case titleAndContentRule:
@@ -347,15 +355,16 @@ class FilterRule with EquatableMixin {
     }
 
     //Join values of all extended filter rules if exist
-    if (filterRules.isNotEmpty) {
-      final FilterRule extendedFilterRule = filterRules
-          .where((r) => r.ruleType == extendedRule)
-          .reduce((previousValue, element) => previousValue.copyWith(
-                value: previousValue.value! + element.value!,
-              ));
+    if (filterRules.isNotEmpty &&
+        filterRules.where((e) => e.ruleType == FilterRule.extendedRule).length >
+            1) {
+      final mergedExtendedRule = filterRules
+          .where((r) => r.ruleType == FilterRule.extendedRule)
+          .map((e) => e.value)
+          .join(",");
       filterRules
         ..removeWhere((element) => element.ruleType == extendedRule)
-        ..add(extendedFilterRule);
+        ..add(FilterRule(FilterRule.extendedRule, mergedExtendedRule));
     }
     return filterRules;
   }

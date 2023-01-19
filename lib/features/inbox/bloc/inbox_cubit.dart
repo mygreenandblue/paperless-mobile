@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
@@ -9,8 +7,9 @@ import 'package:paperless_mobile/core/repository/state/impl/correspondent_reposi
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/documents_paging_mixin.dart';
 
-class InboxCubit extends HydratedCubit<InboxState> {
+class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
   final LabelRepository<Tag, TagRepositoryState> _tagsRepository;
   final LabelRepository<Correspondent, CorrespondentRepositoryState>
       _correspondentRepository;
@@ -20,6 +19,9 @@ class InboxCubit extends HydratedCubit<InboxState> {
   final PaperlessDocumentsApi _documentsApi;
 
   final List<StreamSubscription> _subscriptions = [];
+
+  @override
+  PaperlessDocumentsApi get api => _documentsApi;
 
   InboxCubit(
     this._tagsRepository,
@@ -67,105 +69,83 @@ class InboxCubit extends HydratedCubit<InboxState> {
     final inboxTags = await _tagsRepository.findAll().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );
+
     if (inboxTags.isEmpty) {
       // no inbox tags = no inbox items.
       return emit(
         state.copyWith(
-          isLoaded: true,
-          inboxItems: [],
+          hasLoaded: true,
+          value: [],
           inboxTags: [],
         ),
       );
     }
-    final inboxDocuments = await _documentsApi
-        .findAll(DocumentFilter(
-          tags: AnyAssignedTagsQuery(tagIds: inboxTags),
-          sortField: SortField.added,
-        ))
-        .then((psr) => psr.results);
-    final newState = state.copyWith(
-      isLoaded: true,
-      inboxItems: inboxDocuments,
-      inboxTags: inboxTags,
+    return updateFilter(
+      filter: DocumentFilter(
+        sortField: SortField.added,
+        tags: IdsTagsQuery.fromIds(inboxTags),
+      ),
     );
-    emit(newState);
   }
 
   ///
   /// Updates the document with all inbox tags removed and removes the document
-  /// from the currently loaded inbox documents.
+  /// from the inbox.
   ///
-  Future<Iterable<int>> remove(DocumentModel document) async {
+  Future<Iterable<int>> removeFromInbox(DocumentModel document) async {
     final tagsToRemove =
         document.tags.toSet().intersection(state.inboxTags.toSet());
 
     final updatedTags = {...document.tags}..removeAll(tagsToRemove);
-
-    await _documentsApi.update(
-      document.copyWith(
-        tags: updatedTags,
-        overwriteTags: true,
-      ),
+    await api.update(
+      document.copyWith(tags: updatedTags),
     );
-    emit(
-      state.copyWith(
-        isLoaded: true,
-        inboxItems: state.inboxItems.where((doc) => doc.id != document.id),
-      ),
-    );
-
+    await remove(document);
     return tagsToRemove;
   }
 
   ///
   /// Adds the previously removed tags to the document and performs an update.
   ///
-  Future<void> undoRemove(
+  Future<void> undoRemoveFromInbox(
     DocumentModel document,
     Iterable<int> removedTags,
   ) async {
     final updatedDoc = document.copyWith(
       tags: {...document.tags, ...removedTags},
-      overwriteTags: true,
     );
     await _documentsApi.update(updatedDoc);
-    emit(state.copyWith(
-      isLoaded: true,
-      inboxItems: [...state.inboxItems, updatedDoc]
-        ..sort((d1, d2) => d2.added.compareTo(d1.added)),
-    ));
+    return reload();
   }
 
   ///
   /// Removes inbox tags from all documents in the inbox.
   ///
   Future<void> clearInbox() async {
-    await _documentsApi.bulkAction(
-      BulkModifyTagsAction.removeTags(
-        state.inboxItems.map((e) => e.id),
-        state.inboxTags,
-      ),
-    );
-    emit(state.copyWith(
-      isLoaded: true,
-      inboxItems: [],
-    ));
+    emit(state.copyWith(isLoading: true));
+    try {
+      await _documentsApi.bulkAction(
+        BulkModifyTagsAction.removeTags(
+          state.documents.map((e) => e.id),
+          state.inboxTags,
+        ),
+      );
+      emit(state.copyWith(
+        hasLoaded: true,
+        value: [],
+      ));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 
   void replaceUpdatedDocument(DocumentModel document) {
     if (document.tags.any((id) => state.inboxTags.contains(id))) {
       // If replaced document still has inbox tag assigned:
-      emit(state.copyWith(
-        inboxItems:
-            state.inboxItems.map((e) => e.id == document.id ? document : e),
-      ));
+      replace(document);
     } else {
-      // Remove tag from inbox.
-      emit(
-        state.copyWith(
-            inboxItems:
-                state.inboxItems.where((element) => element.id != document.id)),
-      );
+      // Remove document from inbox.
+      remove(document);
     }
   }
 
@@ -174,46 +154,8 @@ class InboxCubit extends HydratedCubit<InboxState> {
       final int asn = await _documentsApi.findNextAsn();
       final updatedDocument = await _documentsApi
           .update(document.copyWith(archiveSerialNumber: asn));
-      emit(
-        state.copyWith(
-            inboxItems: state.inboxItems
-                .map((e) => e.id == document.id ? updatedDocument : e)),
-      );
+      replace(updatedDocument);
     }
-  }
-
-  Future<void> updateDocument(DocumentModel document) async {
-    final updatedDocument = await _documentsApi.update(document);
-    emit(
-      state.copyWith(
-        inboxItems: state.inboxItems.map(
-          (e) => e.id == document.id ? updatedDocument : e,
-        ),
-      ),
-    );
-  }
-
-  Future<void> deleteDocument(DocumentModel document) async {
-    int deletedId = await _documentsApi.delete(document);
-    emit(
-      state.copyWith(
-        inboxItems: state.inboxItems.where(
-          (element) => element.id != deletedId,
-        ),
-      ),
-    );
-  }
-
-  void loadSuggestions() {
-    state.inboxItems
-        .whereNot((doc) => state.suggestions.containsKey(doc.id))
-        .map((e) => _documentsApi.findSuggestions(e))
-        .forEach((suggestion) async {
-      final s = await suggestion;
-      emit(state.copyWith(
-        suggestions: {...state.suggestions, s.documentId!: s},
-      ));
-    });
   }
 
   void acknowledgeHint() {

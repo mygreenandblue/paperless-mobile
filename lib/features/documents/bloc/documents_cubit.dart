@@ -5,19 +5,21 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/documents_paging_mixin.dart';
 
-class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
-  final PaperlessDocumentsApi _api;
+class DocumentsCubit extends HydratedCubit<DocumentsState>
+    with DocumentsPagingMixin {
+  @override
+  final PaperlessDocumentsApi api;
+
   final SavedViewRepository _savedViewRepository;
 
-  DocumentsCubit(this._api, this._savedViewRepository)
-      : super(const DocumentsState()) {
-    hydrate();
-  }
+  DocumentsCubit(this.api, this._savedViewRepository)
+      : super(const DocumentsState());
 
   Future<void> bulkRemove(List<DocumentModel> documents) async {
     log("[DocumentsCubit] bulkRemove");
-    await _api.bulkAction(
+    await api.bulkAction(
       BulkDeleteAction(documents.map((doc) => doc.id)),
     );
     await reload();
@@ -29,139 +31,13 @@ class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
     Iterable<int> removeTags = const [],
   }) async {
     log("[DocumentsCubit] bulkEditTags");
-    await _api.bulkAction(BulkModifyTagsAction(
+    await api.bulkAction(BulkModifyTagsAction(
       documents.map((doc) => doc.id),
       addTags: addTags,
       removeTags: removeTags,
     ));
     await reload();
   }
-
-  Future<void> update(
-    DocumentModel document, [
-    bool updateRemote = true,
-  ]) async {
-    log("[DocumentsCubit] update");
-    if (updateRemote) {
-      await _api.update(document);
-    }
-    await reload();
-  }
-
-  Future<void> load() async {
-    log("[DocumentsCubit] load");
-    emit(state.copyWith(isLoading: true));
-    try {
-      final result = await _api.findAll(state.filter);
-      emit(state.copyWith(
-        isLoading: false,
-        hasLoaded: true,
-        value: [...state.value, result],
-      ));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> reload() async {
-    log("[DocumentsCubit] reload");
-    emit(state.copyWith(isLoading: true));
-    try {
-      final filter = state.filter.copyWith(page: 1);
-      final result = await _api.findAll(filter);
-      emit(state.copyWith(
-        hasLoaded: true,
-        value: [result],
-        isLoading: false,
-        filter: filter,
-      ));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> _bulkReloadDocuments() async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      final result = await _api.findAll(
-        state.filter.copyWith(
-          page: 1,
-          pageSize: state.documents.length,
-        ),
-      );
-      emit(DocumentsState(
-        hasLoaded: true,
-        value: [result],
-        filter: state.filter,
-        isLoading: false,
-      ));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> loadMore() async {
-    log("[DocumentsCubit] loadMore");
-    if (state.isLastPageLoaded) {
-      return;
-    }
-    emit(state.copyWith(isLoading: true));
-    final newFilter = state.filter.copyWith(page: state.filter.page + 1);
-    try {
-      final result = await _api.findAll(newFilter);
-      emit(
-        DocumentsState(
-          hasLoaded: true,
-          value: [...state.value, result],
-          filter: newFilter,
-          isLoading: false,
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  ///
-  /// Updates document filter and automatically reloads documents. Always resets page to 1.
-  /// Use [loadMore] to load more data.
-  Future<void> updateFilter({
-    final DocumentFilter filter = DocumentFilter.initial,
-  }) async {
-    log("[DocumentsCubit] updateFilter");
-    try {
-      emit(state.copyWith(isLoading: true));
-      final result = await _api.findAll(filter.copyWith(page: 1));
-
-      emit(
-        DocumentsState(
-          filter: filter,
-          value: [result],
-          hasLoaded: true,
-          isLoading: false,
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> resetFilter() {
-    log("[DocumentsCubit] resetFilter");
-    final filter = DocumentFilter.initial.copyWith(
-      sortField: state.filter.sortField,
-      sortOrder: state.filter.sortOrder,
-    );
-    return updateFilter(filter: filter);
-  }
-
-  ///
-  /// Convenience method which allows to directly use [DocumentFilter.copyWith] on the current filter.
-  ///
-  Future<void> updateCurrentFilter(
-    final DocumentFilter Function(DocumentFilter) transformFn,
-  ) async =>
-      updateFilter(filter: transformFn(state.filter));
 
   void toggleDocumentSelection(DocumentModel model) {
     log("[DocumentsCubit] toggleSelection");
@@ -185,12 +61,6 @@ class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
     emit(state.copyWith(selection: []));
   }
 
-  @override
-  void onChange(Change<DocumentsState> change) {
-    super.onChange(change);
-    log("[DocumentsCubit] state changed: ${change.currentState.selection.map((e) => e.id).join(",")} to ${change.nextState.selection.map((e) => e.id).join(",")}");
-  }
-
   void reset() {
     log("[DocumentsCubit] reset");
     emit(const DocumentsState());
@@ -204,7 +74,7 @@ class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
       if (filter == null) {
         return;
       }
-      final results = await _api.findAll(filter.copyWith(page: 1));
+      final results = await api.findAll(filter.copyWith(page: 1));
       emit(
         DocumentsState(
           filter: filter,
@@ -220,7 +90,7 @@ class DocumentsCubit extends Cubit<DocumentsState> with HydratedMixin {
   }
 
   Future<Iterable<String>> autocomplete(String query) async {
-    final res = await _api.autocomplete(query);
+    final res = await api.autocomplete(query);
     return res;
   }
 
