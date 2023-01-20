@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class RelativeDateRangePickerHelper extends StatefulWidget {
@@ -28,15 +29,17 @@ class _RelativeDateRangePickerHelperState
         separatorBuilder: (context, index) => const SizedBox(width: 8.0),
         itemBuilder: (context, index) {
           final option = _options[index];
-          return FilterChip(
-            label: Text(option.title),
-            onSelected: (isSelected) {
-              final value =
-                  isSelected ? option.value : const RelativeDateRangeQuery();
-              widget.field.didChange(value);
-              widget.onChanged?.call(value);
-            },
-            selected: widget.field.value == option.value,
+          return ColoredChipWrapper(
+            child: FilterChip(
+              label: Text(option.title),
+              onSelected: (isSelected) {
+                final value =
+                    isSelected ? option.value : const RelativeDateRangeQuery();
+                widget.field.didChange(value);
+                widget.onChanged?.call(value);
+              },
+              selected: widget.field.value == option.value,
+            ),
           );
         },
         scrollDirection: Axis.horizontal,

@@ -95,7 +95,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   }
 
   void unselectView() {
-    emit(state.copyWith(selectedSavedViewId: null));
+    emit(state.copyWith(selectedSavedViewId: () => null));
   }
 
   @override

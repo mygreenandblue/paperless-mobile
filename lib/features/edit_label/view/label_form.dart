@@ -46,7 +46,16 @@ class LabelForm<T extends Label> extends StatefulWidget {
 class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   final _formKey = GlobalKey<FormBuilderState>();
 
+  late bool _enableMatchFormField;
+
   PaperlessValidationErrors _errors = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _enableMatchFormField =
+        widget.initialValue?.matchingAlgorithm != MatchingAlgorithm.auto;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,15 +80,6 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               initialValue: widget.initialValue?.name,
               onChanged: (val) => setState(() => _errors = {}),
             ),
-            FormBuilderTextField(
-              name: Label.matchKey,
-              decoration: InputDecoration(
-                labelText: S.of(context).labelMatchPropertyLabel,
-                errorText: _errors[Label.matchKey],
-              ),
-              initialValue: widget.initialValue?.match,
-              onChanged: (val) => setState(() => _errors = {}),
-            ),
             FormBuilderDropdown<int?>(
               name: Label.matchingAlgorithmKey,
               initialValue: widget.initialValue?.matchingAlgorithm.value ??
@@ -88,16 +88,32 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                 labelText: S.of(context).labelMatchingAlgorithmPropertyLabel,
                 errorText: _errors[Label.matchingAlgorithmKey],
               ),
-              onChanged: (val) => setState(() => _errors = {}),
+              onChanged: (val) {
+                setState(() {
+                  _errors = {};
+                  _enableMatchFormField = val != MatchingAlgorithm.auto.value;
+                });
+              },
               items: MatchingAlgorithm.values
                   .map(
                     (algo) => DropdownMenuItem<int?>(
-                      child: Text(translateMatchingAlgorithm(context, algo)),
+                      child: Text(
+                          translateMatchingAlgorithmDescription(context, algo)),
                       value: algo.value,
                     ),
                   )
                   .toList(),
             ),
+            if (_enableMatchFormField)
+              FormBuilderTextField(
+                name: Label.matchKey,
+                decoration: InputDecoration(
+                  labelText: S.of(context).labelMatchPropertyLabel,
+                  errorText: _errors[Label.matchKey],
+                ),
+                initialValue: widget.initialValue?.match,
+                onChanged: (val) => setState(() => _errors = {}),
+              ),
             FormBuilderCheckbox(
               name: Label.isInsensitiveKey,
               initialValue: widget.initialValue?.isInsensitive ?? true,
@@ -117,6 +133,11 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           ...widget.initialValue?.toJson() ?? {},
           ..._formKey.currentState!.value
         };
+        if (mergedJson[Label.matchingAlgorithmKey] ==
+            MatchingAlgorithm.auto.value) {
+          // If auto is selected, the match will be removed.
+          mergedJson[Label.matchKey] = '';
+        }
         final createdLabel = await widget.submitButtonConfig
             .onSubmit(widget.fromJsonT(mergedJson));
         Navigator.pop(context, createdLabel);

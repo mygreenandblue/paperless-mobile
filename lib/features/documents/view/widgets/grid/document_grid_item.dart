@@ -72,7 +72,6 @@ class DocumentGridItem extends StatelessWidget {
                         TagsWidget(
                           tagIds: document.tags,
                           isMultiLine: false,
-                          isSelectedPredicate: isTagSelectedPredicate,
                           onTagSelected: onTagSelected,
                         ),
                         const Spacer(),

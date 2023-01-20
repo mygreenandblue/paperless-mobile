@@ -219,7 +219,7 @@ class _InfoDrawerState extends State<InfoDrawer> {
                     ],
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                   ),
                 ),
                 ...[

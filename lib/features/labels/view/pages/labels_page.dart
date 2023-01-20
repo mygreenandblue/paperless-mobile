@@ -174,7 +174,6 @@ class _LabelsPageState extends State<LabelsPage>
                             )
                           : null,
                     ),
-                    contentBuilder: (t) => Text(t.match ?? ''),
                     emptyStateActionButtonLabel:
                         S.of(context).labelsPageTagsEmptyStateAddNewLabel,
                     emptyStateDescription:

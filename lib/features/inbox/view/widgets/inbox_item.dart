@@ -4,6 +4,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
@@ -111,21 +112,23 @@ class _InboxItemState extends State<InboxItem> {
     final actions = [
       _buildAssignAsnAction(chipShape, context),
       const SizedBox(width: 4.0),
-      ActionChip(
-        avatar: const Icon(Icons.delete_outline),
-        shape: chipShape,
-        label: const Text("Delete document"),
-        onPressed: () async {
-          final shouldDelete = await showDialog<bool>(
-                context: context,
-                builder: (context) =>
-                    DeleteDocumentConfirmationDialog(document: widget.document),
-              ) ??
-              false;
-          if (shouldDelete) {
-            context.read<InboxCubit>().delete(widget.document);
-          }
-        },
+      ColoredChipWrapper(
+        child: ActionChip(
+          avatar: const Icon(Icons.delete_outline),
+          shape: chipShape,
+          label: const Text("Delete document"),
+          onPressed: () async {
+            final shouldDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => DeleteDocumentConfirmationDialog(
+                      document: widget.document),
+                ) ??
+                false;
+            if (shouldDelete) {
+              context.read<InboxCubit>().delete(widget.document);
+            }
+          },
+        ),
       ),
     ];
     // return FutureBuilder<FieldSuggestions>(
@@ -191,31 +194,33 @@ class _InboxItemState extends State<InboxItem> {
     BuildContext context,
   ) {
     final hasAsn = widget.document.archiveSerialNumber != null;
-    return ActionChip(
-      avatar: _isAsnAssignLoading
-          ? const CircularProgressIndicator()
-          : hasAsn
-              ? null
-              : const Icon(Icons.archive_outlined),
-      shape: chipShape,
-      label: hasAsn
-          ? Text(
-              '${S.of(context).documentArchiveSerialNumberPropertyShortLabel} #${widget.document.archiveSerialNumber}',
-            )
-          : const Text("Assign ASN"),
-      onPressed: !hasAsn
-          ? () {
-              setState(() {
-                _isAsnAssignLoading = true;
-              });
-              context
-                  .read<InboxCubit>()
-                  .assignAsn(widget.document)
-                  .whenComplete(
-                    () => setState(() => _isAsnAssignLoading = false),
-                  );
-            }
-          : null,
+    return ColoredChipWrapper(
+      child: ActionChip(
+        avatar: _isAsnAssignLoading
+            ? const CircularProgressIndicator()
+            : hasAsn
+                ? null
+                : const Icon(Icons.archive_outlined),
+        shape: chipShape,
+        label: hasAsn
+            ? Text(
+                '${S.of(context).documentArchiveSerialNumberPropertyShortLabel} #${widget.document.archiveSerialNumber}',
+              )
+            : const Text("Assign ASN"),
+        onPressed: !hasAsn
+            ? () {
+                setState(() {
+                  _isAsnAssignLoading = true;
+                });
+                context
+                    .read<InboxCubit>()
+                    .assignAsn(widget.document)
+                    .whenComplete(
+                      () => setState(() => _isAsnAssignLoading = false),
+                    );
+              }
+            : null,
+      ),
     );
   }
 
@@ -224,7 +229,6 @@ class _InboxItemState extends State<InboxItem> {
       tagIds: widget.document.tags,
       isMultiLine: false,
       isClickable: false,
-      isSelectedPredicate: (_) => false,
       showShortNames: true,
       dense: true,
     );

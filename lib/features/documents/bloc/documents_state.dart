@@ -25,7 +25,7 @@ class DocumentsState extends DocumentsPagedState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     List<DocumentModel>? selection,
-    int? selectedSavedViewId,
+    int? Function()? selectedSavedViewId,
   }) {
     return DocumentsState(
       hasLoaded: hasLoaded ?? this.hasLoaded,
@@ -33,7 +33,9 @@ class DocumentsState extends DocumentsPagedState {
       value: value ?? this.value,
       filter: filter ?? this.filter,
       selection: selection ?? this.selection,
-      selectedSavedViewId: selectedSavedViewId ?? this.selectedSavedViewId,
+      selectedSavedViewId: selectedSavedViewId != null
+          ? selectedSavedViewId.call()
+          : this.selectedSavedViewId,
     );
   }
 

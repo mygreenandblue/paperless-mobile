@@ -182,15 +182,15 @@ class SavedViewSelectionWidget extends StatelessWidget {
   }
 
   void _onSelected(
-    bool isSelected,
+    bool selectionIntent,
     BuildContext context,
     SavedView view,
   ) async {
-    if (isSelected) {
+    if (selectionIntent) {
       context.read<DocumentsCubit>().selectView(view.id!);
     } else {
-      context.read<DocumentsCubit>().resetFilter();
       context.read<DocumentsCubit>().unselectView();
+      context.read<DocumentsCubit>().resetFilter();
     }
   }
 

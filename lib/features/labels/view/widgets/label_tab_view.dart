@@ -68,21 +68,22 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                   connectivityState.isConnected,
               child: ListView(
                 children: labels
-                    .map(
-                      (l) => LabelItem<T>(
-                        name: l.name,
-                        content: contentBuilder?.call(l) ??
-                            Text(
-                              "${translateMatchingAlgorithm(context, l.matchingAlgorithm)}\n"
-                              "${l.match}",
-                              maxLines: 2,
-                            ),
-                        onOpenEditPage: onEdit,
-                        filterBuilder: filterBuilder,
-                        leading: leadingBuilder?.call(l),
-                        label: l,
-                      ),
-                    )
+                    .map((l) => LabelItem<T>(
+                          name: l.name,
+                          content: contentBuilder?.call(l) ??
+                              Text(
+                                translateMatchingAlgorithmName(
+                                        context, l.matchingAlgorithm) +
+                                    ((l.match?.isNotEmpty ?? false)
+                                        ? ": ${l.match}"
+                                        : ""),
+                                maxLines: 2,
+                              ),
+                          onOpenEditPage: onEdit,
+                          filterBuilder: filterBuilder,
+                          leading: leadingBuilder?.call(l),
+                          label: l,
+                        ))
                     .toList(),
               ),
             );

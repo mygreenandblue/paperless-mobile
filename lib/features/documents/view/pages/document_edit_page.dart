@@ -11,6 +11,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_document/cubit/edit_document_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
@@ -305,6 +306,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     );
   }
 
+  ///
+  /// Item builder is typically some sort of [Chip].
+  ///
   Widget _buildSuggestionsSkeleton<T>({
     required Iterable<T> suggestions,
     required ItemBuilder<T> itemBuilder,
@@ -321,8 +325,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: suggestions.length,
-            itemBuilder: (context, index) =>
-                itemBuilder(context, suggestions.elementAt(index)),
+            itemBuilder: (context, index) => ColoredChipWrapper(
+              child: itemBuilder(context, suggestions.elementAt(index)),
+            ),
             separatorBuilder: (BuildContext context, int index) =>
                 const SizedBox(width: 4.0),
           ),

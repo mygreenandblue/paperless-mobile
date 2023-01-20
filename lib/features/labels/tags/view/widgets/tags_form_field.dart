@@ -7,6 +7,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -263,13 +264,15 @@ class _TagFormFieldState extends State<TagFormField> {
   }
 
   Widget _buildNotAssignedTag(FormFieldState<TagsQuery> field) {
-    return InputChip(
-      label: Text(
-        S.of(context).labelNotAssignedText,
+    return ColoredChipWrapper(
+      child: InputChip(
+        label: Text(
+          S.of(context).labelNotAssignedText,
+        ),
+        backgroundColor:
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+        onDeleted: () => field.didChange(const IdsTagsQuery()),
       ),
-      backgroundColor:
-          Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-      onDeleted: () => field.didChange(const IdsTagsQuery()),
     );
   }
 
@@ -283,33 +286,37 @@ class _TagFormFieldState extends State<TagFormField> {
     if (tag == null) {
       return Container();
     }
-    return InputChip(
-      label: Text(
-        tag.name,
-        style: TextStyle(
-          color: tag.textColor,
-          decorationColor: tag.textColor,
-          decoration: !isIncludedTag ? TextDecoration.lineThrough : null,
-          decorationThickness: 2.0,
+    return ColoredChipWrapper(
+      child: InputChip(
+        label: Text(
+          tag.name,
+          style: TextStyle(
+            color: tag.textColor,
+            decorationColor: tag.textColor,
+            decoration: !isIncludedTag ? TextDecoration.lineThrough : null,
+            decorationThickness: 2.0,
+          ),
         ),
-      ),
-      onPressed: widget.excludeAllowed
-          ? () => field.didChange(currentQuery.withIdQueryToggled(tag.id!))
-          : null,
-      backgroundColor: tag.color,
-      deleteIconColor: tag.textColor,
-      onDeleted: () => field.didChange(
-        (field.value as IdsTagsQuery).withIdsRemoved([tag.id!]),
+        onPressed: widget.excludeAllowed
+            ? () => field.didChange(currentQuery.withIdQueryToggled(tag.id!))
+            : null,
+        backgroundColor: tag.color,
+        deleteIconColor: tag.textColor,
+        onDeleted: () => field.didChange(
+          (field.value as IdsTagsQuery).withIdsRemoved([tag.id!]),
+        ),
       ),
     );
   }
 
   Widget _buildAnyAssignedTag(FormFieldState<TagsQuery> field) {
-    return InputChip(
-      label: Text(S.of(context).labelAnyAssignedText),
-      backgroundColor:
-          Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),
-      onDeleted: () => field.didChange(const IdsTagsQuery()),
+    return ColoredChipWrapper(
+      child: InputChip(
+        label: Text(S.of(context).labelAnyAssignedText),
+        backgroundColor:
+            Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),
+        onDeleted: () => field.didChange(const IdsTagsQuery()),
+      ),
     );
   }
 }

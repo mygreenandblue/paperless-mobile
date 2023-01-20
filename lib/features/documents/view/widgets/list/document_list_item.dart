@@ -73,7 +73,6 @@ class DocumentListItem extends StatelessWidget {
             isClickable: isLabelClickable,
             tagIds: document.tags,
             isMultiLine: false,
-            isSelectedPredicate: isTagSelectedPredicate,
             onTagSelected: (id) => onTagSelected?.call(id),
           ),
         ),

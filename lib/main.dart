@@ -204,54 +204,20 @@ class PaperlessMobileEntrypoint extends StatefulWidget {
 }
 
 class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
-  final _lightTheme = ThemeData(
-    brightness: Brightness.light,
+  final _lightTheme = ThemeData.from(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.lightGreen,
+      brightness: Brightness.light,
+    ),
     useMaterial3: true,
-    colorSchemeSeed: Colors.lightGreen,
-    appBarTheme: const AppBarTheme(
-      scrolledUnderElevation: 0.0,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 16.0,
-      ),
-    ),
-    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    chipTheme: ChipThemeData(
-      backgroundColor: Colors.lightGreen[50],
-    ),
-    listTileTheme: const ListTileThemeData(
-      tileColor: Colors.transparent,
-    ),
   );
 
-  final _darkTheme = ThemeData(
-    brightness: Brightness.dark,
+  final _darkTheme = ThemeData.from(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.lightGreen,
+      brightness: Brightness.dark,
+    ),
     useMaterial3: true,
-    colorSchemeSeed: Colors.lightGreen,
-    appBarTheme: const AppBarTheme(
-      scrolledUnderElevation: 0.0,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 16.0,
-      ),
-    ),
-    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    chipTheme: ChipThemeData(
-      backgroundColor: Colors.green[900],
-    ),
-    listTileTheme: const ListTileThemeData(
-      tileColor: Colors.transparent,
-    ),
   );
 
   @override
@@ -269,8 +235,39 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
           return MaterialApp(
             debugShowCheckedModeBanner: true,
             title: "Paperless Mobile",
-            theme: _lightTheme,
-            darkTheme: _darkTheme,
+            theme: _lightTheme.copyWith(
+              inputDecorationTheme: InputDecorationTheme(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
+              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              listTileTheme: const ListTileThemeData(
+                tileColor: Colors.transparent,
+              ),
+            ),
+            darkTheme: _darkTheme.copyWith(
+              inputDecorationTheme: InputDecorationTheme(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
+              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              chipTheme: ChipThemeData(
+                backgroundColor: Colors.lightGreen[50],
+              ),
+              listTileTheme: const ListTileThemeData(
+                tileColor: Colors.transparent,
+              ),
+            ),
             themeMode: settings.preferredThemeMode,
             supportedLocales: S.delegate.supportedLocales,
             locale: Locale.fromSubtags(

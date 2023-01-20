@@ -438,7 +438,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               child: TagsWidget(
                 isClickable: widget.isLabelClickable,
                 tagIds: document.tags,
-                isSelectedPredicate: (_) => false,
                 onTagSelected: (int tagId) {},
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class StoragePathAutofillFormBuilderField extends StatefulWidget {
@@ -61,71 +62,78 @@ class _StoragePathAutofillFormBuilderFieldState
             "Select to autofill path variable",
             style: Theme.of(context).textTheme.bodySmall,
           ),
-          Wrap(
-            alignment: WrapAlignment.start,
-            spacing: 4.0,
-            runSpacing: 4.0,
-            children: [
-              InputChip(
-                label: Text(
-                    S.of(context).documentArchiveSerialNumberPropertyLongLabel),
-                onPressed: () => _addParameterToInput("{asn}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCorrespondentPropertyLabel),
-                onPressed: () => _addParameterToInput("{correspondent}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentDocumentTypePropertyLabel),
-                onPressed: () => _addParameterToInput("{document_type}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentTagsPropertyLabel),
-                onPressed: () => _addParameterToInput("{tag_list}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentTitlePropertyLabel),
-                onPressed: () => _addParameterToInput("{title}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel),
-                onPressed: () => _addParameterToInput("{created}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterYearLabel})"),
-                onPressed: () => _addParameterToInput("{created_year}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterMonthLabel})"),
-                onPressed: () => _addParameterToInput("{created_month}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterDayLabel})"),
-                onPressed: () => _addParameterToInput("{created_day}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel),
-                onPressed: () => _addParameterToInput("{added}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterYearLabel})"),
-                onPressed: () => _addParameterToInput("{added_year}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterMonthLabel})"),
-                onPressed: () => _addParameterToInput("{added_month}", field),
-              ),
-              InputChip(
-                label: Text(S.of(context).documentCreatedPropertyLabel +
-                    " (${S.of(context).storagePathParameterDayLabel})"),
-                onPressed: () => _addParameterToInput("{added_day}", field),
-              ),
-            ],
+          ColoredChipWrapper(
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: 4.0,
+              runSpacing: 4.0,
+              children: [
+                InputChip(
+                  label: Text(S
+                      .of(context)
+                      .documentArchiveSerialNumberPropertyLongLabel),
+                  onPressed: () => _addParameterToInput("{asn}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCorrespondentPropertyLabel),
+                  onPressed: () =>
+                      _addParameterToInput("{correspondent}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentDocumentTypePropertyLabel),
+                  onPressed: () =>
+                      _addParameterToInput("{document_type}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentTagsPropertyLabel),
+                  onPressed: () => _addParameterToInput("{tag_list}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentTitlePropertyLabel),
+                  onPressed: () => _addParameterToInput("{title}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel),
+                  onPressed: () => _addParameterToInput("{created}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterYearLabel})"),
+                  onPressed: () =>
+                      _addParameterToInput("{created_year}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterMonthLabel})"),
+                  onPressed: () =>
+                      _addParameterToInput("{created_month}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterDayLabel})"),
+                  onPressed: () => _addParameterToInput("{created_day}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel),
+                  onPressed: () => _addParameterToInput("{added}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterYearLabel})"),
+                  onPressed: () => _addParameterToInput("{added_year}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterMonthLabel})"),
+                  onPressed: () => _addParameterToInput("{added_month}", field),
+                ),
+                InputChip(
+                  label: Text(S.of(context).documentCreatedPropertyLabel +
+                      " (${S.of(context).storagePathParameterDayLabel})"),
+                  onPressed: () => _addParameterToInput("{added_day}", field),
+                ),
+              ],
+            ),
           )
         ],
       ),

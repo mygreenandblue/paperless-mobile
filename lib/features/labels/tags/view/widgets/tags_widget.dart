@@ -9,20 +9,16 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_widget.da
 class TagsWidget extends StatelessWidget {
   final Iterable<int> tagIds;
   final bool isMultiLine;
-  final VoidCallback? afterTagTapped;
   final void Function(int tagId)? onTagSelected;
   final bool isClickable;
-  final bool Function(int id) isSelectedPredicate;
   final bool showShortNames;
   final bool dense;
 
   const TagsWidget({
     Key? key,
     required this.tagIds,
-    this.afterTagTapped,
     this.isMultiLine = true,
     this.isClickable = true,
-    required this.isSelectedPredicate,
     this.onTagSelected,
     this.showShortNames = false,
     this.dense = true,
@@ -38,9 +34,7 @@ class TagsWidget extends StatelessWidget {
               .map(
                 (id) => TagWidget(
                   tag: state.getLabel(id)!,
-                  afterTagTapped: afterTagTapped,
                   isClickable: isClickable,
-                  isSelected: isSelectedPredicate(id),
                   onSelected: () => onTagSelected?.call(id),
                   showShortName: showShortNames,
                   dense: dense,
