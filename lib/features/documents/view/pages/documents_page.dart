@@ -16,7 +16,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/new_items_loadi
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
-import 'package:paperless_mobile/features/home/view/widget/info_drawer.dart';
+import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/labels_bloc_provider.dart';
 import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
@@ -131,7 +131,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           return Scaffold(
             drawer: BlocProvider.value(
               value: context.read<AuthenticationCubit>(),
-              child: InfoDrawer(
+              child: AppDrawer(
                 afterInboxClosed: () => context.read<DocumentsCubit>().reload(),
               ),
             ),

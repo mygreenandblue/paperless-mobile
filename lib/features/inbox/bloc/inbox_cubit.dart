@@ -80,6 +80,7 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
         ),
       );
     }
+    emit(state.copyWith(inboxTags: inboxTags));
     return updateFilter(
       filter: DocumentFilter(
         sortField: SortField.added,

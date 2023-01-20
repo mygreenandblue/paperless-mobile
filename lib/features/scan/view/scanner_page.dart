@@ -22,7 +22,7 @@ import 'package:paperless_mobile/core/widgets/offline_banner.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/home/view/widget/info_drawer.dart';
+import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/scan/view/widgets/grid_image_item_widget.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
@@ -47,7 +47,7 @@ class _ScannerPageState extends State<ScannerPage>
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
         return Scaffold(
-          drawer: const InfoDrawer(),
+          drawer: const AppDrawer(),
           floatingActionButton: FloatingActionButton(
             onPressed: () => _openDocumentScanner(context),
             child: const Icon(Icons.add_a_photo_outlined),

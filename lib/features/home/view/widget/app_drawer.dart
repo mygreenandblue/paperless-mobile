@@ -23,24 +23,24 @@ import 'package:paperless_mobile/util.dart';
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class InfoDrawer extends StatefulWidget {
+class AppDrawer extends StatefulWidget {
   final VoidCallback? afterInboxClosed;
 
-  const InfoDrawer({Key? key, this.afterInboxClosed}) : super(key: key);
+  const AppDrawer({Key? key, this.afterInboxClosed}) : super(key: key);
 
   @override
-  State<InfoDrawer> createState() => _InfoDrawerState();
+  State<AppDrawer> createState() => _AppDrawerState();
 }
 
-enum NavigationDestinations {
-  inbox,
-  settings,
-  reportBug,
-  about,
-  logout;
-}
+// enum NavigationDestinations {
+//   inbox,
+//   settings,
+//   reportBug,
+//   about,
+//   logout;
+// }
 
-class _InfoDrawerState extends State<InfoDrawer> {
+class _AppDrawerState extends State<AppDrawer> {
   late final Future<PackageInfo> _packageInfo;
 
   @override
@@ -219,7 +219,7 @@ class _InfoDrawerState extends State<InfoDrawer> {
                     ],
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    color: Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ),
                 ...[
