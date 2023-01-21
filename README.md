@@ -129,6 +129,7 @@ If you want to contribute to translate the app into your language, create a new 
 Thanks to the following contributors for providing translations:
 - German and English by <a href="https://github.com/astubenbord">astubenbord</a>
 - Czech language by <a href="https://github.com/svetlemodry">svetlemodry</a>
+- Turkish language by <a href="https://github.com/imsakg">imsakg</a>
 
 This project is registered as an open source project in Localizely, which offers full benefits for free! 
 
