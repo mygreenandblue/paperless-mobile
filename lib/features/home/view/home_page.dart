@@ -21,7 +21,7 @@ import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/home/view/widget/bottom_navigation_bar.dart';
-import 'package:paperless_mobile/features/home/view/widget/info_drawer.dart';
+import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
     final filename = extractFilenameFromPath(mediaFile.path);
     final extension = p.extension(mediaFile.path);
     try {
-      if (File(mediaFile.path).existsSync()) {
+      if (await File(mediaFile.path).exists()) {
         final bytes = File(mediaFile.path).readAsBytesSync();
         final success = await Navigator.push<bool>(
               context,
@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
           if (!sizingInformation.isMobile) {
             return Scaffold(
               key: rootScaffoldKey,
-              drawer: const InfoDrawer(),
+              drawer: const AppDrawer(),
               body: Row(
                 children: [
                   NavigationRail(
@@ -266,7 +266,7 @@ class _HomePageState extends State<HomePage> {
               destinations:
                   destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
-            drawer: const InfoDrawer(),
+            drawer: const AppDrawer(),
             body: routes[_currentIndex],
           );
         },

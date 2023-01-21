@@ -15,7 +15,7 @@ class TagWidget extends StatelessWidget {
     this.isClickable = true,
     required this.onSelected,
     this.showShortName = false,
-    this.dense = false,
+    this.dense = true,
   });
 
   @override

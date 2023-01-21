@@ -16,7 +16,7 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_corresponden
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
-import 'package:paperless_mobile/features/home/view/widget/info_drawer.dart';
+import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/correspondent_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/document_type_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/storage_path_bloc_provider.dart';
@@ -51,7 +51,7 @@ class _LabelsPageState extends State<LabelsPage>
       child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
         builder: (context, connectedState) {
           return Scaffold(
-            drawer: const InfoDrawer(),
+            drawer: const AppDrawer(),
             appBar: AppBar(
               title: Text(
                 [

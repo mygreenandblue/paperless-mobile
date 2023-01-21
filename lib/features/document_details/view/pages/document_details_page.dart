@@ -5,12 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
@@ -20,8 +20,6 @@ import 'package:paperless_mobile/features/documents/view/pages/document_view.dar
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/edit_document/cubit/edit_document_cubit.dart';
-import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
-import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
@@ -75,9 +73,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         return b.Badge(
                           position: b.BadgePosition.topEnd(top: -12, end: -6),
                           showBadge: _filteredSuggestions.hasSuggestions,
-                          child: FloatingActionButton(
-                            child: const Icon(Icons.edit),
-                            onPressed: () => _onEdit(state.document),
+                          child: Tooltip(
+                            message:
+                                S.of(context).documentDetailsPageEditTooltip,
+                            preferBelow: false,
+                            verticalOffset: 40,
+                            child: FloatingActionButton(
+                              child: const Icon(Icons.edit),
+                              onPressed: () => _onEdit(state.document),
+                            ),
                           ),
                           badgeContent: Text(
                             '${_filteredSuggestions.suggestionsCount}',
@@ -86,7 +90,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                             ),
                           ),
                           badgeColor: Colors.red,
-                          //TODO: Wait for stable version of m3, then use AlignmentDirectional.topEnd
                         );
                       },
                     );
@@ -104,33 +107,40 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         IconButton(
+                          tooltip:
+                              S.of(context).documentDetailsPageDeleteTooltip,
                           icon: const Icon(Icons.delete),
                           onPressed: widget.allowEdit && isConnected
                               ? () => _onDelete(state.document)
                               : null,
                         ).paddedSymmetrically(horizontal: 4),
                         Tooltip(
-                          message: "Download",
+                          message:
+                              S.of(context).documentDetailsPageDownloadTooltip,
                           child: DocumentDownloadButton(
                             document: state.document,
                             enabled: isConnected,
                           ),
                         ),
                         IconButton(
+                          tooltip:
+                              S.of(context).documentDetailsPagePreviewTooltip,
                           icon: const Icon(Icons.visibility),
                           onPressed: isConnected
                               ? () => _onOpen(state.document)
                               : null,
                         ).paddedOnly(right: 4.0),
-                        // IconButton(
-                        //   icon: const Icon(Icons.open_in_new),
-                        //   onPressed: isConnected
-                        //       ? context
-                        //           .read<DocumentDetailsCubit>()
-                        //           .openDocumentInSystemViewer
-                        //       : null,
-                        // ).paddedOnly(right: 4.0),
                         IconButton(
+                          tooltip: S
+                              .of(context)
+                              .documentDetailsPageOpenInSystemViewerTooltip,
+                          icon: const Icon(Icons.open_in_new),
+                          onPressed:
+                              isConnected ? _onOpenFileInSystemViewer : null,
+                        ).paddedOnly(right: 4.0),
+                        IconButton(
+                          tooltip:
+                              S.of(context).documentDetailsPageShareTooltip,
                           icon: const Icon(Icons.share),
                           onPressed: isConnected
                               ? () => _onShare(state.document)
@@ -267,6 +277,23 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           maintainState: true,
         ),
       );
+    }
+  }
+
+  void _onOpenFileInSystemViewer() async {
+    final status =
+        await context.read<DocumentDetailsCubit>().openDocumentInSystemViewer();
+    if (status == ResultType.done) return;
+    if (status == ResultType.noAppToOpen) {
+      showGenericError(context,
+          S.of(context).documentDetailsPageNoPdfViewerFoundErrorMessage);
+    }
+    if (status == ResultType.fileNotFound) {
+      showGenericError(context, translateError(context, ErrorCode.unknown));
+    }
+    if (status == ResultType.permissionDenied) {
+      showGenericError(context,
+          S.of(context).documentDetailsPageOpenPdfPermissionDeniedErrorMessage);
     }
   }
 

@@ -84,8 +84,8 @@ class AdaptiveDocumentsView extends StatelessWidget {
 
   Widget _buildGridView() {
     return SliverGrid.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 178,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
         childAspectRatio: 1 / 2,

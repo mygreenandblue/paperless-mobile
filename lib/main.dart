@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +134,7 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
+
   runApp(
     MultiProvider(
       providers: [
@@ -261,9 +264,6 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                 ),
               ),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              chipTheme: ChipThemeData(
-                backgroundColor: Colors.lightGreen[50],
-              ),
               listTileTheme: const ListTileThemeData(
                 tileColor: Colors.transparent,
               ),

@@ -45,7 +45,7 @@ class TagsWidget extends StatelessWidget {
             return Wrap(
               runAlignment: WrapAlignment.start,
               children: children,
-              runSpacing: 8,
+              runSpacing: 4,
               spacing: 4,
             );
           } else {
