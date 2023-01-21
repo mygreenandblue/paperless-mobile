@@ -59,7 +59,7 @@ Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
       'storagePath': instance.storagePath.toJson(),
       'asnQuery': instance.asnQuery.toJson(),
       'tags': const TagsQueryJsonConverter().toJson(instance.tags),
-      'sortField': _$SortFieldEnumMap[instance.sortField]!,
+      'sortField': _$SortFieldEnumMap[instance.sortField],
       'sortOrder': _$SortOrderEnumMap[instance.sortOrder]!,
       'created': const DateRangeQueryJsonConverter().toJson(instance.created),
       'added': const DateRangeQueryJsonConverter().toJson(instance.added),
@@ -68,10 +68,10 @@ Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
     };
 
 const _$SortFieldEnumMap = {
-  SortField.archiveSerialNumber: 'archiveSerialNumber',
-  SortField.correspondentName: 'correspondentName',
+  SortField.archiveSerialNumber: 'archive_serial_number',
+  SortField.correspondentName: 'correspondent__name',
   SortField.title: 'title',
-  SortField.documentType: 'documentType',
+  SortField.documentType: 'document_type__name',
   SortField.created: 'created',
   SortField.added: 'added',
   SortField.modified: 'modified',

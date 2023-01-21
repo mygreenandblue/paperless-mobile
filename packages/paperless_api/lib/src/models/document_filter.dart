@@ -26,7 +26,7 @@ class DocumentFilter extends Equatable {
   final IdQueryParameter storagePath;
   final IdQueryParameter asnQuery;
   final TagsQuery tags;
-  final SortField sortField;
+  final SortField? sortField;
   final SortOrder sortOrder;
   final DateRangeQuery created;
   final DateRangeQuery added;
@@ -59,7 +59,6 @@ class DocumentFilter extends Equatable {
     List<MapEntry<String, dynamic>> params = [
       MapEntry('page', '$page'),
       MapEntry('page_size', '$pageSize'),
-      MapEntry('ordering', '${sortOrder.queryString}${sortField.queryString}'),
       ...documentType.toQueryParameter('document_type').entries,
       ...correspondent.toQueryParameter('correspondent').entries,
       ...storagePath.toQueryParameter('storage_path').entries,
@@ -70,6 +69,14 @@ class DocumentFilter extends Equatable {
       ...modified.toQueryParameter(DateRangeQueryField.modified).entries,
       ...query.toQueryParameter().entries,
     ];
+    if (sortField != null) {
+      params.add(
+        MapEntry(
+          'ordering',
+          '${sortOrder.queryString}${sortField!.queryString}',
+        ),
+      );
+    }
     // Reverse ordering can also be encoded using &reverse=1
     // Merge query params
     final queryParams = groupBy(params, (e) => e.key).map(
