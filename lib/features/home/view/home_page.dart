@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
     final filename = extractFilenameFromPath(mediaFile.path);
     final extension = p.extension(mediaFile.path);
     try {
-      if (File(mediaFile.path).existsSync()) {
+      if (await File(mediaFile.path).exists()) {
         final bytes = File(mediaFile.path).readAsBytesSync();
         final success = await Navigator.push<bool>(
               context,

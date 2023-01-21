@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
@@ -280,22 +281,23 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  void _onLogout() {
+  void _onLogout() async {
     try {
-      context.read<AuthenticationCubit>().logout();
-      context.read<LocalVault>().clear();
-      context.read<ApplicationSettingsCubit>().clear();
-      context.read<LabelRepository<Tag, TagRepositoryState>>().clear();
-      context
+      await context.read<AuthenticationCubit>().logout();
+      await context.read<LocalVault>().clear();
+      await context.read<ApplicationSettingsCubit>().clear();
+      await context.read<LabelRepository<Tag, TagRepositoryState>>().clear();
+      await context
           .read<LabelRepository<Correspondent, CorrespondentRepositoryState>>()
           .clear();
-      context
+      await context
           .read<LabelRepository<DocumentType, DocumentTypeRepositoryState>>()
           .clear();
-      context
+      await context
           .read<LabelRepository<StoragePath, StoragePathRepositoryState>>()
           .clear();
-      context.read<SavedViewRepository>().clear();
+      await context.read<SavedViewRepository>().clear();
+      await HydratedBloc.storage.clear();
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

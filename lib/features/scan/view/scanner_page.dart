@@ -82,7 +82,7 @@ class _ScannerPageState extends State<ScannerPage>
                         ),
                       )
                   : null,
-              icon: const Icon(Icons.preview),
+              icon: const Icon(Icons.visibility),
               tooltip: S.of(context).documentScannerPageResetButtonTooltipText,
             );
           },
