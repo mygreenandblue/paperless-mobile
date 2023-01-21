@@ -37,7 +37,7 @@
     ·-->  
     <a href="https://github.com/astubenbord/paperless-mobile/issues">Report Bug</a>
     ·
-    <a href="https://github.com/astubenbord/paperless-mobile/issues">Request Feature</a>
+    <a href="https://github.com/astubenbord/paperless-mobile/discussions/categories/feature-requests">Request Feature</a>
   </p>
 </div>
 
