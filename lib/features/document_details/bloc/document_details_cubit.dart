@@ -53,7 +53,8 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     final metaData = await _api.getMetaData(state.document);
     final docBytes = await _api.download(state.document);
     File f = File('${downloadDir.path}/${metaData.mediaFilename}');
-    f.writeAsBytes(docBytes);
+    f.createSync(recursive: true);
+    f.writeAsBytesSync(docBytes);
     return OpenFilex.open(f.path, type: "application/pdf")
         .then((value) => value.type);
   }
