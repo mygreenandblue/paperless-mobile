@@ -146,8 +146,10 @@ flutter:
 flutter_intl:
   enabled: true
   main_locale: en
+
   localizely:
     project_id: 84b4144d-a628-4ba6-a8d0-4f9917444057
+    download_empty_as: main
 
 flutter_native_splash:
   image: assets/logos/paperless_logo_green.png
