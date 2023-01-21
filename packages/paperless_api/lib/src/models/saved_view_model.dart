@@ -1,9 +1,13 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/models/document_filter.dart';
 import 'package:paperless_api/src/models/filter_rule_model.dart';
 import 'package:paperless_api/src/models/query_parameters/sort_field.dart';
 import 'package:paperless_api/src/models/query_parameters/sort_order.dart';
 
+part 'saved_view_model.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class SavedView with EquatableMixin {
   final int? id;
   final String name;
@@ -11,7 +15,7 @@ class SavedView with EquatableMixin {
   final bool showOnDashboard;
   final bool showInSidebar;
 
-  final SortField sortField;
+  final SortField? sortField;
   final bool sortReverse;
   final List<FilterRule> filterRules;
 
@@ -20,7 +24,7 @@ class SavedView with EquatableMixin {
     required this.name,
     required this.showOnDashboard,
     required this.showInSidebar,
-    required this.sortField,
+    this.sortField,
     required this.sortReverse,
     required this.filterRules,
   }) {
@@ -41,21 +45,10 @@ class SavedView with EquatableMixin {
         filterRules
       ];
 
-  SavedView.fromJson(Map<String, dynamic> json)
-      : this(
-          id: json['id'],
-          name: json['name'],
-          showOnDashboard: json['show_on_dashboard'],
-          showInSidebar: json['show_in_sidebar'],
-          sortField: SortField.values
-              .where((order) => order.queryString == json['sort_field'])
-              .first,
-          sortReverse: json['sort_reverse'],
-          filterRules: (json['filter_rules'] as List)
-              .cast<Map<String, dynamic>>()
-              .map(FilterRule.fromJson)
-              .toList(),
-        );
+  factory SavedView.fromJson(Map<String, dynamic> json) =>
+      _$SavedViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SavedViewToJson(this);
 
   DocumentFilter toDocumentFilter() {
     return filterRules.fold(
@@ -81,16 +74,4 @@ class SavedView with EquatableMixin {
           showOnDashboard: showOnDashboard,
           sortReverse: filter.sortOrder == SortOrder.descending,
         );
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'show_on_dashboard': showOnDashboard,
-      'show_in_sidebar': showInSidebar,
-      'sort_reverse': sortReverse,
-      'sort_field': sortField.queryString,
-      'filter_rules': filterRules.map((rule) => rule.toJson()).toList(),
-    };
-  }
 }
