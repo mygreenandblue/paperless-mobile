@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/linked_documents_preview/bloc/linked_documents_cubit.dart';
-import 'package:paperless_mobile/features/linked_documents_preview/view/pages/linked_documents_page.dart';
+import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents_cubit.dart';
+import 'package:paperless_mobile/features/linked_documents/view/pages/linked_documents_page.dart';
+import 'package:paperless_mobile/helpers/format_helpers.dart';
 
 class LabelItem<T extends Label> extends StatelessWidget {
   final T label;
@@ -37,7 +38,7 @@ class LabelItem<T extends Label> extends StatelessWidget {
   Widget _buildReferencedDocumentsWidget(BuildContext context) {
     return TextButton.icon(
       label: const Icon(Icons.link),
-      icon: Text(_formatDocumentCount(label.documentCount)),
+      icon: Text(formatMaxCount(label.documentCount)),
       onPressed: (label.documentCount ?? 0) == 0
           ? null
           : () {
@@ -56,12 +57,5 @@ class LabelItem<T extends Label> extends StatelessWidget {
               );
             },
     );
-  }
-
-  String _formatDocumentCount(int? count) {
-    if ((count ?? 0) > 99) {
-      return "99+";
-    }
-    return (count ?? 0).toString().padLeft(3);
   }
 }

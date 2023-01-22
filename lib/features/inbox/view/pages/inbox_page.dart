@@ -13,6 +13,7 @@ import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/util.dart';
 
 class InboxPage extends StatefulWidget {

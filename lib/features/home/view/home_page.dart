@@ -29,7 +29,8 @@ import 'package:paperless_mobile/features/scan/view/scanner_page.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/file_helpers.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -136,7 +137,7 @@ class _HomePageState extends State<HomePage> {
           toastLength: Toast.LENGTH_LONG,
         );
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       Fluttertoast.showToast(
         msg: S.of(context).receiveSharedFilePermissionDeniedMessage,
         toastLength: Toast.LENGTH_LONG,
@@ -236,7 +237,6 @@ class _HomePageState extends State<HomePage> {
         builder: (context, sizingInformation) {
           if (!sizingInformation.isMobile) {
             return Scaffold(
-              key: rootScaffoldKey,
               drawer: const AppDrawer(),
               body: Row(
                 children: [
@@ -257,7 +257,6 @@ class _HomePageState extends State<HomePage> {
             );
           }
           return Scaffold(
-            key: rootScaffoldKey,
             bottomNavigationBar: NavigationBar(
               elevation: 4.0,
               selectedIndex: _currentIndex,

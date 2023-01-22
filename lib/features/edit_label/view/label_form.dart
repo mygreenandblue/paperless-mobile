@@ -6,6 +6,7 @@ import 'package:paperless_mobile/core/translation/matching_algorithm_localizatio
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/util.dart';
 
 class SubmitButtonConfig<T extends Label> {

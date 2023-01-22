@@ -17,17 +17,18 @@ import 'package:paperless_mobile/core/repository/state/impl/document_type_reposi
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/core/store/local_vault.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/offline_banner.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
-import 'package:paperless_mobile/features/scan/view/widgets/grid_image_item_widget.dart';
+import 'package:paperless_mobile/features/scan/view/widgets/scanned_image_item.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/file_helpers.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -218,7 +219,7 @@ class _ScannerPageState extends State<ScannerPage>
           mainAxisSpacing: 10,
         ),
         itemBuilder: (context, index) {
-          return GridImageItemWidget(
+          return ScannedImageItem(
             file: scans[index],
             onDelete: () async {
               try {

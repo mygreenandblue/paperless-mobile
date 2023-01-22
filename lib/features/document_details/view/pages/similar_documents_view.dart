@@ -6,6 +6,7 @@ import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/list/document_list_item.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/util.dart';
 
 class SimilarDocumentsView extends StatefulWidget {

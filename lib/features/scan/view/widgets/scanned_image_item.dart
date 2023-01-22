@@ -7,7 +7,7 @@ import 'package:photo_view/photo_view.dart';
 typedef DeleteCallback = void Function();
 typedef OnImageOperation = void Function(File);
 
-class GridImageItemWidget extends StatefulWidget {
+class ScannedImageItem extends StatefulWidget {
   final File file;
   final DeleteCallback onDelete;
   //final OnImageOperation onImageOperation;
@@ -15,7 +15,7 @@ class GridImageItemWidget extends StatefulWidget {
   final int index;
   final int totalNumberOfFiles;
 
-  const GridImageItemWidget({
+  const ScannedImageItem({
     Key? key,
     required this.file,
     required this.onDelete,
@@ -25,10 +25,10 @@ class GridImageItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<GridImageItemWidget> createState() => _GridImageItemWidgetState();
+  State<ScannedImageItem> createState() => _ScannedImageItemState();
 }
 
-class _GridImageItemWidgetState extends State<GridImageItemWidget> {
+class _ScannedImageItemState extends State<ScannedImageItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

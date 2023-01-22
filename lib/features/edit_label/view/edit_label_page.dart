@@ -9,6 +9,7 @@ import 'package:paperless_mobile/core/repository/state/repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/util.dart';
 
 class EditLabelPage<T extends Label> extends StatelessWidget {

@@ -5,8 +5,8 @@ import 'package:paperless_mobile/core/widgets/documents_list_loading_widget.dart
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/list/document_list_item.dart';
-import 'package:paperless_mobile/features/linked_documents_preview/bloc/linked_documents_cubit.dart';
-import 'package:paperless_mobile/features/linked_documents_preview/bloc/state/linked_documents_state.dart';
+import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents_cubit.dart';
+import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {

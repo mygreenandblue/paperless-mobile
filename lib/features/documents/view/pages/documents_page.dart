@@ -26,6 +26,7 @@ import 'package:paperless_mobile/features/settings/model/application_settings_st
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/util.dart';
 
 class DocumentFilterIntent {

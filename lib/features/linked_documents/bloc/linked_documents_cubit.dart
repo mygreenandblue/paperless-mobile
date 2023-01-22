@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/linked_documents_preview/bloc/state/linked_documents_state.dart';
+import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
 
 class LinkedDocumentsCubit extends Cubit<LinkedDocumentsState> {
   final PaperlessDocumentsApi _api;
