@@ -14,6 +14,7 @@ import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
+import 'package:paperless_mobile/features/document_details/view/pages/similar_documents_view.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
@@ -23,6 +24,7 @@ import 'package:paperless_mobile/features/edit_document/cubit/edit_document_cubi
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
+import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,6 +33,7 @@ import 'package:badges/badges.dart' as b;
 
 import '../../../../core/repository/state/impl/document_type_repository_state.dart';
 
+//TODO: Refactor this into several widgets
 class DocumentDetailsPage extends StatefulWidget {
   final bool allowEdit;
   final bool isLabelClickable;
@@ -48,6 +51,16 @@ class DocumentDetailsPage extends StatefulWidget {
 }
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
+  late Future<DocumentMetaData> _metaData;
+
+  @override
+  void initState() {
+    super.initState();
+    _metaData = context
+        .read<PaperlessDocumentsApi>()
+        .getMetaData(context.read<DocumentDetailsCubit>().state.document);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -57,102 +70,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         return false;
       },
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: widget.allowEdit
-              ? BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                  builder: (context, state) {
-                    final _filteredSuggestions =
-                        state.suggestions.documentDifference(state.document);
-                    return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-                      builder: (context, connectivityState) {
-                        if (!connectivityState.isConnected) {
-                          return Container();
-                        }
-                        return b.Badge(
-                          position: b.BadgePosition.topEnd(top: -12, end: -6),
-                          showBadge: _filteredSuggestions.hasSuggestions,
-                          child: Tooltip(
-                            message:
-                                S.of(context).documentDetailsPageEditTooltip,
-                            preferBelow: false,
-                            verticalOffset: 40,
-                            child: FloatingActionButton(
-                              child: const Icon(Icons.edit),
-                              onPressed: () => _onEdit(state.document),
-                            ),
-                          ),
-                          badgeContent: Text(
-                            '${_filteredSuggestions.suggestionsCount}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          badgeColor: Colors.red,
-                        );
-                      },
-                    );
-                  },
-                )
-              : null,
-          bottomNavigationBar:
-              BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-            builder: (context, state) {
-              return BottomAppBar(
-                child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
-                  builder: (context, connectivityState) {
-                    final isConnected = connectivityState.isConnected;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          tooltip:
-                              S.of(context).documentDetailsPageDeleteTooltip,
-                          icon: const Icon(Icons.delete),
-                          onPressed: widget.allowEdit && isConnected
-                              ? () => _onDelete(state.document)
-                              : null,
-                        ).paddedSymmetrically(horizontal: 4),
-                        Tooltip(
-                          message:
-                              S.of(context).documentDetailsPageDownloadTooltip,
-                          child: DocumentDownloadButton(
-                            document: state.document,
-                            enabled: isConnected,
-                          ),
-                        ),
-                        IconButton(
-                          tooltip:
-                              S.of(context).documentDetailsPagePreviewTooltip,
-                          icon: const Icon(Icons.visibility),
-                          onPressed: isConnected
-                              ? () => _onOpen(state.document)
-                              : null,
-                        ).paddedOnly(right: 4.0),
-                        IconButton(
-                          tooltip: S
-                              .of(context)
-                              .documentDetailsPageOpenInSystemViewerTooltip,
-                          icon: const Icon(Icons.open_in_new),
-                          onPressed:
-                              isConnected ? _onOpenFileInSystemViewer : null,
-                        ).paddedOnly(right: 4.0),
-                        IconButton(
-                          tooltip:
-                              S.of(context).documentDetailsPageShareTooltip,
-                          icon: const Icon(Icons.share),
-                          onPressed: isConnected
-                              ? () => _onShare(state.document)
-                              : null,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              );
-            },
-          ),
+          floatingActionButton: widget.allowEdit ? _buildAppBar() : null,
+          bottomNavigationBar: _buildBottomAppBar(),
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
@@ -180,6 +102,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   backgroundColor:
                       Theme.of(context).colorScheme.primaryContainer,
                   tabBar: TabBar(
+                    isScrollable: true,
                     tabs: [
                       Tab(
                         child: Text(
@@ -208,6 +131,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   .onPrimaryContainer),
                         ),
                       ),
+                      Tab(
+                        child: Text(
+                          S
+                              .of(context)
+                              .documentDetailsPageTabSimilarDocumentsLabel,
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -215,25 +150,120 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             ],
             body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
               builder: (context, state) {
-                return TabBarView(
-                  children: [
-                    _buildDocumentOverview(
-                      state.document,
-                    ),
-                    _buildDocumentContentView(
-                      state.document,
-                      state,
-                    ),
-                    _buildDocumentMetaDataView(
-                      state.document,
-                    ),
-                  ],
+                return BlocProvider(
+                  create: (context) => SimilarDocumentsCubit(
+                    context.read(),
+                    documentId: state.document.id,
+                  ),
+                  child: TabBarView(
+                    children: [
+                      _buildDocumentOverview(
+                        state.document,
+                      ),
+                      _buildDocumentContentView(
+                        state.document,
+                        state,
+                      ),
+                      _buildDocumentMetaDataView(
+                        state.document,
+                      ),
+                      _buildSimilarDocumentsView(),
+                    ],
+                  ),
                 ).paddedSymmetrically(horizontal: 8);
               },
             ),
           ),
         ),
       ),
+    );
+  }
+
+  BlocBuilder<DocumentDetailsCubit, DocumentDetailsState> _buildAppBar() {
+    return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+      builder: (context, state) {
+        final _filteredSuggestions =
+            state.suggestions.documentDifference(state.document);
+        return BlocBuilder<ConnectivityCubit, ConnectivityState>(
+          builder: (context, connectivityState) {
+            if (!connectivityState.isConnected) {
+              return Container();
+            }
+            return b.Badge(
+              position: b.BadgePosition.topEnd(top: -12, end: -6),
+              showBadge: _filteredSuggestions.hasSuggestions,
+              child: Tooltip(
+                message: S.of(context).documentDetailsPageEditTooltip,
+                preferBelow: false,
+                verticalOffset: 40,
+                child: FloatingActionButton(
+                  child: const Icon(Icons.edit),
+                  onPressed: () => _onEdit(state.document),
+                ),
+              ),
+              badgeContent: Text(
+                '${_filteredSuggestions.suggestionsCount}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              badgeColor: Colors.red,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  BlocBuilder<DocumentDetailsCubit, DocumentDetailsState> _buildBottomAppBar() {
+    return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+      builder: (context, state) {
+        return BottomAppBar(
+          child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
+            builder: (context, connectivityState) {
+              final isConnected = connectivityState.isConnected;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    tooltip: S.of(context).documentDetailsPageDeleteTooltip,
+                    icon: const Icon(Icons.delete),
+                    onPressed: widget.allowEdit && isConnected
+                        ? () => _onDelete(state.document)
+                        : null,
+                  ).paddedSymmetrically(horizontal: 4),
+                  Tooltip(
+                    message: S.of(context).documentDetailsPageDownloadTooltip,
+                    child: DocumentDownloadButton(
+                      document: state.document,
+                      enabled: isConnected,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: S.of(context).documentDetailsPagePreviewTooltip,
+                    icon: const Icon(Icons.visibility),
+                    onPressed:
+                        isConnected ? () => _onOpen(state.document) : null,
+                  ).paddedOnly(right: 4.0),
+                  IconButton(
+                    tooltip: S
+                        .of(context)
+                        .documentDetailsPageOpenInSystemViewerTooltip,
+                    icon: const Icon(Icons.open_in_new),
+                    onPressed: isConnected ? _onOpenFileInSystemViewer : null,
+                  ).paddedOnly(right: 4.0),
+                  IconButton(
+                    tooltip: S.of(context).documentDetailsPageShareTooltip,
+                    icon: const Icon(Icons.share),
+                    onPressed:
+                        isConnected ? () => _onShare(state.document) : null,
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -306,7 +336,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           );
         }
         return FutureBuilder<DocumentMetaData>(
-          future: context.read<PaperlessDocumentsApi>().getMetaData(document),
+          future: _metaData,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -465,34 +495,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               child: TagsWidget(
                 isClickable: widget.isLabelClickable,
                 tagIds: document.tags,
-                onTagSelected: (int tagId) {},
               ),
             ),
           ).paddedSymmetrically(vertical: 16),
         ),
-        // _separator(),
-        // FutureBuilder<List<SimilarDocumentModel>>(
-        //     future: getIt<DocumentRepository>().findSimilar(document.id),
-        //     builder: (context, snapshot) {
-        //       if (!snapshot.hasData) {
-        //         return CircularProgressIndicator();
-        //       }
-        //       return ExpansionTile(
-        //         tilePadding: const EdgeInsets.symmetric(horizontal: 8.0),
-        //         title: Text(
-        //           S.of(context).documentDetailsPageSimilarDocumentsLabel,
-        //           style:
-        //               Theme.of(context).textTheme.headline5?.copyWith(fontWeight: FontWeight.bold),
-        //         ),
-        //         children: snapshot.data!
-        //             .map((e) => DocumentListItem(
-        //                 document: e,
-        //                 onTap: (doc) {},
-        //                 isSelected: false,
-        //                 isAtLeastOneSelected: false))
-        //             .toList(),
-        //       );
-        //     }),
       ],
     );
   }
@@ -557,6 +563,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
         ' ' +
         suffixes[i];
+  }
+
+  Widget _buildSimilarDocumentsView() {
+    return const SimilarDocumentsView();
   }
 }
 

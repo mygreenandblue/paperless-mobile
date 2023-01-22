@@ -33,6 +33,9 @@ class DocumentFilter extends Equatable {
   final DateRangeQuery modified;
   final TextQuery query;
 
+  /// Query documents similar to the document with this id.
+  final int? moreLike;
+
   const DocumentFilter({
     this.documentType = const IdQueryParameter.unset(),
     this.correspondent = const IdQueryParameter.unset(),
@@ -47,6 +50,7 @@ class DocumentFilter extends Equatable {
     this.added = const UnsetDateRangeQuery(),
     this.created = const UnsetDateRangeQuery(),
     this.modified = const UnsetDateRangeQuery(),
+    this.moreLike,
   });
 
   bool get forceExtendedQuery {
@@ -76,6 +80,10 @@ class DocumentFilter extends Equatable {
           '${sortOrder.queryString}${sortField!.queryString}',
         ),
       );
+    }
+
+    if (moreLike != null) {
+      params.add(MapEntry('more_like_id', moreLike.toString()));
     }
     // Reverse ordering can also be encoded using &reverse=1
     // Merge query params
@@ -107,7 +115,7 @@ class DocumentFilter extends Equatable {
     DateRangeQuery? created,
     DateRangeQuery? modified,
     TextQuery? query,
-    int? selectedViewId,
+    int? Function()? moreLike,
   }) {
     final newFilter = DocumentFilter(
       pageSize: pageSize ?? this.pageSize,
@@ -123,6 +131,7 @@ class DocumentFilter extends Equatable {
       added: added ?? this.added,
       created: created ?? this.created,
       modified: modified ?? this.modified,
+      moreLike: moreLike != null ? moreLike.call() : this.moreLike,
     );
     if (query?.queryType != QueryType.extended &&
         newFilter.forceExtendedQuery) {

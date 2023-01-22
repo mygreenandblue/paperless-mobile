@@ -33,7 +33,7 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               if (!state.isLoaded)
-                Expanded(child: const DocumentsListLoadingWidget())
+                const Expanded(child: DocumentsListLoadingWidget())
               else
                 Expanded(
                   child: ListView.builder(
@@ -59,10 +59,6 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
                             ),
                           );
                         },
-                        isSelected: false,
-                        isAtLeastOneSelected: false,
-                        isTagSelectedPredicate: (_) => false,
-                        onTagSelected: (int tag) {},
                       );
                     },
                   ),

@@ -6,6 +6,7 @@ import 'package:paperless_mobile/generated/l10n.dart';
 class HintCard extends StatelessWidget {
   final String hintText;
   final double elevation;
+  final IconData hintIcon;
   final VoidCallback? onHintAcknowledged;
   final bool show;
   const HintCard({
@@ -13,7 +14,8 @@ class HintCard extends StatelessWidget {
     required this.hintText,
     this.onHintAcknowledged,
     this.elevation = 1,
-    required this.show,
+    this.show = true,
+    this.hintIcon = Icons.tips_and_updates_outlined,
   });
 
   @override
@@ -31,7 +33,7 @@ class HintCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
-              Icons.tips_and_updates_outlined,
+              hintIcon,
               color: Theme.of(context).hintColor,
             ).padded(),
             Align(
@@ -52,7 +54,7 @@ class HintCard extends StatelessWidget {
                 ),
               )
             else
-              Padding(padding: EdgeInsets.only(bottom: 24)),
+              const Padding(padding: EdgeInsets.only(bottom: 24)),
           ],
         ).padded(),
       ).padded(),

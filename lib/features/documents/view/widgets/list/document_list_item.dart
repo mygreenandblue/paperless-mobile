@@ -7,31 +7,32 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.d
 class DocumentListItem extends StatelessWidget {
   static const _a4AspectRatio = 1 / 1.4142;
   final DocumentModel document;
-  final void Function(DocumentModel) onTap;
+  final void Function(DocumentModel)? onTap;
   final void Function(DocumentModel)? onSelected;
   final bool isSelected;
   final bool isAtLeastOneSelected;
   final bool isLabelClickable;
-  final bool Function(int tagId) isTagSelectedPredicate;
 
   final void Function(int tagId)? onTagSelected;
   final void Function(int? correspondentId)? onCorrespondentSelected;
   final void Function(int? documentTypeId)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
 
+  final bool enableHeroAnimation;
+
   const DocumentListItem({
     Key? key,
     required this.document,
-    required this.onTap,
+    this.onTap,
     this.onSelected,
-    required this.isSelected,
-    required this.isAtLeastOneSelected,
+    this.isSelected = false,
+    this.isAtLeastOneSelected = false,
     this.isLabelClickable = true,
-    required this.isTagSelectedPredicate,
     this.onTagSelected,
     this.onCorrespondentSelected,
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
+    this.enableHeroAnimation = true,
   }) : super(key: key);
 
   @override
@@ -85,6 +86,7 @@ class DocumentListItem extends StatelessWidget {
             id: document.id,
             fit: BoxFit.cover,
             alignment: Alignment.topCenter,
+            enableHero: enableHeroAnimation,
           ),
         ),
       ),
@@ -96,7 +98,7 @@ class DocumentListItem extends StatelessWidget {
     if (isAtLeastOneSelected || isSelected) {
       onSelected?.call(document);
     } else {
-      onTap(document);
+      onTap?.call(document);
     }
   }
 }

@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:paperless_api/paperless_api.dart';
 
+///
+/// Base state for all blocs/cubits using a paged view of documents.
+/// [T] is the return type of the API call.
+///
 abstract class DocumentsPagedState extends Equatable {
   final bool hasLoaded;
   final bool isLoading;

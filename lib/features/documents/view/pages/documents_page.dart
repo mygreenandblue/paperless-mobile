@@ -66,13 +66,17 @@ class _DocumentsPageState extends State<DocumentsPage> {
       ..addListener(_listenForLoadNewData);
   }
 
-  void _listenForLoadNewData() {
+  void _listenForLoadNewData() async {
     final currState = context.read<DocumentsCubit>().state;
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent * 0.75 &&
         !currState.isLoading &&
         !currState.isLastPageLoaded) {
-      _loadNewPage();
+      try {
+        await context.read<DocumentsCubit>().loadMore();
+      } on PaperlessServerException catch (error, stackTrace) {
+        showErrorMessage(context, error, stackTrace);
+      }
     }
   }
 
@@ -353,8 +357,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   .equals(previous.documents, current.documents) ||
               previous.selectedIds != current.selectedIds,
           builder: (context, state) {
-            // Some ugly tricks to make it work with bloc, update pageController
-
             if (state.hasLoaded && state.documents.isEmpty) {
               return DocumentsEmptyState(
                 state: state,
@@ -486,14 +488,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
               filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
         );
       }
-    } on PaperlessServerException catch (error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-    }
-  }
-
-  Future<void> _loadNewPage() async {
-    try {
-      await context.read<DocumentsCubit>().loadMore();
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

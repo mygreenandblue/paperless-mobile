@@ -90,6 +90,8 @@
   "@documentDetailsPageTabMetaDataLabel": {},
   "documentDetailsPageTabOverviewLabel": "Přehled",
   "@documentDetailsPageTabOverviewLabel": {},
+  "documentDetailsPageTabSimilarDocumentsLabel": "Similar Documents",
+  "@documentDetailsPageTabSimilarDocumentsLabel": {},
   "documentDocumentTypePropertyLabel": "Typ dokumentu",
   "@documentDocumentTypePropertyLabel": {},
   "documentDownloadSuccessMessage": "Dokument úspěšně stažen.",

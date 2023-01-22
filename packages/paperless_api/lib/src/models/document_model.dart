@@ -3,6 +3,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
+import 'package:paperless_api/src/models/search_hit.dart';
 
 part 'document_model.g.dart';
 
@@ -37,6 +38,12 @@ class DocumentModel extends Equatable {
   final String originalFileName;
   final String? archivedFileName;
 
+  @JsonKey(
+    name: '__search_hit__',
+    includeIfNull: false,
+  )
+  final SearchHit? searchHit;
+
   const DocumentModel({
     required this.id,
     required this.title,
@@ -51,6 +58,7 @@ class DocumentModel extends Equatable {
     required this.originalFileName,
     this.archivedFileName,
     this.storagePath,
+    this.searchHit,
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) =>

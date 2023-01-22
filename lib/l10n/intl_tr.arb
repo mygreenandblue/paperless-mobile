@@ -90,6 +90,8 @@
   "@documentDetailsPageTabMetaDataLabel": {},
   "documentDetailsPageTabOverviewLabel": "Genel bakış",
   "@documentDetailsPageTabOverviewLabel": {},
+  "documentDetailsPageTabSimilarDocumentsLabel": "Similar Documents",
+  "@documentDetailsPageTabSimilarDocumentsLabel": {},
   "documentDocumentTypePropertyLabel": "Döküman tipi",
   "@documentDocumentTypePropertyLabel": {},
   "documentDownloadSuccessMessage": "Döküman başarıyla indirildi.",

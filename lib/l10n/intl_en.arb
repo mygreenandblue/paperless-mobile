@@ -90,6 +90,8 @@
   "@documentDetailsPageTabMetaDataLabel": {},
   "documentDetailsPageTabOverviewLabel": "Overview",
   "@documentDetailsPageTabOverviewLabel": {},
+  "documentDetailsPageTabSimilarDocumentsLabel": "Similar Documents",
+  "@documentDetailsPageTabSimilarDocumentsLabel": {},
   "documentDocumentTypePropertyLabel": "Document Type",
   "@documentDocumentTypePropertyLabel": {},
   "documentDownloadSuccessMessage": "Document successfully downloaded.",

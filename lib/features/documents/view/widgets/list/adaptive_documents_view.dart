@@ -64,13 +64,6 @@ class AdaptiveDocumentsView extends StatelessWidget {
               isSelected: state.selectedIds.contains(document.id),
               onSelected: onSelected,
               isAtLeastOneSelected: state.selection.isNotEmpty,
-              isTagSelectedPredicate: (int tagId) {
-                return state.filter.tags is IdsTagsQuery
-                    ? (state.filter.tags as IdsTagsQuery)
-                        .includedIds
-                        .contains(tagId)
-                    : false;
-              },
               onTagSelected: onTagSelected,
               onCorrespondentSelected: onCorrespondentSelected,
               onDocumentTypeSelected: onDocumentTypeSelected,

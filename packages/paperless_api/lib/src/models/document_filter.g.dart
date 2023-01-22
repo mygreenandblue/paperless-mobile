@@ -48,6 +48,7 @@ DocumentFilter _$DocumentFilterFromJson(Map<String, dynamic> json) =>
           ? const UnsetDateRangeQuery()
           : const DateRangeQueryJsonConverter()
               .fromJson(json['modified'] as Map<String, dynamic>),
+      moreLike: json['moreLike'] as int?,
     );
 
 Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
@@ -65,6 +66,7 @@ Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
       'added': const DateRangeQueryJsonConverter().toJson(instance.added),
       'modified': const DateRangeQueryJsonConverter().toJson(instance.modified),
       'query': instance.query.toJson(),
+      'moreLike': instance.moreLike,
     };
 
 const _$SortFieldEnumMap = {
