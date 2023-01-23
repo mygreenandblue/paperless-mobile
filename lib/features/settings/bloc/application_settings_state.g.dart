@@ -11,11 +11,16 @@ ApplicationSettingsState _$ApplicationSettingsStateFromJson(
     ApplicationSettingsState(
       preferredLocaleSubtag: json['preferredLocaleSubtag'] as String,
       preferredThemeMode:
-          $enumDecode(_$ThemeModeEnumMap, json['preferredThemeMode']),
+          $enumDecodeNullable(_$ThemeModeEnumMap, json['preferredThemeMode']) ??
+              ThemeMode.system,
       isLocalAuthenticationEnabled:
-          json['isLocalAuthenticationEnabled'] as bool,
+          json['isLocalAuthenticationEnabled'] as bool? ?? false,
       preferredViewType:
-          $enumDecode(_$ViewTypeEnumMap, json['preferredViewType']),
+          $enumDecodeNullable(_$ViewTypeEnumMap, json['preferredViewType']) ??
+              ViewType.list,
+      preferredColorSchemeOption: $enumDecodeNullable(
+              _$ColorSchemeOptionEnumMap, json['preferredColorSchemeOption']) ??
+          ColorSchemeOption.dynamic,
     );
 
 Map<String, dynamic> _$ApplicationSettingsStateToJson(
@@ -25,6 +30,8 @@ Map<String, dynamic> _$ApplicationSettingsStateToJson(
       'preferredLocaleSubtag': instance.preferredLocaleSubtag,
       'preferredThemeMode': _$ThemeModeEnumMap[instance.preferredThemeMode]!,
       'preferredViewType': _$ViewTypeEnumMap[instance.preferredViewType]!,
+      'preferredColorSchemeOption':
+          _$ColorSchemeOptionEnumMap[instance.preferredColorSchemeOption]!,
     };
 
 const _$ThemeModeEnumMap = {
@@ -36,4 +43,9 @@ const _$ThemeModeEnumMap = {
 const _$ViewTypeEnumMap = {
   ViewType.grid: 'grid',
   ViewType.list: 'list',
+};
+
+const _$ColorSchemeOptionEnumMap = {
+  ColorSchemeOption.classic: 'classic',
+  ColorSchemeOption.dynamic: 'dynamic',
 };

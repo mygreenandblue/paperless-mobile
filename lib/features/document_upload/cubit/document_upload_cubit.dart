@@ -8,7 +8,6 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
-import 'package:paperless_mobile/core/store/local_vault.dart';
 
 part 'document_upload_state.dart';
 
@@ -24,7 +23,6 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final List<StreamSubscription> _subs = [];
 
   DocumentUploadCubit({
-    required LocalVault localVault,
     required PaperlessDocumentsApi documentApi,
     required LabelRepository<Tag, TagRepositoryState> tagRepository,
     required LabelRepository<Correspondent, CorrespondentRepositoryState>

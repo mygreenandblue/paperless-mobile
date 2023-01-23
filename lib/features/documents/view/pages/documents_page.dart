@@ -8,6 +8,7 @@ import 'package:paperless_mobile/core/repository/provider/label_repositories_pro
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
+import 'package:paperless_mobile/features/document_search/document_search_delegate.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
@@ -22,12 +23,12 @@ import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_selection_widget.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/model/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/constants.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -148,9 +149,42 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 builder: (context, state) {
                   if (state.selection.isEmpty) {
                     return AppBar(
-                      title: Text(
-                        "${S.of(context).documentsPageTitle} (${_formatDocumentCount(state.count)})",
+                      title: TextField(
+                        onTap: () => showSearch(
+                          context: context,
+                          delegate: DocumentSearchDelegate(
+                            searchFieldStyle:
+                                Theme.of(context).textTheme.bodyLarge,
+                            hintText: "Search your documents",
+                          ),
+                        ),
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: "Search your documents",
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32),
+                            borderSide: BorderSide.none,
+                          ),
+                          prefixIcon: IconButton(
+                            icon: const Icon(Icons.menu),
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
+                          ),
+                        ),
                       ),
+                      // title: Text(
+                      // "${S.of(context).documentsPageTitle} (${_formatDocumentCount(state.count)})",
+                      // ),
                       actions: [
                         const SortDocumentsButton(),
                         BlocBuilder<ApplicationSettingsCubit,
@@ -182,6 +216,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                             ? const LinearProgressIndicator()
                             : const SizedBox(height: 4.0),
                       ),
+                      automaticallyImplyLeading: false,
                     );
                   } else {
                     return AppBar(

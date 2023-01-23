@@ -26,6 +26,7 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.d
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -554,15 +555,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         ),
       ),
     );
-  }
-
-  static String formatBytes(int bytes, int decimals) {
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
-        ' ' +
-        suffixes[i];
   }
 
   Widget _buildSimilarDocumentsView() {

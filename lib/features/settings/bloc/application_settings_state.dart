@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_mobile/core/type/types.dart';
+import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 part 'application_settings_state.g.dart';
@@ -13,22 +13,21 @@ part 'application_settings_state.g.dart';
 @JsonSerializable()
 class ApplicationSettingsState {
   static final defaultSettings = ApplicationSettingsState(
-    isLocalAuthenticationEnabled: false,
     preferredLocaleSubtag: Platform.localeName.split('_').first,
-    preferredThemeMode: ThemeMode.system,
-    preferredViewType: ViewType.list,
   );
 
   final bool isLocalAuthenticationEnabled;
   final String preferredLocaleSubtag;
   final ThemeMode preferredThemeMode;
   final ViewType preferredViewType;
+  final ColorSchemeOption preferredColorSchemeOption;
 
   ApplicationSettingsState({
     required this.preferredLocaleSubtag,
-    required this.preferredThemeMode,
-    required this.isLocalAuthenticationEnabled,
-    required this.preferredViewType,
+    this.preferredThemeMode = ThemeMode.system,
+    this.isLocalAuthenticationEnabled = false,
+    this.preferredViewType = ViewType.list,
+    this.preferredColorSchemeOption = ColorSchemeOption.dynamic,
   });
 
   Map<String, dynamic> toJson() => _$ApplicationSettingsStateToJson(this);
@@ -40,6 +39,7 @@ class ApplicationSettingsState {
     String? preferredLocaleSubtag,
     ThemeMode? preferredThemeMode,
     ViewType? preferredViewType,
+    ColorSchemeOption? preferredColorSchemeOption,
   }) {
     return ApplicationSettingsState(
       isLocalAuthenticationEnabled:
@@ -48,6 +48,8 @@ class ApplicationSettingsState {
           preferredLocaleSubtag ?? this.preferredLocaleSubtag,
       preferredThemeMode: preferredThemeMode ?? this.preferredThemeMode,
       preferredViewType: preferredViewType ?? this.preferredViewType,
+      preferredColorSchemeOption:
+          preferredColorSchemeOption ?? this.preferredColorSchemeOption,
     );
   }
 }

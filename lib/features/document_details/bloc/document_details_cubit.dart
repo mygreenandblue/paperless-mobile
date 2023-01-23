@@ -1,8 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -49,14 +51,18 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   Future<ResultType> openDocumentInSystemViewer() async {
-    final downloadDir = await FileService.temporaryDirectory;
+    final cacheDir = await FileService.temporaryDirectory;
+
     final metaData = await _api.getMetaData(state.document);
-    final docBytes = await _api.download(state.document);
-    File f = File('${downloadDir.path}/${metaData.mediaFilename}');
-    f.createSync(recursive: true);
-    f.writeAsBytesSync(docBytes);
-    return OpenFilex.open(f.path, type: "application/pdf")
-        .then((value) => value.type);
+    final bytes = await _api.download(state.document);
+
+    final file = File('${cacheDir.path}/${metaData.mediaFilename}')
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(bytes);
+
+    return OpenFilex.open(file.path, type: "application/pdf").then(
+      (value) => value.type,
+    );
   }
 
   void replaceDocument(DocumentModel document) {

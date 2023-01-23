@@ -14,7 +14,7 @@ import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/constants.dart';
 
 class InboxPage extends StatefulWidget {
   const InboxPage({super.key});

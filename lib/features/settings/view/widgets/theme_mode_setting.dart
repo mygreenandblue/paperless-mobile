@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/model/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
@@ -19,6 +19,11 @@ class ThemeModeSetting extends StatelessWidget {
           onTap: () => showDialog<ThemeMode>(
             context: context,
             builder: (_) => RadioSettingsDialog<ThemeMode>(
+              titleText: S.of(context).settingsPageAppearanceSettingTitle,
+              initialValue: context
+                  .read<ApplicationSettingsCubit>()
+                  .state
+                  .preferredThemeMode,
               options: [
                 RadioOption(
                   value: ThemeMode.system,
@@ -38,14 +43,11 @@ class ThemeModeSetting extends StatelessWidget {
                       S.of(context).settingsPageAppearanceSettingDarkThemeLabel,
                 )
               ],
-              initialValue: context
-                  .read<ApplicationSettingsCubit>()
-                  .state
-                  .preferredThemeMode,
-              title: Text(S.of(context).settingsPageAppearanceSettingTitle),
             ),
           ).then((value) {
-            return context.read<ApplicationSettingsCubit>().setThemeMode(value);
+            if (value != null) {
+              context.read<ApplicationSettingsCubit>().setThemeMode(value);
+            }
           }),
         );
       },

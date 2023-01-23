@@ -611,5 +611,10 @@
   "verifyIdentityPageTitle": "Verify your identity",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Verify Identity",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
+  "settingsPageColorSchemeSettingLabel": "Colors",
+  "colorSchemeOptionClassic": "Classic",
+  "colorSchemeOptionDynamic": "Dynamic",
+  "settingsPageColorSchemeSettingDialogDescription": "Choose between a classic color scheme inspired by a traditional Paperless green or use the dynamic color scheme based on your system theme.",
+  "settingsPageColorSchemeSettingDynamicThemeingVersionMismatchWarning": "Dynamic theming is only supported for devices running Android 12 and above. Selecting the 'Dynamic' option might not have any effect depending on your OS implementation."
 }

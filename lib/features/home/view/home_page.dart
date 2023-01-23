@@ -109,7 +109,6 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(
                 builder: (context) => BlocProvider.value(
                   value: DocumentUploadCubit(
-                    localVault: context.read(),
                     documentApi: context.read(),
                     tagRepository: context.read(),
                     correspondentRepository: context.read(),
