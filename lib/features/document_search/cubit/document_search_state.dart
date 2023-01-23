@@ -5,18 +5,13 @@ import 'package:paperless_mobile/features/paged_document_view/model/documents_pa
 
 part 'document_search_state.g.dart';
 
-
-
 @JsonSerializable(ignoreUnannotated: true)
 class DocumentSearchState extends DocumentsPagedState {
   @JsonKey()
   final List<String> searchHistory;
 
-  final List<String> suggestions;
-
   const DocumentSearchState({
     this.searchHistory = const [],
-    this.suggestions = const [],
     super.filter,
     super.hasLoaded,
     super.isLoading,
@@ -30,7 +25,6 @@ class DocumentSearchState extends DocumentsPagedState {
         filter,
         value,
         searchHistory,
-        suggestions,
       ];
 
   @override
@@ -62,7 +56,6 @@ class DocumentSearchState extends DocumentsPagedState {
       hasLoaded: hasLoaded ?? this.hasLoaded,
       isLoading: isLoading ?? this.isLoading,
       searchHistory: searchHistory ?? this.searchHistory,
-      suggestions: suggestions ?? this.suggestions,
     );
   }
 
@@ -71,5 +64,3 @@ class DocumentSearchState extends DocumentsPagedState {
 
   Map<String, dynamic> toJson() => _$DocumentSearchStateToJson(this);
 }
-
-class 

@@ -5,10 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
+import 'package:paperless_mobile/core/widgets/material/search/m3_search.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
+import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/document_search_delegate.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_app_bar.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
@@ -143,48 +146,14 @@ class _DocumentsPageState extends State<DocumentsPage> {
             ),
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(
-                kToolbarHeight + linearProgressIndicatorHeight,
+                kToolbarHeight,
               ),
               child: BlocBuilder<DocumentsCubit, DocumentsState>(
                 builder: (context, state) {
                   if (state.selection.isEmpty) {
                     return AppBar(
-                      title: TextField(
-                        onTap: () => showSearch(
-                          context: context,
-                          delegate: DocumentSearchDelegate(
-                            searchFieldStyle:
-                                Theme.of(context).textTheme.bodyLarge,
-                            hintText: "Search your documents",
-                          ),
-                        ),
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintText: "Search your documents",
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
-                            borderSide: BorderSide.none,
-                          ),
-                          prefixIcon: IconButton(
-                            icon: const Icon(Icons.menu),
-                            onPressed: () {
-                              Scaffold.of(context).openDrawer();
-                            },
-                          ),
-                        ),
-                      ),
-                      // title: Text(
-                      // "${S.of(context).documentsPageTitle} (${_formatDocumentCount(state.count)})",
-                      // ),
+                      automaticallyImplyLeading: false,
+                      title: const DocumentSearchAppBar(),
                       actions: [
                         const SortDocumentsButton(),
                         BlocBuilder<ApplicationSettingsCubit,
@@ -209,14 +178,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                           ),
                         ),
                       ],
-                      bottom: PreferredSize(
-                        preferredSize: const Size.fromHeight(
-                            linearProgressIndicatorHeight),
-                        child: state.isLoading && state.hasLoaded
-                            ? const LinearProgressIndicator()
-                            : const SizedBox(height: 4.0),
-                      ),
-                      automaticallyImplyLeading: false,
                     );
                   } else {
                     return AppBar(

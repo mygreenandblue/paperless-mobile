@@ -21,11 +21,14 @@ import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
+import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
+import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/scan/view/scanner_page.dart';
+import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -171,22 +174,22 @@ class _HomePageState extends State<HomePage> {
         ),
         label: S.of(context).bottomNavLabelsPageLabel,
       ),
-      // RouteDescription(
-      //   icon: const Icon(Icons.inbox_outlined),
-      //   selectedIcon: Icon(
-      //     Icons.inbox,
-      //     color: Theme.of(context).colorScheme.primary,
-      //   ),
-      //   label: S.of(context).bottomNavInboxPageLabel,
-      // ),
-      // RouteDescription(
-      //   icon: const Icon(Icons.settings_outlined),
-      //   selectedIcon: Icon(
-      //     Icons.settings,
-      //     color: Theme.of(context).colorScheme.primary,
-      //   ),
-      //   label: S.of(context).appDrawerSettingsLabel,
-      // ),
+      RouteDescription(
+        icon: const Icon(Icons.inbox_outlined),
+        selectedIcon: Icon(
+          Icons.inbox,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context).bottomNavInboxPageLabel,
+      ),
+      RouteDescription(
+        icon: const Icon(Icons.settings_outlined),
+        selectedIcon: Icon(
+          Icons.settings,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context).appDrawerSettingsLabel,
+      ),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
@@ -210,6 +213,16 @@ class _HomePageState extends State<HomePage> {
         child: const ScannerPage(),
       ),
       const LabelsPage(),
+      BlocProvider(
+        create: (context) => InboxCubit(
+          context.read(),
+          context.read(),
+          context.read(),
+          context.read(),
+        ),
+        child: const InboxPage(),
+      ),
+      const SettingsPage(),
     ];
     return MultiBlocListener(
       listeners: [
@@ -257,6 +270,7 @@ class _HomePageState extends State<HomePage> {
           }
           return Scaffold(
             bottomNavigationBar: NavigationBar(
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,

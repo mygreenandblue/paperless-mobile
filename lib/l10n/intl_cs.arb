@@ -616,5 +616,6 @@
   "colorSchemeOptionClassic": "Classic",
   "colorSchemeOptionDznamic": "Dynamic",
   "settingsPageColorSchemeSettingDialogDescription": "Choose between the classic color scheme in Paperless inspired green or use the dynamic color scheme based on your system theme.",
-  "settingsPageColorSchemeSettingDynamicThemeingVersionMismatchWarning": "Dynamic theming is only supported for devices running Android 12 and above. Using the 'dynamic' option might not have any effect depending on your OS implementation."
+  "settingsPageColorSchemeSettingDynamicThemeingVersionMismatchWarning": "Dynamic theming is only supported for devices running Android 12 and above. Using the 'dynamic' option might not have any effect depending on your OS implementation.",
+  "documentSearchPageRemoveFromHistory": "Remove from search history?"
 }

@@ -26,7 +26,7 @@ ThemeData buildTheme({
   final classicScheme = ColorScheme.fromSeed(
     seedColor: _classicThemeColorSeed,
     brightness: brightness,
-  );
+  ).harmonized();
   late ColorScheme colorScheme;
   switch (preferredColorScheme) {
     case ColorSchemeOption.classic:
@@ -43,5 +43,8 @@ ThemeData buildTheme({
     inputDecorationTheme: _defaultInputDecorationTheme,
     listTileTheme: _defaultListTileTheme,
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    appBarTheme: AppBarTheme(
+      scrolledUnderElevation: 0,
+    ),
   );
 }

@@ -30,6 +30,7 @@ class _InboxPageState extends State<InboxPage> {
   @override
   void initState() {
     super.initState();
+    context.read<InboxCubit>().initializeInbox();
     _scrollController.addListener(_listenForLoadNewData);
   }
 
