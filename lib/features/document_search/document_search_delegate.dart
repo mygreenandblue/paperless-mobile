@@ -47,7 +47,7 @@ class DocumentSearchDelegate extends m3.SearchDelegate<DocumentModel> {
             slivers: [
               SliverToBoxAdapter(
                 child: Text(
-                  "History", //TODO: INTL
+                  S.of(context).documentSearchHistory,
                   style: Theme.of(context).textTheme.labelMedium,
                 ).padded(16),
               ),
@@ -111,7 +111,7 @@ class DocumentSearchDelegate extends m3.SearchDelegate<DocumentModel> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Text(
-                      "Results", //TODO: INTL
+                      S.of(context).documentSearchResults,
                       style: Theme.of(context).textTheme.labelMedium,
                     ).padded(),
                   ),

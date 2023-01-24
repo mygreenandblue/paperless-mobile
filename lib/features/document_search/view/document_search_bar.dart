@@ -4,8 +4,8 @@ import 'package:paperless_mobile/features/document_search/cubit/document_search_
 import 'package:paperless_mobile/features/document_search/document_search_delegate.dart';
 import 'package:provider/provider.dart';
 
-class DocumentSearchAppBar extends StatelessWidget {
-  const DocumentSearchAppBar({
+class DocumentSearchBar extends StatelessWidget {
+  const DocumentSearchBar({
     super.key,
   });
 
@@ -34,7 +34,7 @@ class DocumentSearchAppBar extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
         prefixIcon: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(Icons.search),
           onPressed: () {
             Scaffold.of(context).openDrawer();
           },

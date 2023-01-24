@@ -11,7 +11,7 @@ import 'package:paperless_mobile/features/document_details/bloc/document_details
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/document_search_delegate.dart';
-import 'package:paperless_mobile/features/document_search/view/document_search_app_bar.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_bar.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
@@ -30,6 +30,7 @@ import 'package:paperless_mobile/features/settings/bloc/application_settings_sta
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
 
@@ -152,9 +153,24 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 builder: (context, state) {
                   if (state.selection.isEmpty) {
                     return AppBar(
-                      automaticallyImplyLeading: false,
-                      title: const DocumentSearchAppBar(),
+                      automaticallyImplyLeading: true,
+                      title: Text(S.of(context).documentsPageTitle +
+                          " (${formatMaxCount(state.documents.length)})"),
                       actions: [
+                        IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            showMaterial3Search(
+                              context: context,
+                              delegate: DocumentSearchDelegate(
+                                DocumentSearchCubit(context.read()),
+                                searchFieldStyle:
+                                    Theme.of(context).textTheme.bodyLarge,
+                                hintText: "Search documents",
+                              ),
+                            );
+                          },
+                        ),
                         const SortDocumentsButton(),
                         BlocBuilder<ApplicationSettingsCubit,
                             ApplicationSettingsState>(

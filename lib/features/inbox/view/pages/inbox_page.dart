@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/documents_list_loading_widget.dart';
@@ -14,7 +13,6 @@ import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
 class InboxPage extends StatefulWidget {
   const InboxPage({super.key});
@@ -65,10 +63,6 @@ class _InboxPageState extends State<InboxPage> {
           builder: (context, state) {
             return AppBar(
               title: Text(S.of(context).bottomNavInboxPageLabel),
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
               actions: [
                 if (state.hasLoaded)
                   Align(
@@ -89,12 +83,6 @@ class _InboxPageState extends State<InboxPage> {
                     ),
                   ).paddedSymmetrically(horizontal: 8)
               ],
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(4),
-                child: state.isLoading && state.hasLoaded
-                    ? const LinearProgressIndicator()
-                    : const SizedBox(height: _progressBarHeight),
-              ),
             );
           },
         ),

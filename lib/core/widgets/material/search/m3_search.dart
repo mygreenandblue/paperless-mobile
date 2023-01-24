@@ -1,10 +1,9 @@
+//TODO: REMOVE THIS WHEN NATIVE MATERIAL FLUTTER SEARCH IS RELEASED
 // Copyright 2014 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 /// Shows a full screen search page and returns the search result selected by
 /// the user when the page is closed.
@@ -381,7 +380,7 @@ enum _SearchBody {
 class _SearchPageRoute<T> extends PageRoute<T> {
   _SearchPageRoute({
     required this.delegate,
-  }) : assert(delegate != null) {
+  }) {
     assert(
       delegate._route == null,
       'The ${delegate.runtimeType} instance is currently used by another active '

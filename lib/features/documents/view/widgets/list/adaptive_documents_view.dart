@@ -7,12 +7,12 @@ import 'package:paperless_mobile/features/documents/view/widgets/list/document_l
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 class AdaptiveDocumentsView extends StatelessWidget {
+  final DocumentsState state;
   final ViewType viewType;
   final Widget beforeItems;
   final void Function(DocumentModel) onTap;
   final void Function(DocumentModel) onSelected;
   final ScrollController scrollController;
-  final DocumentsState state;
   final bool hasInternetConnection;
   final bool isLabelClickable;
   final void Function(int id)? onTagSelected;
@@ -46,6 +46,8 @@ class AdaptiveDocumentsView extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(child: beforeItems),
         if (viewType == ViewType.list) _buildListView() else _buildGridView(),
+        if (state.hasLoaded && state.isLoading)
+          SliverToBoxAdapter(child: pageLoadingWidget),
       ],
     );
   }

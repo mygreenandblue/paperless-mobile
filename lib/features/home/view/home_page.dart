@@ -182,14 +182,14 @@ class _HomePageState extends State<HomePage> {
         ),
         label: S.of(context).bottomNavInboxPageLabel,
       ),
-      RouteDescription(
-        icon: const Icon(Icons.settings_outlined),
-        selectedIcon: Icon(
-          Icons.settings,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        label: S.of(context).appDrawerSettingsLabel,
-      ),
+      // RouteDescription(
+      //   icon: const Icon(Icons.settings_outlined),
+      //   selectedIcon: Icon(
+      //     Icons.settings,
+      //     color: Theme.of(context).colorScheme.primary,
+      //   ),
+      //   label: S.of(context).appDrawerSettingsLabel,
+      // ),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: const InboxPage(),
       ),
-      const SettingsPage(),
+      // const SettingsPage(),
     ];
     return MultiBlocListener(
       listeners: [
@@ -270,7 +270,7 @@ class _HomePageState extends State<HomePage> {
           }
           return Scaffold(
             bottomNavigationBar: NavigationBar(
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
