@@ -1,13 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
 part 'inbox_state.g.dart';
 
 @JsonSerializable(
   ignoreUnannotated: true,
 )
-class InboxState extends DocumentsPagedState {
+class InboxState extends PagedDocumentsState {
   final Iterable<int> inboxTags;
 
   final Map<int, Tag> availableTags;

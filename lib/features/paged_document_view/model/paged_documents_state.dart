@@ -5,13 +5,13 @@ import 'package:paperless_api/paperless_api.dart';
 /// Base state for all blocs/cubits using a paged view of documents.
 /// [T] is the return type of the API call.
 ///
-abstract class DocumentsPagedState extends Equatable {
+abstract class PagedDocumentsState extends Equatable {
   final bool hasLoaded;
   final bool isLoading;
   final List<PagedSearchResult<DocumentModel>> value;
   final DocumentFilter filter;
 
-  const DocumentsPagedState({
+  const PagedDocumentsState({
     this.value = const [],
     this.hasLoaded = false,
     this.isLoading = false,
@@ -71,4 +71,12 @@ abstract class DocumentsPagedState extends Equatable {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
   });
+
+  @override
+  List<Object?> get props => [
+        filter,
+        value,
+        hasLoaded,
+        isLoading,
+      ];
 }

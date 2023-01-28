@@ -8,6 +8,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/list/document_l
 import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {
   const LinkedDocumentsPage({super.key});
@@ -17,6 +18,28 @@ class LinkedDocumentsPage extends StatefulWidget {
 }
 
 class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_listenForLoadNewData);
+  }
+
+  void _listenForLoadNewData() async {
+    final currState = context.read<LinkedDocumentsCubit>().state;
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent * 0.75 &&
+        !currState.isLoading &&
+        !currState.isLastPageLoaded) {
+      try {
+        await context.read<LinkedDocumentsCubit>().loadMore();
+      } on PaperlessServerException catch (error, stackTrace) {
+        showErrorMessage(context, error, stackTrace);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,45 +48,14 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
       ),
       body: BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
         builder: (context, state) {
-          return Column(
-            children: [
-              Text(
-                S.of(context).referencedDocumentsReadOnlyHintText,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              if (!state.isLoaded)
-                const Expanded(child: DocumentsListLoadingWidget())
-              else
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.documents?.results.length,
-                    itemBuilder: (context, index) {
-                      return DocumentListItem(
-                        isLabelClickable: false,
-                        document: state.documents!.results.elementAt(index),
-                        onTap: (doc) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BlocProvider(
-                                create: (context) => DocumentDetailsCubit(
-                                  context.read<PaperlessDocumentsApi>(),
-                                  state.documents!.results.elementAt(index),
-                                ),
-                                child: const DocumentDetailsPage(
-                                  isLabelClickable: false,
-                                  allowEdit: false,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-            ],
+          if (!state.hasLoaded) {
+            return const DocumentsListLoadingWidget();
+          }
+          return ListView.builder(
+            itemCount: state.documents.length,
+            itemBuilder: (context, index) => DocumentListItem(
+              document: state.documents[index],
+            ),
           );
         },
       ),

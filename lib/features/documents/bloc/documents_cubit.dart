@@ -5,10 +5,10 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/documents_paging_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
 class DocumentsCubit extends HydratedCubit<DocumentsState>
-    with DocumentsPagingMixin {
+    with PagedDocumentsMixin {
   @override
   final PaperlessDocumentsApi api;
 

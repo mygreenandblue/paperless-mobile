@@ -9,7 +9,7 @@ import 'package:paperless_mobile/features/settings/model/view_type.dart';
 class AdaptiveDocumentsView extends StatelessWidget {
   final DocumentsState state;
   final ViewType viewType;
-  final Widget beforeItems;
+  final Widget? beforeItems;
   final void Function(DocumentModel) onTap;
   final void Function(DocumentModel) onSelected;
   final ScrollController scrollController;
@@ -34,7 +34,7 @@ class AdaptiveDocumentsView extends StatelessWidget {
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
     required this.pageLoadingWidget,
-    required this.beforeItems,
+    this.beforeItems,
     required this.viewType,
   });
 

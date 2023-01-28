@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
-String translateSortField(BuildContext context, SortField sortField) {
+String translateSortField(BuildContext context, SortField? sortField) {
   switch (sortField) {
     case SortField.archiveSerialNumber:
       return S.of(context).documentArchiveSerialNumberPropertyShortLabel;
@@ -18,5 +18,7 @@ String translateSortField(BuildContext context, SortField sortField) {
       return S.of(context).documentAddedPropertyLabel;
     case SortField.modified:
       return S.of(context).documentModifiedPropertyLabel;
+    default:
+      return '';
   }
 }

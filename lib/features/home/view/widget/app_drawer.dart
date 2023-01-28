@@ -317,53 +317,5 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  Link _buildOnboardingImageCredits() {
-    return Link(
-      uri: Uri.parse(
-          'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author'),
-      builder: (context, followLink) => Wrap(
-        children: [
-          const Text('Onboarding images by '),
-          GestureDetector(
-            onTap: followLink,
-            child: Text(
-              'pch.vector',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-            ),
-          ),
-          const Text(' on Freepik.')
-        ],
-      ),
-    );
-  }
-
-  void _onShowAboutDialog() {
-    showAboutDialog(
-      context: context,
-      applicationIcon: const ImageIcon(
-        AssetImage('assets/logos/paperless_logo_green.png'),
-      ),
-      applicationName: 'Paperless Mobile',
-      applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
-      children: [
-        Text(S.of(context).aboutDialogDevelopedByText('Anton Stubenbord')),
-        Link(
-          uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
-          builder: (context, followLink) => GestureDetector(
-            onTap: followLink,
-            child: Text(
-              'https://github.com/astubenbord/paperless-mobile',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Credits',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        _buildOnboardingImageCredits(),
-      ],
-    );
-  }
+  void _onShowAboutDialog() {}
 }

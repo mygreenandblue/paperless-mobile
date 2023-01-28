@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
+import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
+import 'package:paperless_mobile/core/widgets/app_options_popup_menu.dart';
 import 'package:paperless_mobile/core/widgets/material/search/m3_search.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
@@ -25,6 +27,7 @@ import 'package:paperless_mobile/features/labels/bloc/providers/labels_bloc_prov
 import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_selection_widget.dart';
+import 'package:paperless_mobile/features/search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -32,7 +35,6 @@ import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -137,146 +139,177 @@ class _DocumentsPageState extends State<DocumentsPage> {
           }
         },
         builder: (context, connectivityState) {
-          const linearProgressIndicatorHeight = 4.0;
           return Scaffold(
-            drawer: BlocProvider.value(
-              value: context.read<AuthenticationCubit>(),
-              child: AppDrawer(
-                afterInboxClosed: () => context.read<DocumentsCubit>().reload(),
-              ),
-            ),
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(
-                kToolbarHeight,
-              ),
-              child: BlocBuilder<DocumentsCubit, DocumentsState>(
-                builder: (context, state) {
-                  if (state.selection.isEmpty) {
-                    return AppBar(
-                      automaticallyImplyLeading: true,
-                      title: Text(S.of(context).documentsPageTitle +
-                          " (${formatMaxCount(state.documents.length)})"),
-                      actions: [
-                        IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () {
-                            showMaterial3Search(
-                              context: context,
-                              delegate: DocumentSearchDelegate(
-                                DocumentSearchCubit(context.read()),
-                                searchFieldStyle:
-                                    Theme.of(context).textTheme.bodyLarge,
-                                hintText: "Search documents",
-                              ),
-                            );
-                          },
-                        ),
-                        const SortDocumentsButton(),
-                        BlocBuilder<ApplicationSettingsCubit,
-                            ApplicationSettingsState>(
-                          builder: (context, settingsState) => IconButton(
-                            icon: Icon(
-                              settingsState.preferredViewType == ViewType.grid
-                                  ? Icons.list
-                                  : Icons.grid_view_rounded,
-                            ),
-                            onPressed: () {
-                              // Reset saved view widget position as scroll offset will be reset anyway.
-                              setState(() {
-                                _offset = 0;
-                                _last = 0;
-                              });
-                              final cubit =
-                                  context.read<ApplicationSettingsCubit>();
-                              cubit.setViewType(
-                                  cubit.state.preferredViewType.toggle());
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return AppBar(
-                      leading: IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () =>
-                            context.read<DocumentsCubit>().resetSelection(),
-                      ),
-                      title: Text(
-                          '${state.selection.length} ${S.of(context).documentsSelectedText}'),
-                      actions: [
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _onDelete(context, state),
-                        ),
-                      ],
-                    );
-                  }
-                },
-              ),
-            ),
-            floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
-              builder: (context, state) {
-                final appliedFiltersCount = state.filter.appliedFiltersCount;
-                return b.Badge(
-                  position: b.BadgePosition.topEnd(top: -12, end: -6),
-                  showBadge: appliedFiltersCount > 0,
-                  badgeContent: Text(
-                    '$appliedFiltersCount',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  animationType: b.BadgeAnimationType.fade,
-                  badgeColor: Colors.red,
-                  child: FloatingActionButton(
-                    child: const Icon(Icons.filter_alt_outlined),
-                    onPressed: _openDocumentFilter,
-                  ),
-                );
-              },
-            ),
+            // appBar: PreferredSize(
+            //   preferredSize: const Size.fromHeight(
+            //     kToolbarHeight,
+            //   ),
+            //   child: BlocBuilder<DocumentsCubit, DocumentsState>(
+            //     builder: (context, state) {
+            //       if (state.selection.isEmpty) {
+            //         return DocumentSearchBar();
+            //         // return AppBar(
+            //         //   title: Text(S.of(context).documentsPageTitle +
+            //         //       " (${formatMaxCount(state.documents.length)})"),
+            //         //   actions: [
+            //         //     IconButton(
+            //         //       icon: const Icon(Icons.search),
+            //         //       onPressed: () {
+            //         //         showMaterial3Search(
+            //         //           context: context,
+            //         //           delegate: DocumentSearchDelegate(
+            //         //             DocumentSearchCubit(context.read()),
+            //         //             searchFieldStyle:
+            //         //                 Theme.of(context).textTheme.bodyLarge,
+            //         //             hintText: "Search documents", //TODO: INTL
+            //         //           ),
+            //         //         );
+            //         //       },
+            //         //     ),
+            //         //     const SortDocumentsButton(),
+            //         //     const AppOptionsPopupMenu(
+            //         //       displayedActions: [
+            //         //         AppPopupMenuEntries.documentsSelectListView,
+            //         //         AppPopupMenuEntries.documentsSelectGridView,
+            //         //         AppPopupMenuEntries.divider,
+            //         //         AppPopupMenuEntries.openAboutThisAppDialog,
+            //         //         AppPopupMenuEntries.reportBug,
+            //         //         AppPopupMenuEntries.openSettings,
+            //         //       ],
+            //         //     ),
+            //         //   ],
+            //         // );
+            //       } else {
+            //         return AppBar(
+            //           leading: IconButton(
+            //             icon: const Icon(Icons.close),
+            //             onPressed: () =>
+            //                 context.read<DocumentsCubit>().resetSelection(),
+            //           ),
+            //           title: Text(
+            //               '${state.selection.length} ${S.of(context).documentsSelectedText}'),
+            //           actions: [
+            //             IconButton(
+            //               icon: const Icon(Icons.delete),
+            //               onPressed: () => _onDelete(context, state),
+            //             ),
+            //           ],
+            //         );
+            //       }
+            //     },
+            //   ),
+            // ),
+            // floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
+            //   builder: (context, state) {
+            //     final appliedFiltersCount = state.filter.appliedFiltersCount;
+            //     return b.Badge(
+            //       position: b.BadgePosition.topEnd(top: -12, end: -6),
+            //       showBadge: appliedFiltersCount > 0,
+            //       badgeContent: Text(
+            //         '$appliedFiltersCount',
+            //         style: const TextStyle(
+            //           color: Colors.white,
+            //         ),
+            //       ),
+            //       animationType: b.BadgeAnimationType.fade,
+            //       badgeColor: Colors.red,
+            //       child: FloatingActionButton(
+            //         child: const Icon(Icons.filter_alt_outlined),
+            //         onPressed: _openDocumentFilter,
+            //       ),
+            //     );
+            //   },
+            // ),
             resizeToAvoidBottomInset: true,
-            body: WillPopScope(
-              onWillPop: () async {
-                if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
-                  context.read<DocumentsCubit>().resetSelection();
-                }
-                return false;
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    floating: true,
+                    pinned: true,
+                    snap: true,
+                    title: SearchBar(
+                      height: kToolbarHeight - 2,
+                      supportingText: "Search documents",
+                      onTap: () {
+                        showDocumentSearchPage(context);
+                      },
+                      leadingIcon: Icon(Icons.menu),
+                      trailingIcon: CircleAvatar(
+                        child: Text("A"),
+                      ),
+                    ),
+                  )
+                ];
               },
-              child: RefreshIndicator(
-                onRefresh: _onRefresh,
-                notificationPredicate: (_) => connectivityState.isConnected,
-                child: BlocBuilder<TaskStatusCubit, TaskStatusState>(
-                  builder: (context, taskState) {
-                    return Stack(
-                      children: [
-                        _buildBody(connectivityState),
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          top: _offset,
-                          child: BlocBuilder<DocumentsCubit, DocumentsState>(
-                            builder: (context, state) {
-                              return ColoredBox(
-                                color: Theme.of(context).colorScheme.background,
-                                child: SavedViewSelectionWidget(
-                                  height: _savedViewWidgetHeight,
-                                  currentFilter: state.filter,
-                                  enabled: state.selection.isEmpty &&
-                                      connectivityState.isConnected,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+              body: WillPopScope(
+                onWillPop: () async {
+                  if (context
+                      .read<DocumentsCubit>()
+                      .state
+                      .selection
+                      .isNotEmpty) {
+                    context.read<DocumentsCubit>().resetSelection();
+                  }
+                  return false;
+                },
+                child: RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  notificationPredicate: (_) => connectivityState.isConnected,
+                  child: BlocBuilder<TaskStatusCubit, TaskStatusState>(
+                    builder: (context, taskState) {
+                      return _buildBody(connectivityState);
+                      // return Stack(
+                      //   children: [
+                      //     Positioned(
+                      //       left: 0,
+                      //       right: 0,
+                      //       top: _offset,
+                      //       child: BlocBuilder<DocumentsCubit, DocumentsState>(
+                      //         builder: (context, state) {
+                      //           return ColoredBox(
+                      //             color:
+                      //                 Theme.of(context).colorScheme.background,
+                      //             child: SavedViewSelectionWidget(
+                      //               height: _savedViewWidgetHeight,
+                      //               currentFilter: state.filter,
+                      //               enabled: state.selection.isEmpty &&
+                      //                   connectivityState.isConnected,
+                      //             ),
+                      //           );
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // );
+                    },
+                  ),
                 ),
               ),
             ),
           );
+        },
+      ),
+    );
+  }
+
+  BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>
+      _buildViewTypeButton() {
+    return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+      builder: (context, settingsState) => IconButton(
+        icon: Icon(
+          settingsState.preferredViewType == ViewType.grid
+              ? Icons.list
+              : Icons.grid_view_rounded,
+        ),
+        onPressed: () {
+          // Reset saved view widget position as scroll offset will be reset anyway.
+          setState(() {
+            _offset = 0;
+            _last = 0;
+          });
+          final cubit = context.read<ApplicationSettingsCubit>();
+          cubit.setViewType(cubit.state.preferredViewType.toggle());
         },
       ),
     );
@@ -392,7 +425,26 @@ class _DocumentsPageState extends State<DocumentsPage> {
               onDocumentTypeSelected: _addDocumentTypeToFilter,
               onStoragePathSelected: _addStoragePathToFilter,
               pageLoadingWidget: const NewItemsLoadingWidget(),
-              beforeItems: const SizedBox(height: _savedViewWidgetHeight),
+              beforeItems: SizedBox(
+                height: kToolbarHeight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SortDocumentsButton(),
+                    IconButton(
+                      icon: Icon(
+                        settings.preferredViewType == ViewType.grid
+                            ? Icons.list
+                            : Icons.grid_view_rounded,
+                      ),
+                      onPressed: () =>
+                          context.read<ApplicationSettingsCubit>().setViewType(
+                                settings.preferredViewType.toggle(),
+                              ),
+                    ),
+                  ],
+                ),
+              ),
             );
           },
         );

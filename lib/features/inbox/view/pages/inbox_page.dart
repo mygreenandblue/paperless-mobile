@@ -72,10 +72,10 @@ class _InboxPageState extends State<InboxPage> {
                       child: ColoredBox(
                         color: Theme.of(context).colorScheme.secondaryContainer,
                         child: Text(
-                          state.value.isEmpty
-                              ? '0'
-                              : '${state.value.first.count} ' +
-                                  S.of(context).inboxPageUnseenText,
+                          (state.value.isEmpty
+                                  ? '0 '
+                                  : '${state.value.first.count} ') +
+                              S.of(context).inboxPageUnseenText,
                           textAlign: TextAlign.start,
                           style: Theme.of(context).textTheme.bodySmall,
                         ).paddedSymmetrically(horizontal: 4.0),

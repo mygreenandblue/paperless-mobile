@@ -1,6 +1,6 @@
 part of 'similar_documents_cubit.dart';
 
-class SimilarDocumentsState extends DocumentsPagedState {
+class SimilarDocumentsState extends PagedDocumentsState {
   const SimilarDocumentsState({
     super.filter,
     super.hasLoaded,

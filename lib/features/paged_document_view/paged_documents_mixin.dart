@@ -2,12 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 
-import 'model/documents_paged_state.dart';
+import 'model/paged_documents_state.dart';
 
 ///
 /// Mixin which can be used on cubits which handle documents. This implements all paging and filtering logic.
 ///
-mixin DocumentsPagingMixin<State extends DocumentsPagedState>
+mixin PagedDocumentsMixin<State extends PagedDocumentsState>
     on BlocBase<State> {
   PaperlessDocumentsApi get api;
 

@@ -28,51 +28,48 @@ class SearchBar extends StatelessWidget {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 360, maxWidth: 720),
-        width: double.infinity,
-        height: effectiveHeight,
-        child: Material(
-          elevation: 3,
-          color: colorScheme.surface,
-          shadowColor: colorScheme.shadow,
-          surfaceTintColor: colorScheme.surfaceTint,
+    return Container(
+      constraints: const BoxConstraints(minWidth: 360, maxWidth: 720),
+      width: double.infinity,
+      height: effectiveHeight,
+      child: Material(
+        elevation: 1,
+        color: colorScheme.surface,
+        shadowColor: colorScheme.shadow,
+        surfaceTintColor: colorScheme.surfaceTint,
+        borderRadius: BorderRadius.circular(effectiveHeight / 2),
+        child: InkWell(
+          onTap: () {},
           borderRadius: BorderRadius.circular(effectiveHeight / 2),
-          child: InkWell(
-            onTap: () {},
-            borderRadius: BorderRadius.circular(effectiveHeight / 2),
-            highlightColor: Colors.transparent,
-            splashFactory: InkRipple.splashFactory,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(children: [
-                leadingIcon,
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: TextField(
-                      cursorColor: colorScheme.primary,
-                      style: textTheme.bodyLarge,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        isCollapsed: true,
-                        border: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 8),
-                        hintText: supportingText,
-                        hintStyle: textTheme.bodyLarge?.apply(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+          highlightColor: Colors.transparent,
+          splashFactory: InkRipple.splashFactory,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(children: [
+              leadingIcon,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: TextField(
+                    readOnly: true,
+                    cursorColor: colorScheme.primary,
+                    style: textTheme.bodyLarge,
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      hintText: supportingText,
+                      hintStyle: textTheme.bodyLarge?.apply(
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                      onTap: onTap,
                     ),
+                    onTap: onTap,
                   ),
                 ),
-                if (trailingIcon != null) trailingIcon!,
-              ]),
-            ),
+              ),
+              if (trailingIcon != null) trailingIcon!,
+            ]),
           ),
         ),
       ),

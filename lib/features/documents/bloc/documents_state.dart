@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
-class DocumentsState extends DocumentsPagedState {
+class DocumentsState extends PagedDocumentsState {
   final int? selectedSavedViewId;
 
   @JsonKey(ignore: true)

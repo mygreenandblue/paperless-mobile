@@ -51,7 +51,6 @@ class _LabelsPageState extends State<LabelsPage>
       child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
         builder: (context, connectedState) {
           return Scaffold(
-            drawer: const AppDrawer(),
             appBar: AppBar(
               title: Text(
                 [

@@ -249,7 +249,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context, sizingInformation) {
           if (!sizingInformation.isMobile) {
             return Scaffold(
-              drawer: const AppDrawer(),
+              // drawer: const AppDrawer(),
               body: Row(
                 children: [
                   NavigationRail(

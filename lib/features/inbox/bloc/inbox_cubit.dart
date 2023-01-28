@@ -7,9 +7,9 @@ import 'package:paperless_mobile/core/repository/state/impl/correspondent_reposi
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/documents_paging_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
-class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
+class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
   final LabelRepository<Tag, TagRepositoryState> _tagsRepository;
   final LabelRepository<Correspondent, CorrespondentRepositoryState>
       _correspondentRepository;

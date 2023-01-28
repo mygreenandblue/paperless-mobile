@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
+import 'package:paperless_mobile/generated/l10n.dart';
 
 part 'application_settings_state.g.dart';
 
@@ -13,7 +14,7 @@ part 'application_settings_state.g.dart';
 @JsonSerializable()
 class ApplicationSettingsState {
   static final defaultSettings = ApplicationSettingsState(
-    preferredLocaleSubtag: Platform.localeName.split('_').first,
+    preferredLocaleSubtag: _defaultPreferredLocaleSubtag,
   );
 
   final bool isLocalAuthenticationEnabled;
@@ -51,5 +52,14 @@ class ApplicationSettingsState {
       preferredColorSchemeOption:
           preferredColorSchemeOption ?? this.preferredColorSchemeOption,
     );
+  }
+
+  static String get _defaultPreferredLocaleSubtag {
+    String preferredLocale = Platform.localeName.split("_").first;
+    if (!S.delegate.supportedLocales
+        .any((locale) => locale.languageCode == preferredLocale)) {
+      preferredLocale = 'en';
+    }
+    return preferredLocale;
   }
 }

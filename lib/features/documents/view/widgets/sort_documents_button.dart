@@ -4,51 +4,60 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
+import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/sort_field_selection_bottom_sheet.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 
 class SortDocumentsButton extends StatelessWidget {
-  const SortDocumentsButton({super.key});
+  const SortDocumentsButton({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.sort),
-      onPressed: () {
-        showModalBottomSheet(
-          elevation: 2,
-          context: context,
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-          ),
-          builder: (_) => BlocProvider<DocumentsCubit>.value(
-            value: context.read<DocumentsCubit>(),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (context) => LabelCubit<DocumentType>(
-                    context.read<
-                        LabelRepository<DocumentType,
-                            DocumentTypeRepositoryState>>(),
-                  ),
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        if (state.filter.sortField == null) {
+          return const SizedBox.shrink();
+        }
+        return TextButton.icon(
+          icon: Icon(state.filter.sortOrder == SortOrder.ascending
+              ? Icons.arrow_upward
+              : Icons.arrow_downward),
+          label: Text(translateSortField(context, state.filter.sortField)),
+          onPressed: () {
+            showModalBottomSheet(
+              elevation: 2,
+              context: context,
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
-                BlocProvider(
-                  create: (context) => LabelCubit<Correspondent>(
-                    context.read<
-                        LabelRepository<Correspondent,
-                            CorrespondentRepositoryState>>(),
-                  ),
-                ),
-              ],
-              child: BlocBuilder<DocumentsCubit, DocumentsState>(
-                builder: (context, state) {
-                  return SortFieldSelectionBottomSheet(
+              ),
+              builder: (_) => BlocProvider<DocumentsCubit>.value(
+                value: context.read<DocumentsCubit>(),
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (context) => LabelCubit<DocumentType>(
+                        context.read<
+                            LabelRepository<DocumentType,
+                                DocumentTypeRepositoryState>>(),
+                      ),
+                    ),
+                    BlocProvider(
+                      create: (context) => LabelCubit<Correspondent>(
+                        context.read<
+                            LabelRepository<Correspondent,
+                                CorrespondentRepositoryState>>(),
+                      ),
+                    ),
+                  ],
+                  child: SortFieldSelectionBottomSheet(
                     initialSortField: state.filter.sortField,
                     initialSortOrder: state.filter.sortOrder,
                     onSubmit: (field, order) =>
@@ -58,11 +67,11 @@ class SortDocumentsButton extends StatelessWidget {
                                 sortOrder: order,
                               ),
                             ),
-                  );
-                },
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

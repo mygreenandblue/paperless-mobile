@@ -1,25 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
-class LinkedDocumentsCubit extends Cubit<LinkedDocumentsState> {
-  final PaperlessDocumentsApi _api;
+class LinkedDocumentsCubit extends Cubit<LinkedDocumentsState>
+    with PagedDocumentsMixin {
+  @override
+  final PaperlessDocumentsApi api;
 
-  LinkedDocumentsCubit(this._api, DocumentFilter filter)
-      : super(LinkedDocumentsState(filter: filter)) {
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    final documents = await _api.findAll(
-      state.filter.copyWith(
-        pageSize: 100,
-      ),
-    );
-    emit(LinkedDocumentsState(
-      isLoaded: true,
-      documents: documents,
-      filter: state.filter,
-    ));
+  LinkedDocumentsCubit(this.api, DocumentFilter filter)
+      : super(const LinkedDocumentsState()) {
+    updateFilter(filter: filter);
   }
 }

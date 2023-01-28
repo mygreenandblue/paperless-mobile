@@ -1,17 +1,25 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
 part 'document_search_state.g.dart';
 
+enum SearchView {
+  suggestions,
+  results;
+}
+
 @JsonSerializable(ignoreUnannotated: true)
-class DocumentSearchState extends DocumentsPagedState {
+class DocumentSearchState extends PagedDocumentsState {
   @JsonKey()
   final List<String> searchHistory;
-
+  final SearchView view;
+  final List<String> suggestions;
   const DocumentSearchState({
+    this.view = SearchView.suggestions,
     this.searchHistory = const [],
+    this.suggestions = const [],
     super.filter,
     super.hasLoaded,
     super.isLoading,
@@ -25,6 +33,8 @@ class DocumentSearchState extends DocumentsPagedState {
         filter,
         value,
         searchHistory,
+        suggestions,
+        view,
       ];
 
   @override
@@ -49,6 +59,7 @@ class DocumentSearchState extends DocumentsPagedState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     List<String>? suggestions,
+    SearchView? view,
   }) {
     return DocumentSearchState(
       value: value ?? this.value,
@@ -56,6 +67,8 @@ class DocumentSearchState extends DocumentsPagedState {
       hasLoaded: hasLoaded ?? this.hasLoaded,
       isLoading: isLoading ?? this.isLoading,
       searchHistory: searchHistory ?? this.searchHistory,
+      view: view ?? this.view,
+      suggestions: suggestions ?? this.suggestions,
     );
   }
 

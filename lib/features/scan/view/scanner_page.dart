@@ -47,7 +47,6 @@ class _ScannerPageState extends State<ScannerPage>
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
         return Scaffold(
-          drawer: const AppDrawer(),
           floatingActionButton: FloatingActionButton(
             onPressed: () => _openDocumentScanner(context),
             child: const Icon(Icons.add_a_photo_outlined),
