@@ -41,6 +41,9 @@
   </p>
 </div>
 
+## Important Notice
+This project is under **very active** development. Breaking changes are expected and therefore a clean install is recommended for each update!
+
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 With this app you can conveniently add, manage or simply find documents stored in your paperless server without any comproimises. This project started as a small fun side project to learn more about the Flutter framework and because existing solutions didn't fulfill my needs, but it has grown much faster with far more features than I originally anticipated.  
