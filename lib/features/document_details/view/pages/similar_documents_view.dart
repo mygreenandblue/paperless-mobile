@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/documents_list_loading_widget.dart';
+import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/list/document_list_item.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -58,11 +60,6 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView> {
     );
     return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
       builder: (context, state) {
-        if (!state.hasLoaded) {
-          return const DocumentsListLoadingWidget(
-            beforeWidgets: [earlyPreviewHintCard],
-          );
-        }
         if (state.documents.isEmpty) {
           return DocumentsEmptyState(
             state: state,
@@ -74,20 +71,36 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView> {
                 ),
           );
         }
-        return CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            const SliverToBoxAdapter(child: earlyPreviewHintCard),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                childCount: state.documents.length,
-                (context, index) => DocumentListItem(
-                  document: state.documents[index],
-                  enableHeroAnimation: false,
+
+        return BlocBuilder<ConnectivityCubit, ConnectivityState>(
+          builder: (context, connectivity) {
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                const SliverToBoxAdapter(child: earlyPreviewHintCard),
+                SliverAdaptiveDocumentsView(
+                  documents: state.documents,
+                  hasInternetConnection: connectivity.isConnected,
+                  isLabelClickable: false,
+                  isLoading: state.isLoading,
+                  hasLoaded: state.hasLoaded,
+
                 ),
-              ),
-            ),
-          ],
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: state.documents.length,
+                    (context, index) => DocumentListItem(
+                      document: state.documents[index],
+                      enableHeroAnimation: false,
+                      isLabelClickable: false,
+                      isSelected: false,
+                      isSelectionActive: false,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

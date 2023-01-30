@@ -1,38 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:intl/intl.dart';
 
-class DocumentGridItem extends StatelessWidget {
-  final DocumentModel document;
-  final bool isSelected;
-  final void Function(DocumentModel) onTap;
-  final void Function(DocumentModel) onSelected;
-  final bool isAtLeastOneSelected;
-  final bool Function(int tagId) isTagSelectedPredicate;
-  final void Function(int tagId)? onTagSelected;
-
+class DocumentGridItem extends DocumentItem {
   const DocumentGridItem({
-    Key? key,
-    required this.document,
-    required this.onTap,
-    required this.onSelected,
-    required this.isSelected,
-    required this.isAtLeastOneSelected,
-    required this.isTagSelectedPredicate,
-    required this.onTagSelected,
-  }) : super(key: key);
+    super.key,
+    required super.document,
+    required super.isSelected,
+    required super.isSelectionActive,
+    required super.isLabelClickable,
+    super.onCorrespondentSelected,
+    super.onDocumentTypeSelected,
+    super.onSelected,
+    super.onStoragePathSelected,
+    super.onTagSelected,
+    super.onTap,
+    required super.enableHeroAnimation,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _onTap,
-      onLongPress: () => onSelected(document),
+      onLongPress: onSelected != null ? () => onSelected!(document) : null,
       child: AbsorbPointer(
-        absorbing: isAtLeastOneSelected,
+        absorbing: isSelectionActive,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Card(
@@ -48,6 +45,7 @@ class DocumentGridItem extends StatelessWidget {
                   child: DocumentPreview(
                     id: document.id,
                     borderRadius: 12.0,
+                    enableHero: enableHeroAnimation,
                   ),
                 ),
                 Expanded(
@@ -94,10 +92,10 @@ class DocumentGridItem extends StatelessWidget {
   }
 
   void _onTap() {
-    if (isAtLeastOneSelected || isSelected) {
-      onSelected(document);
+    if (isSelectionActive || isSelected) {
+      onSelected?.call(document);
     } else {
-      onTap(document);
+      onTap?.call(document);
     }
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/documents_list_loading_widget.dart';
+import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/list/document_list_item.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -48,14 +50,17 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
       ),
       body: BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
         builder: (context, state) {
-          if (!state.hasLoaded) {
-            return const DocumentsListLoadingWidget();
-          }
-          return ListView.builder(
-            itemCount: state.documents.length,
-            itemBuilder: (context, index) => DocumentListItem(
-              document: state.documents[index],
-            ),
+          return BlocBuilder<ConnectivityCubit, ConnectivityState>(
+            builder: (context, connectivity) {
+              return DefaultAdaptiveDocumentsView(
+                scrollController: _scrollController,
+                documents: state.documents,
+                hasInternetConnection: connectivity.isConnected,
+                isLabelClickable: false,
+                isLoading: state.isLoading,
+                hasLoaded: state.hasLoaded,
+              );
+            },
           );
         },
       ),

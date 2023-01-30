@@ -7,11 +7,11 @@ import 'package:paperless_mobile/generated/l10n.dart';
 
 class DocumentsEmptyState extends StatelessWidget {
   final PagedDocumentsState state;
-  final VoidCallback onReset;
+  final VoidCallback? onReset;
   const DocumentsEmptyState({
     Key? key,
     required this.state,
-    required this.onReset,
+    this.onReset,
   }) : super(key: key);
 
   @override
@@ -20,7 +20,7 @@ class DocumentsEmptyState extends StatelessWidget {
       child: EmptyState(
         title: S.of(context).documentsPageEmptyStateOopsText,
         subtitle: S.of(context).documentsPageEmptyStateNothingHereText,
-        bottomChild: state.filter != DocumentFilter.initial
+        bottomChild: state.filter != DocumentFilter.initial && onReset != null
             ? TextButton(
                 onPressed: onReset,
                 child: Text(

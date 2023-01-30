@@ -66,36 +66,9 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     emit(const DocumentsState());
   }
 
-  Future<void> selectView(int id) async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      final filter =
-          _savedViewRepository.current?.values[id]?.toDocumentFilter();
-      if (filter == null) {
-        return;
-      }
-      final results = await api.findAll(filter.copyWith(page: 1));
-      emit(
-        DocumentsState(
-          filter: filter,
-          hasLoaded: true,
-          isLoading: false,
-          selectedSavedViewId: id,
-          value: [results],
-        ),
-      );
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
   Future<Iterable<String>> autocomplete(String query) async {
     final res = await api.autocomplete(query);
     return res;
-  }
-
-  void unselectView() {
-    emit(state.copyWith(selectedSavedViewId: () => null));
   }
 
   @override

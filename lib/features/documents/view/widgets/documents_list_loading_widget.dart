@@ -5,37 +5,23 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DocumentsListLoadingWidget extends StatelessWidget {
-  final List<Widget> beforeWidgets;
-  final List<Widget> afterWidgets;
-
   static const _tags = ["    ", "            ", "      "];
   static const _titleLengths = <double>[double.infinity, 150.0, 200.0];
   static const _correspondentLengths = <double>[200.0, 300.0, 150.0];
   static const _fontSize = 16.0;
 
-  const DocumentsListLoadingWidget({
-    super.key,
-    this.beforeWidgets = const [],
-    this.afterWidgets = const [],
+  const DocumentsListLoadingWidget({super.key
   });
 
   @override
   Widget build(BuildContext context) {
     final _random = Random();
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate(beforeWidgets),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return _buildFakeListItem(context, _random);
-            },
-          ),
-        ),
-        SliverList(delegate: SliverChildListDelegate(afterWidgets))
-      ],
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return _buildFakeListItem(context, _random);
+        },
+      ),
     );
   }
 

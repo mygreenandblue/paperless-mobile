@@ -3,14 +3,11 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
 class DocumentsState extends PagedDocumentsState {
-  final int? selectedSavedViewId;
-
   @JsonKey(ignore: true)
   final List<DocumentModel> selection;
 
   const DocumentsState({
     this.selection = const [],
-    this.selectedSavedViewId,
     super.value = const [],
     super.filter = const DocumentFilter(),
     super.hasLoaded = false,
@@ -25,7 +22,6 @@ class DocumentsState extends PagedDocumentsState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     List<DocumentModel>? selection,
-    int? Function()? selectedSavedViewId,
   }) {
     return DocumentsState(
       hasLoaded: hasLoaded ?? this.hasLoaded,
@@ -33,9 +29,6 @@ class DocumentsState extends PagedDocumentsState {
       value: value ?? this.value,
       filter: filter ?? this.filter,
       selection: selection ?? this.selection,
-      selectedSavedViewId: selectedSavedViewId != null
-          ? selectedSavedViewId.call()
-          : this.selectedSavedViewId,
     );
   }
 
@@ -46,7 +39,6 @@ class DocumentsState extends PagedDocumentsState {
         value,
         selection,
         isLoading,
-        selectedSavedViewId,
       ];
 
   Map<String, dynamic> toJson() {
@@ -54,7 +46,6 @@ class DocumentsState extends PagedDocumentsState {
       'hasLoaded': hasLoaded,
       'isLoading': isLoading,
       'filter': filter.toJson(),
-      'selectedSavedViewId': selectedSavedViewId,
       'value':
           value.map((e) => e.toJson(DocumentModelJsonConverter())).toList(),
     };
@@ -65,7 +56,6 @@ class DocumentsState extends PagedDocumentsState {
     return DocumentsState(
       hasLoaded: json['hasLoaded'],
       isLoading: json['isLoading'],
-      selectedSavedViewId: json['selectedSavedViewId'],
       value: (json['value'] as List<dynamic>)
           .map((e) =>
               PagedSearchResult.fromJsonT(e, DocumentModelJsonConverter()))

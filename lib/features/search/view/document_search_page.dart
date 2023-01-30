@@ -1,13 +1,10 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/core/widgets/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/list/document_list_item.dart';
-import 'package:paperless_mobile/features/search/cubit/document_search_state.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/search/cubit/document_search_cubit.dart';
+import 'package:paperless_mobile/features/search/cubit/document_search_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 Future<void> showDocumentSearchPage(BuildContext context) {
@@ -48,28 +45,33 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             color: theme.colorScheme.onSurface,
           ),
           decoration: InputDecoration(
+            contentPadding: EdgeInsets.zero,
             hintStyle: theme.textTheme.bodyLarge?.apply(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            hintText: "Search documents",
+            hintText: "Search documents", //TODO: INTL
             border: InputBorder.none,
           ),
           controller: _queryController,
           onChanged: context.read<DocumentSearchCubit>().suggest,
-          onSubmitted: context.read<DocumentSearchCubit>().search,
+          textInputAction: TextInputAction.search,
+          onSubmitted: (query) {
+            FocusScope.of(context).unfocus();
+            context.read<DocumentSearchCubit>().search(query);
+          },
         ),
         actions: [
           IconButton(
             color: theme.colorScheme.onSurfaceVariant,
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: () {
               context.read<DocumentSearchCubit>().reset();
               _queryController.clear();
             },
-          )
+          ).padded(),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
+          preferredSize: const Size.fromHeight(1),
           child: Divider(
             color: theme.colorScheme.outline,
           ),
@@ -103,7 +105,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           delegate: SliverChildBuilderDelegate(
             (context, index) => ListTile(
               title: Text(historyMatches[index]),
-              leading: Icon(Icons.history),
+              leading: const Icon(Icons.history),
               onTap: () => _selectSuggestion(historyMatches[index]),
             ),
             childCount: historyMatches.length,
@@ -120,7 +122,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             delegate: SliverChildBuilderDelegate(
               (context, index) => ListTile(
                 title: Text(suggestions[index]),
-                leading: Icon(Icons.search),
+                leading: const Icon(Icons.search),
                 onTap: () => _selectSuggestion(suggestions[index]),
               ),
               childCount: suggestions.length,
@@ -135,27 +137,21 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
       S.of(context).documentSearchResults,
       style: Theme.of(context).textTheme.labelSmall,
     ).padded();
-    if (state.isLoading) {
-      return DocumentsListLoadingWidget(
-        beforeWidgets: [header],
-      );
-    }
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: header),
         if (state.hasLoaded && !state.isLoading && state.documents.isEmpty)
-          SliverToBoxAdapter(
-            child: Center(child: Text("No documents found.")),
+          const SliverToBoxAdapter(
+            child: Center(child: Text("No documents found.")), //TODO: INTL
           )
         else
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => DocumentListItem(
-                document: state.documents[index],
-              ),
-              childCount: state.documents.length,
-            ),
-          ),
+          SliverAdaptiveDocumentsView(
+            documents: state.documents,
+            hasInternetConnection: true,
+            isLabelClickable: false,
+            isLoading: state.isLoading,
+            hasLoaded: state.hasLoaded,
+          )
       ],
     );
   }

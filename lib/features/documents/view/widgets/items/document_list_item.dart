@@ -1,39 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 
-class DocumentListItem extends StatelessWidget {
+class DocumentListItem extends DocumentItem {
   static const _a4AspectRatio = 1 / 1.4142;
-  final DocumentModel document;
-  final void Function(DocumentModel)? onTap;
-  final void Function(DocumentModel)? onSelected;
-  final bool isSelected;
-  final bool isAtLeastOneSelected;
-  final bool isLabelClickable;
-
-  final void Function(int tagId)? onTagSelected;
-  final void Function(int? correspondentId)? onCorrespondentSelected;
-  final void Function(int? documentTypeId)? onDocumentTypeSelected;
-  final void Function(int? id)? onStoragePathSelected;
-
-  final bool enableHeroAnimation;
 
   const DocumentListItem({
-    Key? key,
-    required this.document,
-    this.onTap,
-    this.onSelected,
-    this.isSelected = false,
-    this.isAtLeastOneSelected = false,
-    this.isLabelClickable = true,
-    this.onTagSelected,
-    this.onCorrespondentSelected,
-    this.onDocumentTypeSelected,
-    this.onStoragePathSelected,
-    this.enableHeroAnimation = true,
-  }) : super(key: key);
+    super.key,
+    required super.document,
+    required super.isSelected,
+    required super.isSelectionActive,
+    required super.isLabelClickable,
+    super.onCorrespondentSelected,
+    super.onDocumentTypeSelected,
+    super.onSelected,
+    super.onStoragePathSelected,
+    super.onTagSelected,
+    super.onTap,
+    super.enableHeroAnimation = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +37,7 @@ class DocumentListItem extends StatelessWidget {
           Row(
             children: [
               AbsorbPointer(
-                absorbing: isAtLeastOneSelected,
+                absorbing: isSelectionActive,
                 child: CorrespondentWidget(
                   isClickable: isLabelClickable,
                   correspondentId: document.correspondent,
@@ -69,7 +56,7 @@ class DocumentListItem extends StatelessWidget {
       subtitle: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: AbsorbPointer(
-          absorbing: isAtLeastOneSelected,
+          absorbing: isSelectionActive,
           child: TagsWidget(
             isClickable: isLabelClickable,
             tagIds: document.tags,
@@ -95,7 +82,7 @@ class DocumentListItem extends StatelessWidget {
   }
 
   void _onTap() {
-    if (isAtLeastOneSelected || isSelected) {
+    if (isSelectionActive || isSelected) {
       onSelected?.call(document);
     } else {
       onTap?.call(document);
