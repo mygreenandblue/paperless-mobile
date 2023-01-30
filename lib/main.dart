@@ -5,6 +5,7 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -134,7 +135,11 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
-
+      
+  // Temporary Fix: Can be removed if the flutter engine implements the fix itself
+  // Activate the highest availabe refresh rate on the device
+  await FlutterDisplayMode.setHighRefreshRate();
+  
   runApp(
     MultiProvider(
       providers: [
