@@ -96,9 +96,12 @@ void main() async {
 
   // Initialize Blocs/Cubits
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
-  // Remove temporarily downloaded files.
 
-  (await FileService.temporaryDirectory).deleteSync(recursive: true);
+  // Remove temporarily downloaded files.
+  for (var item in (await FileService.temporaryDirectory).listSync()) {
+    item.deleteSync(recursive: true);
+  }
+
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();
 
