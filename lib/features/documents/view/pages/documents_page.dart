@@ -1,33 +1,28 @@
-import 'dart:developer';
-
 import 'package:badges/badges.dart' as b;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
-import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
+import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/new_items_loading_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/view_actions.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/labels_bloc_provider.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
-import 'package:paperless_mobile/features/search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -116,6 +111,7 @@ class _DocumentsPageState extends State<DocumentsPage>
         },
         builder: (context, connectivityState) {
           return Scaffold(
+            drawer: const AppDrawer(),
             floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
               builder: (context, state) {
                 final appliedFiltersCount = state.filter.appliedFiltersCount;
@@ -165,6 +161,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                       context,
                     ),
                     sliver: SearchAppBar(
+                      hintText: "Search documents", //TODO: INTL
                       onOpenSearch: showDocumentSearchPage,
                       bottom: TabBar(
                         controller: _tabController,
@@ -177,9 +174,12 @@ class _DocumentsPageState extends State<DocumentsPage>
                     ),
                   ),
                 ],
-                body: NotificationListener<ScrollUpdateNotification>(
+                body: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     final metrics = notification.metrics;
+                    if (metrics.maxScrollExtent == 0) {
+                      return true;
+                    }
                     final desiredTab =
                         (metrics.pixels / metrics.maxScrollExtent).round();
                     if (metrics.axis == Axis.horizontal &&
@@ -414,27 +414,19 @@ class _DocumentsPageState extends State<DocumentsPage>
   }
 
   Future<void> _openDetails(DocumentModel document) async {
-    final updatedModel = await Navigator.of(context).push<DocumentModel?>(
-      _buildDetailsPageRoute(document),
-    );
+    final updatedModel = await Navigator.pushNamed(
+      context,
+      DocumentDetailsRoute.routeName,
+      arguments: DocumentDetailsRouteArguments(
+        document: document,
+      ),
+    ) as DocumentModel?;
+    // final updatedModel = await Navigator.of(context).push<DocumentModel?>(
+    //   _buildDetailsPageRoute(document),
+    // );
     if (updatedModel != document) {
       context.read<DocumentsCubit>().reload();
     }
-  }
-
-  MaterialPageRoute<DocumentModel?> _buildDetailsPageRoute(
-      DocumentModel document) {
-    return MaterialPageRoute(
-      builder: (_) => BlocProvider(
-        create: (context) => DocumentDetailsCubit(
-          context.read<PaperlessDocumentsApi>(),
-          document,
-        ),
-        child: const LabelRepositoriesProvider(
-          child: DocumentDetailsPage(),
-        ),
-      ),
-    );
   }
 
   void _addTagToFilter(int tagId) {

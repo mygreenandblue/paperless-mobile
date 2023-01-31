@@ -39,7 +39,7 @@ class SearchBar extends StatelessWidget {
         surfaceTintColor: colorScheme.surfaceTint,
         borderRadius: BorderRadius.circular(effectiveHeight / 2),
         child: InkWell(
-          onTap: () {},
+          onTap: onTap,
           borderRadius: BorderRadius.circular(effectiveHeight / 2),
           highlightColor: Colors.transparent,
           splashFactory: InkRipple.splashFactory,
@@ -51,7 +51,9 @@ class SearchBar extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: TextField(
+                    onTap: onTap,
                     readOnly: true,
+                    enabled: false,
                     cursorColor: colorScheme.primary,
                     style: textTheme.bodyLarge,
                     textAlignVertical: TextAlignVertical.center,
@@ -64,7 +66,6 @@ class SearchBar extends StatelessWidget {
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    onTap: onTap,
                   ),
                 ),
               ),

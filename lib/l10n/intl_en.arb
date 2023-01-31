@@ -627,5 +627,6 @@
   "verifyIdentityPageTitle": "Verify your identity",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Verify Identity",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
+  "genericActionCloseLabel": "Close"
 }

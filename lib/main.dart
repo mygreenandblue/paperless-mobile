@@ -49,6 +49,7 @@ import 'package:paperless_mobile/features/settings/bloc/application_settings_sta
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:path_provider/path_provider.dart';
@@ -254,6 +255,10 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                   GlobalWidgetsLocalizations.delegate,
                   FormBuilderLocalizations.delegate,
                 ],
+                routes: {
+                  DocumentDetailsRoute.routeName: (context) =>
+                      const DocumentDetailsRoute(),
+                },
                 home: const AuthenticationWrapper(),
               );
             },

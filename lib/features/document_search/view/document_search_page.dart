@@ -1,11 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
+import 'package:paperless_mobile/features/document_search/cubit/document_search_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/search/cubit/document_search_cubit.dart';
-import 'package:paperless_mobile/features/search/cubit/document_search_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 Future<void> showDocumentSearchPage(BuildContext context) {
   return Navigator.of(context).push(
@@ -151,12 +153,27 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             isLabelClickable: false,
             isLoading: state.isLoading,
             hasLoaded: state.hasLoaded,
+            onTap: (document) async {
+              final updatedDocument = await Navigator.pushNamed(
+                context,
+                DocumentDetailsRoute.routeName,
+                arguments: DocumentDetailsRouteArguments(
+                  document: document,
+                  isLabelClickable: false,
+                ),
+              ) as DocumentModel?;
+              if (updatedDocument != document) {
+                context.read<DocumentSearchCubit>().reload();
+              }
+            },
           )
       ],
     );
   }
 
   void _selectSuggestion(String suggestion) {
+    _queryController.text = suggestion;
     context.read<DocumentSearchCubit>().search(suggestion);
+    FocusScope.of(context).unfocus();
   }
 }

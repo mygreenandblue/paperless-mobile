@@ -627,5 +627,6 @@
   "verifyIdentityPageTitle": "Kimliğinizi doğrulayın",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Kimliği Doğrula",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
+  "genericActionCloseLabel": "Close"
 }

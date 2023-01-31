@@ -26,16 +26,6 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).appDrawerSettingsLabel),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            color: Theme.of(context).colorScheme.error,
-            onPressed: () async {
-              await _onLogout(context);
-              Navigator.pop(context);
-            },
-          ),
-        ],
       ),
       bottomNavigationBar: BlocBuilder<PaperlessServerInformationCubit,
           PaperlessServerInformationState>(
@@ -48,14 +38,16 @@ class SettingsPage extends StatelessWidget {
                   " " +
                   (info.username ?? 'unknown') +
                   "@${info.host}",
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.center,
             ),
             subtitle: Text(
               S.of(context).serverInformationPaperlessVersionText +
                   ' ' +
                   info.version.toString() +
                   ' (API v${info.apiVersion})',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.center,
             ),
           );
         },
@@ -99,26 +91,5 @@ class SettingsPage extends StatelessWidget {
         maintainState: true,
       ),
     );
-  }
-
-  Future<void> _onLogout(BuildContext context) async {
-    try {
-      await context.read<AuthenticationCubit>().logout();
-      await context.read<ApplicationSettingsCubit>().clear();
-      await context.read<LabelRepository<Tag, TagRepositoryState>>().clear();
-      await context
-          .read<LabelRepository<Correspondent, CorrespondentRepositoryState>>()
-          .clear();
-      await context
-          .read<LabelRepository<DocumentType, DocumentTypeRepositoryState>>()
-          .clear();
-      await context
-          .read<LabelRepository<StoragePath, StoragePathRepositoryState>>()
-          .clear();
-      await context.read<SavedViewRepository>().clear();
-      await HydratedBloc.storage.clear();
-    } on PaperlessServerException catch (error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-    }
   }
 }

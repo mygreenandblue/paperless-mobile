@@ -17,12 +17,14 @@ import 'package:paperless_mobile/core/repository/state/impl/document_type_reposi
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/core/widgets/offline_banner.dart';
+import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/scan/view/widgets/scanned_image_item.dart';
+import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/file_helpers.dart';
@@ -47,17 +49,97 @@ class _ScannerPageState extends State<ScannerPage>
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
         return Scaffold(
+          drawer: const AppDrawer(),
           floatingActionButton: FloatingActionButton(
             onPressed: () => _openDocumentScanner(context),
             child: const Icon(Icons.add_a_photo_outlined),
           ),
-          appBar: _buildAppBar(context, connectedState.isConnected),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildBody(connectedState.isConnected),
+          //appBar: _buildAppBar(context, connectedState.isConnected),
+          // body: Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: _buildBody(connectedState.isConnected),
+          // ),
+          body: BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return NestedScrollView(
+                floatHeaderSlivers: false,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SearchAppBar(
+                    hintText: "Search documents", //TODO: INTL
+                    onOpenSearch: showDocumentSearchPage,
+                    bottom: PreferredSize(
+                      child: _buildActions(connectedState.isConnected),
+                      preferredSize: const Size.fromHeight(kTextTabBarHeight),
+                    ),
+                  ),
+                ],
+                body: CustomScrollView(
+                  slivers: [
+                    if (state.isEmpty)
+                      SliverFillRemaining(
+                        child: _buildEmptyState(connectedState.isConnected),
+                      )
+                    else
+                      _buildImageGrid(state)
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
+    );
+  }
+
+  Widget _buildActions(bool isConnected) {
+    return SizedBox(
+      height: kTextTabBarHeight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text("Preview"), //TODO: INTL
+                onPressed: state.isNotEmpty
+                    ? () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DocumentView(
+                              documentBytes: _assembleFileBytes(
+                                state,
+                                forcePdf: true,
+                              ).then((file) => file.bytes),
+                            ),
+                          ),
+                        )
+                    : null,
+                icon: const Icon(Icons.visibility_outlined),
+              );
+            },
+          ),
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text("Clear all"), //TODO: INTL
+                onPressed: state.isEmpty ? null : () => _reset(context),
+                icon: const Icon(Icons.delete_sweep_outlined),
+              );
+            },
+          ),
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text("Upload"), //TODO: INTL
+                onPressed: state.isEmpty || !isConnected
+                    ? null
+                    : () => _onPrepareDocumentUpload(context),
+                icon: const Icon(Icons.upload_outlined),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -170,7 +252,7 @@ class _ScannerPageState extends State<ScannerPage>
     }
   }
 
-  Widget _buildBody(bool isConnected) {
+  Widget _buildEmptyState(bool isConnected) {
     return BlocBuilder<DocumentScannerCubit, List<File>>(
       builder: (context, scans) {
         if (scans.isNotEmpty) {
@@ -207,7 +289,7 @@ class _ScannerPageState extends State<ScannerPage>
   }
 
   Widget _buildImageGrid(List<File> scans) {
-    return GridView.builder(
+    return SliverGrid.builder(
         itemCount: scans.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,

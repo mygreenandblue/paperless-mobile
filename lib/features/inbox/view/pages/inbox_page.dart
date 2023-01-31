@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/dart_extensions.dart';
@@ -11,6 +13,7 @@ import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
+import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
@@ -54,39 +57,8 @@ class _InboxPageState extends State<InboxPage> {
 
   @override
   Widget build(BuildContext context) {
-    const _progressBarHeight = 4.0;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize:
-            const Size.fromHeight(kToolbarHeight + _progressBarHeight),
-        child: BlocBuilder<InboxCubit, InboxState>(
-          builder: (context, state) {
-            return AppBar(
-              title: Text(S.of(context).bottomNavInboxPageLabel),
-              actions: [
-                if (state.hasLoaded)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: ColoredBox(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        child: Text(
-                          (state.value.isEmpty
-                                  ? '0 '
-                                  : '${state.value.first.count} ') +
-                              S.of(context).inboxPageUnseenText,
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ).paddedSymmetrically(horizontal: 4.0),
-                      ),
-                    ),
-                  ).paddedSymmetrically(horizontal: 8)
-              ],
-            );
-          },
-        ),
-      ),
+      drawer: const AppDrawer(),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
           if (!state.hasLoaded || state.documents.isEmpty) {
@@ -104,91 +76,95 @@ class _InboxPageState extends State<InboxPage> {
           );
         },
       ),
-      body: BlocBuilder<InboxCubit, InboxState>(
-        builder: (context, state) {
-          if (!state.hasLoaded) {
-            return const DocumentsListLoadingWidget();
-          }
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SearchAppBar(
+            hintText: "Search documents",
+            onOpenSearch: showDocumentSearchPage,
+          ),
+        ],
+        body: BlocBuilder<InboxCubit, InboxState>(
+          builder: (context, state) {
+            if (!state.hasLoaded) {
+              return const CustomScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                slivers: [DocumentsListLoadingWidget()],
+              );
+            }
 
-          if (state.documents.isEmpty) {
-            return InboxEmptyWidget(
-              emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
-            );
-          }
+            if (state.documents.isEmpty) {
+              return InboxEmptyWidget(
+                emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
+              );
+            }
 
-          // Build a list of slivers alternating between SliverToBoxAdapter
-          // (group header) and a SliverList (inbox items).
-          final List<Widget> slivers = _groupByDate(state.documents)
-              .entries
-              .map(
-                (entry) => [
-                  SliverToBoxAdapter(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(32.0),
-                        child: Text(
-                          entry.key,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          textAlign: TextAlign.center,
-                        ).padded(),
-                      ),
-                    ).paddedOnly(top: 8.0),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      childCount: entry.value.length,
-                      (context, index) {
-                        if (index < entry.value.length - 1) {
-                          return Column(
-                            children: [
-                              _buildListItem(
-                                entry.value[index],
-                              ),
-                              const Divider(
-                                indent: 16,
-                                endIndent: 16,
-                              ),
-                            ],
+            // Build a list of slivers alternating between SliverToBoxAdapter
+            // (group header) and a SliverList (inbox items).
+            final List<Widget> slivers = _groupByDate(state.documents)
+                .entries
+                .map(
+                  (entry) => [
+                    SliverToBoxAdapter(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(32.0),
+                          child: Text(
+                            entry.key,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            textAlign: TextAlign.center,
+                          ).padded(),
+                        ),
+                      ).paddedOnly(top: 8.0),
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: entry.value.length,
+                        (context, index) {
+                          if (index < entry.value.length - 1) {
+                            return Column(
+                              children: [
+                                _buildListItem(
+                                  entry.value[index],
+                                ),
+                                const Divider(
+                                  indent: 16,
+                                  endIndent: 16,
+                                ),
+                              ],
+                            );
+                          }
+                          return _buildListItem(
+                            entry.value[index],
                           );
-                        }
-                        return _buildListItem(
-                          entry.value[index],
-                        );
-                      },
+                        },
+                      ),
+                    ),
+                  ],
+                )
+                .flattened
+                .toList()
+              ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
+
+            return RefreshIndicator(
+              onRefresh: () => context.read<InboxCubit>().initializeInbox(),
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: HintCard(
+                      show: !state.isHintAcknowledged,
+                      hintText: S.of(context).inboxPageUsageHintText,
+                      onHintAcknowledged: () =>
+                          context.read<InboxCubit>().acknowledgeHint(),
                     ),
                   ),
+                  ...slivers,
                 ],
-              )
-              .flattened
-              .toList()
-            ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
-
-          return RefreshIndicator(
-            onRefresh: () => context.read<InboxCubit>().initializeInbox(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: HintCard(
-                          show: !state.isHintAcknowledged,
-                          hintText: S.of(context).inboxPageUsageHintText,
-                          onHintAcknowledged: () =>
-                              context.read<InboxCubit>().acknowledgeHint(),
-                        ),
-                      ),
-                      ...slivers,
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

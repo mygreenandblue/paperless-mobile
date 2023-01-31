@@ -482,7 +482,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           child: _DetailsItem(
             label: S.of(context).documentStoragePathPropertyLabel,
             content: StoragePathWidget(
-              isClickable: widget.isLabelClickable,
               pathId: document.storagePath,
             ),
           ).paddedSymmetrically(vertical: 16),

@@ -14,6 +14,7 @@ import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class InboxItem extends StatefulWidget {
   static const _a4AspectRatio = 1 / 1.4142;
@@ -40,24 +41,16 @@ class _InboxItemState extends State<InboxItem> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () async {
-        final returnedDocument = await Navigator.push<DocumentModel?>(
+        final updatedDocument = await Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) => DocumentDetailsCubit(
-                context.read<PaperlessDocumentsApi>(),
-                widget.document,
-              ),
-              child: const LabelRepositoriesProvider(
-                child: DocumentDetailsPage(
-                  isLabelClickable: false,
-                ),
-              ),
-            ),
+          DocumentDetailsRoute.routeName,
+          arguments: DocumentDetailsRouteArguments(
+            document: widget.document,
+            isLabelClickable: false,
           ),
-        );
-        if (returnedDocument != null) {
-          widget.onDocumentUpdated(returnedDocument);
+        ) as DocumentModel?;
+        if (updatedDocument != null) {
+          widget.onDocumentUpdated(updatedDocument);
         }
       },
       child: SizedBox(

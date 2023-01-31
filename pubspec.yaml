@@ -88,6 +88,7 @@ dependencies:
   responsive_builder: ^0.4.3
   open_filex: ^4.3.2
   dynamic_color: ^1.5.4
+  auto_route: ^5.0.4
 
 dev_dependencies:
   integration_test:
@@ -102,6 +103,7 @@ dev_dependencies:
   flutter_lints: ^1.0.0
   json_serializable: ^6.5.4
   dart_code_metrics: ^5.4.0
+  auto_route_generator: ^5.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

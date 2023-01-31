@@ -46,45 +46,46 @@ class LabelTabView<T extends Label> extends StatelessWidget {
             }
             final labels = state.labels.values.toList()..sort();
             if (labels.isEmpty) {
-              return Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      emptyStateDescription,
-                      textAlign: TextAlign.center,
-                    ),
-                    TextButton(
-                      onPressed: onAddNew,
-                      child: Text(emptyStateActionButtonLabel),
-                    ),
-                  ].padded(),
+              return SliverFillRemaining(
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        emptyStateDescription,
+                        textAlign: TextAlign.center,
+                      ),
+                      TextButton(
+                        onPressed: onAddNew,
+                        child: Text(emptyStateActionButtonLabel),
+                      ),
+                    ].padded(),
+                  ),
                 ),
               );
             }
-            return RefreshIndicator(
-              onRefresh: context.read<LabelCubit<T>>().reload,
-              notificationPredicate: (notification) =>
-                  connectivityState.isConnected,
-              child: ListView(
-                children: labels
-                    .map((l) => LabelItem<T>(
-                          name: l.name,
-                          content: contentBuilder?.call(l) ??
-                              Text(
-                                translateMatchingAlgorithmName(
-                                        context, l.matchingAlgorithm) +
-                                    ((l.match?.isNotEmpty ?? false)
-                                        ? ": ${l.match}"
-                                        : ""),
-                                maxLines: 2,
-                              ),
-                          onOpenEditPage: onEdit,
-                          filterBuilder: filterBuilder,
-                          leading: leadingBuilder?.call(l),
-                          label: l,
-                        ))
-                    .toList(),
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final l = labels.elementAt(index);
+                  return LabelItem<T>(
+                    name: l.name,
+                    content: contentBuilder?.call(l) ??
+                        Text(
+                          translateMatchingAlgorithmName(
+                                  context, l.matchingAlgorithm) +
+                              ((l.match?.isNotEmpty ?? false)
+                                  ? ": ${l.match}"
+                                  : ""),
+                          maxLines: 2,
+                        ),
+                    onOpenEditPage: onEdit,
+                    filterBuilder: filterBuilder,
+                    leading: leadingBuilder?.call(l),
+                    label: l,
+                  );
+                },
+                childCount: labels.length,
               ),
             );
           },

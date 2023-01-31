@@ -48,11 +48,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
+  late final InboxCubit _inboxCubit;
 
   @override
   void initState() {
     super.initState();
     _initializeData(context);
+    _inboxCubit = InboxCubit(
+      context.read(),
+      context.read(),
+      context.read(),
+      context.read(),
+    );
     context.read<ConnectivityCubit>().reload();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
@@ -148,6 +155,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _inboxCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final destinations = [
       RouteDescription(
@@ -182,28 +195,15 @@ class _HomePageState extends State<HomePage> {
         ),
         label: S.of(context).bottomNavInboxPageLabel,
       ),
-      // RouteDescription(
-      //   icon: const Icon(Icons.settings_outlined),
-      //   selectedIcon: Icon(
-      //     Icons.settings,
-      //     color: Theme.of(context).colorScheme.primary,
-      //   ),
-      //   label: S.of(context).appDrawerSettingsLabel,
-      // ),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => DocumentsCubit(
-              context.read<PaperlessDocumentsApi>(),
-              context.read<SavedViewRepository>(),
-            ),
+            create: (context) => DocumentsCubit(context.read()),
           ),
           BlocProvider(
-            create: (context) => SavedViewCubit(
-              context.read<SavedViewRepository>(),
-            ),
+            create: (context) => SavedViewCubit(context.read()),
           ),
         ],
         child: const DocumentsPage(),
@@ -213,13 +213,8 @@ class _HomePageState extends State<HomePage> {
         child: const ScannerPage(),
       ),
       const LabelsPage(),
-      BlocProvider(
-        create: (context) => InboxCubit(
-          context.read(),
-          context.read(),
-          context.read(),
-          context.read(),
-        ),
+      BlocProvider.value(
+        value: _inboxCubit,
         child: const InboxPage(),
       ),
       // const SettingsPage(),
@@ -249,7 +244,6 @@ class _HomePageState extends State<HomePage> {
         builder: (context, sizingInformation) {
           if (!sizingInformation.isMobile) {
             return Scaffold(
-              // drawer: const AppDrawer(),
               body: Row(
                 children: [
                   NavigationRail(

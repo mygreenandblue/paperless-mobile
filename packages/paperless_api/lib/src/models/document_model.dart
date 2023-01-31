@@ -84,9 +84,11 @@ class DocumentModel extends Equatable {
       id: id,
       title: title ?? this.title,
       content: content ?? this.content,
-      documentType: documentType?.call() ?? this.documentType,
-      correspondent: correspondent?.call() ?? this.correspondent,
-      storagePath: storagePath?.call() ?? this.storagePath,
+      documentType:
+          documentType != null ? documentType.call() : this.documentType,
+      correspondent:
+          correspondent != null ? correspondent.call() : this.correspondent,
+      storagePath: storagePath != null ? storagePath.call() : this.storagePath,
       tags: tags ?? this.tags,
       created: created ?? this.created,
       modified: modified ?? this.modified,

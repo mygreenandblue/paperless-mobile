@@ -627,5 +627,6 @@
   "verifyIdentityPageTitle": "Ověř svou identitu",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Ověřit identitu",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
+  "genericActionCloseLabel": "Close"
 }

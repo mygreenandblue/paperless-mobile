@@ -12,10 +12,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   final PaperlessDocumentsApi api;
 
-  final SavedViewRepository _savedViewRepository;
-
-  DocumentsCubit(this.api, this._savedViewRepository)
-      : super(const DocumentsState());
+  DocumentsCubit(this.api) : super(const DocumentsState());
 
   Future<void> bulkRemove(List<DocumentModel> documents) async {
     log("[DocumentsCubit] bulkRemove");

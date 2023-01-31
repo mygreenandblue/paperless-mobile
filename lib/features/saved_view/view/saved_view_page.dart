@@ -12,6 +12,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/view_actions.da
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_details_cubit.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SavedViewPage extends StatefulWidget {
   final Future<void> Function(SavedView savedView) onDelete;
@@ -101,6 +102,12 @@ class _SavedViewPageState extends State<SavedViewPage> {
                     onTap: _onOpenDocumentDetails,
                     viewType: _viewType,
                   ),
+                  if (state.hasLoaded && state.isLoading)
+                    const SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
                 ],
               );
             },
@@ -111,20 +118,14 @@ class _SavedViewPageState extends State<SavedViewPage> {
   }
 
   void _onOpenDocumentDetails(DocumentModel document) async {
-    final updatedDocument = await Navigator.push<DocumentModel>(
+    final updatedDocument = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (context) => DocumentDetailsCubit(
-            context.read<PaperlessDocumentsApi>(),
-            document,
-          ),
-          child: const LabelRepositoriesProvider(
-            child: DocumentDetailsPage(),
-          ),
-        ),
+      DocumentDetailsRoute.routeName,
+      arguments: DocumentDetailsRouteArguments(
+        document: document,
+        isLabelClickable: false,
       ),
-    );
+    ) as DocumentModel?;
     if (updatedDocument != document) {
       // Reload in case document was edited and might not fulfill filter criteria of saved view anymore
       context.read<SavedViewDetailsCubit>().reload();

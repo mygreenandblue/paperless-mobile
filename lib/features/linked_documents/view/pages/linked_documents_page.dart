@@ -11,6 +11,7 @@ import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents
 import 'package:paperless_mobile/features/linked_documents/bloc/state/linked_documents_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {
   const LinkedDocumentsPage({super.key});
@@ -59,6 +60,19 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
                 isLabelClickable: false,
                 isLoading: state.isLoading,
                 hasLoaded: state.hasLoaded,
+                onTap: (document) async {
+                  final updatedDocument = await Navigator.pushNamed(
+                    context,
+                    DocumentDetailsRoute.routeName,
+                    arguments: DocumentDetailsRouteArguments(
+                      document: document,
+                      isLabelClickable: false,
+                    ),
+                  ) as DocumentModel?;
+                  if (updatedDocument != document) {
+                    context.read<LinkedDocumentsCubit>().reload();
+                  }
+                },
               );
             },
           );

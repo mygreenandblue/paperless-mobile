@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/document_search/cubit/document_search_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
-import 'package:paperless_mobile/features/search/cubit/document_search_state.dart';
 
 class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
     with PagedDocumentsMixin {

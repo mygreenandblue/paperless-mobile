@@ -29,7 +29,8 @@ class SavedViewList extends StatelessWidget {
               return ListTile(
                 title: Text(view.name),
                 subtitle: Text(
-                    "${view.filterRules.length} filter(s) set"), //TODO: INTL w/ placeholder
+                  "${view.filterRules.length} filter(s) set",
+                ), //TODO: INTL w/ placeholder
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(

@@ -27,11 +27,8 @@ class DocumentSearchState extends PagedDocumentsState {
   });
 
   @override
-  List<Object> get props => [
-        hasLoaded,
-        isLoading,
-        filter,
-        value,
+  List<Object?> get props => [
+        ...super.props,
         searchHistory,
         suggestions,
         view,
