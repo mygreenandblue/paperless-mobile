@@ -98,9 +98,7 @@ void main() async {
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
 
   // Remove temporarily downloaded files.
-  for (var item in (await FileService.temporaryDirectory).listSync()) {
-    item.deleteSync(recursive: true);
-  }
+  await FileService.clearDirectoryContent(PaperlessDirectoryType.temporary);
 
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();

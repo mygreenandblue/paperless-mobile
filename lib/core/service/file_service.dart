@@ -85,6 +85,16 @@ class FileService {
     await scanDir?.delete(recursive: true);
     await tempDir.delete(recursive: true);
   }
+
+  static Future<void> clearDirectoryContent(PaperlessDirectoryType type) async {
+    final dir = await getDirectory(type);
+
+    if (dir == null || !(await dir.exists())) {
+      return;
+    }
+
+    await Future.wait(dir.listSync().map((item) => item.delete()));
+  }
 }
 
 enum PaperlessDirectoryType {
