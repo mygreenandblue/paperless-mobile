@@ -227,3 +227,6 @@ Here are some impressions from the app!
 
 Made with [contrib.rocks](https://contrib.rocks).
 
+## Troubleshooting
+#### Suggestions are not selectable in any of the label form fields
+This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue to occur. Luckily, this can be resolved by turning off the accessibility features in these apps.
