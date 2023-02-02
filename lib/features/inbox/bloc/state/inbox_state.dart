@@ -16,6 +16,8 @@ class InboxState extends PagedDocumentsState {
 
   final Map<int, Correspondent> availableCorrespondents;
 
+  final int itemsInInboxCount;
+
   @JsonKey()
   final bool isHintAcknowledged;
 
@@ -29,6 +31,7 @@ class InboxState extends PagedDocumentsState {
     this.availableTags = const {},
     this.availableDocumentTypes = const {},
     this.availableCorrespondents = const {},
+    this.itemsInInboxCount = 0,
   });
 
   @override
@@ -43,6 +46,7 @@ class InboxState extends PagedDocumentsState {
         availableTags,
         availableDocumentTypes,
         availableCorrespondents,
+        itemsInInboxCount,
       ];
 
   InboxState copyWith({
@@ -56,6 +60,7 @@ class InboxState extends PagedDocumentsState {
     Map<int, Correspondent>? availableCorrespondents,
     Map<int, DocumentType>? availableDocumentTypes,
     Map<int, FieldSuggestions>? suggestions,
+    int? itemsInInboxCount,
   }) {
     return InboxState(
       hasLoaded: hasLoaded ?? super.hasLoaded,
@@ -69,6 +74,7 @@ class InboxState extends PagedDocumentsState {
           availableDocumentTypes ?? this.availableDocumentTypes,
       availableTags: availableTags ?? this.availableTags,
       filter: filter ?? super.filter,
+      itemsInInboxCount: itemsInInboxCount ?? this.itemsInInboxCount,
     );
   }
 

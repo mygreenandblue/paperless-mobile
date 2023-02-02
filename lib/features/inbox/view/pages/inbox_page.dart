@@ -79,9 +79,8 @@ class _InboxPageState extends State<InboxPage> {
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SearchAppBar(
-            hintText: "Search documents",
-            onOpenSearch: showDocumentSearchPage,
-          ),
+              hintText: "Search documents",
+              onOpenSearch: showDocumentSearchPage),
         ],
         body: BlocBuilder<InboxCubit, InboxState>(
           builder: (context, state) {

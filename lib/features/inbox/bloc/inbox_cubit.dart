@@ -18,16 +18,20 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
 
   final PaperlessDocumentsApi _documentsApi;
 
+  final PaperlessServerStatsApi _statsApi;
+
   final List<StreamSubscription> _subscriptions = [];
 
   @override
   PaperlessDocumentsApi get api => _documentsApi;
 
+  Timer? _taskTimer;
   InboxCubit(
     this._tagsRepository,
     this._documentsApi,
     this._correspondentRepository,
     this._documentTypeRepository,
+    this._statsApi,
   ) : super(
           InboxState(
             availableCorrespondents:
@@ -60,6 +64,15 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
         }
       }),
     );
+    //TODO: Do this properly in a background task.
+    _taskTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      refreshItemsInInboxCount();
+    });
+  }
+
+  void refreshItemsInInboxCount() async {
+    final stats = await _statsApi.getServerStatistics();
+    emit(state.copyWith(itemsInInboxCount: stats.documentsInInbox));
   }
 
   ///
@@ -175,9 +188,10 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
 
   @override
   Future<void> close() {
-    _subscriptions.forEach((element) {
-      element.cancel();
-    });
+    _taskTimer?.cancel();
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
     return super.close();
   }
 }

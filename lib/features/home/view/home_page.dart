@@ -20,7 +20,7 @@ import 'package:paperless_mobile/features/document_upload/view/document_upload_p
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
-import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
+import 'package:paperless_mobile/features/home/view/widget/_app_drawer.dart';
 import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
@@ -55,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _initializeData(context);
     _inboxCubit = InboxCubit(
+      context.read(),
       context.read(),
       context.read(),
       context.read(),
@@ -271,7 +272,6 @@ class _HomePageState extends State<HomePage> {
               destinations:
                   destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
-            drawer: const AppDrawer(),
             body: routes[_currentIndex],
           );
         },
