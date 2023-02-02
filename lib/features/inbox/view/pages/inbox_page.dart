@@ -76,78 +76,81 @@ class _InboxPageState extends State<InboxPage> {
           );
         },
       ),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SearchAppBar(
-              hintText: "Search documents",
-              onOpenSearch: showDocumentSearchPage),
-        ],
-        body: BlocBuilder<InboxCubit, InboxState>(
-          builder: (context, state) {
-            if (!state.hasLoaded) {
-              return const CustomScrollView(
-                physics: NeverScrollableScrollPhysics(),
-                slivers: [DocumentsListLoadingWidget()],
-              );
-            }
+      body: RefreshIndicator(
+        edgeOffset: 78,
+        onRefresh: () => context.read<InboxCubit>().initializeInbox(),
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            SearchAppBar(
+              hintText: S.of(context).documentSearchSearchDocuments,
+              onOpenSearch: showDocumentSearchPage,
+            ),
+          ],
+          body: BlocBuilder<InboxCubit, InboxState>(
+            builder: (context, state) {
+              if (!state.hasLoaded) {
+                return const CustomScrollView(
+                  physics: NeverScrollableScrollPhysics(),
+                  slivers: [DocumentsListLoadingWidget()],
+                );
+              }
 
-            if (state.documents.isEmpty) {
-              return InboxEmptyWidget(
-                emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
-              );
-            }
+              if (state.documents.isEmpty) {
+                return InboxEmptyWidget(
+                  emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
+                );
+              }
 
-            // Build a list of slivers alternating between SliverToBoxAdapter
-            // (group header) and a SliverList (inbox items).
-            final List<Widget> slivers = _groupByDate(state.documents)
-                .entries
-                .map(
-                  (entry) => [
-                    SliverToBoxAdapter(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(32.0),
-                          child: Text(
-                            entry.key,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ).padded(),
-                        ),
-                      ).paddedOnly(top: 8.0),
-                    ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        childCount: entry.value.length,
-                        (context, index) {
-                          if (index < entry.value.length - 1) {
-                            return Column(
-                              children: [
-                                _buildListItem(
-                                  entry.value[index],
-                                ),
-                                const Divider(
-                                  indent: 16,
-                                  endIndent: 16,
-                                ),
-                              ],
-                            );
-                          }
-                          return _buildListItem(
-                            entry.value[index],
-                          );
-                        },
+              // Build a list of slivers alternating between SliverToBoxAdapter
+              // (group header) and a SliverList (inbox items).
+              final List<Widget> slivers = _groupByDate(state.documents)
+                  .entries
+                  .map(
+                    (entry) => [
+                      SliverToBoxAdapter(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(32.0),
+                            child: Text(
+                              entry.key,
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ).padded(),
+                          ),
+                        ).paddedOnly(top: 8.0),
                       ),
-                    ),
-                  ],
-                )
-                .flattened
-                .toList()
-              ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          childCount: entry.value.length,
+                          (context, index) {
+                            if (index < entry.value.length - 1) {
+                              return Column(
+                                children: [
+                                  _buildListItem(
+                                    entry.value[index],
+                                  ),
+                                  const Divider(
+                                    indent: 16,
+                                    endIndent: 16,
+                                  ),
+                                ],
+                              );
+                            }
+                            return _buildListItem(
+                              entry.value[index],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                  .flattened
+                  .toList()
+                ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
+              //                              edgeOffset: kToolbarHeight,
 
-            return RefreshIndicator(
-              onRefresh: () => context.read<InboxCubit>().initializeInbox(),
-              child: CustomScrollView(
+              return CustomScrollView(
                 controller: _scrollController,
                 slivers: [
                   SliverToBoxAdapter(
@@ -160,9 +163,9 @@ class _InboxPageState extends State<InboxPage> {
                   ),
                   ...slivers,
                 ],
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

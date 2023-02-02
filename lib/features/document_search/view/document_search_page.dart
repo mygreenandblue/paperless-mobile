@@ -51,7 +51,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hintStyle: theme.textTheme.bodyLarge?.apply(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            hintText: "Search documents", //TODO: INTL
+            hintText: S.of(context).documentSearchSearchDocuments,
             border: InputBorder.none,
           ),
           controller: _queryController,
@@ -143,8 +143,10 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
       slivers: [
         SliverToBoxAdapter(child: header),
         if (state.hasLoaded && !state.isLoading && state.documents.isEmpty)
-          const SliverToBoxAdapter(
-            child: Center(child: Text("No documents found.")), //TODO: INTL
+          SliverToBoxAdapter(
+            child: Center(
+              child: Text(S.of(context).documentSearchNoMatchesFound),
+            ),
           )
         else
           SliverAdaptiveDocumentsView(

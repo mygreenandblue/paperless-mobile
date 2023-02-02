@@ -6,6 +6,8 @@
       "name": {}
     }
   },
+  "accountSettingsTitle": "Account",
+  "@accountSettingsTitle": {},
   "addCorrespondentPageTitle": "Neuer Korrespondent",
   "@addCorrespondentPageTitle": {},
   "addDocumentTypePageTitle": "Neuer Dokumenttyp",
@@ -150,10 +152,14 @@
   "@documentScannerPageUploadFromThisDeviceButtonLabel": {},
   "documentSearchHistory": "Verlauf",
   "@documentSearchHistory": {},
+  "documentSearchNoMatchesFound": "Keine Treffer.",
+  "@documentSearchNoMatchesFound": {},
   "documentSearchPageRemoveFromHistory": "Aus dem Suchverlauf entfernen?",
   "@documentSearchPageRemoveFromHistory": {},
   "documentSearchResults": "Ergebnisse",
   "@documentSearchResults": {},
+  "documentSearchSearchDocuments": "Durchsuche Dokumente",
+  "@documentSearchSearchDocuments": {},
   "documentsEmptyStateResetFilterLabel": "Filter zurücksetzen",
   "@documentsEmptyStateResetFilterLabel": {},
   "documentsFilterPageAdvancedLabel": "Erweitert",
@@ -268,7 +274,7 @@
   "@errorMessageDocumentUploadFailed": {},
   "errorMessageInvalidClientCertificateConfiguration": "Ungültiges Zertifikat oder fehlende Passphrase, bitte versuche es erneut.",
   "@errorMessageInvalidClientCertificateConfiguration": {},
-  "errorMessageLoadSavedViewsError": "Gespeicherte Ansichten konnten nicht geladen werden.",
+  "errorMessageLoadSavedViewsError": "Ansichten konnten nicht geladen werden.",
   "@errorMessageLoadSavedViewsError": {},
   "errorMessageMissingClientCertificate": "Ein Client Zerfitikat wurde erwartet, aber nicht gesendet. Bitte konfiguriere ein gültiges Zertifikat.",
   "@errorMessageMissingClientCertificate": {},
@@ -370,6 +376,8 @@
   "@genericAcknowledgeLabel": {},
   "genericActionCancelLabel": "Abbrechen",
   "@genericActionCancelLabel": {},
+  "genericActionCloseLabel": "Schließen",
+  "@genericActionCloseLabel": {},
   "genericActionCreateLabel": "Erstellen",
   "@genericActionCreateLabel": {},
   "genericActionDeleteLabel": "Löschen",
@@ -558,14 +566,26 @@
   "@savedViewNameLabel": {},
   "savedViewsEmptyStateText": "Lege Ansichten an, um Dokumente schneller zu finden.",
   "@savedViewsEmptyStateText": {},
+  "savedViewsFiltersSetCount": "{count, plural, zero{{count} Filter gesetzt} one{{count} Filter gesetzt} other{{count} Filter gesetzt}}",
+  "@savedViewsFiltersSetCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "savedViewShowInSidebarLabel": "In Seitenleiste zeigen",
   "@savedViewShowInSidebarLabel": {},
   "savedViewShowOnDashboardLabel": "Auf Startseite zeigen",
   "@savedViewShowOnDashboardLabel": {},
-  "savedViewsLabel": "Gespeicherte Ansichten",
+  "savedViewsLabel": "Ansichten",
   "@savedViewsLabel": {},
+  "scannerPageClearAllLabel": "Alle löschen",
+  "@scannerPageClearAllLabel": {},
   "scannerPageImagePreviewTitle": "Aufnahme",
   "@scannerPageImagePreviewTitle": {},
+  "scannerPagePreviewLabel": "Vorschau",
+  "@scannerPagePreviewLabel": {},
+  "scannerPageUploadLabel": "Hochladen",
+  "@scannerPageUploadLabel": {},
   "serverInformationPaperlessVersionText": "Paperless Server-Version",
   "@serverInformationPaperlessVersionText": {},
   "settingsPageAppearanceSettingDarkThemeLabel": "Dunkler Modus",
@@ -627,6 +647,5 @@
   "verifyIdentityPageTitle": "Verifiziere deine Identität",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Identität verifizieren",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
-  "genericActionCloseLabel": "Close"
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
 }

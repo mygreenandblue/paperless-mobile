@@ -115,6 +115,7 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
       document.copyWith(tags: updatedTags),
     );
     await remove(document);
+    emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
     return tagsToRemove;
   }
 
@@ -129,6 +130,7 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
       tags: {...document.tags, ...removedTags},
     );
     await _documentsApi.update(updatedDoc);
+    emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount + 1));
     return reload();
   }
 
@@ -147,6 +149,7 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
       emit(state.copyWith(
         hasLoaded: true,
         value: [],
+        itemsInInboxCount: 0,
       ));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -160,6 +163,7 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
     } else {
       // Remove document from inbox.
       remove(document);
+      emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
     }
   }
 

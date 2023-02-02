@@ -47,11 +47,11 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
                 ),
                 RadioOption(
                   value: 'cs',
-                  label: _languageOptions['cs']! + " *",
+                  label: _languageOptions['cs']! + "*",
                 ),
                 RadioOption(
                   value: 'tr',
-                  label: _languageOptions['tr']! + " *",
+                  label: _languageOptions['tr']! + "*",
                 )
               ],
               initialValue: context

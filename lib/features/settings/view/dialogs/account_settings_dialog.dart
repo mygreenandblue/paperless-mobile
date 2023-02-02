@@ -11,7 +11,7 @@ import 'package:paperless_mobile/core/repository/state/impl/document_type_reposi
 import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
-import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -25,8 +25,12 @@ class AccountSettingsDialog extends StatelessWidget {
     return AlertDialog(
       scrollable: true,
       contentPadding: EdgeInsets.zero,
-      icon: const PaperlessLogo.green(),
-      title: const Text(" Your Accounts"),
+      title: Row(
+        children: [
+          const CloseButton(),
+          Text(S.of(context).accountSettingsTitle),
+        ],
+      ),
       content: BlocBuilder<PaperlessServerInformationCubit,
           PaperlessServerInformationState>(
         builder: (context, state) {
@@ -55,28 +59,27 @@ class AccountSettingsDialog extends StatelessWidget {
                 onTap: () {},
               ),
               Divider(),
-              OutlinedButton(
+              FilledButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(
+                    Theme.of(context).colorScheme.error,
+                  ),
+                ),
                 child: Text(
                   S.of(context).appDrawerLogoutLabel,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
+                    color: Theme.of(context).colorScheme.onError,
                   ),
                 ),
                 onPressed: () async {
                   await _onLogout(context);
                   Navigator.of(context).maybePop();
                 },
-              ),
+              ).padded(16),
             ],
           );
         },
       ),
-      actions: [
-        TextButton(
-          child: Text(S.of(context).genericActionCloseLabel),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
     );
   }
 

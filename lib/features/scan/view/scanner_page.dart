@@ -65,7 +65,7 @@ class _ScannerPageState extends State<ScannerPage>
                 floatHeaderSlivers: false,
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SearchAppBar(
-                    hintText: "Search documents", //TODO: INTL
+                    hintText: S.of(context).documentSearchSearchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: PreferredSize(
                       child: _buildActions(connectedState.isConnected),
@@ -101,7 +101,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text("Preview"), //TODO: INTL
+                label: Text(S.of(context).scannerPagePreviewLabel),
                 onPressed: state.isNotEmpty
                     ? () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -121,7 +121,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text("Clear all"), //TODO: INTL
+                label: Text(S.of(context).scannerPageClearAllLabel),
                 onPressed: state.isEmpty ? null : () => _reset(context),
                 icon: const Icon(Icons.delete_sweep_outlined),
               );
@@ -130,7 +130,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text("Upload"), //TODO: INTL
+                label: Text(S.of(context).scannerPageUploadLabel),
                 onPressed: state.isEmpty || !isConnected
                     ? null
                     : () => _onPrepareDocumentUpload(context),

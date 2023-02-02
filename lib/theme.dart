@@ -46,5 +46,10 @@ ThemeData buildTheme({
     appBarTheme: AppBarTheme(
       scrolledUnderElevation: 0,
     ),
+    chipTheme: ChipThemeData(
+      backgroundColor: colorScheme.surfaceVariant,
+      checkmarkColor: colorScheme.onSurfaceVariant,
+      deleteIconColor: colorScheme.onSurfaceVariant,
+    ),
   );
 }

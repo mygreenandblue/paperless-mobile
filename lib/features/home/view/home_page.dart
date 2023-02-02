@@ -20,15 +20,14 @@ import 'package:paperless_mobile/features/document_upload/view/document_upload_p
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
-import 'package:paperless_mobile/features/home/view/widget/_app_drawer.dart';
 import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
+import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/scan/view/scanner_page.dart';
-import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -189,13 +188,24 @@ class _HomePageState extends State<HomePage> {
         label: S.of(context).bottomNavLabelsPageLabel,
       ),
       RouteDescription(
-        icon: const Icon(Icons.inbox_outlined),
-        selectedIcon: Icon(
-          Icons.inbox,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        label: S.of(context).bottomNavInboxPageLabel,
-      ),
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: Icon(
+            Icons.inbox,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context).bottomNavInboxPageLabel,
+          badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
+                bloc: _inboxCubit,
+                builder: (context, state) {
+                  if (state.itemsInInboxCount > 0) {
+                    return Badge.count(
+                      count: state.itemsInInboxCount,
+                      child: icon,
+                    );
+                  }
+                  return icon;
+                },
+              )),
     ];
     final routes = <Widget>[
       MultiBlocProvider(

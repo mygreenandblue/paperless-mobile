@@ -47,9 +47,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
         ),
       );
     } else {
-      emit(
-        state.copyWith(selection: [...state.selection, model]),
-      );
+      emit(state.copyWith(selection: [...state.selection, model]));
     }
   }
 

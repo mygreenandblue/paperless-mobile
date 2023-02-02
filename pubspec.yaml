@@ -68,7 +68,7 @@ dependencies:
   mime: ^1.0.2
   receive_sharing_intent: ^1.4.5
   uuid: ^3.0.6
-  flutter_typeahead: ^4.1.1
+  flutter_typeahead: ^4.3.3
   fluttertoast: ^8.1.1
   paperless_api:
     path: packages/paperless_api

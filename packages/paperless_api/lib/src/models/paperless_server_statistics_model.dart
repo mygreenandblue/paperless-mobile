@@ -8,6 +8,6 @@ class PaperlessServerStatisticsModel {
   });
 
   PaperlessServerStatisticsModel.fromJson(Map<String, dynamic> json)
-      : documentsTotal = json['documents_total'],
-        documentsInInbox = json['documents_inbox'];
+      : documentsTotal = json['documents_total'] ?? 0,
+        documentsInInbox = json['documents_inbox'] ?? 0;
 }

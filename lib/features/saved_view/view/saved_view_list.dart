@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_details_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_state.dart';
@@ -17,10 +17,11 @@ class SavedViewList extends StatelessWidget {
     return BlocBuilder<SavedViewCubit, SavedViewState>(
       builder: (context, state) {
         if (state.value.isEmpty) {
-          return Text(
-            S.of(context).savedViewsEmptyStateText,
-            textAlign: TextAlign.center,
-          ).padded();
+          return SliverToBoxAdapter(
+            child: HintCard(
+              hintText: S.of(context).savedViewsEmptyStateText,
+            ),
+          );
         }
         return SliverList(
           delegate: SliverChildBuilderDelegate(
@@ -29,8 +30,10 @@ class SavedViewList extends StatelessWidget {
               return ListTile(
                 title: Text(view.name),
                 subtitle: Text(
-                  "${view.filterRules.length} filter(s) set",
-                ), //TODO: INTL w/ placeholder
+                  S
+                      .of(context)
+                      .savedViewsFiltersSetCount(view.filterRules.length),
+                ),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -42,7 +45,6 @@ class SavedViewList extends StatelessWidget {
                               savedView: view,
                             ),
                           ),
-                          BlocProvider.value(value: savedViewCubit),
                         ],
                         child: SavedViewPage(
                           onDelete: savedViewCubit.remove,

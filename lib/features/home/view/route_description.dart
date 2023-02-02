@@ -16,8 +16,8 @@ class RouteDescription {
   NavigationDestination toNavigationDestination() {
     return NavigationDestination(
       label: label,
-      icon: icon,
-      selectedIcon: selectedIcon,
+      icon: badgeBuilder?.call(icon) ?? icon,
+      selectedIcon: badgeBuilder?.call(selectedIcon) ?? selectedIcon,
     );
   }
 

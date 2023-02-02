@@ -36,13 +36,16 @@ class HintCard extends StatelessWidget {
               hintIcon,
               color: Theme.of(context).hintColor,
             ).padded(),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                hintText,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  hintText,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ),
             ),
             if (onHintAcknowledged != null)

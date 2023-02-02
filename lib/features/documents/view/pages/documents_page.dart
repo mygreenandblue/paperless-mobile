@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/labels_bloc_provider.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
@@ -19,6 +21,7 @@ import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -147,7 +150,6 @@ class _DocumentsPageState extends State<DocumentsPage>
                 return false;
               },
               child: NestedScrollView(
-                floatHeaderSlivers: true,
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SliverOverlapAbsorber(
                     // This widget takes the overlapping behavior of the SliverAppBar,
@@ -160,17 +162,41 @@ class _DocumentsPageState extends State<DocumentsPage>
                     handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
                       context,
                     ),
-                    sliver: SearchAppBar(
-                      hintText: "Search documents", //TODO: INTL
-                      onOpenSearch: showDocumentSearchPage,
-                      bottom: TabBar(
-                        controller: _tabController,
-                        isScrollable: true,
-                        tabs: [
-                          Tab(text: S.of(context).documentsPageTitle),
-                          Tab(text: S.of(context).savedViewsLabel),
-                        ],
-                      ),
+                    sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
+                      builder: (context, state) {
+                        if (state.selection.isNotEmpty) {
+                          return SliverAppBar(
+                            floating: false,
+                            pinned: true,
+                            leading: IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => context
+                                  .read<DocumentsCubit>()
+                                  .resetSelection(),
+                            ),
+                            title: Text(
+                              "${state.selection.length} ${S.of(context).documentsSelectedText}",
+                            ),
+                            actions: [
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => _onDelete(state),
+                              ),
+                            ],
+                          );
+                        }
+                        return SearchAppBar(
+                          hintText: S.of(context).documentSearchSearchDocuments,
+                          onOpenSearch: showDocumentSearchPage,
+                          bottom: TabBar(
+                            controller: _tabController,
+                            tabs: [
+                              Tab(text: S.of(context).documentsPageTitle),
+                              Tab(text: S.of(context).savedViewsLabel),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -186,7 +212,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                         _currentTab != desiredTab) {
                       setState(() => _currentTab = desiredTab);
                     }
-                    return true;
+                    return false;
                   },
                   child: NotificationListener<ScrollMetricsNotification>(
                     onNotification: (notification) {
@@ -213,7 +239,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                               ),
                             );
                       }
-                      return true;
+                      return false;
                     },
                     child: TabBarView(
                       controller: _tabController,
@@ -233,6 +259,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                                         .sliverOverlapAbsorberHandleFor(
                                             context),
                                   ),
+                                  _buildViewActions(),
                                   BlocBuilder<DocumentsCubit, DocumentsState>(
                                     buildWhen: (previous, current) =>
                                         !const ListEquality().equals(
@@ -324,8 +351,33 @@ class _DocumentsPageState extends State<DocumentsPage>
     );
   }
 
-  //TODO: Add app bar...
-  void _onDelete(BuildContext context, DocumentsState documentsState) async {
+  Widget _buildViewActions() {
+    return SliverToBoxAdapter(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SortDocumentsButton(),
+          BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Icon(
+                  state.preferredViewType == ViewType.list
+                      ? Icons.grid_view_rounded
+                      : Icons.list,
+                ),
+                onPressed: () =>
+                    context.read<ApplicationSettingsCubit>().setViewType(
+                          state.preferredViewType.toggle(),
+                        ),
+              );
+            },
+          )
+        ],
+      ).paddedSymmetrically(horizontal: 8, vertical: 4),
+    );
+  }
+
+  void _onDelete(DocumentsState documentsState) async {
     final shouldDelete = await showDialog<bool>(
           context: context,
           builder: (context) =>

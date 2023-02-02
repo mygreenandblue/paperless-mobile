@@ -6,6 +6,8 @@
       "name": {}
     }
   },
+  "accountSettingsTitle": "Account",
+  "@accountSettingsTitle": {},
   "addCorrespondentPageTitle": "Yeni ek yazar",
   "@addCorrespondentPageTitle": {},
   "addDocumentTypePageTitle": "Yeni Belge Türü",
@@ -150,10 +152,14 @@
   "@documentScannerPageUploadFromThisDeviceButtonLabel": {},
   "documentSearchHistory": "History",
   "@documentSearchHistory": {},
+  "documentSearchNoMatchesFound": "No matches found.",
+  "@documentSearchNoMatchesFound": {},
   "documentSearchPageRemoveFromHistory": "Remove from search history?",
   "@documentSearchPageRemoveFromHistory": {},
   "documentSearchResults": "Results",
   "@documentSearchResults": {},
+  "documentSearchSearchDocuments": "Search documents",
+  "@documentSearchSearchDocuments": {},
   "documentsEmptyStateResetFilterLabel": "Filtreyi sıfırla",
   "@documentsEmptyStateResetFilterLabel": {},
   "documentsFilterPageAdvancedLabel": "Gelişmiş",
@@ -370,6 +376,8 @@
   "@genericAcknowledgeLabel": {},
   "genericActionCancelLabel": "İptal",
   "@genericActionCancelLabel": {},
+  "genericActionCloseLabel": "Close",
+  "@genericActionCloseLabel": {},
   "genericActionCreateLabel": "Yarat",
   "@genericActionCreateLabel": {},
   "genericActionDeleteLabel": "Sil",
@@ -558,14 +566,26 @@
   "@savedViewNameLabel": {},
   "savedViewsEmptyStateText": "Belgelerinizi hızla filtrelemek için görünümler oluşturun.",
   "@savedViewsEmptyStateText": {},
+  "savedViewsFiltersSetCount": "{count, plural, zero{{count} filters set} one{{count} filter set} other{{count} filters set}}",
+  "@savedViewsFiltersSetCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "savedViewShowInSidebarLabel": "Kenar çubuğunda göster",
   "@savedViewShowInSidebarLabel": {},
   "savedViewShowOnDashboardLabel": "Kontrol panelinde göster",
   "@savedViewShowOnDashboardLabel": {},
   "savedViewsLabel": "Kayıtlı Görünümler",
   "@savedViewsLabel": {},
+  "scannerPageClearAllLabel": "Clear all",
+  "@scannerPageClearAllLabel": {},
   "scannerPageImagePreviewTitle": "Tara",
   "@scannerPageImagePreviewTitle": {},
+  "scannerPagePreviewLabel": "Preview",
+  "@scannerPagePreviewLabel": {},
+  "scannerPageUploadLabel": "Upload",
+  "@scannerPageUploadLabel": {},
   "serverInformationPaperlessVersionText": "Paperless sunucu versiyonu",
   "@serverInformationPaperlessVersionText": {},
   "settingsPageAppearanceSettingDarkThemeLabel": "Koyu Tema",
@@ -627,6 +647,5 @@
   "verifyIdentityPageTitle": "Kimliğinizi doğrulayın",
   "@verifyIdentityPageTitle": {},
   "verifyIdentityPageVerifyIdentityButtonLabel": "Kimliği Doğrula",
-  "@verifyIdentityPageVerifyIdentityButtonLabel": {},
-  "genericActionCloseLabel": "Close"
+  "@verifyIdentityPageVerifyIdentityButtonLabel": {}
 }

@@ -291,7 +291,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             label: Text(S.of(context).documentCreatedPropertyLabel),
           ),
           initialValue: initialCreatedAtDate,
-          format: DateFormat("dd. MMMM yyyy"), //TODO: Localized date format
+          format: DateFormat.yMMMMd(),
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
         if (_filteredSuggestions.hasSuggestedDates)
