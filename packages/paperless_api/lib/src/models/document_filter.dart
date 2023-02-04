@@ -143,6 +143,11 @@ class DocumentFilter extends Equatable {
     return newFilter;
   }
 
+  ///
+  /// Checks whether the properties of [document] match the current filter criteria.
+  ///
+  bool includes(DocumentModel document) {}
+
   int get appliedFiltersCount => [
         documentType != initial.documentType,
         correspondent != initial.correspondent,

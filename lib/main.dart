@@ -21,6 +21,7 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/impl/correspondent_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/impl/document_type_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/impl/saved_view_repository_impl.dart';
@@ -168,6 +169,7 @@ void main() async {
         Provider<LocalNotificationService>.value(
           value: localNotificationService,
         ),
+        Provider.value(value: DocumentChangedNotifier()),
       ],
       child: MultiRepositoryProvider(
         providers: [

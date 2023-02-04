@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
@@ -8,7 +9,11 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
     with PagedDocumentsMixin {
   @override
   final PaperlessDocumentsApi api;
-  DocumentSearchCubit(this.api) : super(const DocumentSearchState());
+  @override
+  final DocumentChangedNotifier notifier;
+
+  DocumentSearchCubit(this.api, this.notifier)
+      : super(const DocumentSearchState());
 
   Future<void> search(String query) async {
     emit(state.copyWith(

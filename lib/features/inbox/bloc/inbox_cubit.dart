@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
@@ -17,6 +18,8 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
       _documentTypeRepository;
 
   final PaperlessDocumentsApi _documentsApi;
+  @override
+  final DocumentChangedNotifier notifier;
 
   final PaperlessServerStatsApi _statsApi;
 
@@ -32,6 +35,7 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
     this._correspondentRepository,
     this._documentTypeRepository,
     this._statsApi,
+    this.notifier,
   ) : super(
           InboxState(
             availableCorrespondents:
@@ -41,6 +45,12 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
             availableTags: _tagsRepository.current?.values ?? {},
           ),
         ) {
+    _subscriptions.addAll(
+      notifier.listen(
+        onDeleted: remove,
+        onUpdated: replace,
+      ),
+    );
     _subscriptions.add(
       _tagsRepository.values.listen((event) {
         if (event?.hasLoaded ?? false) {

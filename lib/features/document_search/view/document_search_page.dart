@@ -13,7 +13,10 @@ Future<void> showDocumentSearchPage(BuildContext context) {
   return Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => BlocProvider(
-        create: (context) => DocumentSearchCubit(context.read()),
+        create: (context) => DocumentSearchCubit(
+          context.read(),
+          context.read(),
+        ),
         child: const DocumentSearchPage(),
       ),
     ),

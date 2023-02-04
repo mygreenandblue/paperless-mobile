@@ -211,10 +211,15 @@ class _HomePageState extends State<HomePage> {
       MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => DocumentsCubit(context.read()),
+            create: (context) => DocumentsCubit(
+              context.read(),
+              context.read(),
+            ),
           ),
           BlocProvider(
-            create: (context) => SavedViewCubit(context.read()),
+            create: (context) => SavedViewCubit(
+              context.read(),
+            ),
           ),
         ],
         child: const DocumentsPage(),

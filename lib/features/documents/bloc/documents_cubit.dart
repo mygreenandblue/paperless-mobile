@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
@@ -12,7 +13,12 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   final PaperlessDocumentsApi api;
 
-  DocumentsCubit(this.api) : super(const DocumentsState());
+  @override
+  final DocumentChangedNotifier notifier;
+
+  DocumentsCubit(this.api, this.notifier) : super(const DocumentsState()) {
+    reload();
+  }
 
   Future<void> bulkRemove(List<DocumentModel> documents) async {
     log("[DocumentsCubit] bulkRemove");
