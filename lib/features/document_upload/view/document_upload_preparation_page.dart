@@ -8,10 +8,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/type/types.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
@@ -20,7 +17,6 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_fie
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
 class DocumentUploadPreparationPage extends StatefulWidget {
   final Uint8List fileBytes;
@@ -173,9 +169,8 @@ class _DocumentUploadPreparationPageState
                   formBuilderState: _formKey.currentState,
                   labelCreationWidgetBuilder: (initialName) =>
                       RepositoryProvider(
-                    create: (context) => context.read<
-                        LabelRepository<DocumentType,
-                            DocumentTypeRepositoryState>>(),
+                    create: (context) =>
+                        context.read<LabelRepository<DocumentType>>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
                   textFieldLabel:
@@ -189,9 +184,8 @@ class _DocumentUploadPreparationPageState
                   formBuilderState: _formKey.currentState,
                   labelCreationWidgetBuilder: (initialName) =>
                       RepositoryProvider(
-                    create: (context) => context.read<
-                        LabelRepository<Correspondent,
-                            CorrespondentRepositoryState>>(),
+                    create: (context) =>
+                        context.read<LabelRepository<Correspondent>>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
                   textFieldLabel:

@@ -1,23 +1,32 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 
 part 'document_details_state.dart';
 
 class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   final PaperlessDocumentsApi _api;
+  final DocumentChangedNotifier _notifier;
 
-  DocumentDetailsCubit(this._api, DocumentModel initialDocument)
-      : super(DocumentDetailsState(document: initialDocument)) {
+  final List<StreamSubscription> _subscriptions = [];
+  DocumentDetailsCubit(
+    this._api,
+    this._notifier, {
+    required DocumentModel initialDocument,
+  }) : super(DocumentDetailsState(document: initialDocument)) {
+    _notifier.subscribe(this, onUpdated: replace);
     loadSuggestions();
   }
 
   Future<void> delete(DocumentModel document) async {
     await _api.delete(document);
+    _notifier.notifyDeleted(document);
   }
 
   Future<void> loadSuggestions() async {
@@ -41,7 +50,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       final int asn = await _api.findNextAsn();
       final updatedDocument =
           await _api.update(document.copyWith(archiveSerialNumber: asn));
-      emit(state.copyWith(document: updatedDocument));
+      _notifier.notifyUpdated(updatedDocument);
     }
   }
 
@@ -60,7 +69,16 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     );
   }
 
-  void replaceDocument(DocumentModel document) {
+  void replace(DocumentModel document) {
     emit(state.copyWith(document: document));
+  }
+
+  @override
+  Future<void> close() {
+    for (final element in _subscriptions) {
+      element.cancel();
+    }
+    _notifier.unsubscribe(this);
+    return super.close();
   }
 }

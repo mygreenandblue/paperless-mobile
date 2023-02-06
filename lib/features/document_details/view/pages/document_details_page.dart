@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'dart:math';
 
+import 'package:badges/badges.dart' as b;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,13 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/similar_documents_view.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
@@ -30,9 +28,7 @@ import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:badges/badges.dart' as b;
-
-import '../../../../core/repository/state/impl/document_type_repository_state.dart';
+import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 
 //TODO: Refactor this into several widgets
 class DocumentDetailsPage extends StatefulWidget {
@@ -79,16 +75,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors
-                        .black, //TODO: check if there is a way to dynamically determine color...
-                  ),
-                  onPressed: () => Navigator.of(context).pop(
-                    context.read<DocumentDetailsCubit>().state.document,
-                  ),
-                ),
+                leading: const BackButton(),
                 floating: true,
                 pinned: true,
                 expandedHeight: 200.0,
@@ -154,6 +141,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 return BlocProvider(
                   create: (context) => SimilarDocumentsCubit(
                     context.read(),
+                    context.read(),
                     documentId: state.document.id,
                   ),
                   child: TabBarView(
@@ -168,7 +156,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       _buildDocumentMetaDataView(
                         state.document,
                       ),
-                      _buildSimilarDocumentsView(),
+                      const SimilarDocumentsView(),
                     ],
                   ),
                 ).paddedSymmetrically(horizontal: 8);
@@ -284,6 +272,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   documentTypeRepository: context.read(),
                   storagePathRepository: context.read(),
                   tagRepository: context.read(),
+                  notifier: context.read(),
                 ),
               ),
               BlocProvider<DocumentDetailsCubit>.value(
@@ -294,7 +283,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               listenWhen: (previous, current) =>
                   previous.document != current.document,
               listener: (context, state) {
-                cubit.replaceDocument(state.document);
+                cubit.replace(state.document);
               },
               child: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
                 builder: (context, state) {
@@ -461,7 +450,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           visible: document.documentType != null,
           child: _DetailsItem(
             label: S.of(context).documentDocumentTypePropertyLabel,
-            content: LabelText<DocumentType, DocumentTypeRepositoryState>(
+            content: LabelText<DocumentType>(
               style: Theme.of(context).textTheme.bodyLarge,
               id: document.documentType,
             ),
@@ -471,7 +460,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           visible: document.correspondent != null,
           child: _DetailsItem(
             label: S.of(context).documentCorrespondentPropertyLabel,
-            content: LabelText<Correspondent, CorrespondentRepositoryState>(
+            content: LabelText<Correspondent>(
               style: Theme.of(context).textTheme.bodyLarge,
               id: document.correspondent,
             ),
@@ -554,10 +543,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         ),
       ),
     );
-  }
-
-  Widget _buildSimilarDocumentsView() {
-    return const SimilarDocumentsView();
   }
 }
 

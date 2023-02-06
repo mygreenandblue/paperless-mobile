@@ -3,7 +3,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
 class DocumentsState extends PagedDocumentsState {
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: true, includeToJson: false)
   final List<DocumentModel> selection;
 
   const DocumentsState({
@@ -34,11 +34,8 @@ class DocumentsState extends PagedDocumentsState {
 
   @override
   List<Object?> get props => [
-        hasLoaded,
-        filter,
-        value,
         selection,
-        isLoading,
+        ...super.props,
       ];
 
   Map<String, dynamic> toJson() {

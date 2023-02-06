@@ -1,42 +1,42 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_item_placeholder.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
 
-class DocumentsListLoadingWidget extends StatelessWidget {
-  static const _tags = ["    ", "            ", "      "];
-  static const _titleLengths = <double>[double.infinity, 150.0, 200.0];
-  static const _correspondentLengths = <double>[200.0, 300.0, 150.0];
-  static const _fontSize = 16.0;
+class DocumentsListLoadingWidget extends StatelessWidget
+    with DocumentItemPlaceholder {
+  final bool _isSliver;
+  DocumentsListLoadingWidget({super.key}) : _isSliver = false;
 
-  const DocumentsListLoadingWidget({super.key
-  });
+  DocumentsListLoadingWidget.sliver({super.key}) : _isSliver = true;
+
+  @override
+  final Random random = Random(1209571050);
 
   @override
   Widget build(BuildContext context) {
-    final _random = Random();
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return _buildFakeListItem(context, _random);
-        },
-      ),
-    );
+    if (_isSliver) {
+      return SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => _buildFakeListItem(context),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) => _buildFakeListItem(context),
+      );
+    }
   }
 
-  Widget _buildFakeListItem(BuildContext context, Random random) {
-    final tagCount = random.nextInt(_tags.length + 1);
-    final correspondentLength =
-        _correspondentLengths[random.nextInt(_correspondentLengths.length - 1)];
-    final titleLength = _titleLengths[random.nextInt(_titleLengths.length - 1)];
-    return Shimmer.fromColors(
-      baseColor: Theme.of(context).brightness == Brightness.light
-          ? Colors.grey[300]!
-          : Colors.grey[900]!,
-      highlightColor: Theme.of(context).brightness == Brightness.light
-          ? Colors.grey[100]!
-          : Colors.grey[600]!,
+  Widget _buildFakeListItem(BuildContext context) {
+    const fontSize = 14.0;
+    final values = nextValues;
+    return ShimmerPlaceholder(
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         dense: true,
@@ -45,15 +45,17 @@ class DocumentsListLoadingWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             color: Colors.white,
-            height: 50,
+            height: double.infinity,
             width: 35,
           ),
         ),
-        title: Container(
-          padding: const EdgeInsets.symmetric(vertical: 2.0),
-          width: correspondentLength,
-          height: _fontSize,
-          color: Colors.white,
+        title: Row(
+          children: [
+            TextPlaceholder(
+              length: values.correspondentLength,
+              fontSize: fontSize,
+            ),
+          ],
         ),
         subtitle: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -61,21 +63,16 @@ class DocumentsListLoadingWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                height: _fontSize,
-                width: titleLength,
-                color: Colors.white,
+              TextPlaceholder(
+                length: values.titleLength,
+                fontSize: fontSize,
               ),
-              Wrap(
-                spacing: 2.0,
-                children: List.generate(
-                  tagCount,
-                  (index) => InputChip(
-                    label: Text(_tags[random.nextInt(_tags.length)]),
-                  ),
-                ),
-              ).paddedOnly(top: 4),
+              if (values.tagCount > 0)
+                TagsPlaceholder(count: values.tagCount, dense: true),
+              TextPlaceholder(
+                length: 100,
+                fontSize: Theme.of(context).textTheme.labelSmall!.fontSize!,
+              ),
             ],
           ),
         ),

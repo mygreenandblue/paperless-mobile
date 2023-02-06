@@ -117,18 +117,14 @@ class _SavedViewPageState extends State<SavedViewPage> {
     );
   }
 
-  void _onOpenDocumentDetails(DocumentModel document) async {
-    final updatedDocument = await Navigator.pushNamed(
+  void _onOpenDocumentDetails(DocumentModel document) {
+    Navigator.pushNamed(
       context,
       DocumentDetailsRoute.routeName,
       arguments: DocumentDetailsRouteArguments(
         document: document,
         isLabelClickable: false,
       ),
-    ) as DocumentModel?;
-    if (updatedDocument != document) {
-      // Reload in case document was edited and might not fulfill filter criteria of saved view anymore
-      context.read<SavedViewDetailsCubit>().reload();
-    }
+    );
   }
 }

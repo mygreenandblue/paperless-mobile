@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
@@ -17,14 +17,21 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   final DocumentChangedNotifier notifier;
 
   DocumentsCubit(this.api, this.notifier) : super(const DocumentsState()) {
-    reload();
+    notifier.subscribe(
+      this,
+      onUpdated: replace,
+      onDeleted: remove,
+    );
   }
 
-  Future<void> bulkRemove(List<DocumentModel> documents) async {
-    log("[DocumentsCubit] bulkRemove");
+  Future<void> bulkDelete(List<DocumentModel> documents) async {
+    debugPrint("[DocumentsCubit] bulkRemove");
     await api.bulkAction(
       BulkDeleteAction(documents.map((doc) => doc.id)),
     );
+    for (final deletedDoc in documents) {
+      notifier.notifyDeleted(deletedDoc);
+    }
     await reload();
   }
 
@@ -33,7 +40,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     Iterable<int> addTags = const [],
     Iterable<int> removeTags = const [],
   }) async {
-    log("[DocumentsCubit] bulkEditTags");
+    debugPrint("[DocumentsCubit] bulkEditTags");
     await api.bulkAction(BulkModifyTagsAction(
       documents.map((doc) => doc.id),
       addTags: addTags,
@@ -43,7 +50,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   }
 
   void toggleDocumentSelection(DocumentModel model) {
-    log("[DocumentsCubit] toggleSelection");
+    debugPrint("[DocumentsCubit] toggleSelection");
     if (state.selectedIds.contains(model.id)) {
       emit(
         state.copyWith(
@@ -58,12 +65,12 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   }
 
   void resetSelection() {
-    log("[DocumentsCubit] resetSelection");
+    debugPrint("[DocumentsCubit] resetSelection");
     emit(state.copyWith(selection: []));
   }
 
   void reset() {
-    log("[DocumentsCubit] reset");
+    debugPrint("[DocumentsCubit] reset");
     emit(const DocumentsState());
   }
 
@@ -80,5 +87,11 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   Map<String, dynamic>? toJson(DocumentsState state) {
     return state.toJson();
+  }
+
+  @override
+  Future<void> close() {
+    notifier.unsubscribe(this);
+    return super.close();
   }
 }

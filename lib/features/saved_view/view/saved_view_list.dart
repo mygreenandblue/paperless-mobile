@@ -43,6 +43,7 @@ class SavedViewList extends StatelessWidget {
                           BlocProvider(
                             create: (context) => SavedViewDetailsCubit(
                               context.read(),
+                              context.read(),
                               savedView: view,
                             ),
                           ),

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SimilarDocumentsView extends StatefulWidget {
   const SimilarDocumentsView({super.key});
@@ -54,13 +53,9 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView> {
 
   @override
   Widget build(BuildContext context) {
-    const earlyPreviewHintCard = HintCard(
-      hintIcon: Icons.construction,
-      hintText: "This view is still work in progress.",
-    );
     return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
       builder: (context, state) {
-        if (state.documents.isEmpty) {
+        if (state.hasLoaded && !state.isLoading && state.documents.isEmpty) {
           return DocumentsEmptyState(
             state: state,
             onReset: () => context.read<SimilarDocumentsCubit>().updateFilter(
@@ -77,26 +72,23 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView> {
             return CustomScrollView(
               controller: _scrollController,
               slivers: [
-                const SliverToBoxAdapter(child: earlyPreviewHintCard),
                 SliverAdaptiveDocumentsView(
                   documents: state.documents,
                   hasInternetConnection: connectivity.isConnected,
                   isLabelClickable: false,
                   isLoading: state.isLoading,
                   hasLoaded: state.hasLoaded,
-
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    childCount: state.documents.length,
-                    (context, index) => DocumentListItem(
-                      document: state.documents[index],
-                      enableHeroAnimation: false,
-                      isLabelClickable: false,
-                      isSelected: false,
-                      isSelectionActive: false,
-                    ),
-                  ),
+                  enableHeroAnimation: false,
+                  onTap: (document) {
+                    Navigator.pushNamed(
+                      context,
+                      DocumentDetailsRoute.routeName,
+                      arguments: DocumentDetailsRouteArguments(
+                        document: document,
+                        isLabelClickable: false,
+                      ),
+                    );
+                  },
                 ),
               ],
             );

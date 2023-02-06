@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/repository_state.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/document_type_bloc_provider.dart';
 
-class LabelText<T extends Label, State extends RepositoryState>
-    extends StatelessWidget {
+class LabelText<T extends Label> extends StatelessWidget {
   final int? id;
   final String placeholder;
   final TextStyle? style;
@@ -24,7 +21,7 @@ class LabelText<T extends Label, State extends RepositoryState>
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LabelCubit<T>(
-        context.read<LabelRepository<T, State>>(),
+        context.read<LabelRepository<T>>(),
       ),
       child: BlocBuilder<LabelCubit<T>, LabelState<T>>(
         builder: (context, state) {

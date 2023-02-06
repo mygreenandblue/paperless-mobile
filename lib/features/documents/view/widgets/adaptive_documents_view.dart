@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/document_grid_loading_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -23,6 +23,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
 
+  bool get showLoadingPlaceholder => (!hasLoaded && isLoading);
   const AdaptiveDocumentsView({
     super.key,
     this.selectedDocumentIds = const [],
@@ -56,6 +57,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.onTap,
     super.selectedDocumentIds,
     super.viewType,
+    super.enableHeroAnimation,
     required super.isLoading,
     required super.hasLoaded,
   });
@@ -71,8 +73,8 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
   }
 
   Widget _buildListView() {
-    if (!hasLoaded && isLoading) {
-      return const DocumentsListLoadingWidget();
+    if (showLoadingPlaceholder) {
+      return DocumentsListLoadingWidget.sliver();
     }
     return SliverList(
       delegate: SliverChildBuilderDelegate(
@@ -91,6 +93,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
               onCorrespondentSelected: onCorrespondentSelected,
               onDocumentTypeSelected: onDocumentTypeSelected,
               onStoragePathSelected: onStoragePathSelected,
+              enableHeroAnimation: enableHeroAnimation,
             ),
           );
         },
@@ -99,8 +102,8 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
   }
 
   Widget _buildGridView() {
-    if (!hasLoaded && isLoading) {
-      return const DocumentsListLoadingWidget();
+    if (showLoadingPlaceholder) {
+      return DocumentGridLoadingWidget.sliver();
     }
     return SliverGrid.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -162,10 +165,8 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
   }
 
   Widget _buildListView() {
-    if (!hasLoaded && isLoading) {
-      return const CustomScrollView(slivers: [
-        DocumentsListLoadingWidget(),
-      ]);
+    if (showLoadingPlaceholder) {
+      return DocumentsListLoadingWidget();
     }
 
     return ListView.builder(
@@ -194,12 +195,8 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
   }
 
   Widget _buildGridView() {
-    if (!hasLoaded && isLoading) {
-      return const CustomScrollView(
-        slivers: [
-          DocumentsListLoadingWidget(),
-        ],
-      ); //TODO: Build grid skeleton
+    if (showLoadingPlaceholder) {
+      return DocumentGridLoadingWidget();
     }
     return GridView.builder(
       controller: scrollController,

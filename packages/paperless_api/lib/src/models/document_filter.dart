@@ -146,7 +146,20 @@ class DocumentFilter extends Equatable {
   ///
   /// Checks whether the properties of [document] match the current filter criteria.
   ///
-  bool includes(DocumentModel document) {}
+  bool matches(DocumentModel document) {
+    return correspondent.matches(document.correspondent) &&
+        documentType.matches(document.documentType) &&
+        storagePath.matches(document.storagePath) &&
+        tags.matches(document.tags) &&
+        created.matches(document.created) &&
+        added.matches(document.added) &&
+        modified.matches(document.modified) &&
+        query.matches(
+          title: document.title,
+          content: document.content,
+          asn: document.archiveSerialNumber,
+        );
+  }
 
   int get appliedFiltersCount => [
         documentType != initial.documentType,

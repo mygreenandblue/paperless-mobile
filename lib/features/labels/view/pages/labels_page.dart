@@ -82,7 +82,7 @@ class _LabelsPageState extends State<LabelsPage>
                     context,
                   ),
                   sliver: SearchAppBar(
-                    hintText: "Search documents", //TODO: INTL
+                    hintText: S.of(context).documentSearchSearchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: TabBar(
                       controller: _tabController,
@@ -141,176 +141,138 @@ class _LabelsPageState extends State<LabelsPage>
                   }
                   return true;
                 },
-                child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                      create: (context) => LabelCubit<Correspondent>(
-                        context.read<
-                            LabelRepository<Correspondent,
-                                CorrespondentRepositoryState>>(),
+                child: RefreshIndicator(
+                  edgeOffset: kToolbarHeight + kTextTabBarHeight,
+                  notificationPredicate: (notification) =>
+                      connectedState.isConnected,
+                  onRefresh: () => [
+                    context.read<LabelCubit<Correspondent>>(),
+                    context.read<LabelCubit<DocumentType>>(),
+                    context.read<LabelCubit<Tag>>(),
+                    context.read<LabelCubit<StoragePath>>(),
+                  ][_currentIndex]
+                      .reload(),
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<Correspondent>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  correspondent:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditCorrespondentPage,
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageCorrespondentEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageCorrespondentEmptyStateDescriptionText,
+                                onAddNew: _openAddCorrespondentPage,
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                    BlocProvider(
-                      create: (context) => LabelCubit<DocumentType>(
-                        context.read<
-                            LabelRepository<DocumentType,
-                                DocumentTypeRepositoryState>>(),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<DocumentType>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  documentType:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditDocumentTypePage,
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageDocumentTypeEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageDocumentTypeEmptyStateDescriptionText,
+                                onAddNew: _openAddDocumentTypePage,
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                    BlocProvider(
-                      create: (context) => LabelCubit<Tag>(
-                        context
-                            .read<LabelRepository<Tag, TagRepositoryState>>(),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<Tag>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  tags: IdsTagsQuery.fromIds([label.id!]),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditTagPage,
+                                leadingBuilder: (t) => CircleAvatar(
+                                  backgroundColor: t.color,
+                                  child: t.isInboxTag ?? false
+                                      ? Icon(
+                                          Icons.inbox,
+                                          color: t.textColor,
+                                        )
+                                      : null,
+                                ),
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageTagsEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageTagsEmptyStateDescriptionText,
+                                onAddNew: _openAddTagPage,
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                    BlocProvider(
-                      create: (context) => LabelCubit<StoragePath>(
-                        context.read<
-                            LabelRepository<StoragePath,
-                                StoragePathRepositoryState>>(),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<StoragePath>(
+                                onEdit: _openEditStoragePathPage,
+                                filterBuilder: (label) => DocumentFilter(
+                                  storagePath:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                contentBuilder: (path) => Text(path.path ?? ""),
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageStoragePathEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageStoragePathEmptyStateDescriptionText,
+                                onAddNew: _openAddStoragePathPage,
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                  child: RefreshIndicator(
-                    edgeOffset: kToolbarHeight,
-                    notificationPredicate: (notification) =>
-                        connectedState.isConnected,
-                    onRefresh: () => [
-                      context.read<LabelCubit<Correspondent>>(),
-                      context.read<LabelCubit<DocumentType>>(),
-                      context.read<LabelCubit<Tag>>(),
-                      context.read<LabelCubit<StoragePath>>(),
-                    ][_currentIndex]
-                        .reload(),
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                LabelTabView<Correspondent>(
-                                  filterBuilder: (label) => DocumentFilter(
-                                    correspondent:
-                                        IdQueryParameter.fromId(label.id),
-                                    pageSize: label.documentCount ?? 0,
-                                  ),
-                                  onEdit: _openEditCorrespondentPage,
-                                  emptyStateActionButtonLabel: S
-                                      .of(context)
-                                      .labelsPageCorrespondentEmptyStateAddNewLabel,
-                                  emptyStateDescription: S
-                                      .of(context)
-                                      .labelsPageCorrespondentEmptyStateDescriptionText,
-                                  onAddNew: _openAddCorrespondentPage,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                DocumentTypeBlocProvider(
-                                  child: LabelTabView<DocumentType>(
-                                    filterBuilder: (label) => DocumentFilter(
-                                      documentType:
-                                          IdQueryParameter.fromId(label.id),
-                                      pageSize: label.documentCount ?? 0,
-                                    ),
-                                    onEdit: _openEditDocumentTypePage,
-                                    emptyStateActionButtonLabel: S
-                                        .of(context)
-                                        .labelsPageDocumentTypeEmptyStateAddNewLabel,
-                                    emptyStateDescription: S
-                                        .of(context)
-                                        .labelsPageDocumentTypeEmptyStateDescriptionText,
-                                    onAddNew: _openAddDocumentTypePage,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                TagBlocProvider(
-                                  child: LabelTabView<Tag>(
-                                    filterBuilder: (label) => DocumentFilter(
-                                      tags: IdsTagsQuery.fromIds([label.id!]),
-                                      pageSize: label.documentCount ?? 0,
-                                    ),
-                                    onEdit: _openEditTagPage,
-                                    leadingBuilder: (t) => CircleAvatar(
-                                      backgroundColor: t.color,
-                                      child: t.isInboxTag ?? false
-                                          ? Icon(
-                                              Icons.inbox,
-                                              color: t.textColor,
-                                            )
-                                          : null,
-                                    ),
-                                    emptyStateActionButtonLabel: S
-                                        .of(context)
-                                        .labelsPageTagsEmptyStateAddNewLabel,
-                                    emptyStateDescription: S
-                                        .of(context)
-                                        .labelsPageTagsEmptyStateDescriptionText,
-                                    onAddNew: _openAddTagPage,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                StoragePathBlocProvider(
-                                  child: LabelTabView<StoragePath>(
-                                    onEdit: _openEditStoragePathPage,
-                                    filterBuilder: (label) => DocumentFilter(
-                                      storagePath:
-                                          IdQueryParameter.fromId(label.id),
-                                      pageSize: label.documentCount ?? 0,
-                                    ),
-                                    contentBuilder: (path) =>
-                                        Text(path.path ?? ""),
-                                    emptyStateActionButtonLabel: S
-                                        .of(context)
-                                        .labelsPageStoragePathEmptyStateAddNewLabel,
-                                    emptyStateDescription: S
-                                        .of(context)
-                                        .labelsPageStoragePathEmptyStateDescriptionText,
-                                    onAddNew: _openAddStoragePathPage,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -326,8 +288,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Correspondent>>(),
           child: EditCorrespondentPage(correspondent: correspondent),
         ),
       ),
@@ -339,8 +300,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<DocumentType>>(),
           child: EditDocumentTypePage(documentType: docType),
         ),
       ),
@@ -352,8 +312,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) =>
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Tag>>(),
           child: EditTagPage(tag: tag),
         ),
       ),
@@ -365,8 +324,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context
-              .read<LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<StoragePath>>(),
           child: EditStoragePathPage(
             storagePath: path,
           ),
@@ -380,8 +338,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Correspondent>>(),
           child: const AddCorrespondentPage(),
         ),
       ),
@@ -393,8 +350,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<DocumentType>>(),
           child: const AddDocumentTypePage(),
         ),
       ),
@@ -406,8 +362,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) =>
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Tag>>(),
           child: const AddTagPage(),
         ),
       ),
@@ -419,8 +374,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context
-              .read<LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<StoragePath>>(),
           child: const AddStoragePathPage(),
         ),
       ),

@@ -56,7 +56,7 @@ class DocumentListItem extends DocumentItem {
             Text(
               document.title,
               overflow: TextOverflow.ellipsis,
-              maxLines: document.tags.isEmpty ? 2 : 1,
+              maxLines: 1,
             ),
             AbsorbPointer(
               absorbing: isSelectionActive,

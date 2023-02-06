@@ -44,16 +44,12 @@ class SortDocumentsButton extends StatelessWidget {
                   providers: [
                     BlocProvider(
                       create: (context) => LabelCubit<DocumentType>(
-                        context.read<
-                            LabelRepository<DocumentType,
-                                DocumentTypeRepositoryState>>(),
+                        context.read<LabelRepository<DocumentType>>(),
                       ),
                     ),
                     BlocProvider(
                       create: (context) => LabelCubit<Correspondent>(
-                        context.read<
-                            LabelRepository<Correspondent,
-                                CorrespondentRepositoryState>>(),
+                        context.read<LabelRepository<Correspondent>>(),
                       ),
                     ),
                   ],

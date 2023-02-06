@@ -13,7 +13,13 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
   final DocumentChangedNotifier notifier;
 
   DocumentSearchCubit(this.api, this.notifier)
-      : super(const DocumentSearchState());
+      : super(const DocumentSearchState()) {
+    notifier.subscribe(
+      this,
+      onDeleted: remove,
+      onUpdated: replace,
+    );
+  }
 
   Future<void> search(String query) async {
     emit(state.copyWith(
@@ -59,6 +65,12 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
       suggestions: [],
       isLoading: false,
     ));
+  }
+
+  @override
+  Future<void> close() {
+    notifier.unsubscribe(this);
+    return super.close();
   }
 
   @override

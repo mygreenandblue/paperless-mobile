@@ -34,7 +34,9 @@ class SavedViewCubit extends Cubit<SavedViewState> {
   Future<void> initialize() async {
     final views = await _repository.findAll();
     final values = {for (var element in views) element.id!: element};
-    emit(SavedViewState(value: values, hasLoaded: true));
+    if (!isClosed) {
+      emit(SavedViewState(value: values, hasLoaded: true));
+    }
   }
 
   Future<void> reload() => initialize();

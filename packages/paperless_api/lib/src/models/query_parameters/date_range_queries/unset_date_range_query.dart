@@ -14,4 +14,7 @@ class UnsetDateRangeQuery extends DateRangeQuery {
   Map<String, dynamic> toJson() {
     return {};
   }
+
+  @override
+  bool matches(DateTime dt) => true;
 }

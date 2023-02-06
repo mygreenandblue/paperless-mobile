@@ -6,10 +6,6 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.da
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
@@ -26,9 +22,10 @@ class AccountSettingsDialog extends StatelessWidget {
       scrollable: true,
       contentPadding: EdgeInsets.zero,
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const CloseButton(),
           Text(S.of(context).accountSettingsTitle),
+          const CloseButton(),
         ],
       ),
       content: BlocBuilder<PaperlessServerInformationCubit,
@@ -55,7 +52,7 @@ class AccountSettingsDialog extends StatelessWidget {
               ListTile(
                 dense: true,
                 leading: const Icon(Icons.person_add_rounded),
-                title: const Text("Add another account"), //TODO: INTL
+                title: Text(S.of(context).accountSettingsAddAnotherAccount),
                 onTap: () {},
               ),
               Divider(),
@@ -87,16 +84,10 @@ class AccountSettingsDialog extends StatelessWidget {
     try {
       await context.read<AuthenticationCubit>().logout();
       await context.read<ApplicationSettingsCubit>().clear();
-      await context.read<LabelRepository<Tag, TagRepositoryState>>().clear();
-      await context
-          .read<LabelRepository<Correspondent, CorrespondentRepositoryState>>()
-          .clear();
-      await context
-          .read<LabelRepository<DocumentType, DocumentTypeRepositoryState>>()
-          .clear();
-      await context
-          .read<LabelRepository<StoragePath, StoragePathRepositoryState>>()
-          .clear();
+      await context.read<LabelRepository<Tag>>().clear();
+      await context.read<LabelRepository<Correspondent>>().clear();
+      await context.read<LabelRepository<DocumentType>>().clear();
+      await context.read<LabelRepository<StoragePath>>().clear();
       await context.read<SavedViewRepository>().clear();
       await HydratedBloc.storage.clear();
     } on PaperlessServerException catch (error, stackTrace) {

@@ -11,12 +11,27 @@ class LinkedDocumentsCubit extends Cubit<LinkedDocumentsState>
 
   @override
   final DocumentChangedNotifier notifier;
-  
+
   LinkedDocumentsCubit(
-    this.api,
     DocumentFilter filter,
+    this.api,
     this.notifier,
   ) : super(const LinkedDocumentsState()) {
     updateFilter(filter: filter);
+    notifier.subscribe(
+      this,
+      onUpdated: replace,
+      onDeleted: remove,
+    );
+  }
+
+  @override
+  Future<void> update(DocumentModel document) async {
+    final updated = await api.update(document);
+    if (!state.filter.matches(updated)) {
+      remove(document);
+    } else {
+      replace(document);
+    }
   }
 }

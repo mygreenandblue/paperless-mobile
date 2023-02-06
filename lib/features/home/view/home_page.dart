@@ -23,6 +23,7 @@ import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
+import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
@@ -54,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _initializeData(context);
     _inboxCubit = InboxCubit(
+      context.read(),
       context.read(),
       context.read(),
       context.read(),
@@ -228,7 +230,23 @@ class _HomePageState extends State<HomePage> {
         value: _scannerCubit,
         child: const ScannerPage(),
       ),
-      const LabelsPage(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => LabelCubit<Correspondent>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<DocumentType>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<Tag>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<StoragePath>(context.read()),
+          ),
+        ],
+        child: const LabelsPage(),
+      ),
       BlocProvider.value(
         value: _inboxCubit,
         child: const InboxPage(),
@@ -302,16 +320,10 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeData(BuildContext context) {
     try {
-      context.read<LabelRepository<Tag, TagRepositoryState>>().findAll();
-      context
-          .read<LabelRepository<Correspondent, CorrespondentRepositoryState>>()
-          .findAll();
-      context
-          .read<LabelRepository<DocumentType, DocumentTypeRepositoryState>>()
-          .findAll();
-      context
-          .read<LabelRepository<StoragePath, StoragePathRepositoryState>>()
-          .findAll();
+      context.read<LabelRepository<Tag>>().findAll();
+      context.read<LabelRepository<Correspondent>>().findAll();
+      context.read<LabelRepository<DocumentType>>().findAll();
+      context.read<LabelRepository<StoragePath>>().findAll();
       context.read<SavedViewRepository>().findAll();
       context.read<PaperlessServerInformationCubit>().updateInformtion();
     } on PaperlessServerException catch (error, stackTrace) {

@@ -14,8 +14,7 @@ class EditCorrespondentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EditLabelCubit<Correspondent>(
-        context.read<
-            LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+        context.read<LabelRepository<Correspondent>>(),
       ),
       child: EditLabelPage<Correspondent>(
         label: correspondent,

@@ -109,7 +109,7 @@ void main() async {
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
   // Remove temporarily downloaded files.
 
-  (await FileService.temporaryDirectory).deleteSync(recursive: true);
+  // (await FileService.temporaryDirectory).deleteSync(recursive: true);
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();
 
@@ -173,20 +173,16 @@ void main() async {
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<LabelRepository<Tag, TagRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<Tag>>.value(
             value: tagRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<Correspondent,
-                  CorrespondentRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<Correspondent>>.value(
             value: correspondentRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<DocumentType>>.value(
             value: documentTypeRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<StoragePath, StoragePathRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<StoragePath>>.value(
             value: storagePathRepository,
           ),
           RepositoryProvider<SavedViewRepository>.value(

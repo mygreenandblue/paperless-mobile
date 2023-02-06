@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -73,14 +75,18 @@ mixin PagedDocumentsMixin<State extends PagedDocumentsState>
     try {
       final filter = state.filter.copyWith(page: 1);
       final result = await api.findAll(filter);
-      emit(state.copyWithPaged(
-        hasLoaded: true,
-        value: [result],
-        isLoading: false,
-        filter: filter,
-      ));
+      if (!isClosed) {
+        emit(state.copyWithPaged(
+          hasLoaded: true,
+          value: [result],
+          isLoading: false,
+          filter: filter,
+        ));
+      }
     } finally {
-      emit(state.copyWithPaged(isLoading: false));
+      if (!isClosed) {
+        emit(state.copyWithPaged(isLoading: false));
+      }
     }
   }
 
@@ -88,16 +94,10 @@ mixin PagedDocumentsMixin<State extends PagedDocumentsState>
   /// Updates a document. If [shouldReload] is false, the updated document will
   /// replace the currently loaded one, otherwise all documents will be reloaded.
   ///
-  Future<void> update(
-    DocumentModel document, {
-    bool shouldReload = true,
-  }) async {
+  Future<void> update(DocumentModel document) async {
     final updatedDocument = await api.update(document);
-    if (shouldReload) {
-      await reload();
-    } else {
-      replace(updatedDocument);
-    }
+    notifier.notifyUpdated(updatedDocument);
+    // replace(updatedDocument);
   }
 
   ///
@@ -107,7 +107,8 @@ mixin PagedDocumentsMixin<State extends PagedDocumentsState>
     emit(state.copyWithPaged(isLoading: true));
     try {
       await api.delete(document);
-      await remove(document);
+      notifier.notifyDeleted(document);
+      // remove(document); // Removing deleted now works with the change notifier.
     } finally {
       emit(state.copyWithPaged(isLoading: false));
     }
@@ -117,7 +118,7 @@ mixin PagedDocumentsMixin<State extends PagedDocumentsState>
   /// Removes [document] from the currently loaded state.
   /// Does not delete it from the server!
   ///
-  Future<void> remove(DocumentModel document) async {
+  void remove(DocumentModel document) {
     final index = state.value.indexWhere(
       (page) => page.results.any((element) => element.id == document.id),
     );
@@ -144,23 +145,36 @@ mixin PagedDocumentsMixin<State extends PagedDocumentsState>
 
   ///
   /// Replaces the document with the same id as [document] from the currently
-  /// loaded state.
+  /// loaded state if the document's properties still match the given filter criteria, otherwise removes it.
   ///
   Future<void> replace(DocumentModel document) async {
-    final index = state.value.indexWhere(
+    final matchesFilterCriteria = state.filter.matches(document);
+    if (!matchesFilterCriteria) {
+      return remove(document);
+    }
+    final pageIndex = state.value.indexWhere(
       (page) => page.results.any((element) => element.id == document.id),
     );
-    if (index != -1) {
-      final foundPage = state.value[index];
+    if (pageIndex != -1) {
+      final foundPage = state.value[pageIndex];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results..replaceRange(index, index + 1, [document]),
+        results: foundPage.results
+            .map((doc) => doc.id == document.id ? document : doc)
+            .toList(),
       );
-      emit(state.copyWithPaged(
+      final newState = state.copyWithPaged(
         value: state.value
             .mapIndexed((currIndex, element) =>
-                currIndex == index ? replacementPage : element)
+                currIndex == pageIndex ? replacementPage : element)
             .toList(),
-      ));
+      );
+      emit(newState);
     }
+  }
+
+  @override
+  Future<void> close() {
+    notifier.unsubscribe(this);
+    return super.close();
   }
 }

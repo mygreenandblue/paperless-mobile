@@ -158,18 +158,16 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             isLabelClickable: false,
             isLoading: state.isLoading,
             hasLoaded: state.hasLoaded,
-            onTap: (document) async {
-              final updatedDocument = await Navigator.pushNamed(
+            enableHeroAnimation: false,
+            onTap: (document) {
+              Navigator.pushNamed(
                 context,
                 DocumentDetailsRoute.routeName,
                 arguments: DocumentDetailsRouteArguments(
                   document: document,
                   isLabelClickable: false,
                 ),
-              ) as DocumentModel?;
-              if (updatedDocument != document) {
-                context.read<DocumentSearchCubit>().reload();
-              }
+              );
             },
           )
       ],

@@ -17,8 +17,9 @@ class DocumentDetailsRoute extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => DocumentDetailsCubit(
-        context.read<PaperlessDocumentsApi>(),
-        args.document,
+        context.read(),
+        context.read(),
+        initialDocument: args.document,
       ),
       child: LabelRepositoriesProvider(
         child: DocumentDetailsPage(

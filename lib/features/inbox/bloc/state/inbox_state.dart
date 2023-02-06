@@ -4,9 +4,7 @@ import 'package:paperless_mobile/features/paged_document_view/model/paged_docume
 
 part 'inbox_state.g.dart';
 
-@JsonSerializable(
-  ignoreUnannotated: true,
-)
+@JsonSerializable(ignoreUnannotated: true)
 class InboxState extends PagedDocumentsState {
   final Iterable<int> inboxTags;
 

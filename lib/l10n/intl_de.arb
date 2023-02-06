@@ -6,6 +6,8 @@
       "name": {}
     }
   },
+  "accountSettingsAddAnotherAccount": "Einen Account hinzufügen",
+  "@accountSettingsAddAnotherAccount": {},
   "accountSettingsTitle": "Account",
   "@accountSettingsTitle": {},
   "addCorrespondentPageTitle": "Neuer Korrespondent",
@@ -396,6 +398,10 @@
   "@genericActionUploadLabel": {},
   "genericMessageOfflineText": "Du bist offline.",
   "@genericMessageOfflineText": {},
+  "inboxActionAssignAsn": "ASN zuweisen",
+  "@inboxActionAssignAsn": {},
+  "inboxActionDeleteDocument": "Dokument löschen",
+  "@inboxActionDeleteDocument": {},
   "inboxPageAssignAsnLabel": "ASN zuweisen",
   "@inboxPageAssignAsnLabel": {},
   "inboxPageDocumentRemovedMessageText": "Dokument aus Posteingang entfernt.",

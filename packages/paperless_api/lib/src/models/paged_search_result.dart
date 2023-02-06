@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_api/src/models/document_model.dart';
 
 const pageRegex = r".*page=(\d+).*";
 
@@ -108,5 +107,10 @@ class PagedSearchResult<T> extends Equatable {
   }
 
   @override
-  List<Object?> get props => [count, next, previous, results];
+  List<Object?> get props => [
+        count,
+        next,
+        previous,
+        results,
+      ];
 }

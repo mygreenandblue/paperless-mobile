@@ -4,6 +4,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Shows a full screen search page and returns the search result selected by
 /// the user when the page is closed.
@@ -221,12 +222,13 @@ abstract class SearchDelegate<T> {
     final ColorScheme colorScheme = theme.colorScheme;
     return theme.copyWith(
       appBarTheme: AppBarTheme(
-        brightness: colorScheme.brightness,
+        systemOverlayStyle: colorScheme.brightness == Brightness.light
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
         backgroundColor: colorScheme.brightness == Brightness.dark
             ? Colors.grey[900]
             : Colors.white,
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-        textTheme: theme.textTheme,
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
           InputDecorationTheme(

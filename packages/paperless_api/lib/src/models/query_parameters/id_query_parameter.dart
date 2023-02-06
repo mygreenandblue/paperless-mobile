@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'id_query_parameter.g.dart';
 
@@ -19,9 +18,7 @@ class IdQueryParameter extends Equatable {
       : assignmentStatus = 0,
         id = null;
 
-  const IdQueryParameter.fromId(int? id)
-      : assignmentStatus = null,
-        id = id;
+  const IdQueryParameter.fromId(this.id) : assignmentStatus = null;
 
   const IdQueryParameter.unset() : this.fromId(null);
 
@@ -43,6 +40,13 @@ class IdQueryParameter extends Equatable {
       params.putIfAbsent("${field}__id", () => id!.toString());
     }
     return params;
+  }
+
+  bool matches(int? id) {
+    return onlyAssigned && id != null ||
+        onlyNotAssigned && id == null ||
+        isSet && id == this.id ||
+        isUnset;
   }
 
   @override

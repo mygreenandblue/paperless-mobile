@@ -160,8 +160,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<StoragePath>>(),
             child: AddStoragePathPage(initalValue: initialValue),
           ),
           textFieldLabel: S.of(context).documentStoragePathPropertyLabel,
@@ -182,8 +181,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<Correspondent>>(),
             child: AddCorrespondentPage(initialName: initialValue),
           ),
           textFieldLabel: S.of(context).documentCorrespondentPropertyLabel,
@@ -215,8 +213,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (currentInput) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<DocumentType>>(),
             child: AddDocumentTypePage(
               initialName: currentInput,
             ),

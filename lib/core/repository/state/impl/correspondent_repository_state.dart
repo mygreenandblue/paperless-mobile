@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/state/repository_state.dart';
+import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 
 part 'correspondent_repository_state.g.dart';
 
 @JsonSerializable()
 class CorrespondentRepositoryState
-    extends RepositoryState<Map<int, Correspondent>> {
+    extends IndexedRepositoryState<Correspondent> {
   const CorrespondentRepositoryState({
     super.values = const {},
     super.hasLoaded,

@@ -249,7 +249,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                         Builder(
                           builder: (context) {
                             return RefreshIndicator(
-                              edgeOffset: kToolbarHeight,
+                              edgeOffset: kToolbarHeight + kTextTabBarHeight,
                               onRefresh: _onReloadDocuments,
                               notificationPredicate: (_) =>
                                   connectivityState.isConnected,
@@ -263,13 +263,14 @@ class _DocumentsPageState extends State<DocumentsPage>
                                   ),
                                   _buildViewActions(),
                                   BlocBuilder<DocumentsCubit, DocumentsState>(
-                                    buildWhen: (previous, current) =>
-                                        !const ListEquality().equals(
-                                          previous.documents,
-                                          current.documents,
-                                        ) ||
-                                        previous.selectedIds !=
-                                            current.selectedIds,
+                                    // Not required anymore since saved views are now handled separately
+                                    // buildWhen: (previous, current) =>
+                                    //     !const ListEquality().equals(
+                                    //       previous.documents,
+                                    //       current.documents,
+                                    //     ) ||
+                                    //     previous.selectedIds !=
+                                    //         current.selectedIds,
                                     builder: (context, state) {
                                       if (state.hasLoaded &&
                                           state.documents.isEmpty) {
@@ -323,7 +324,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                         Builder(
                           builder: (context) {
                             return RefreshIndicator(
-                              edgeOffset: kToolbarHeight,
+                              edgeOffset: kToolbarHeight + kTextTabBarHeight,
                               onRefresh: _onReloadSavedViews,
                               notificationPredicate: (_) =>
                                   connectivityState.isConnected,
@@ -390,7 +391,7 @@ class _DocumentsPageState extends State<DocumentsPage>
       try {
         await context
             .read<DocumentsCubit>()
-            .bulkRemove(documentsState.selection);
+            .bulkDelete(documentsState.selection);
         showSnackBar(
           context,
           S.of(context).documentsPageBulkDeleteSuccessfulText,
@@ -467,20 +468,14 @@ class _DocumentsPageState extends State<DocumentsPage>
     }
   }
 
-  Future<void> _openDetails(DocumentModel document) async {
-    final updatedModel = await Navigator.pushNamed(
+  void _openDetails(DocumentModel document) {
+    Navigator.pushNamed(
       context,
       DocumentDetailsRoute.routeName,
       arguments: DocumentDetailsRouteArguments(
         document: document,
       ),
-    ) as DocumentModel?;
-    // final updatedModel = await Navigator.of(context).push<DocumentModel?>(
-    //   _buildDetailsPageRoute(document),
-    // );
-    if (updatedModel != document) {
-      context.read<DocumentsCubit>().reload();
-    }
+    );
   }
 
   void _addTagToFilter(int tagId) {
