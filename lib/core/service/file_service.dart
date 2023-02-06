@@ -94,7 +94,8 @@ class FileService {
     }
 
     await Future.wait(
-        dir.listSync().map((item) => item.delete(recursive: true)));
+      dir.listSync().map((item) => item.delete(recursive: true)),
+    );
   }
 }
 
