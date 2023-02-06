@@ -1,10 +1,8 @@
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 
-class DocumentTypeRepositoryImpl
-    extends LabelRepository<DocumentType, DocumentTypeRepositoryState> {
+class DocumentTypeRepositoryImpl extends LabelRepository<DocumentType> {
   final PaperlessLabelsApi _api;
 
   DocumentTypeRepositoryImpl(this._api)
@@ -13,7 +11,7 @@ class DocumentTypeRepositoryImpl
   @override
   Future<DocumentType> create(DocumentType documentType) async {
     final created = await _api.saveDocumentType(documentType);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..putIfAbsent(created.id!, () => created);
     emit(DocumentTypeRepositoryState(values: updatedState, hasLoaded: true));
     return created;
@@ -22,7 +20,7 @@ class DocumentTypeRepositoryImpl
   @override
   Future<int> delete(DocumentType documentType) async {
     await _api.deleteDocumentType(documentType);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..removeWhere((k, v) => k == documentType.id);
     emit(DocumentTypeRepositoryState(values: updatedState, hasLoaded: true));
     return documentType.id!;
@@ -32,7 +30,7 @@ class DocumentTypeRepositoryImpl
   Future<DocumentType?> find(int id) async {
     final documentType = await _api.getDocumentType(id);
     if (documentType != null) {
-      final updatedState = {...state.values}..[id] = documentType;
+      final updatedState = {...state.values ?? {}}..[id] = documentType;
       emit(DocumentTypeRepositoryState(values: updatedState, hasLoaded: true));
       return documentType;
     }
@@ -42,7 +40,7 @@ class DocumentTypeRepositoryImpl
   @override
   Future<Iterable<DocumentType>> findAll([Iterable<int>? ids]) async {
     final documentTypes = await _api.getDocumentTypes(ids);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..addEntries(documentTypes.map((e) => MapEntry(e.id!, e)));
     emit(DocumentTypeRepositoryState(values: updatedState, hasLoaded: true));
     return documentTypes;
@@ -51,7 +49,8 @@ class DocumentTypeRepositoryImpl
   @override
   Future<DocumentType> update(DocumentType documentType) async {
     final updated = await _api.updateDocumentType(documentType);
-    final updatedState = {...state.values}..update(updated.id!, (_) => updated);
+    final updatedState = {...state.values ?? {}}
+      ..update(updated.id!, (_) => updated);
     emit(DocumentTypeRepositoryState(values: updatedState, hasLoaded: true));
     return updated;
   }
@@ -62,7 +61,7 @@ class DocumentTypeRepositoryImpl
   }
 
   @override
-  Map<String, dynamic> toJson(DocumentTypeRepositoryState state) {
+  Map<String, dynamic> toJson(covariant DocumentTypeRepositoryState state) {
     return state.toJson();
   }
 }

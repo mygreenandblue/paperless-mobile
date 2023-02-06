@@ -1,3 +1,6 @@
+import 'package:paperless_api/paperless_api.dart';
+import 'package:rxdart/subjects.dart';
+
 typedef JSON = Map<String, dynamic>;
 typedef PaperlessValidationErrors = Map<String, String>;
 typedef PaperlessLocalizedErrorMessage = String;

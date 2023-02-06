@@ -7,4 +7,6 @@ abstract class DateRangeQuery extends Equatable {
   Map<String, String> toQueryParameter(DateRangeQueryField field);
 
   Map<String, dynamic> toJson();
+
+  bool matches(DateTime dt);
 }

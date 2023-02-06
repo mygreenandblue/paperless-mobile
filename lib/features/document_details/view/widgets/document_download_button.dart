@@ -5,7 +5,8 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:provider/provider.dart';
 
 class DocumentDownloadButton extends StatefulWidget {
@@ -47,20 +48,24 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       return;
     }
     setState(() => _isDownloadPending = true);
+    final service = context.read<PaperlessDocumentsApi>();
     try {
-      final bytes =
-          await context.read<PaperlessDocumentsApi>().download(document);
+      final bytes = await service.download(document);
+      final meta = await service.getMetaData(document);
       final Directory dir = await FileService.downloadsDirectory;
-      String filePath = "${dir.path}/${document.originalFileName}";
-      //TODO: Add replacement mechanism here (ask user if file should be replaced if exists)
-      await File(filePath).writeAsBytes(bytes);
+      String filePath = "${dir.path}/${meta.mediaFilename}";
+      final createdFile = File(filePath);
+      createdFile.createSync(recursive: true);
+      createdFile.writeAsBytesSync(bytes);
       showSnackBar(context, S.of(context).documentDownloadSuccessMessage);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {
       showGenericError(context, error);
     } finally {
-      setState(() => _isDownloadPending = false);
+      if (mounted) {
+        setState(() => _isDownloadPending = false);
+      }
     }
   }
 }

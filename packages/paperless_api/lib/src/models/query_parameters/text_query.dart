@@ -58,6 +58,26 @@ class TextQuery extends Equatable {
     return null;
   }
 
+  bool matches({
+    required String title,
+    String? content,
+    int? asn,
+  }) {
+    if (queryText?.isEmpty ?? true) return true;
+    switch (queryType) {
+      case QueryType.title:
+        return title.contains(queryText!);
+      case QueryType.titleAndContent:
+        return title.contains(queryText!) ||
+            (content?.contains(queryText!) ?? false);
+      case QueryType.extended:
+        //TODO: Implement. Might be too complex...
+        return true;
+      case QueryType.asn:
+        return int.tryParse(queryText!) == asn;
+    }
+  }
+
   Map<String, dynamic> toJson() => _$TextQueryToJson(this);
 
   factory TextQuery.fromJson(Map<String, dynamic> json) =>

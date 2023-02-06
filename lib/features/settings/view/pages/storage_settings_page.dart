@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/clear_storage_setting.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/clear_storage_settings.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class StorageSettingsPage extends StatelessWidget {
@@ -13,7 +13,7 @@ class StorageSettingsPage extends StatelessWidget {
       ),
       body: ListView(
         children: const [
-          ClearStorageSetting(),
+          ClearCacheSetting(),
         ],
       ),
     );

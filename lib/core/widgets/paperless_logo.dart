@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PaperlessLogo extends StatelessWidget {
+  static const _paperlessGreen = Color(0xFF18541F);
   final double? height;
   final double? width;
-  final String _path;
+  final Color _color;
 
-  const PaperlessLogo.white({super.key, this.height, this.width})
-      : _path = "assets/logos/paperless_logo_white.svg";
+  const PaperlessLogo.white({
+    super.key,
+    this.height,
+    this.width,
+  }) : _color = Colors.white;
 
   const PaperlessLogo.green({super.key, this.height, this.width})
-      : _path = "assets/logos/paperless_logo_green.svg";
+      : _color = _paperlessGreen;
 
   const PaperlessLogo.black({super.key, this.height, this.width})
-      : _path = "assets/logos/paperless_logo_black.svg";
+      : _color = Colors.black;
+
+  const PaperlessLogo.colored(Color color, {super.key, this.height, this.width})
+      : _color = color;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +31,8 @@ class PaperlessLogo extends StatelessWidget {
       ),
       padding: const EdgeInsets.only(right: 8),
       child: SvgPicture.asset(
-        _path,
+        "assets/logos/paperless_logo_white.svg",
+        color: _color,
       ),
     );
   }

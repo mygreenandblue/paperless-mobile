@@ -1,3 +1,4 @@
+import 'package:jiffy/jiffy.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'date_range_query.dart';
@@ -35,9 +36,28 @@ class RelativeDateRangeQuery extends DateRangeQuery {
     );
   }
 
+  /// Returns the datetime when subtracting the offset given the unit from now.
+  DateTime get dateTime {
+    switch (unit) {
+      case DateRangeUnit.day:
+        return Jiffy().subtract(days: offset).dateTime;
+      case DateRangeUnit.week:
+        return Jiffy().subtract(weeks: offset).dateTime;
+      case DateRangeUnit.month:
+        return Jiffy().subtract(months: offset).dateTime;
+      case DateRangeUnit.year:
+        return Jiffy().subtract(years: offset).dateTime;
+    }
+  }
+
   @override
   Map<String, dynamic> toJson() => _$RelativeDateRangeQueryToJson(this);
 
   factory RelativeDateRangeQuery.fromJson(Map<String, dynamic> json) =>
       _$RelativeDateRangeQueryFromJson(json);
+
+  @override
+  bool matches(DateTime dt) {
+    return dt.isAfter(dateTime) || dt == dateTime;
+  }
 }

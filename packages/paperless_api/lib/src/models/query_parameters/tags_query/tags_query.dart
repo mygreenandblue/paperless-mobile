@@ -4,4 +4,6 @@ abstract class TagsQuery extends Equatable {
   const TagsQuery();
   Map<String, String> toQueryParameter();
   Map<String, dynamic> toJson();
+
+  bool matches(Iterable<int> ids);
 }

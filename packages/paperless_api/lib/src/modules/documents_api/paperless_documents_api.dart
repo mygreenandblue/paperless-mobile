@@ -18,7 +18,6 @@ abstract class PaperlessDocumentsApi {
   Future<int> findNextAsn();
   Future<PagedSearchResult<DocumentModel>> findAll(DocumentFilter filter);
   Future<DocumentModel?> find(int id);
-  Future<List<SimilarDocumentModel>> findSimilar(int docId);
   Future<int> delete(DocumentModel doc);
   Future<DocumentMetaData> getMetaData(DocumentModel document);
   Future<Iterable<int>> bulkAction(BulkAction action);

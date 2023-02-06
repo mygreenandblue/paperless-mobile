@@ -241,8 +241,7 @@ class _TagFormFieldState extends State<TagFormField> {
     final Tag? tag = await Navigator.of(context).push<Tag>(
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) =>
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Tag>>(),
           child: AddTagPage(initialValue: _textEditingController.text),
         ),
       ),
@@ -266,6 +265,10 @@ class _TagFormFieldState extends State<TagFormField> {
   Widget _buildNotAssignedTag(FormFieldState<TagsQuery> field) {
     return ColoredChipWrapper(
       child: InputChip(
+        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.all(4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: BorderSide.none,
         label: Text(
           S.of(context).labelNotAssignedText,
         ),
@@ -288,6 +291,10 @@ class _TagFormFieldState extends State<TagFormField> {
     }
     return ColoredChipWrapper(
       child: InputChip(
+        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.all(4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: BorderSide.none,
         label: Text(
           tag.name,
           style: TextStyle(
@@ -312,6 +319,10 @@ class _TagFormFieldState extends State<TagFormField> {
   Widget _buildAnyAssignedTag(FormFieldState<TagsQuery> field) {
     return ColoredChipWrapper(
       child: InputChip(
+        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.all(4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: BorderSide.none,
         label: Text(S.of(context).labelAnyAssignedText),
         backgroundColor:
             Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),

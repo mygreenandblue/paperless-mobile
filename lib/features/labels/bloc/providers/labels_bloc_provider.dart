@@ -18,25 +18,22 @@ class LabelsBlocProvider extends StatelessWidget {
       providers: [
         BlocProvider<LabelCubit<StoragePath>>(
           create: (context) => LabelCubit<StoragePath>(
-            context.read<
-                LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+            context.read<LabelRepository<StoragePath>>(),
           ),
         ),
         BlocProvider<LabelCubit<Correspondent>>(
           create: (context) => LabelCubit<Correspondent>(
-            context.read<
-                LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+            context.read<LabelRepository<Correspondent>>(),
           ),
         ),
         BlocProvider<LabelCubit<DocumentType>>(
           create: (context) => LabelCubit<DocumentType>(
-            context.read<
-                LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+            context.read<LabelRepository<DocumentType>>(),
           ),
         ),
         BlocProvider<LabelCubit<Tag>>(
           create: (context) => LabelCubit<Tag>(
-            context.read<LabelRepository<Tag, TagRepositoryState>>(),
+            context.read<LabelRepository<Tag>>(),
           ),
         ),
       ],

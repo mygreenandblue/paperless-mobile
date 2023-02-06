@@ -20,6 +20,6 @@ CorrespondentRepositoryState _$CorrespondentRepositoryStateFromJson(
 Map<String, dynamic> _$CorrespondentRepositoryStateToJson(
         CorrespondentRepositoryState instance) =>
     <String, dynamic>{
-      'values': instance.values.map((k, e) => MapEntry(k.toString(), e)),
+      'values': instance.values?.map((k, e) => MapEntry(k.toString(), e)),
       'hasLoaded': instance.hasLoaded,
     };

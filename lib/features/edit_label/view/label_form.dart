@@ -6,7 +6,8 @@ import 'package:paperless_mobile/core/translation/matching_algorithm_localizatio
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/constants.dart';
 
 class SubmitButtonConfig<T extends Label> {
   final Widget icon;
@@ -53,8 +54,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   @override
   void initState() {
     super.initState();
-    _enableMatchFormField =
-        widget.initialValue?.matchingAlgorithm != MatchingAlgorithm.auto;
+    _enableMatchFormField = (widget.initialValue?.matchingAlgorithm ??
+            MatchingAlgorithm.defaultValue) !=
+        MatchingAlgorithm.auto;
   }
 
   @override
@@ -82,8 +84,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
             ),
             FormBuilderDropdown<int?>(
               name: Label.matchingAlgorithmKey,
-              initialValue: widget.initialValue?.matchingAlgorithm.value ??
-                  MatchingAlgorithm.auto.value,
+              initialValue: (widget.initialValue?.matchingAlgorithm ??
+                      MatchingAlgorithm.defaultValue)
+                  .value,
               decoration: InputDecoration(
                 labelText: S.of(context).labelMatchingAlgorithmPropertyLabel,
                 errorText: _errors[Label.matchingAlgorithmKey],
@@ -98,7 +101,8 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                   .map(
                     (algo) => DropdownMenuItem<int?>(
                       child: Text(
-                          translateMatchingAlgorithmDescription(context, algo)),
+                        translateMatchingAlgorithmDescription(context, algo),
+                      ),
                       value: algo.value,
                     ),
                   )
@@ -138,8 +142,8 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           // If auto is selected, the match will be removed.
           mergedJson[Label.matchKey] = '';
         }
-        final createdLabel = await widget.submitButtonConfig
-            .onSubmit(widget.fromJsonT(mergedJson));
+        final parsed = widget.fromJsonT(mergedJson);
+        final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
         Navigator.pop(context, createdLabel);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
