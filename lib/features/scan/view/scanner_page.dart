@@ -12,22 +12,21 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/core/store/local_vault.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/offline_banner.dart';
+import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
 import 'package:paperless_mobile/features/scan/bloc/document_scanner_cubit.dart';
-import 'package:paperless_mobile/features/scan/view/widgets/grid_image_item_widget.dart';
+import 'package:paperless_mobile/features/scan/view/widgets/scanned_image_item.dart';
+import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/file_helpers.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -44,6 +43,15 @@ class _ScannerPageState extends State<ScannerPage>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
+    final safeAreaPadding = MediaQuery.of(context).padding;
+    final availableHeight = MediaQuery.of(context).size.height -
+        2 * kToolbarHeight -
+        kTextTabBarHeight -
+        kBottomNavigationBarHeight -
+        safeAreaPadding.top -
+        safeAreaPadding.bottom;
+
+    print(availableHeight);
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
         return Scaffold(
@@ -52,13 +60,119 @@ class _ScannerPageState extends State<ScannerPage>
             onPressed: () => _openDocumentScanner(context),
             child: const Icon(Icons.add_a_photo_outlined),
           ),
-          appBar: _buildAppBar(context, connectedState.isConnected),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildBody(connectedState.isConnected),
+          //appBar: _buildAppBar(context, connectedState.isConnected),
+          // body: Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: _buildBody(connectedState.isConnected),
+          // ),
+          body: BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return CustomScrollView(
+                physics:
+                    state.isEmpty ? const NeverScrollableScrollPhysics() : null,
+                slivers: [
+                  SearchAppBar(
+                    hintText: S.of(context).documentSearchSearchDocuments,
+                    onOpenSearch: showDocumentSearchPage,
+                    bottom: PreferredSize(
+                      child: _buildActions(connectedState.isConnected),
+                      preferredSize: const Size.fromHeight(kTextTabBarHeight),
+                    ),
+                  ),
+                  if (state.isEmpty)
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: availableHeight,
+                        child: Center(
+                          child: _buildEmptyState(connectedState.isConnected),
+                        ),
+                      ),
+                    )
+                  else
+                    _buildImageGrid(state)
+                ],
+              );
+
+              NestedScrollView(
+                floatHeaderSlivers: false,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SearchAppBar(
+                    hintText: S.of(context).documentSearchSearchDocuments,
+                    onOpenSearch: showDocumentSearchPage,
+                    bottom: PreferredSize(
+                      child: _buildActions(connectedState.isConnected),
+                      preferredSize: const Size.fromHeight(kTextTabBarHeight),
+                    ),
+                  ),
+                ],
+                body: CustomScrollView(
+                  slivers: [
+                    if (state.isEmpty)
+                      SliverFillViewport(
+                        delegate: SliverChildListDelegate.fixed(
+                            [_buildEmptyState(connectedState.isConnected)]),
+                      )
+                    else
+                      _buildImageGrid(state)
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
+    );
+  }
+
+  Widget _buildActions(bool isConnected) {
+    return SizedBox(
+      height: kTextTabBarHeight,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text(S.of(context).scannerPagePreviewLabel),
+                onPressed: state.isNotEmpty
+                    ? () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DocumentView(
+                              documentBytes: _assembleFileBytes(
+                                state,
+                                forcePdf: true,
+                              ).then((file) => file.bytes),
+                            ),
+                          ),
+                        )
+                    : null,
+                icon: const Icon(Icons.visibility_outlined),
+              );
+            },
+          ),
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text(S.of(context).scannerPageClearAllLabel),
+                onPressed: state.isEmpty ? null : () => _reset(context),
+                icon: const Icon(Icons.delete_sweep_outlined),
+              );
+            },
+          ),
+          BlocBuilder<DocumentScannerCubit, List<File>>(
+            builder: (context, state) {
+              return TextButton.icon(
+                label: Text(S.of(context).scannerPageUploadLabel),
+                onPressed: state.isEmpty || !isConnected
+                    ? null
+                    : () => _onPrepareDocumentUpload(context),
+                icon: const Icon(Icons.upload_outlined),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -147,15 +261,12 @@ class _ScannerPageState extends State<ScannerPage>
         builder: (_) => LabelRepositoriesProvider(
           child: BlocProvider(
             create: (context) => DocumentUploadCubit(
-              localVault: context.read<LocalVault>(),
               documentApi: context.read<PaperlessDocumentsApi>(),
-              correspondentRepository: context.read<
-                  LabelRepository<Correspondent,
-                      CorrespondentRepositoryState>>(),
-              documentTypeRepository: context.read<
-                  LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
-              tagRepository:
-                  context.read<LabelRepository<Tag, TagRepositoryState>>(),
+              correspondentRepository:
+                  context.read<LabelRepository<Correspondent>>(),
+              documentTypeRepository:
+                  context.read<LabelRepository<DocumentType>>(),
+              tagRepository: context.read<LabelRepository<Tag>>(),
             ),
             child: DocumentUploadPreparationPage(
               fileBytes: file.bytes,
@@ -172,7 +283,7 @@ class _ScannerPageState extends State<ScannerPage>
     }
   }
 
-  Widget _buildBody(bool isConnected) {
+  Widget _buildEmptyState(bool isConnected) {
     return BlocBuilder<DocumentScannerCubit, List<File>>(
       builder: (context, scans) {
         if (scans.isNotEmpty) {
@@ -209,7 +320,7 @@ class _ScannerPageState extends State<ScannerPage>
   }
 
   Widget _buildImageGrid(List<File> scans) {
-    return GridView.builder(
+    return SliverGrid.builder(
         itemCount: scans.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
@@ -218,7 +329,7 @@ class _ScannerPageState extends State<ScannerPage>
           mainAxisSpacing: 10,
         ),
         itemBuilder: (context, index) {
-          return GridImageItemWidget(
+          return ScannedImageItem(
             file: scans[index],
             onDelete: () async {
               try {
@@ -265,16 +376,12 @@ class _ScannerPageState extends State<ScannerPage>
           builder: (_) => LabelRepositoriesProvider(
             child: BlocProvider(
               create: (context) => DocumentUploadCubit(
-                localVault: context.read<LocalVault>(),
                 documentApi: context.read<PaperlessDocumentsApi>(),
-                correspondentRepository: context.read<
-                    LabelRepository<Correspondent,
-                        CorrespondentRepositoryState>>(),
-                documentTypeRepository: context.read<
-                    LabelRepository<DocumentType,
-                        DocumentTypeRepositoryState>>(),
-                tagRepository:
-                    context.read<LabelRepository<Tag, TagRepositoryState>>(),
+                correspondentRepository:
+                    context.read<LabelRepository<Correspondent>>(),
+                documentTypeRepository:
+                    context.read<LabelRepository<DocumentType>>(),
+                tagRepository: context.read<LabelRepository<Tag>>(),
               ),
               child: DocumentUploadPreparationPage(
                 fileBytes: file.readAsBytesSync(),

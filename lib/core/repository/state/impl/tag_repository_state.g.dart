@@ -18,6 +18,6 @@ TagRepositoryState _$TagRepositoryStateFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TagRepositoryStateToJson(TagRepositoryState instance) =>
     <String, dynamic>{
-      'values': instance.values.map((k, e) => MapEntry(k.toString(), e)),
+      'values': instance.values?.map((k, e) => MapEntry(k.toString(), e)),
       'hasLoaded': instance.hasLoaded,
     };

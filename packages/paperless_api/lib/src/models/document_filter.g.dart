@@ -48,6 +48,7 @@ DocumentFilter _$DocumentFilterFromJson(Map<String, dynamic> json) =>
           ? const UnsetDateRangeQuery()
           : const DateRangeQueryJsonConverter()
               .fromJson(json['modified'] as Map<String, dynamic>),
+      moreLike: json['moreLike'] as int?,
     );
 
 Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
@@ -59,19 +60,20 @@ Map<String, dynamic> _$DocumentFilterToJson(DocumentFilter instance) =>
       'storagePath': instance.storagePath.toJson(),
       'asnQuery': instance.asnQuery.toJson(),
       'tags': const TagsQueryJsonConverter().toJson(instance.tags),
-      'sortField': _$SortFieldEnumMap[instance.sortField]!,
+      'sortField': _$SortFieldEnumMap[instance.sortField],
       'sortOrder': _$SortOrderEnumMap[instance.sortOrder]!,
       'created': const DateRangeQueryJsonConverter().toJson(instance.created),
       'added': const DateRangeQueryJsonConverter().toJson(instance.added),
       'modified': const DateRangeQueryJsonConverter().toJson(instance.modified),
       'query': instance.query.toJson(),
+      'moreLike': instance.moreLike,
     };
 
 const _$SortFieldEnumMap = {
-  SortField.archiveSerialNumber: 'archiveSerialNumber',
-  SortField.correspondentName: 'correspondentName',
+  SortField.archiveSerialNumber: 'archive_serial_number',
+  SortField.correspondentName: 'correspondent__name',
   SortField.title: 'title',
-  SortField.documentType: 'documentType',
+  SortField.documentType: 'document_type__name',
   SortField.created: 'created',
   SortField.added: 'added',
   SortField.modified: 'modified',

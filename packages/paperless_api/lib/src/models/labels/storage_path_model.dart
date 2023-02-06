@@ -6,17 +6,17 @@ part 'storage_path_model.g.dart';
 @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
 class StoragePath extends Label {
   static const pathKey = 'path';
-  late String? path;
+  final String path;
 
-  StoragePath({
-    required super.id,
+  const StoragePath({
+    super.id,
     required super.name,
+    required this.path,
     super.slug,
     super.match,
-    required super.matchingAlgorithm,
+    super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
-    required this.path,
   });
 
   factory StoragePath.fromJson(Map<String, dynamic> json) =>

@@ -4,18 +4,20 @@ class RouteDescription {
   final String label;
   final Icon icon;
   final Icon selectedIcon;
+  final Widget Function(Widget icon)? badgeBuilder;
 
   RouteDescription({
     required this.label,
     required this.icon,
     required this.selectedIcon,
+    this.badgeBuilder,
   });
 
   NavigationDestination toNavigationDestination() {
     return NavigationDestination(
       label: label,
-      icon: icon,
-      selectedIcon: selectedIcon,
+      icon: badgeBuilder?.call(icon) ?? icon,
+      selectedIcon: badgeBuilder?.call(selectedIcon) ?? selectedIcon,
     );
   }
 
@@ -30,8 +32,8 @@ class RouteDescription {
   BottomNavigationBarItem toBottomNavigationBarItem() {
     return BottomNavigationBarItem(
       label: label,
-      icon: icon,
-      activeIcon: selectedIcon,
+      icon: badgeBuilder?.call(icon) ?? icon,
+      activeIcon: badgeBuilder?.call(selectedIcon) ?? selectedIcon,
     );
   }
 }

@@ -1,16 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
-class DocumentsState extends DocumentsPagedState {
-  final int? selectedSavedViewId;
-
-  @JsonKey(ignore: true)
+class DocumentsState extends PagedDocumentsState {
+  @JsonKey(includeFromJson: true, includeToJson: false)
   final List<DocumentModel> selection;
 
   const DocumentsState({
     this.selection = const [],
-    this.selectedSavedViewId,
     super.value = const [],
     super.filter = const DocumentFilter(),
     super.hasLoaded = false,
@@ -25,7 +22,6 @@ class DocumentsState extends DocumentsPagedState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     List<DocumentModel>? selection,
-    int? Function()? selectedSavedViewId,
   }) {
     return DocumentsState(
       hasLoaded: hasLoaded ?? this.hasLoaded,
@@ -33,20 +29,13 @@ class DocumentsState extends DocumentsPagedState {
       value: value ?? this.value,
       filter: filter ?? this.filter,
       selection: selection ?? this.selection,
-      selectedSavedViewId: selectedSavedViewId != null
-          ? selectedSavedViewId.call()
-          : this.selectedSavedViewId,
     );
   }
 
   @override
   List<Object?> get props => [
-        hasLoaded,
-        filter,
-        value,
         selection,
-        isLoading,
-        selectedSavedViewId,
+        ...super.props,
       ];
 
   Map<String, dynamic> toJson() {
@@ -54,7 +43,6 @@ class DocumentsState extends DocumentsPagedState {
       'hasLoaded': hasLoaded,
       'isLoading': isLoading,
       'filter': filter.toJson(),
-      'selectedSavedViewId': selectedSavedViewId,
       'value':
           value.map((e) => e.toJson(DocumentModelJsonConverter())).toList(),
     };
@@ -65,7 +53,6 @@ class DocumentsState extends DocumentsPagedState {
     return DocumentsState(
       hasLoaded: json['hasLoaded'],
       isLoading: json['isLoading'],
-      selectedSavedViewId: json['selectedSavedViewId'],
       value: (json['value'] as List<dynamic>)
           .map((e) =>
               PagedSearchResult.fromJsonT(e, DocumentModelJsonConverter()))

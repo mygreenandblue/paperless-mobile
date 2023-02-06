@@ -1,20 +1,21 @@
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/state/repository_state.dart';
+import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'storage_path_repository_state.g.dart';
 
 @JsonSerializable()
-class StoragePathRepositoryState
-    extends RepositoryState<Map<int, StoragePath>> {
+class StoragePathRepositoryState extends IndexedRepositoryState<StoragePath> {
   const StoragePathRepositoryState({
     super.values = const {},
     super.hasLoaded = false,
   });
 
   @override
-  StoragePathRepositoryState copyWith(
-      {Map<int, StoragePath>? values, bool? hasLoaded}) {
+  StoragePathRepositoryState copyWith({
+    Map<int, StoragePath>? values,
+    bool? hasLoaded,
+  }) {
     return StoragePathRepositoryState(
       values: values ?? this.values,
       hasLoaded: hasLoaded ?? this.hasLoaded,

@@ -51,9 +51,7 @@ class TagsWidget extends StatelessWidget {
           } else {
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: children,
-              ),
+              child: Row(children: children),
             );
           }
         },

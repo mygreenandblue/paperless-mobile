@@ -1,0 +1,4 @@
+enum ColorSchemeOption {
+  classic,
+  dynamic;
+}

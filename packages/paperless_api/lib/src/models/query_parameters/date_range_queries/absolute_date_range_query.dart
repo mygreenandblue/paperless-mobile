@@ -52,4 +52,17 @@ class AbsoluteDateRangeQuery extends DateRangeQuery {
 
   @override
   Map<String, dynamic> toJson() => _$AbsoluteDateRangeQueryToJson(this);
+
+  @override
+  bool matches(DateTime dt) {
+    //TODO: Check if after and before are inclusive or exclusive definitions.
+    bool matches = true;
+    if (after != null) {
+      matches &= dt.isAfter(after!) || dt == after;
+    }
+    if (before != null) {
+      matches &= dt.isBefore(before!) || dt == before;
+    }
+    return matches;
+  }
 }

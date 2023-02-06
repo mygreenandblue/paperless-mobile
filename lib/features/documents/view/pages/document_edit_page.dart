@@ -20,7 +20,8 @@ import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/constants.dart';
 
 class DocumentEditPage extends StatefulWidget {
   final FieldSuggestions suggestions;
@@ -159,8 +160,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<StoragePath>>(),
             child: AddStoragePathPage(initalValue: initialValue),
           ),
           textFieldLabel: S.of(context).documentStoragePathPropertyLabel,
@@ -181,8 +181,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<Correspondent>>(),
             child: AddCorrespondentPage(initialName: initialValue),
           ),
           textFieldLabel: S.of(context).documentCorrespondentPropertyLabel,
@@ -214,8 +213,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (currentInput) => RepositoryProvider(
-            create: (context) => context.read<
-                LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+            create: (context) => context.read<LabelRepository<DocumentType>>(),
             child: AddDocumentTypePage(
               initialName: currentInput,
             ),
@@ -290,7 +288,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             label: Text(S.of(context).documentCreatedPropertyLabel),
           ),
           initialValue: initialCreatedAtDate,
-          format: DateFormat("dd. MMMM yyyy"), //TODO: Localized date format
+          format: DateFormat.yMMMMd(),
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
         if (_filteredSuggestions.hasSuggestedDates)

@@ -7,14 +7,16 @@ import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 
 class CorrespondentBlocProvider extends StatelessWidget {
   final Widget child;
-  const CorrespondentBlocProvider({super.key, required this.child});
+  const CorrespondentBlocProvider({
+    super.key,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LabelCubit<Correspondent>(
-        context.read<
-            LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+        context.read<LabelRepository<Correspondent>>(),
       ),
       child: child,
     );

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/notifications/services/models/notification_payloads/open_created_document_notification_payload.dart';
@@ -121,7 +122,7 @@ class LocalNotificationService {
   ) {}
 
   void onDidReceiveNotificationResponse(NotificationResponse response) {
-    log("Received Notification: ${response.payload}");
+    debugPrint("Received Notification: ${response.payload}");
     if (response.notificationResponseType ==
         NotificationResponseType.selectedNotificationAction) {
       final action =

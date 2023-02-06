@@ -1,10 +1,8 @@
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/repository_state.dart';
 
-class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
+class TagRepositoryImpl extends LabelRepository<Tag> {
   final PaperlessLabelsApi _api;
 
   TagRepositoryImpl(this._api) : super(const TagRepositoryState());
@@ -12,7 +10,7 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   @override
   Future<Tag> create(Tag object) async {
     final created = await _api.saveTag(object);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..putIfAbsent(created.id!, () => created);
     emit(TagRepositoryState(values: updatedState, hasLoaded: true));
     return created;
@@ -21,7 +19,8 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   @override
   Future<int> delete(Tag tag) async {
     await _api.deleteTag(tag);
-    final updatedState = {...state.values}..removeWhere((k, v) => k == tag.id);
+    final updatedState = {...state.values ?? {}}
+      ..removeWhere((k, v) => k == tag.id);
     emit(TagRepositoryState(values: updatedState, hasLoaded: true));
     return tag.id!;
   }
@@ -30,7 +29,7 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   Future<Tag?> find(int id) async {
     final tag = await _api.getTag(id);
     if (tag != null) {
-      final updatedState = {...state.values}..[id] = tag;
+      final updatedState = {...state.values ?? {}}..[id] = tag;
       emit(TagRepositoryState(values: updatedState, hasLoaded: true));
       return tag;
     }
@@ -40,7 +39,7 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   @override
   Future<Iterable<Tag>> findAll([Iterable<int>? ids]) async {
     final tags = await _api.getTags(ids);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..addEntries(tags.map((e) => MapEntry(e.id!, e)));
     emit(TagRepositoryState(values: updatedState, hasLoaded: true));
     return tags;
@@ -49,7 +48,8 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   @override
   Future<Tag> update(Tag tag) async {
     final updated = await _api.updateTag(tag);
-    final updatedState = {...state.values}..update(updated.id!, (_) => updated);
+    final updatedState = {...state.values ?? {}}
+      ..update(updated.id!, (_) => updated);
     emit(TagRepositoryState(values: updatedState, hasLoaded: true));
     return updated;
   }
@@ -60,7 +60,7 @@ class TagRepositoryImpl extends LabelRepository<Tag, TagRepositoryState> {
   }
 
   @override
-  Map<String, dynamic>? toJson(TagRepositoryState state) {
+  Map<String, dynamic>? toJson(covariant TagRepositoryState state) {
     return state.toJson();
   }
 }

@@ -27,4 +27,9 @@ class AnyAssignedTagsQuery extends TagsQuery {
 
   factory AnyAssignedTagsQuery.fromJson(Map<String, dynamic> json) =>
       _$AnyAssignedTagsQueryFromJson(json);
+
+  @override
+  bool matches(Iterable<int> ids) {
+    return ids.isNotEmpty;
+  }
 }

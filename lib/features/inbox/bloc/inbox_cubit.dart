@@ -1,22 +1,24 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/documents_paging_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 
-class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
-  final LabelRepository<Tag, TagRepositoryState> _tagsRepository;
-  final LabelRepository<Correspondent, CorrespondentRepositoryState>
-      _correspondentRepository;
-  final LabelRepository<DocumentType, DocumentTypeRepositoryState>
-      _documentTypeRepository;
+class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
+  final LabelRepository<Tag> _tagsRepository;
+  final LabelRepository<Correspondent> _correspondentRepository;
+  final LabelRepository<DocumentType> _documentTypeRepository;
 
   final PaperlessDocumentsApi _documentsApi;
+
+  @override
+  final DocumentChangedNotifier notifier;
+
+  final PaperlessServerStatsApi _statsApi;
 
   final List<StreamSubscription> _subscriptions = [];
 
@@ -28,6 +30,8 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
     this._documentsApi,
     this._correspondentRepository,
     this._documentTypeRepository,
+    this._statsApi,
+    this.notifier,
   ) : super(
           InboxState(
             availableCorrespondents:
@@ -37,6 +41,21 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
             availableTags: _tagsRepository.current?.values ?? {},
           ),
         ) {
+    notifier.subscribe(
+      this,
+      onDeleted: remove,
+      onUpdated: (document) {
+        if (document.tags
+            .toSet()
+            .intersection(state.inboxTags.toSet())
+            .isEmpty) {
+          remove(document);
+          emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
+        } else {
+          replace(document);
+        }
+      },
+    );
     _subscriptions.add(
       _tagsRepository.values.listen((event) {
         if (event?.hasLoaded ?? false) {
@@ -60,12 +79,35 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
         }
       }),
     );
+
+    refreshItemsInInboxCount(false);
+    loadInbox();
+
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (isClosed) {
+        timer.cancel();
+      }
+      refreshItemsInInboxCount();
+    });
+  }
+
+  void refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
+    final stats = await _statsApi.getServerStatistics();
+
+    if (stats.documentsInInbox != state.itemsInInboxCount && shouldLoadInbox) {
+      loadInbox();
+    }
+    emit(
+      state.copyWith(
+        itemsInInboxCount: stats.documentsInInbox,
+      ),
+    );
   }
 
   ///
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
-  Future<void> initializeInbox() async {
+  Future<void> loadInbox() async {
     final inboxTags = await _tagsRepository.findAll().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );
@@ -81,7 +123,7 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
       );
     }
     emit(state.copyWith(inboxTags: inboxTags));
-    return updateFilter(
+    updateFilter(
       filter: DocumentFilter(
         sortField: SortField.added,
         tags: IdsTagsQuery.fromIds(inboxTags),
@@ -98,10 +140,12 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
         document.tags.toSet().intersection(state.inboxTags.toSet());
 
     final updatedTags = {...document.tags}..removeAll(tagsToRemove);
-    await api.update(
+    final updatedDocument = await api.update(
       document.copyWith(tags: updatedTags),
     );
-    await remove(document);
+    // Remove first so document is not replaced first.
+    remove(document);
+    notifier.notifyUpdated(updatedDocument);
     return tagsToRemove;
   }
 
@@ -112,10 +156,13 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
     DocumentModel document,
     Iterable<int> removedTags,
   ) async {
-    final updatedDoc = document.copyWith(
-      tags: {...document.tags, ...removedTags},
+    final updatedDocument = await _documentsApi.update(
+      document.copyWith(
+        tags: {...document.tags, ...removedTags},
+      ),
     );
-    await _documentsApi.update(updatedDoc);
+    notifier.notifyUpdated(updatedDocument);
+    emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount + 1));
     return reload();
   }
 
@@ -134,19 +181,10 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
       emit(state.copyWith(
         hasLoaded: true,
         value: [],
+        itemsInInboxCount: 0,
       ));
     } finally {
       emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  void replaceUpdatedDocument(DocumentModel document) {
-    if (document.tags.any((id) => state.inboxTags.contains(id))) {
-      // If replaced document still has inbox tag assigned:
-      replace(document);
-    } else {
-      // Remove document from inbox.
-      remove(document);
     }
   }
 
@@ -155,6 +193,7 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
       final int asn = await _documentsApi.findNextAsn();
       final updatedDocument = await _documentsApi
           .update(document.copyWith(archiveSerialNumber: asn));
+
       replace(updatedDocument);
     }
   }
@@ -175,9 +214,9 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentsPagingMixin {
 
   @override
   Future<void> close() {
-    _subscriptions.forEach((element) {
-      element.cancel();
-    });
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
     return super.close();
   }
 }

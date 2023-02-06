@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class InboxItem extends StatefulWidget {
   static const _a4AspectRatio = 1 / 1.4142;
 
-  final void Function(DocumentModel model) onDocumentUpdated;
   final DocumentModel document;
   const InboxItem({
     super.key,
     required this.document,
-    required this.onDocumentUpdated,
   });
 
   @override
@@ -40,25 +34,14 @@ class _InboxItemState extends State<InboxItem> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () async {
-        final returnedDocument = await Navigator.push<DocumentModel?>(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) => DocumentDetailsCubit(
-                context.read<PaperlessDocumentsApi>(),
-                widget.document,
-              ),
-              child: const LabelRepositoriesProvider(
-                child: DocumentDetailsPage(
-                  isLabelClickable: false,
-                ),
-              ),
-            ),
+          DocumentDetailsRoute.routeName,
+          arguments: DocumentDetailsRouteArguments(
+            document: widget.document,
+            isLabelClickable: false,
           ),
         );
-        if (returnedDocument != null) {
-          widget.onDocumentUpdated(returnedDocument);
-        }
       },
       child: SizedBox(
         height: 200,
@@ -111,12 +94,12 @@ class _InboxItemState extends State<InboxItem> {
     );
     final actions = [
       _buildAssignAsnAction(chipShape, context),
-      const SizedBox(width: 4.0),
+      const SizedBox(width: 8.0),
       ColoredChipWrapper(
         child: ActionChip(
           avatar: const Icon(Icons.delete_outline),
           shape: chipShape,
-          label: const Text("Delete document"),
+          label: Text(S.of(context).inboxActionDeleteDocument),
           onPressed: () async {
             final shouldDelete = await showDialog<bool>(
                   context: context,
@@ -131,6 +114,7 @@ class _InboxItemState extends State<InboxItem> {
         ),
       ),
     ];
+
     // return FutureBuilder<FieldSuggestions>(
     //   future: _fieldSuggestions,
     //   builder: (context, snapshot) {
@@ -158,12 +142,14 @@ class _InboxItemState extends State<InboxItem> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.bolt_outlined),
-            SizedBox(
-              width: 40,
+            ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 50,
+              ),
               child: Text(
                 S.of(context).inboxPageQuickActionsLabel,
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 3,
                 style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
@@ -206,7 +192,7 @@ class _InboxItemState extends State<InboxItem> {
             ? Text(
                 '${S.of(context).documentArchiveSerialNumberPropertyShortLabel} #${widget.document.archiveSerialNumber}',
               )
-            : const Text("Assign ASN"),
+            : Text(S.of(context).inboxActionAssignAsn),
         onPressed: !hasAsn
             ? () {
                 setState(() {
@@ -240,7 +226,7 @@ class _InboxItemState extends State<InboxItem> {
         Icons.description_outlined,
         size: Theme.of(context).textTheme.bodyMedium?.fontSize,
       ),
-      LabelText<DocumentType, DocumentTypeRepositoryState>(
+      LabelText<DocumentType>(
         id: widget.document.documentType,
         style: Theme.of(context).textTheme.bodyMedium,
         placeholder: "-",
@@ -254,7 +240,7 @@ class _InboxItemState extends State<InboxItem> {
         Icons.person_outline,
         size: Theme.of(context).textTheme.bodyMedium?.fontSize,
       ),
-      LabelText<Correspondent, CorrespondentRepositoryState>(
+      LabelText<Correspondent>(
         id: widget.document.correspondent,
         style: Theme.of(context).textTheme.bodyMedium,
         placeholder: "-",

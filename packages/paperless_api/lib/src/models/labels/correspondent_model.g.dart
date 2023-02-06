@@ -12,9 +12,10 @@ Correspondent _$CorrespondentFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       slug: json['slug'] as String?,
       match: json['match'] as String?,
-      matchingAlgorithm:
-          $enumDecode(_$MatchingAlgorithmEnumMap, json['matching_algorithm']),
-      isInsensitive: json['is_insensitive'] as bool?,
+      matchingAlgorithm: $enumDecodeNullable(
+              _$MatchingAlgorithmEnumMap, json['matching_algorithm']) ??
+          MatchingAlgorithm.defaultValue,
+      isInsensitive: json['is_insensitive'] as bool? ?? true,
       documentCount: json['document_count'] as int?,
       lastCorrespondence: _$JsonConverterFromJson<String, DateTime>(
           json['last_correspondence'],

@@ -4,7 +4,9 @@ import 'package:paperless_mobile/generated/l10n.dart';
 class RadioSettingsDialog<T> extends StatefulWidget {
   final List<RadioOption<T>> options;
   final T initialValue;
-  final Widget? title;
+  final String? titleText;
+  final String? descriptionText;
+  final Widget? footer;
   final Widget? confirmButton;
   final Widget? cancelButton;
 
@@ -12,9 +14,11 @@ class RadioSettingsDialog<T> extends StatefulWidget {
     super.key,
     required this.options,
     required this.initialValue,
-    this.title,
+    this.titleText,
     this.confirmButton,
     this.cancelButton,
+    this.descriptionText,
+    this.footer,
   });
 
   @override
@@ -43,10 +47,16 @@ class _RadioSettingsDialogState<T> extends State<RadioSettingsDialog<T>> {
                 onPressed: () => Navigator.pop(context, _groupValue),
                 child: Text(S.of(context).genericActionOkLabel)),
       ],
-      title: widget.title,
+      title: widget.titleText != null ? Text(widget.titleText!) : null,
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: widget.options.map(_buildOptionListTile).toList(),
+        children: [
+          if (widget.descriptionText != null)
+            Text(widget.descriptionText!,
+                style: Theme.of(context).textTheme.bodySmall),
+          ...widget.options.map(_buildOptionListTile),
+          if (widget.footer != null) widget.footer!,
+        ],
       ),
     );
   }
