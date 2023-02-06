@@ -6,11 +6,11 @@ part 'document_type_model.g.dart';
 @JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
 class DocumentType extends Label {
   const DocumentType({
-    required super.id,
+    super.id,
     required super.name,
     super.slug,
     super.match,
-    required super.matchingAlgorithm,
+    super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
   });
