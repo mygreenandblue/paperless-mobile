@@ -1,9 +1,7 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
@@ -30,14 +28,9 @@ import 'package:paperless_mobile/core/repository/impl/storage_path_repository_im
 import 'package:paperless_mobile/core/repository/impl/tag_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
@@ -146,11 +139,11 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
-      
+
   // Temporary Fix: Can be removed if the flutter engine implements the fix itself
   // Activate the highest availabe refresh rate on the device
   await FlutterDisplayMode.setHighRefreshRate();
-  
+
   runApp(
     MultiProvider(
       providers: [
