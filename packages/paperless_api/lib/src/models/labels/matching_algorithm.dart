@@ -14,12 +14,5 @@ enum MatchingAlgorithm {
 
   const MatchingAlgorithm(this.value, this.name);
 
-  static MatchingAlgorithm fromInt(int? value) {
-    return MatchingAlgorithm.values
-        .where((element) => element.value == value)
-        .firstWhere(
-          (element) => true,
-          orElse: () => MatchingAlgorithm.anyWord,
-        );
-  }
+  static const MatchingAlgorithm defaultValue = auto;
 }

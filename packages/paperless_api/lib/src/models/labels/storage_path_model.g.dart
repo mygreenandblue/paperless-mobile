@@ -9,13 +9,14 @@ part of 'storage_path_model.dart';
 StoragePath _$StoragePathFromJson(Map<String, dynamic> json) => StoragePath(
       id: json['id'] as int?,
       name: json['name'] as String,
+      path: json['path'] as String,
       slug: json['slug'] as String?,
       match: json['match'] as String?,
-      matchingAlgorithm:
-          $enumDecode(_$MatchingAlgorithmEnumMap, json['matching_algorithm']),
-      isInsensitive: json['is_insensitive'] as bool?,
+      matchingAlgorithm: $enumDecodeNullable(
+              _$MatchingAlgorithmEnumMap, json['matching_algorithm']) ??
+          MatchingAlgorithm.defaultValue,
+      isInsensitive: json['is_insensitive'] as bool? ?? true,
       documentCount: json['document_count'] as int?,
-      path: json['path'] as String?,
     );
 
 Map<String, dynamic> _$StoragePathToJson(StoragePath instance) {
@@ -35,7 +36,7 @@ Map<String, dynamic> _$StoragePathToJson(StoragePath instance) {
       _$MatchingAlgorithmEnumMap[instance.matchingAlgorithm]!;
   writeNotNull('is_insensitive', instance.isInsensitive);
   writeNotNull('document_count', instance.documentCount);
-  writeNotNull('path', instance.path);
+  val['path'] = instance.path;
   return val;
 }
 

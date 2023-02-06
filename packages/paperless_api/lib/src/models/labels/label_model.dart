@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/models/labels/matching_algorithm.dart';
 
 abstract class Label extends Equatable implements Comparable {
@@ -12,27 +11,21 @@ abstract class Label extends Equatable implements Comparable {
   static const documentCountKey = "document_count";
 
   String get queryEndpoint;
-  @JsonKey()
+
   final int? id;
-  @JsonKey()
   final String name;
-  @JsonKey()
   final String? slug;
-  @JsonKey()
   final String? match;
-  @JsonKey()
   final MatchingAlgorithm matchingAlgorithm;
-  @JsonKey()
   final bool? isInsensitive;
-  @JsonKey()
   final int? documentCount;
 
   const Label({
-    required this.id,
+    this.id,
     required this.name,
-    required this.matchingAlgorithm,
+    this.matchingAlgorithm = MatchingAlgorithm.defaultValue,
     this.match,
-    this.isInsensitive,
+    this.isInsensitive = true,
     this.documentCount,
     this.slug,
   });
