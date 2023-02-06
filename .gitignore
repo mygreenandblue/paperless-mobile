@@ -49,8 +49,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Injectable generated files
-di_initializer.config.dart
+# build_runner generated files
+lib/**/*.g.dart
+packages/**/*.g.dart
 
 # mockito generated files
 *.mocks.dart
