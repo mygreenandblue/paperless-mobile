@@ -88,7 +88,6 @@ dependencies:
   responsive_builder: ^0.4.3
   open_filex: ^4.3.2
   dynamic_color: ^1.5.4
-  auto_route: ^5.0.4
 
 dev_dependencies:
   integration_test:
