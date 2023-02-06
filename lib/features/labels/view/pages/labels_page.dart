@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -7,12 +5,8 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
-import 'package:paperless_mobile/core/widgets/offline_banner.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
@@ -22,10 +16,6 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_typ
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
 import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/correspondent_bloc_provider.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/document_type_bloc_provider.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/storage_path_bloc_provider.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/tag_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
@@ -259,7 +249,7 @@ class _LabelsPageState extends State<LabelsPage>
                                       IdQueryParameter.fromId(label.id),
                                   pageSize: label.documentCount ?? 0,
                                 ),
-                                contentBuilder: (path) => Text(path.path ?? ""),
+                                contentBuilder: (path) => Text(path.path),
                                 emptyStateActionButtonLabel: S
                                     .of(context)
                                     .labelsPageStoragePathEmptyStateAddNewLabel,
