@@ -28,7 +28,7 @@ class ApplicationSettingsState {
     this.preferredThemeMode = ThemeMode.system,
     this.isLocalAuthenticationEnabled = false,
     this.preferredViewType = ViewType.list,
-    this.preferredColorSchemeOption = ColorSchemeOption.dynamic,
+    this.preferredColorSchemeOption = ColorSchemeOption.classic,
   });
 
   Map<String, dynamic> toJson() => _$ApplicationSettingsStateToJson(this);
