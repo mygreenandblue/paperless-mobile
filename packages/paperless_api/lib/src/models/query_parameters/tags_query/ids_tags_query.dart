@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-
+import 'package:collection/collection.dart';
 import 'exclude_tag_id_query.dart';
 import 'include_tag_id_query.dart';
 import 'tag_id_query.dart';
@@ -84,5 +84,11 @@ class IdsTagsQuery extends TagsQuery {
     return IdsTagsQuery(
       (json['queries'] as List).map((e) => TagIdQuery.fromJson(e)),
     );
+  }
+
+  @override
+  bool matches(Iterable<int> ids) {
+    return includedIds.toSet().difference(ids.toSet()).isEmpty &&
+        excludedIds.toSet().intersection(ids.toSet()).isEmpty;
   }
 }

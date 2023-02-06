@@ -14,4 +14,9 @@ class OnlyNotAssignedTagsQuery extends TagsQuery {
   Map<String, dynamic> toJson() {
     return {};
   }
+
+  @override
+  bool matches(Iterable<int> ids) {
+    return ids.isEmpty;
+  }
 }

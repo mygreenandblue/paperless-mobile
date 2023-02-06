@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,12 +14,14 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/bloc_changes_observer.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/impl/correspondent_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/impl/document_type_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/impl/saved_view_repository_impl.dart';
@@ -33,7 +37,6 @@ import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/core/store/local_vault.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
@@ -43,29 +46,37 @@ import 'package:paperless_mobile/features/login/services/authentication_service.
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/model/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/routes/document_details_route.dart';
+import 'package:paperless_mobile/theme.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 void main() async {
   Bloc.observer = BlocChangesObserver();
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   await findSystemLocale();
+  packageInfo = await PackageInfo.fromPlatform();
+  if (Platform.isAndroid) {
+    androidInfo = await DeviceInfoPlugin().androidInfo;
+  }
+  if (Platform.isIOS) {
+    iosInfo = await DeviceInfoPlugin().iosInfo;
+  }
 
   // Initialize External dependencies
   final connectivity = Connectivity();
-  final encryptedSharedPreferences = EncryptedSharedPreferences();
   final localAuthentication = LocalAuthentication();
   // Initialize other utility classes
   final connectivityStatusService = ConnectivityStatusServiceImpl(connectivity);
-  final localVault = LocalVaultImpl(encryptedSharedPreferences);
-  final localAuthService =
-      LocalAuthenticationService(localVault, localAuthentication);
+  final localAuthService = LocalAuthenticationService(localAuthentication);
 
   final hiveDir = await getApplicationDocumentsDirectory();
   HydratedBloc.storage = await HydratedStorage.build(
@@ -98,7 +109,7 @@ void main() async {
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
   // Remove temporarily downloaded files.
 
-  (await FileService.temporaryDirectory).deleteSync(recursive: true);
+  // (await FileService.temporaryDirectory).deleteSync(recursive: true);
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();
 
@@ -152,30 +163,26 @@ void main() async {
             ),
           ),
         ),
-        Provider<LocalVault>.value(value: localVault),
         Provider<ConnectivityStatusService>.value(
           value: connectivityStatusService,
         ),
         Provider<LocalNotificationService>.value(
           value: localNotificationService,
         ),
+        Provider.value(value: DocumentChangedNotifier()),
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<LabelRepository<Tag, TagRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<Tag>>.value(
             value: tagRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<Correspondent,
-                  CorrespondentRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<Correspondent>>.value(
             value: correspondentRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<DocumentType>>.value(
             value: documentTypeRepository,
           ),
-          RepositoryProvider<
-              LabelRepository<StoragePath, StoragePathRepositoryState>>.value(
+          RepositoryProvider<LabelRepository<StoragePath>>.value(
             value: storagePathRepository,
           ),
           RepositoryProvider<SavedViewRepository>.value(
@@ -207,22 +214,6 @@ class PaperlessMobileEntrypoint extends StatefulWidget {
 }
 
 class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
-  final _lightTheme = ThemeData.from(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.lightGreen,
-      brightness: Brightness.light,
-    ),
-    useMaterial3: true,
-  );
-
-  final _darkTheme = ThemeData.from(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.lightGreen,
-      brightness: Brightness.dark,
-    ),
-    useMaterial3: true,
-  );
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -235,52 +226,40 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
       ],
       child: BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
         builder: (context, settings) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: true,
-            title: "Paperless Mobile",
-            theme: _lightTheme.copyWith(
-              inputDecorationTheme: InputDecorationTheme(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+          return DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: true,
+                title: "Paperless Mobile",
+                theme: buildTheme(
+                  brightness: Brightness.light,
+                  dynamicScheme: lightDynamic,
+                  preferredColorScheme: settings.preferredColorSchemeOption,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 16.0,
+                darkTheme: buildTheme(
+                  brightness: Brightness.dark,
+                  dynamicScheme: darkDynamic,
+                  preferredColorScheme: settings.preferredColorSchemeOption,
                 ),
-              ),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              listTileTheme: const ListTileThemeData(
-                tileColor: Colors.transparent,
-              ),
-            ),
-            darkTheme: _darkTheme.copyWith(
-              inputDecorationTheme: InputDecorationTheme(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                themeMode: settings.preferredThemeMode,
+                supportedLocales: S.delegate.supportedLocales,
+                locale: Locale.fromSubtags(
+                  languageCode: settings.preferredLocaleSubtag,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 16.0,
-                ),
-              ),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              listTileTheme: const ListTileThemeData(
-                tileColor: Colors.transparent,
-              ),
-            ),
-            themeMode: settings.preferredThemeMode,
-            supportedLocales: S.delegate.supportedLocales,
-            locale: Locale.fromSubtags(
-              languageCode: settings.preferredLocaleSubtag,
-            ),
-            localizationsDelegates: const [
-              S.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              FormBuilderLocalizations.delegate,
-            ],
-            home: const AuthenticationWrapper(),
+                localizationsDelegates: const [
+                  S.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  FormBuilderLocalizations.delegate,
+                ],
+                routes: {
+                  DocumentDetailsRoute.routeName: (context) =>
+                      const DocumentDetailsRoute(),
+                },
+                home: const AuthenticationWrapper(),
+              );
+            },
           );
         },
       ),

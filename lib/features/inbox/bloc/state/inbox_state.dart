@@ -1,13 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/documents_paged_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 
 part 'inbox_state.g.dart';
 
-@JsonSerializable(
-  ignoreUnannotated: true,
-)
-class InboxState extends DocumentsPagedState {
+@JsonSerializable(ignoreUnannotated: true)
+class InboxState extends PagedDocumentsState {
   final Iterable<int> inboxTags;
 
   final Map<int, Tag> availableTags;
@@ -15,6 +13,8 @@ class InboxState extends DocumentsPagedState {
   final Map<int, DocumentType> availableDocumentTypes;
 
   final Map<int, Correspondent> availableCorrespondents;
+
+  final int itemsInInboxCount;
 
   @JsonKey()
   final bool isHintAcknowledged;
@@ -29,6 +29,7 @@ class InboxState extends DocumentsPagedState {
     this.availableTags = const {},
     this.availableDocumentTypes = const {},
     this.availableCorrespondents = const {},
+    this.itemsInInboxCount = 0,
   });
 
   @override
@@ -43,6 +44,7 @@ class InboxState extends DocumentsPagedState {
         availableTags,
         availableDocumentTypes,
         availableCorrespondents,
+        itemsInInboxCount,
       ];
 
   InboxState copyWith({
@@ -56,6 +58,7 @@ class InboxState extends DocumentsPagedState {
     Map<int, Correspondent>? availableCorrespondents,
     Map<int, DocumentType>? availableDocumentTypes,
     Map<int, FieldSuggestions>? suggestions,
+    int? itemsInInboxCount,
   }) {
     return InboxState(
       hasLoaded: hasLoaded ?? super.hasLoaded,
@@ -69,6 +72,7 @@ class InboxState extends DocumentsPagedState {
           availableDocumentTypes ?? this.availableDocumentTypes,
       availableTags: availableTags ?? this.availableTags,
       filter: filter ?? super.filter,
+      itemsInInboxCount: itemsInInboxCount ?? this.itemsInInboxCount,
     );
   }
 

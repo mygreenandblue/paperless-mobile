@@ -1,26 +1,32 @@
-import 'dart:developer';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/service/file_service.dart';
 
 part 'document_details_state.dart';
 
 class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   final PaperlessDocumentsApi _api;
+  final DocumentChangedNotifier _notifier;
 
-  DocumentDetailsCubit(this._api, DocumentModel initialDocument)
-      : super(DocumentDetailsState(document: initialDocument)) {
+  final List<StreamSubscription> _subscriptions = [];
+  DocumentDetailsCubit(
+    this._api,
+    this._notifier, {
+    required DocumentModel initialDocument,
+  }) : super(DocumentDetailsState(document: initialDocument)) {
+    _notifier.subscribe(this, onUpdated: replace);
     loadSuggestions();
   }
 
   Future<void> delete(DocumentModel document) async {
     await _api.delete(document);
+    _notifier.notifyDeleted(document);
   }
 
   Future<void> loadSuggestions() async {
@@ -44,21 +50,35 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       final int asn = await _api.findNextAsn();
       final updatedDocument =
           await _api.update(document.copyWith(archiveSerialNumber: asn));
-      emit(state.copyWith(document: updatedDocument));
+      _notifier.notifyUpdated(updatedDocument);
     }
   }
 
   Future<ResultType> openDocumentInSystemViewer() async {
-    final downloadDir = await FileService.temporaryDirectory;
+    final cacheDir = await FileService.temporaryDirectory;
+
     final metaData = await _api.getMetaData(state.document);
-    final docBytes = await _api.download(state.document);
-    File f = File('${downloadDir.path}/${metaData.mediaFilename}');
-    f.writeAsBytes(docBytes);
-    return OpenFilex.open(f.path, type: "application/pdf")
-        .then((value) => value.type);
+    final bytes = await _api.download(state.document);
+
+    final file = File('${cacheDir.path}/${metaData.mediaFilename}')
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(bytes);
+
+    return OpenFilex.open(file.path, type: "application/pdf").then(
+      (value) => value.type,
+    );
   }
 
-  void replaceDocument(DocumentModel document) {
+  void replace(DocumentModel document) {
     emit(state.copyWith(document: document));
+  }
+
+  @override
+  Future<void> close() {
+    for (final element in _subscriptions) {
+      element.cancel();
+    }
+    _notifier.unsubscribe(this);
+    return super.close();
   }
 }

@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.5.2+15
+version: 2.0.0+17
 
 environment:
   sdk: '>=3.0.0-35.0.dev <4.0.0'
@@ -68,7 +68,7 @@ dependencies:
   mime: ^1.0.2
   receive_sharing_intent: ^1.4.5
   uuid: ^3.0.6
-  flutter_typeahead: ^4.1.1
+  flutter_typeahead: ^4.3.3
   fluttertoast: ^8.1.1
   paperless_api:
     path: packages/paperless_api
@@ -87,6 +87,8 @@ dependencies:
   flutter_staggered_grid_view: ^0.6.2
   responsive_builder: ^0.4.3
   open_filex: ^4.3.2
+  dynamic_color: ^1.5.4
+  auto_route: ^5.0.4
 
 dev_dependencies:
   integration_test:
@@ -100,6 +102,8 @@ dev_dependencies:
   intl_utils: ^2.7.0
   flutter_lints: ^1.0.0
   json_serializable: ^6.5.4
+  dart_code_metrics: ^5.4.0
+  auto_route_generator: ^5.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -146,7 +150,6 @@ flutter:
 flutter_intl:
   enabled: true
   main_locale: en
-
   localizely:
     project_id: 84b4144d-a628-4ba6-a8d0-4f9917444057
     download_empty_as: main

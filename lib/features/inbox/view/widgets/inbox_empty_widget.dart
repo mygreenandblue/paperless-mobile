@@ -16,7 +16,7 @@ class InboxEmptyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       key: _emptyStateRefreshIndicatorKey,
-      onRefresh: () => context.read<InboxCubit>().initializeInbox(),
+      onRefresh: () => context.read<InboxCubit>().loadInbox(),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,

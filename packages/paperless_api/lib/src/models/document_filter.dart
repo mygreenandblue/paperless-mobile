@@ -26,12 +26,15 @@ class DocumentFilter extends Equatable {
   final IdQueryParameter storagePath;
   final IdQueryParameter asnQuery;
   final TagsQuery tags;
-  final SortField sortField;
+  final SortField? sortField;
   final SortOrder sortOrder;
   final DateRangeQuery created;
   final DateRangeQuery added;
   final DateRangeQuery modified;
   final TextQuery query;
+
+  /// Query documents similar to the document with this id.
+  final int? moreLike;
 
   const DocumentFilter({
     this.documentType = const IdQueryParameter.unset(),
@@ -47,6 +50,7 @@ class DocumentFilter extends Equatable {
     this.added = const UnsetDateRangeQuery(),
     this.created = const UnsetDateRangeQuery(),
     this.modified = const UnsetDateRangeQuery(),
+    this.moreLike,
   });
 
   bool get forceExtendedQuery {
@@ -59,7 +63,6 @@ class DocumentFilter extends Equatable {
     List<MapEntry<String, dynamic>> params = [
       MapEntry('page', '$page'),
       MapEntry('page_size', '$pageSize'),
-      MapEntry('ordering', '${sortOrder.queryString}${sortField.queryString}'),
       ...documentType.toQueryParameter('document_type').entries,
       ...correspondent.toQueryParameter('correspondent').entries,
       ...storagePath.toQueryParameter('storage_path').entries,
@@ -70,6 +73,18 @@ class DocumentFilter extends Equatable {
       ...modified.toQueryParameter(DateRangeQueryField.modified).entries,
       ...query.toQueryParameter().entries,
     ];
+    if (sortField != null) {
+      params.add(
+        MapEntry(
+          'ordering',
+          '${sortOrder.queryString}${sortField!.queryString}',
+        ),
+      );
+    }
+
+    if (moreLike != null) {
+      params.add(MapEntry('more_like_id', moreLike.toString()));
+    }
     // Reverse ordering can also be encoded using &reverse=1
     // Merge query params
     final queryParams = groupBy(params, (e) => e.key).map(
@@ -100,7 +115,7 @@ class DocumentFilter extends Equatable {
     DateRangeQuery? created,
     DateRangeQuery? modified,
     TextQuery? query,
-    int? selectedViewId,
+    int? Function()? moreLike,
   }) {
     final newFilter = DocumentFilter(
       pageSize: pageSize ?? this.pageSize,
@@ -116,6 +131,7 @@ class DocumentFilter extends Equatable {
       added: added ?? this.added,
       created: created ?? this.created,
       modified: modified ?? this.modified,
+      moreLike: moreLike != null ? moreLike.call() : this.moreLike,
     );
     if (query?.queryType != QueryType.extended &&
         newFilter.forceExtendedQuery) {
@@ -125,6 +141,24 @@ class DocumentFilter extends Equatable {
       );
     }
     return newFilter;
+  }
+
+  ///
+  /// Checks whether the properties of [document] match the current filter criteria.
+  ///
+  bool matches(DocumentModel document) {
+    return correspondent.matches(document.correspondent) &&
+        documentType.matches(document.documentType) &&
+        storagePath.matches(document.storagePath) &&
+        tags.matches(document.tags) &&
+        created.matches(document.created) &&
+        added.matches(document.added) &&
+        modified.matches(document.modified) &&
+        query.matches(
+          title: document.title,
+          content: document.content,
+          asn: document.archiveSerialNumber,
+        );
   }
 
   int get appliedFiltersCount => [

@@ -10,7 +10,7 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   @override
   Future<SavedView> create(SavedView object) async {
     final created = await _api.save(object);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..putIfAbsent(created.id!, () => created);
     emit(SavedViewRepositoryState(values: updatedState, hasLoaded: true));
     return created;
@@ -19,7 +19,7 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   @override
   Future<int> delete(SavedView view) async {
     await _api.delete(view);
-    final updatedState = {...state.values}..remove(view.id);
+    final updatedState = {...state.values ?? {}}..remove(view.id);
     emit(SavedViewRepositoryState(values: updatedState, hasLoaded: true));
     return view.id!;
   }
@@ -27,7 +27,7 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   @override
   Future<SavedView?> find(int id) async {
     final found = await _api.find(id);
-    final updatedState = {...state.values}
+    final updatedState = {...state.values ?? {}}
       ..update(id, (_) => found, ifAbsent: () => found);
     emit(SavedViewRepositoryState(values: updatedState, hasLoaded: true));
     return found;
@@ -37,7 +37,7 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   Future<Iterable<SavedView>> findAll([Iterable<int>? ids]) async {
     final found = await _api.findAll(ids);
     final updatedState = {
-      ...state.values,
+      ...state.values ?? {},
       ...{for (final view in found) view.id!: view},
     };
     emit(SavedViewRepositoryState(values: updatedState, hasLoaded: true));
@@ -56,7 +56,7 @@ class SavedViewRepositoryImpl extends SavedViewRepository {
   }
 
   @override
-  Map<String, dynamic> toJson(SavedViewRepositoryState state) {
+  Map<String, dynamic> toJson(covariant SavedViewRepositoryState state) {
     return state.toJson();
   }
 }

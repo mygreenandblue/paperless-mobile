@@ -85,7 +85,6 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
               TextStyle(color: Theme.of(context).disabledColor, fontSize: 18.0),
         ),
       ),
-      getImmediateSuggestions: true,
       loadingBuilder: (context) => Container(),
       initialValue: widget.initialValue ?? const IdQueryParameter.unset(),
       name: widget.name,
@@ -108,7 +107,6 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        style: ListTileStyle.list,
       ),
       suggestionsCallback: (pattern) {
         final List<IdQueryParameter> suggestions = widget.labelOptions.entries

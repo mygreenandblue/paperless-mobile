@@ -20,6 +20,6 @@ StoragePathRepositoryState _$StoragePathRepositoryStateFromJson(
 Map<String, dynamic> _$StoragePathRepositoryStateToJson(
         StoragePathRepositoryState instance) =>
     <String, dynamic>{
-      'values': instance.values.map((k, e) => MapEntry(k.toString(), e)),
+      'values': instance.values?.map((k, e) => MapEntry(k.toString(), e)),
       'hasLoaded': instance.hasLoaded,
     };

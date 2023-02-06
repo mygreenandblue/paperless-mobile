@@ -8,20 +8,22 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
-import 'package:paperless_mobile/features/home/view/widget/bottom_navigation_bar.dart';
-import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
+import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
+import 'package:paperless_mobile/features/inbox/bloc/state/inbox_state.dart';
+import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
+import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
@@ -30,9 +32,10 @@ import 'package:paperless_mobile/features/scan/view/scanner_page.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/util.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:paperless_mobile/helpers/file_helpers.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path/path.dart' as p;
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,11 +48,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
+  late final InboxCubit _inboxCubit;
 
   @override
   void initState() {
     super.initState();
     _initializeData(context);
+    _inboxCubit = InboxCubit(
+      context.read(),
+      context.read(),
+      context.read(),
+      context.read(),
+      context.read(),
+      context.read(),
+    );
     context.read<ConnectivityCubit>().reload();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
@@ -109,7 +121,6 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(
                 builder: (context) => BlocProvider.value(
                   value: DocumentUploadCubit(
-                    localVault: context.read(),
                     documentApi: context.read(),
                     tagRepository: context.read(),
                     correspondentRepository: context.read(),
@@ -137,12 +148,18 @@ class _HomePageState extends State<HomePage> {
           toastLength: Toast.LENGTH_LONG,
         );
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       Fluttertoast.showToast(
         msg: S.of(context).receiveSharedFilePermissionDeniedMessage,
         toastLength: Toast.LENGTH_LONG,
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _inboxCubit.close();
+    super.dispose();
   }
 
   @override
@@ -172,35 +189,38 @@ class _HomePageState extends State<HomePage> {
         ),
         label: S.of(context).bottomNavLabelsPageLabel,
       ),
-      // RouteDescription(
-      //   icon: const Icon(Icons.inbox_outlined),
-      //   selectedIcon: Icon(
-      //     Icons.inbox,
-      //     color: Theme.of(context).colorScheme.primary,
-      //   ),
-      //   label: S.of(context).bottomNavInboxPageLabel,
-      // ),
-      // RouteDescription(
-      //   icon: const Icon(Icons.settings_outlined),
-      //   selectedIcon: Icon(
-      //     Icons.settings,
-      //     color: Theme.of(context).colorScheme.primary,
-      //   ),
-      //   label: S.of(context).appDrawerSettingsLabel,
-      // ),
+      RouteDescription(
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: Icon(
+            Icons.inbox,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context).bottomNavInboxPageLabel,
+          badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
+                bloc: _inboxCubit,
+                builder: (context, state) {
+                  if (state.itemsInInboxCount > 0) {
+                    return Badge.count(
+                      count: state.itemsInInboxCount,
+                      child: icon,
+                    );
+                  }
+                  return icon;
+                },
+              )),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (context) => DocumentsCubit(
-              context.read<PaperlessDocumentsApi>(),
-              context.read<SavedViewRepository>(),
+              context.read(),
+              context.read(),
             ),
           ),
           BlocProvider(
             create: (context) => SavedViewCubit(
-              context.read<SavedViewRepository>(),
+              context.read(),
             ),
           ),
         ],
@@ -210,7 +230,28 @@ class _HomePageState extends State<HomePage> {
         value: _scannerCubit,
         child: const ScannerPage(),
       ),
-      const LabelsPage(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => LabelCubit<Correspondent>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<DocumentType>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<Tag>(context.read()),
+          ),
+          BlocProvider(
+            create: (context) => LabelCubit<StoragePath>(context.read()),
+          ),
+        ],
+        child: const LabelsPage(),
+      ),
+      BlocProvider.value(
+        value: _inboxCubit,
+        child: const InboxPage(),
+      ),
+      // const SettingsPage(),
     ];
     return MultiBlocListener(
       listeners: [
@@ -237,8 +278,6 @@ class _HomePageState extends State<HomePage> {
         builder: (context, sizingInformation) {
           if (!sizingInformation.isMobile) {
             return Scaffold(
-              key: rootScaffoldKey,
-              drawer: const AppDrawer(),
               body: Row(
                 children: [
                   NavigationRail(
@@ -258,15 +297,14 @@ class _HomePageState extends State<HomePage> {
             );
           }
           return Scaffold(
-            key: rootScaffoldKey,
             bottomNavigationBar: NavigationBar(
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
               destinations:
                   destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
-            drawer: const AppDrawer(),
             body: routes[_currentIndex],
           );
         },
@@ -282,16 +320,10 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeData(BuildContext context) {
     try {
-      context.read<LabelRepository<Tag, TagRepositoryState>>().findAll();
-      context
-          .read<LabelRepository<Correspondent, CorrespondentRepositoryState>>()
-          .findAll();
-      context
-          .read<LabelRepository<DocumentType, DocumentTypeRepositoryState>>()
-          .findAll();
-      context
-          .read<LabelRepository<StoragePath, StoragePathRepositoryState>>()
-          .findAll();
+      context.read<LabelRepository<Tag>>().findAll();
+      context.read<LabelRepository<Correspondent>>().findAll();
+      context.read<LabelRepository<DocumentType>>().findAll();
+      context.read<LabelRepository<StoragePath>>().findAll();
       context.read<SavedViewRepository>().findAll();
       context.read<PaperlessServerInformationCubit>().updateInformtion();
     } on PaperlessServerException catch (error, stackTrace) {

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-@JsonEnum()
+@JsonEnum(valueField: 'queryString')
 enum SortField {
   archiveSerialNumber("archive_serial_number"),
   correspondentName("correspondent__name"),

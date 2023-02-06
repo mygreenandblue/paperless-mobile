@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -8,6 +10,9 @@ import 'package:paperless_mobile/core/repository/state/impl/document_type_reposi
 import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/widgets/offline_banner.dart';
+import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
@@ -16,12 +21,13 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_corresponden
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
-import 'package:paperless_mobile/features/home/view/widget/app_drawer.dart';
+import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/correspondent_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/document_type_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/storage_path_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/bloc/providers/tag_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
+import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class LabelsPage extends StatefulWidget {
@@ -52,153 +58,224 @@ class _LabelsPageState extends State<LabelsPage>
         builder: (context, connectedState) {
           return Scaffold(
             drawer: const AppDrawer(),
-            appBar: AppBar(
-              title: Text(
-                [
-                  S.of(context).labelsPageCorrespondentsTitleText,
-                  S.of(context).labelsPageDocumentTypesTitleText,
-                  S.of(context).labelsPageTagsTitleText,
-                  S.of(context).labelsPageStoragePathTitleText
-                ][_currentIndex],
-              ),
-              actions: [
-                IconButton(
-                  onPressed: [
-                    _openAddCorrespondentPage,
-                    _openAddDocumentTypePage,
-                    _openAddTagPage,
-                    _openAddStoragePathPage,
-                  ][_currentIndex],
-                  icon: const Icon(Icons.add),
-                )
-              ],
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(
-                    kToolbarHeight + (!connectedState.isConnected ? 16 : 0)),
-                child: Column(
-                  children: [
-                    if (!connectedState.isConnected) const OfflineBanner(),
-                    ColoredBox(
-                      color: Theme.of(context).bottomAppBarColor,
-                      child: TabBar(
-                        indicatorColor: Theme.of(context).colorScheme.primary,
-                        controller: _tabController,
-                        tabs: [
-                          Tab(
-                            icon: Icon(
-                              Icons.person_outline,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                            ),
-                          ),
-                          Tab(
-                            icon: Icon(
-                              Icons.description_outlined,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                            ),
-                          ),
-                          Tab(
-                            icon: Icon(
-                              Icons.label_outline,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                            ),
-                          ),
-                          Tab(
-                            icon: Icon(
-                              Icons.folder_open,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: [
+                _openAddCorrespondentPage,
+                _openAddDocumentTypePage,
+                _openAddTagPage,
+                _openAddStoragePathPage,
+              ][_currentIndex],
+              child: Icon(Icons.add),
             ),
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                CorrespondentBlocProvider(
-                  child: LabelTabView<Correspondent>(
-                    filterBuilder: (label) => DocumentFilter(
-                      correspondent: IdQueryParameter.fromId(label.id),
-                      pageSize: label.documentCount ?? 0,
-                    ),
-                    onEdit: _openEditCorrespondentPage,
-                    emptyStateActionButtonLabel: S
-                        .of(context)
-                        .labelsPageCorrespondentEmptyStateAddNewLabel,
-                    emptyStateDescription: S
-                        .of(context)
-                        .labelsPageCorrespondentEmptyStateDescriptionText,
-                    onAddNew: _openAddCorrespondentPage,
+            body: NestedScrollView(
+              floatHeaderSlivers: true,
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverOverlapAbsorber(
+                  // This widget takes the overlapping behavior of the SliverAppBar,
+                  // and redirects it to the SliverOverlapInjector below. If it is
+                  // missing, then it is possible for the nested "inner" scroll view
+                  // below to end up under the SliverAppBar even when the inner
+                  // scroll view thinks it has not been scrolled.
+                  // This is not necessary if the "headerSliverBuilder" only builds
+                  // widgets that do not overlap the next sliver.
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context,
                   ),
-                ),
-                DocumentTypeBlocProvider(
-                  child: LabelTabView<DocumentType>(
-                    filterBuilder: (label) => DocumentFilter(
-                      documentType: IdQueryParameter.fromId(label.id),
-                      pageSize: label.documentCount ?? 0,
+                  sliver: SearchAppBar(
+                    hintText: S.of(context).documentSearchSearchDocuments,
+                    onOpenSearch: showDocumentSearchPage,
+                    bottom: TabBar(
+                      controller: _tabController,
+                      tabs: [
+                        Tab(
+                          icon: Icon(
+                            Icons.person_outline,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                        Tab(
+                          icon: Icon(
+                            Icons.description_outlined,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                        Tab(
+                          icon: Icon(
+                            Icons.label_outline,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                        Tab(
+                          icon: Icon(
+                            Icons.folder_open,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                        ),
+                      ],
                     ),
-                    onEdit: _openEditDocumentTypePage,
-                    emptyStateActionButtonLabel: S
-                        .of(context)
-                        .labelsPageDocumentTypeEmptyStateAddNewLabel,
-                    emptyStateDescription: S
-                        .of(context)
-                        .labelsPageDocumentTypeEmptyStateDescriptionText,
-                    onAddNew: _openAddDocumentTypePage,
-                  ),
-                ),
-                TagBlocProvider(
-                  child: LabelTabView<Tag>(
-                    filterBuilder: (label) => DocumentFilter(
-                      tags: IdsTagsQuery.fromIds([label.id!]),
-                      pageSize: label.documentCount ?? 0,
-                    ),
-                    onEdit: _openEditTagPage,
-                    leadingBuilder: (t) => CircleAvatar(
-                      backgroundColor: t.color,
-                      child: t.isInboxTag ?? false
-                          ? Icon(
-                              Icons.inbox,
-                              color: t.textColor,
-                            )
-                          : null,
-                    ),
-                    emptyStateActionButtonLabel:
-                        S.of(context).labelsPageTagsEmptyStateAddNewLabel,
-                    emptyStateDescription:
-                        S.of(context).labelsPageTagsEmptyStateDescriptionText,
-                    onAddNew: _openAddTagPage,
-                  ),
-                ),
-                StoragePathBlocProvider(
-                  child: LabelTabView<StoragePath>(
-                    onEdit: _openEditStoragePathPage,
-                    filterBuilder: (label) => DocumentFilter(
-                      storagePath: IdQueryParameter.fromId(label.id),
-                      pageSize: label.documentCount ?? 0,
-                    ),
-                    contentBuilder: (path) => Text(path.path ?? ""),
-                    emptyStateActionButtonLabel: S
-                        .of(context)
-                        .labelsPageStoragePathEmptyStateAddNewLabel,
-                    emptyStateDescription: S
-                        .of(context)
-                        .labelsPageStoragePathEmptyStateDescriptionText,
-                    onAddNew: _openAddStoragePathPage,
                   ),
                 ),
               ],
+              body: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  final metrics = notification.metrics;
+                  if (metrics.maxScrollExtent == 0) {
+                    return true;
+                  }
+                  final desiredTab =
+                      ((metrics.pixels / metrics.maxScrollExtent) *
+                              (_tabController.length - 1))
+                          .round();
+
+                  if (metrics.axis == Axis.horizontal &&
+                      _currentIndex != desiredTab) {
+                    setState(() => _currentIndex = desiredTab);
+                  }
+                  return true;
+                },
+                child: RefreshIndicator(
+                  edgeOffset: kToolbarHeight + kTextTabBarHeight,
+                  notificationPredicate: (notification) =>
+                      connectedState.isConnected,
+                  onRefresh: () => [
+                    context.read<LabelCubit<Correspondent>>(),
+                    context.read<LabelCubit<DocumentType>>(),
+                    context.read<LabelCubit<Tag>>(),
+                    context.read<LabelCubit<StoragePath>>(),
+                  ][_currentIndex]
+                      .reload(),
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<Correspondent>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  correspondent:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditCorrespondentPage,
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageCorrespondentEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageCorrespondentEmptyStateDescriptionText,
+                                onAddNew: _openAddCorrespondentPage,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<DocumentType>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  documentType:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditDocumentTypePage,
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageDocumentTypeEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageDocumentTypeEmptyStateDescriptionText,
+                                onAddNew: _openAddDocumentTypePage,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<Tag>(
+                                filterBuilder: (label) => DocumentFilter(
+                                  tags: IdsTagsQuery.fromIds([label.id!]),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                onEdit: _openEditTagPage,
+                                leadingBuilder: (t) => CircleAvatar(
+                                  backgroundColor: t.color,
+                                  child: t.isInboxTag ?? false
+                                      ? Icon(
+                                          Icons.inbox,
+                                          color: t.textColor,
+                                        )
+                                      : null,
+                                ),
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageTagsEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageTagsEmptyStateDescriptionText,
+                                onAddNew: _openAddTagPage,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              LabelTabView<StoragePath>(
+                                onEdit: _openEditStoragePathPage,
+                                filterBuilder: (label) => DocumentFilter(
+                                  storagePath:
+                                      IdQueryParameter.fromId(label.id),
+                                  pageSize: label.documentCount ?? 0,
+                                ),
+                                contentBuilder: (path) => Text(path.path ?? ""),
+                                emptyStateActionButtonLabel: S
+                                    .of(context)
+                                    .labelsPageStoragePathEmptyStateAddNewLabel,
+                                emptyStateDescription: S
+                                    .of(context)
+                                    .labelsPageStoragePathEmptyStateDescriptionText,
+                                onAddNew: _openAddStoragePathPage,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -211,8 +288,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Correspondent>>(),
           child: EditCorrespondentPage(correspondent: correspondent),
         ),
       ),
@@ -224,8 +300,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<DocumentType>>(),
           child: EditDocumentTypePage(documentType: docType),
         ),
       ),
@@ -237,8 +312,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) =>
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Tag>>(),
           child: EditTagPage(tag: tag),
         ),
       ),
@@ -250,8 +324,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context
-              .read<LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<StoragePath>>(),
           child: EditStoragePathPage(
             storagePath: path,
           ),
@@ -265,8 +338,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<Correspondent, CorrespondentRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Correspondent>>(),
           child: const AddCorrespondentPage(),
         ),
       ),
@@ -278,8 +350,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context.read<
-              LabelRepository<DocumentType, DocumentTypeRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<DocumentType>>(),
           child: const AddDocumentTypePage(),
         ),
       ),
@@ -291,8 +362,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) =>
-              context.read<LabelRepository<Tag, TagRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<Tag>>(),
           child: const AddTagPage(),
         ),
       ),
@@ -304,8 +374,7 @@ class _LabelsPageState extends State<LabelsPage>
       context,
       MaterialPageRoute(
         builder: (_) => RepositoryProvider(
-          create: (context) => context
-              .read<LabelRepository<StoragePath, StoragePathRepositoryState>>(),
+          create: (context) => context.read<LabelRepository<StoragePath>>(),
           child: const AddStoragePathPage(),
         ),
       ),

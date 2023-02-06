@@ -8,29 +8,23 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
-import 'package:paperless_mobile/core/store/local_vault.dart';
 
 part 'document_upload_state.dart';
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final PaperlessDocumentsApi _documentApi;
 
-  final LabelRepository<Tag, TagRepositoryState> _tagRepository;
-  final LabelRepository<Correspondent, CorrespondentRepositoryState>
-      _correspondentRepository;
-  final LabelRepository<DocumentType, DocumentTypeRepositoryState>
-      _documentTypeRepository;
+  final LabelRepository<Tag> _tagRepository;
+  final LabelRepository<Correspondent> _correspondentRepository;
+  final LabelRepository<DocumentType> _documentTypeRepository;
 
   final List<StreamSubscription> _subs = [];
 
   DocumentUploadCubit({
-    required LocalVault localVault,
     required PaperlessDocumentsApi documentApi,
-    required LabelRepository<Tag, TagRepositoryState> tagRepository,
-    required LabelRepository<Correspondent, CorrespondentRepositoryState>
-        correspondentRepository,
-    required LabelRepository<DocumentType, DocumentTypeRepositoryState>
-        documentTypeRepository,
+    required LabelRepository<Tag> tagRepository,
+    required LabelRepository<Correspondent> correspondentRepository,
+    required LabelRepository<DocumentType> documentTypeRepository,
   })  : _documentApi = documentApi,
         _tagRepository = tagRepository,
         _correspondentRepository = correspondentRepository,

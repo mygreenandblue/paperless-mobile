@@ -18,7 +18,7 @@ class EditTagPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EditLabelCubit<Tag>(
-        context.read<LabelRepository<Tag, TagRepositoryState>>(),
+        context.read<LabelRepository<Tag>>(),
       ),
       child: EditLabelPage<Tag>(
         label: tag,

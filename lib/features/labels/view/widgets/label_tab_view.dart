@@ -37,59 +37,65 @@ class LabelTabView<T extends Label> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-      builder: (context, connectivityState) {
-        return BlocBuilder<LabelCubit<T>, LabelState<T>>(
-          builder: (context, state) {
-            if (!state.isLoaded && !connectivityState.isConnected) {
-              return const OfflineWidget();
-            }
-            final labels = state.labels.values.toList()..sort();
-            if (labels.isEmpty) {
-              return Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      emptyStateDescription,
-                      textAlign: TextAlign.center,
+    return BlocProvider(
+      create: (context) => LabelCubit<T>(
+        context.read(),
+      ),
+      child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
+        builder: (context, connectivityState) {
+          return BlocBuilder<LabelCubit<T>, LabelState<T>>(
+            builder: (context, state) {
+              if (!state.isLoaded && !connectivityState.isConnected) {
+                return const OfflineWidget();
+              }
+              final labels = state.labels.values.toList()..sort();
+              if (labels.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          emptyStateDescription,
+                          textAlign: TextAlign.center,
+                        ),
+                        TextButton(
+                          onPressed: onAddNew,
+                          child: Text(emptyStateActionButtonLabel),
+                        ),
+                      ].padded(),
                     ),
-                    TextButton(
-                      onPressed: onAddNew,
-                      child: Text(emptyStateActionButtonLabel),
-                    ),
-                  ].padded(),
+                  ),
+                );
+              }
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final l = labels.elementAt(index);
+                    return LabelItem<T>(
+                      name: l.name,
+                      content: contentBuilder?.call(l) ??
+                          Text(
+                            translateMatchingAlgorithmName(
+                                    context, l.matchingAlgorithm) +
+                                ((l.match?.isNotEmpty ?? false)
+                                    ? ": ${l.match}"
+                                    : ""),
+                            maxLines: 2,
+                          ),
+                      onOpenEditPage: onEdit,
+                      filterBuilder: filterBuilder,
+                      leading: leadingBuilder?.call(l),
+                      label: l,
+                    );
+                  },
+                  childCount: labels.length,
                 ),
               );
-            }
-            return RefreshIndicator(
-              onRefresh: context.read<LabelCubit<T>>().reload,
-              notificationPredicate: (notification) =>
-                  connectivityState.isConnected,
-              child: ListView(
-                children: labels
-                    .map((l) => LabelItem<T>(
-                          name: l.name,
-                          content: contentBuilder?.call(l) ??
-                              Text(
-                                translateMatchingAlgorithmName(
-                                        context, l.matchingAlgorithm) +
-                                    ((l.match?.isNotEmpty ?? false)
-                                        ? ": ${l.match}"
-                                        : ""),
-                                maxLines: 2,
-                              ),
-                          onOpenEditPage: onEdit,
-                          filterBuilder: filterBuilder,
-                          leading: leadingBuilder?.call(l),
-                          label: l,
-                        ))
-                    .toList(),
-              ),
-            );
-          },
-        );
-      },
+            },
+          );
+        },
+      ),
     );
   }
 }

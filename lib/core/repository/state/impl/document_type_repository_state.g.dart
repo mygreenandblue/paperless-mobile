@@ -20,6 +20,6 @@ DocumentTypeRepositoryState _$DocumentTypeRepositoryStateFromJson(
 Map<String, dynamic> _$DocumentTypeRepositoryStateToJson(
         DocumentTypeRepositoryState instance) =>
     <String, dynamic>{
-      'values': instance.values.map((k, e) => MapEntry(k.toString(), e)),
+      'values': instance.values?.map((k, e) => MapEntry(k.toString(), e)),
       'hasLoaded': instance.hasLoaded,
     };

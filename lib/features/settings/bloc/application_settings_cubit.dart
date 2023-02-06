@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/settings/model/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
+import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 class ApplicationSettingsCubit extends HydratedCubit<ApplicationSettingsState> {
@@ -27,17 +28,23 @@ class ApplicationSettingsCubit extends HydratedCubit<ApplicationSettingsState> {
     }
   }
 
-  Future<void> setThemeMode(ThemeMode? selectedMode) async {
+  void setThemeMode(ThemeMode? selectedMode) {
     final updatedSettings = state.copyWith(preferredThemeMode: selectedMode);
     _updateSettings(updatedSettings);
   }
 
-  Future<void> setViewType(ViewType viewType) async {
+  void setViewType(ViewType viewType) {
     final updatedSettings = state.copyWith(preferredViewType: viewType);
     _updateSettings(updatedSettings);
   }
 
-  Future<void> _updateSettings(ApplicationSettingsState settings) async {
+  void setColorSchemeOption(ColorSchemeOption schemeOption) {
+    final updatedSettings =
+        state.copyWith(preferredColorSchemeOption: schemeOption);
+    _updateSettings(updatedSettings);
+  }
+
+  void _updateSettings(ApplicationSettingsState settings) async {
     emit(settings);
   }
 

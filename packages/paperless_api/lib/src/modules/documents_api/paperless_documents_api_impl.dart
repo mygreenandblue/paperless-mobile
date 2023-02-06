@@ -242,27 +242,6 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   }
 
   @override
-  Future<List<SimilarDocumentModel>> findSimilar(int docId) async {
-    try {
-      final response =
-          await client.get("/api/documents/?more_like=$docId&pageSize=10");
-      if (response.statusCode == 200) {
-        return (await compute(
-          PagedSearchResult<SimilarDocumentModel>.fromJsonSingleParam,
-          PagedSearchResultJsonSerializer(
-            response.data,
-            SimilarDocumentModelJsonConverter(),
-          ),
-        ))
-            .results;
-      }
-      throw const PaperlessServerException(ErrorCode.similarQueryError);
-    } on DioError catch (err) {
-      throw err.error;
-    }
-  }
-
-  @override
   Future<FieldSuggestions> findSuggestions(DocumentModel document) async {
     try {
       final response =

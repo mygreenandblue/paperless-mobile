@@ -1,11 +1,11 @@
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/state/repository_state.dart';
+import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'saved_view_repository_state.g.dart';
 
 @JsonSerializable()
-class SavedViewRepositoryState extends RepositoryState<Map<int, SavedView>> {
+class SavedViewRepositoryState extends IndexedRepositoryState<SavedView> {
   const SavedViewRepositoryState({
     super.values = const {},
     super.hasLoaded = false,
