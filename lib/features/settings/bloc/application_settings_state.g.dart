@@ -20,7 +20,7 @@ ApplicationSettingsState _$ApplicationSettingsStateFromJson(
               ViewType.list,
       preferredColorSchemeOption: $enumDecodeNullable(
               _$ColorSchemeOptionEnumMap, json['preferredColorSchemeOption']) ??
-          ColorSchemeOption.dynamic,
+          ColorSchemeOption.classic,
     );
 
 Map<String, dynamic> _$ApplicationSettingsStateToJson(
