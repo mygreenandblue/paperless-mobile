@@ -6,8 +6,10 @@ import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DocumentDownloadButton extends StatefulWidget {
   final DocumentModel? document;
@@ -46,6 +48,13 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       showSnackBar(
           context, "This feature is currently only supported on Android!");
       return;
+    }
+    if (true) {
+      // should check for android versions < 30
+      final isGranted = await askForPermission(Permission.storage);
+      if (!isGranted) {
+        return;
+      }
     }
     setState(() => _isDownloadPending = true);
     final service = context.read<PaperlessDocumentsApi>();
