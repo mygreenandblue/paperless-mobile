@@ -140,10 +140,6 @@ void main() async {
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
 
-  // Temporary Fix: Can be removed if the flutter engine implements the fix itself
-  // Activate the highest availabe refresh rate on the device
-  await FlutterDisplayMode.setHighRefreshRate();
-
   runApp(
     MultiProvider(
       providers: [
@@ -199,6 +195,21 @@ void main() async {
       ),
     ),
   );
+}
+
+Future<void> setOptimalDisplayMode() async {
+  final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+  final DisplayMode active = await FlutterDisplayMode.active;
+
+  final List<DisplayMode> sameResolution = supported
+      .where((m) => m.width == active.width && m.height == active.height)
+      .toList()
+    ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
+
+  final DisplayMode mostOptimalMode =
+      sameResolution.isNotEmpty ? sameResolution.first : active;
+
+  await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
 }
 
 class PaperlessMobileEntrypoint extends StatefulWidget {
@@ -282,11 +293,15 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   void initState() {
     super.initState();
+    // Temporary Fix: Can be removed if the flutter engine implements the fix itself
+    // Activate the highest supported refresh rate on the device
+    setOptimalDisplayMode();
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
     ReceiveSharingIntent.getMediaStream()
         .listen(ShareIntentQueue.instance.addAll);
     // For sharing files coming from outside the app while the app is closed
+    // TODO: This does not work currently, app does not have permission to access the shared file
     ReceiveSharingIntent.getInitialMedia()
         .then(ShareIntentQueue.instance.addAll);
   }
