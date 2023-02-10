@@ -1,7 +1,11 @@
 part of 'linked_documents_cubit.dart';
 
+@JsonSerializable(ignoreUnannotated: true)
 class LinkedDocumentsState extends PagedDocumentsState {
+  @JsonKey()
+  final ViewType viewType;
   const LinkedDocumentsState({
+    this.viewType = ViewType.list,
     super.filter,
     super.isLoading,
     super.hasLoaded,
@@ -13,12 +17,14 @@ class LinkedDocumentsState extends PagedDocumentsState {
     bool? isLoading,
     bool? hasLoaded,
     List<PagedSearchResult<DocumentModel>>? value,
+    ViewType? viewType,
   }) {
     return LinkedDocumentsState(
       filter: filter ?? this.filter,
       isLoading: isLoading ?? this.isLoading,
       hasLoaded: hasLoaded ?? this.hasLoaded,
       value: value ?? this.value,
+      viewType: viewType ?? this.viewType,
     );
   }
 
@@ -39,9 +45,12 @@ class LinkedDocumentsState extends PagedDocumentsState {
 
   @override
   List<Object?> get props => [
-        filter,
-        isLoading,
-        hasLoaded,
-        value,
+        viewType,
+        ...super.props,
       ];
+
+  factory LinkedDocumentsState.fromJson(Map<String, dynamic> json) =>
+      _$LinkedDocumentsStateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LinkedDocumentsStateToJson(this);
 }

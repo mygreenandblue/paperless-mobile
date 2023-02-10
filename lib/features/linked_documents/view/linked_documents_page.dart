@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -43,28 +44,43 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).linkedDocumentsPageTitle),
+        actions: [
+          BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
+            builder: (context, state) {
+              return ViewTypeSelectionWidget(
+                viewType: state.viewType,
+                onChanged: context.read<LinkedDocumentsCubit>().setViewType,
+              );
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
         builder: (context, state) {
           return BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectivity) {
-              return DefaultAdaptiveDocumentsView(
-                scrollController: _scrollController,
-                documents: state.documents,
-                hasInternetConnection: connectivity.isConnected,
-                isLabelClickable: false,
-                isLoading: state.isLoading,
-                hasLoaded: state.hasLoaded,
-                onTap: (document) {
-                  Navigator.pushNamed(
-                    context,
-                    DocumentDetailsRoute.routeName,
-                    arguments: DocumentDetailsRouteArguments(
-                      document: document,
-                      isLabelClickable: false,
-                    ),
-                  );
-                },
+              return CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverAdaptiveDocumentsView(
+                    viewType: state.viewType,
+                    documents: state.documents,
+                    hasInternetConnection: connectivity.isConnected,
+                    isLabelClickable: false,
+                    isLoading: state.isLoading,
+                    hasLoaded: state.hasLoaded,
+                    onTap: (document) {
+                      Navigator.pushNamed(
+                        context,
+                        DocumentDetailsRoute.routeName,
+                        arguments: DocumentDetailsRouteArguments(
+                          document: document,
+                          isLabelClickable: false,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
             },
           );
