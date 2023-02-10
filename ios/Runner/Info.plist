@@ -66,6 +66,8 @@
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+		<true/>
+		<key>UISupportsDocumentBrowser</key>
+		<true/>
 </dict>
 </plist>

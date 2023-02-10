@@ -37,20 +37,19 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
               width: 16,
             )
           : const Icon(Icons.download),
-      onPressed: Platform.isAndroid && widget.document != null && widget.enabled
+      onPressed: widget.document != null && widget.enabled
           ? () => _onDownload(widget.document!)
           : null,
     ).paddedOnly(right: 4);
   }
 
   Future<void> _onDownload(DocumentModel document) async {
-    if (!Platform.isAndroid) {
-      showSnackBar(
-          context, "This feature is currently only supported on Android!");
-      return;
-    }
-    if (true) {
-      // should check for android versions < 30
+    // if (!Platform.isAndroid) {
+    //   showSnackBar(
+    //       context, "This feature is currently only supported on Android!");
+    //   return;
+    // }
+    if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
       final isGranted = await askForPermission(Permission.storage);
       if (!isGranted) {
         return;
