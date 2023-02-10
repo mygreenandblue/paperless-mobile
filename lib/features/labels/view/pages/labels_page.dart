@@ -15,7 +15,7 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_corresponden
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n.dart';

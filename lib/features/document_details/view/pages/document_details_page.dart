@@ -12,13 +12,13 @@ import 'package:paperless_mobile/core/translation/error_code_localization_mapper
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_details/bloc/document_details_cubit.dart';
+import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_edit_page.dart';
+import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
+import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/edit_document/cubit/edit_document_cubit.dart';
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
@@ -265,7 +265,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           builder: (_) => MultiBlocProvider(
             providers: [
               BlocProvider.value(
-                value: EditDocumentCubit(
+                value: DocumentEditCubit(
                   document,
                   documentsApi: context.read(),
                   correspondentRepository: context.read(),
@@ -279,7 +279,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 value: cubit,
               ),
             ],
-            child: BlocListener<EditDocumentCubit, EditDocumentState>(
+            child: BlocListener<DocumentEditCubit, DocumentEditState>(
               listenWhen: (previous, current) =>
                   previous.document != current.document,
               listener: (context, state) {

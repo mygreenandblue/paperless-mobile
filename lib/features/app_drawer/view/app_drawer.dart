@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:url_launcher/link.dart';

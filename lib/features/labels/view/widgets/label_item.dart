@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/linked_documents/bloc/linked_documents_cubit.dart';
-import 'package:paperless_mobile/features/linked_documents/view/pages/linked_documents_page.dart';
+import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
+import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
 import 'package:paperless_mobile/helpers/format_helpers.dart';
 
 class LabelItem<T extends Label> extends StatelessWidget {
