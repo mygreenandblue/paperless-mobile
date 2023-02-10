@@ -1,16 +1,10 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
+part of 'edit_label_cubit.dart';
 
-@immutable
 class EditLabelState<T> extends Equatable {
   final Map<int, T> labels;
 
-  const EditLabelState({required this.labels});
+  const EditLabelState({this.labels = const {}});
 
   @override
   List<Object> get props => [labels];
-}
-
-class EditLabelInitial<T> extends EditLabelState<T> {
-  const EditLabelInitial() : super(labels: const {});
 }

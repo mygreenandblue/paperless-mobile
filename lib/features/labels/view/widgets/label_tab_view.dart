@@ -5,7 +5,6 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_state.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_item.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 

@@ -1,6 +1,5 @@
 part of 'linked_documents_cubit.dart';
 
-
 class LinkedDocumentsState extends PagedDocumentsState {
   const LinkedDocumentsState({
     super.filter,

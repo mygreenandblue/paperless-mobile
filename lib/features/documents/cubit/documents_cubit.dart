@@ -5,9 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
+
+part 'documents_state.dart';
+part 'documents_cubit.g.dart';
 
 class DocumentsCubit extends HydratedCubit<DocumentsState>
     with PagedDocumentsMixin {

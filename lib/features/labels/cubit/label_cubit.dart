@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_state.dart';
+
+part 'label_state.dart';
 
 class LabelCubit<T extends Label> extends Cubit<LabelState<T>> {
   final LabelRepository<T> _repository;

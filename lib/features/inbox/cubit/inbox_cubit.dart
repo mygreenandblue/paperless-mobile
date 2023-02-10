@@ -1,12 +1,15 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/inbox/cubit/state/inbox_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
+
+part 'inbox_cubit.g.dart';
+part 'inbox_state.dart';
 
 class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
   final LabelRepository<Tag> _tagsRepository;
@@ -82,13 +85,6 @@ class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
 
     refreshItemsInInboxCount(false);
     loadInbox();
-
-    Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (isClosed) {
-        timer.cancel();
-      }
-      refreshItemsInInboxCount();
-    });
   }
 
   void refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {

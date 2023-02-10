@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_state.dart';
 import 'package:paperless_mobile/features/labels/cubit/providers/storage_path_bloc_provider.dart';
 
 class StoragePathWidget extends StatelessWidget {

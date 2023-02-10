@@ -1,4 +1,4 @@
-import 'package:paperless_api/paperless_api.dart';
+part of 'label_cubit.dart';
 
 class LabelState<T extends Label> {
   LabelState.initial() : this(isLoaded: false, labels: {});

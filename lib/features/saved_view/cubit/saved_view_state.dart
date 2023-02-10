@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
-import 'package:paperless_api/paperless_api.dart';
+part of 'saved_view_cubit.dart';
 
-class SavedViewState with EquatableMixin {
+class SavedViewState extends Equatable {
   final bool hasLoaded;
   final Map<int, SavedView> value;
 

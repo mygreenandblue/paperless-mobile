@@ -1,8 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
-
-part 'inbox_state.g.dart';
+part of 'inbox_cubit.dart';
 
 @JsonSerializable(ignoreUnannotated: true)
 class InboxState extends PagedDocumentsState {
