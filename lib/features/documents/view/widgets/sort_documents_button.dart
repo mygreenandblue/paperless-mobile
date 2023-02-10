@@ -5,10 +5,10 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/sort_field_selection_bottom_sheet.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 
 class SortDocumentsButton extends StatelessWidget {
   const SortDocumentsButton({

@@ -63,25 +63,48 @@ class _ClientCertificateFormFieldState
                 ),
                 child: Column(
                   children: [
-                    ListTile(
-                      leading: ElevatedButton(
-                        onPressed: () => _onSelectFile(field),
-                        child: Text(S.of(context).genericActionSelectText),
-                      ),
-                      title: _buildSelectedFileText(field),
-                      trailing: AbsorbPointer(
-                        absorbing: field.value == null,
-                        child: _selectedFile != null
-                            ? IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => setState(() {
-                                  _selectedFile = null;
-                                  field.didChange(null);
-                                }),
-                              )
-                            : null,
-                      ),
-                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => _onSelectFile(field),
+                              child:
+                                  Text(S.of(context).genericActionSelectText),
+                            ),
+                            _buildSelectedFileText(field).paddedOnly(left: 8),
+                          ],
+                        ),
+                        if (_selectedFile != null)
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => setState(() {
+                              _selectedFile = null;
+                              field.didChange(null);
+                            }),
+                          )
+                      ],
+                    ).padded(8),
+                    // ListTile(
+                    //   leading: ElevatedButton(
+                    //     onPressed: () => _onSelectFile(field),
+                    //     child: Text(S.of(context).genericActionSelectText),
+                    //   ),
+                    //   title: _buildSelectedFileText(field),
+                    //   trailing: AbsorbPointer(
+                    //     absorbing: field.value == null,
+                    //     child: _selectedFile != null
+                    //         ? IconButton(
+                    //             icon: const Icon(Icons.close),
+                    //             onPressed: () => setState(() {
+                    //               _selectedFile = null;
+                    //               field.didChange(null);
+                    //             }),
+                    //           )
+                    //         : null,
+                    //   ),
+                    // ),
                     if (_selectedFile != null) ...[
                       ObscuredInputTextFormField(
                         key: const ValueKey('login-client-cert-passphrase'),
@@ -127,7 +150,9 @@ class _ClientCertificateFormFieldState
       assert(_selectedFile == null);
       return Text(
         S.of(context).loginPageClientCertificateSettingSelectFileText,
-        style: TextStyle(color: Theme.of(context).hintColor),
+        style: Theme.of(context).textTheme.labelMedium?.apply(
+              color: Theme.of(context).hintColor,
+            ),
       );
     } else {
       assert(_selectedFile != null);

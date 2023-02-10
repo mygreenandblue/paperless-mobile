@@ -3,17 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/type/types.dart';
-import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/login_pages/server_connection_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
-import 'widgets/never_scrollable_scroll_behavior.dart';
 import 'widgets/login_pages/server_login_page.dart';
+import 'widgets/never_scrollable_scroll_behavior.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

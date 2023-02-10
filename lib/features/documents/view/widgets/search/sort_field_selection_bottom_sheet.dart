@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_state.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class SortFieldSelectionBottomSheet extends StatefulWidget {

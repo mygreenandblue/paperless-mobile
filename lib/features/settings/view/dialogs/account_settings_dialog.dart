@@ -8,8 +8,8 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
-import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
@@ -48,14 +48,14 @@ class AccountSettingsDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              Divider(),
+              const Divider(),
               ListTile(
                 dense: true,
                 leading: const Icon(Icons.person_add_rounded),
                 title: Text(S.of(context).accountSettingsAddAnotherAccount),
                 onTap: () {},
               ),
-              Divider(),
+              const Divider(),
               FilledButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(

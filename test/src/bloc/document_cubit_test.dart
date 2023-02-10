@@ -1,10 +1,10 @@
 // import 'package:bloc_test/bloc_test.dart';
 // import 'package:paperless_api/paperless_api.dart';
-// import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
+// import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 // import 'package:flutter_test/flutter_test.dart';
 // import 'package:mockito/annotations.dart';
 // import 'package:mockito/mockito.dart';
-// import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
+// import 'package:paperless_mobile/features/documents/cubit/documents_state.dart';
 
 // import '../../utils.dart';
 // @GenerateNiceMocks([MockSpec<PaperlessDocumentsApi>()])
