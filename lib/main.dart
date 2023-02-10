@@ -141,10 +141,15 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
+  
+try {
+    // Temporary Fix: Can be removed if the flutter engine implements the fix itself
+    // Activate the highest availabe refresh rate on the device
+    await FlutterDisplayMode.setHighRefreshRate();
+  } catch(e) {
+    print("Can't set high refresh rate");
+  }
 
-  // Temporary Fix: Can be removed if the flutter engine implements the fix itself
-  // Activate the highest availabe refresh rate on the device
-  await FlutterDisplayMode.setHighRefreshRate();
 
   runApp(
     MultiProvider(
