@@ -79,24 +79,30 @@ To get a local copy up and running follow these simple steps.
 * Install an IDE of your choice (e.g. VSCode with the Dart/Flutter extensions)
 
 ### Install dependencies and generate files
+1. First, clone the repository:
+```sh
+git clone https://github.com/astubenbord/paperless-mobile.git
+```
+   
+You can now either run the `install_dependencies.sh` script at the root of the project, which will automatically install dependencies and generate code for both the app and subpackages, or you can manually run the following steps:
 
-1. Clone the repo
+#### Inside the `packages/paperless_api/` folder:
+
+2. Install the dependencies for `paperless_api`
    ```sh
-   git clone https://github.com/astubenbord/paperless-mobile.git
+   flutter pub get
    ```
-2. Install the dependencies for paperless_api
+3. Build generated files for `paperless_api`
    ```sh
-   (cd packages/paperless_api ; flutter pub get)
+    flutter pub run build_runner build --delete-conflicting-outputs
    ```
-3. Build generated files for paperless api (for json_serializable etc.)
-   ```sh
-   (cd packages/paperless_api ; flutter pub run build_runner build --delete-conflicting-outputs)
-   ```
+   
+#### Inside the project's root folder
 4. Install the dependencies for the app
    ```sh
    flutter pub get
    ```
-5. Build generated files for the app (for json_serializable etc.)
+5. Build generated files for the app
    ```sh
    flutter packages pub run build_runner build --delete-conflicting-outputs
    ```
@@ -125,13 +131,17 @@ buildTypes {
 ```
 2. Build the app with release profile (here for android):
 ```sh
-flutter build apk --split-per-abi
+flutter build apk
 ```
-(the --release flag is implicit for the build command)
+The --release flag is implicit for the build command. You can also run this command with --split-per-abi, which will generate three separate (smaller) binaries.
 
-3. Install the app to your device
+3. Install the app to your device (when omitting the `--split-per-abi` flag)
 ```sh
 flutter install
+```
+or when you built with `--split-per-abi`
+```sh
+flutter install --use-application-binary=build/pp/outputs/flutter-apk/<apk_file_name>.apk
 ```
   
 ## Languages and Translations
@@ -146,17 +156,13 @@ This project is registered as an open source project in Localizely, which offers
 
 <!-- ROADMAP -->
 ## Roadmap
-- [x] Add download functionality (implemented, but flutter cannot download to useful directories except app directory)
-- [x] Add document share support
-- [x] Improvements to UX (e.g. form fields show clear button while empty)
+- [ ] Fully custom document scanner optimized for common white A4 documents and optimized for the use with Paperless
 - [ ] Add more languages
-- [ ] Support for IOS
+- [ ] Support for IOS and publish to AppStore
 - [ ] Automatic releases and CI/CD with fastlane
 - [ ] Templates for recurring scans (e.g. monthly payrolls with same title, dates at end of month, fixed correspondent and document type)
-- [ ] Custom document scanner optimized for common white A4 documents (currently using edge_detection, which is okay but not optimal for this use case)
-- [ ] Support multiple instances (low prio)
 
-See the [open issues](https://github.com/astubenbord/paperless-mobile/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/astubenbord/paperless-mobile/issues) for a full list of issues and [open feature requests](https://github.com/astubenbord/paperless-mobile/discussions/categories/feature-requests) for requested features.
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -208,4 +214,4 @@ Made with [contrib.rocks](https://contrib.rocks).
 
 ## Troubleshooting
 #### Suggestions are not selectable in any of the label form fields
-This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue to occur. Luckily, this can be resolved by turning off the accessibility features in these apps.
+This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue. Luckily, this can be resolved by turning off the accessibility features in these apps. This could also be observed with apps that are allowed to display over other apps, such as emulations of the dynamic island on android.
