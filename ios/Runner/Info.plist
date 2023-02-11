@@ -39,9 +39,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
-	<string>To Login to Paperless with FaceID</string>
+	<string>Allow this app to use FaceID to secure your login credentials.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To upload Documents, please allow permission to access your photo library.</string>
+	<string>Allow this app to access your photo library to upload images from this device.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -66,6 +66,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-    <string>To scan Documents inside the APP</string>
+    <string>Allow this app access to your camera to scan documents.</string>
 </dict>
 </plist>
