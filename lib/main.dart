@@ -139,7 +139,7 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
-
+  
   runApp(
     MultiProvider(
       providers: [
