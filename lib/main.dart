@@ -143,7 +143,7 @@ void main() async {
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
   
 
-if (!Platform.isIOS) {
+if (Platform.isAndroid) {
     // Temporary Fix: Can be removed if the flutter engine implements the fix itself
     // Activate the highest availabe refresh rate on the device
     await FlutterDisplayMode.setHighRefreshRate();
