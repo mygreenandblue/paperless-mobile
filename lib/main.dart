@@ -295,7 +295,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     super.initState();
     // Temporary Fix: Can be removed if the flutter engine implements the fix itself
     // Activate the highest supported refresh rate on the device
-    setOptimalDisplayMode();
+    if (Platform.isAndroid) {
+      setOptimalDisplayMode();
+    }
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
     ReceiveSharingIntent.getMediaStream()
