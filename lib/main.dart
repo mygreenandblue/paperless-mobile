@@ -197,21 +197,6 @@ void main() async {
   );
 }
 
-Future<void> setOptimalDisplayMode() async {
-  final List<DisplayMode> supported = await FlutterDisplayMode.supported;
-  final DisplayMode active = await FlutterDisplayMode.active;
-
-  final List<DisplayMode> sameResolution = supported
-      .where((m) => m.width == active.width && m.height == active.height)
-      .toList()
-    ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
-
-  final DisplayMode mostOptimalMode =
-      sameResolution.isNotEmpty ? sameResolution.first : active;
-
-  await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
-}
-
 class PaperlessMobileEntrypoint extends StatefulWidget {
   const PaperlessMobileEntrypoint({
     Key? key,
@@ -296,7 +281,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     // Temporary Fix: Can be removed if the flutter engine implements the fix itself
     // Activate the highest supported refresh rate on the device
     if (Platform.isAndroid) {
-      setOptimalDisplayMode();
+      _setOptimalDisplayMode();
     }
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
@@ -306,6 +291,22 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     // TODO: This does not work currently, app does not have permission to access the shared file
     ReceiveSharingIntent.getInitialMedia()
         .then(ShareIntentQueue.instance.addAll);
+  }
+
+  Future<void> _setOptimalDisplayMode() async {
+    final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+    final DisplayMode active = await FlutterDisplayMode.active;
+
+    final List<DisplayMode> sameResolution = supported
+        .where((m) => m.width == active.width && m.height == active.height)
+        .toList()
+      ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
+
+    final DisplayMode mostOptimalMode =
+        sameResolution.isNotEmpty ? sameResolution.first : active;
+    debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
+
+    await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
   }
 
   @override
