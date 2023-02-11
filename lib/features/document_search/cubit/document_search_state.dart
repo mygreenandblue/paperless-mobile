@@ -1,9 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
-
-part 'document_search_state.g.dart';
+part of 'document_search_cubit.dart';
 
 enum SearchView {
   suggestions,

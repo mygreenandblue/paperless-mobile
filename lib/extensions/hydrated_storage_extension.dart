@@ -1,6 +1,6 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:paperless_mobile/features/login/bloc/authentication_state.dart';
-import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 
 extension AddressableHydratedStorage on Storage {
   ApplicationSettingsState get settings {

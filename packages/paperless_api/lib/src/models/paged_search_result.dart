@@ -1,15 +1,18 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+part 'paged_search_result.g.dart';
+
 const pageRegex = r".*page=(\d+).*";
 
 class PagedSearchResultJsonSerializer<T> {
   final Map<String, dynamic> json;
-  JsonConverter<T, Map<String, dynamic>> converter;
+  JsonConverter<T, Object?> converter;
 
   PagedSearchResultJsonSerializer(this.json, this.converter);
 }
 
+@JsonSerializable(genericArgumentFactories: true)
 class PagedSearchResult<T> extends Equatable {
   /// Total number of available items
   final int count;
@@ -53,32 +56,24 @@ class PagedSearchResult<T> extends Equatable {
     required this.results,
   });
 
-  factory PagedSearchResult.fromJsonT(Map<String, dynamic> json,
-      JsonConverter<T, Map<String, dynamic>> converter) {
-    return PagedSearchResult(
-      count: json['count'],
-      next: json['next'],
-      previous: json['previous'],
-      results: List<Map<String, dynamic>>.from(json['results'])
-          .map<T>(converter.fromJson)
-          .toList(),
-    );
-  }
+  factory PagedSearchResult.fromJson(
+    Map<String, dynamic> json,
+    T Function(Object?) fromJsonT,
+  ) =>
+      _$PagedSearchResultFromJson(json, fromJsonT);
 
   Map<String, dynamic> toJson(
-      JsonConverter<T, Map<String, dynamic>> converter) {
-    return {
-      'count': count,
-      'next': next,
-      'previous': previous,
-      'results': results.map((e) => converter.toJson(e)).toList()
-    };
-  }
+    Object? Function(T value) toJsonT,
+  ) =>
+      _$PagedSearchResultToJson(this, toJsonT);
 
   factory PagedSearchResult.fromJsonSingleParam(
     PagedSearchResultJsonSerializer<T> serializer,
   ) {
-    return PagedSearchResult.fromJsonT(serializer.json, serializer.converter);
+    return PagedSearchResult.fromJson(
+      serializer.json,
+      serializer.converter.fromJson,
+    );
   }
 
   PagedSearchResult<T> copyWith({

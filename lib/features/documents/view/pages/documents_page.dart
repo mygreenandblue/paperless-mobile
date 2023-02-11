@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:badges/badges.dart' as b;
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -9,21 +6,18 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_cubit.dart';
-import 'package:paperless_mobile/features/documents/bloc/documents_state.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/labels_bloc_provider.dart';
+import 'package:paperless_mobile/features/labels/cubit/providers/labels_bloc_provider.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
-import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -263,14 +257,6 @@ class _DocumentsPageState extends State<DocumentsPage>
                                   ),
                                   _buildViewActions(),
                                   BlocBuilder<DocumentsCubit, DocumentsState>(
-                                    // Not required anymore since saved views are now handled separately
-                                    // buildWhen: (previous, current) =>
-                                    //     !const ListEquality().equals(
-                                    //       previous.documents,
-                                    //       current.documents,
-                                    //     ) ||
-                                    //     previous.selectedIds !=
-                                    //         current.selectedIds,
                                     builder: (context, state) {
                                       if (state.hasLoaded &&
                                           state.documents.isEmpty) {
@@ -285,34 +271,27 @@ class _DocumentsPageState extends State<DocumentsPage>
                                           ),
                                         );
                                       }
-                                      return BlocBuilder<
-                                          ApplicationSettingsCubit,
-                                          ApplicationSettingsState>(
-                                        builder: (context, settings) {
-                                          return SliverAdaptiveDocumentsView(
-                                            viewType:
-                                                settings.preferredViewType,
-                                            onTap: _openDetails,
-                                            onSelected: context
-                                                .read<DocumentsCubit>()
-                                                .toggleDocumentSelection,
-                                            hasInternetConnection:
-                                                connectivityState.isConnected,
-                                            onTagSelected: _addTagToFilter,
-                                            onCorrespondentSelected:
-                                                _addCorrespondentToFilter,
-                                            onDocumentTypeSelected:
-                                                _addDocumentTypeToFilter,
-                                            onStoragePathSelected:
-                                                _addStoragePathToFilter,
-                                            documents: state.documents,
-                                            hasLoaded: state.hasLoaded,
-                                            isLabelClickable: true,
-                                            isLoading: state.isLoading,
-                                            selectedDocumentIds:
-                                                state.selectedIds,
-                                          );
-                                        },
+
+                                      return SliverAdaptiveDocumentsView(
+                                        viewType: state.viewType,
+                                        onTap: _openDetails,
+                                        onSelected: context
+                                            .read<DocumentsCubit>()
+                                            .toggleDocumentSelection,
+                                        hasInternetConnection:
+                                            connectivityState.isConnected,
+                                        onTagSelected: _addTagToFilter,
+                                        onCorrespondentSelected:
+                                            _addCorrespondentToFilter,
+                                        onDocumentTypeSelected:
+                                            _addDocumentTypeToFilter,
+                                        onStoragePathSelected:
+                                            _addStoragePathToFilter,
+                                        documents: state.documents,
+                                        hasLoaded: state.hasLoaded,
+                                        isLabelClickable: true,
+                                        isLoading: state.isLoading,
+                                        selectedDocumentIds: state.selectedIds,
                                       );
                                     },
                                   ),
@@ -360,18 +339,11 @@ class _DocumentsPageState extends State<DocumentsPage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SortDocumentsButton(),
-          BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+          BlocBuilder<DocumentsCubit, DocumentsState>(
             builder: (context, state) {
-              return IconButton(
-                icon: Icon(
-                  state.preferredViewType == ViewType.list
-                      ? Icons.grid_view_rounded
-                      : Icons.list,
-                ),
-                onPressed: () =>
-                    context.read<ApplicationSettingsCubit>().setViewType(
-                          state.preferredViewType.toggle(),
-                        ),
+              return ViewTypeSelectionWidget(
+                viewType: state.viewType,
+                onChanged: context.read<DocumentsCubit>().setViewType,
               );
             },
           )
