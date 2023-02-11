@@ -13,7 +13,7 @@
 // import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
 // import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 // import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-// import 'package:paperless_mobile/features/inbox/bloc/inbox_cubit.dart';
+// import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 // import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 // import 'package:paperless_mobile/features/login/bloc/authentication_cubit.dart';
 // import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';

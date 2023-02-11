@@ -4,9 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/bloc/label_state.dart';
-import 'package:paperless_mobile/features/labels/bloc/providers/document_type_bloc_provider.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:paperless_mobile/features/labels/cubit/providers/document_type_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 

@@ -2,11 +2,17 @@ import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/features/document_search/cubit/document_search_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+
+part 'document_search_state.dart';
+
+part 'document_search_cubit.g.dart';
 
 class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
-    with PagedDocumentsMixin {
+    with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
   @override

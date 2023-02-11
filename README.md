@@ -79,20 +79,34 @@ To get a local copy up and running follow these simple steps.
 * Install an IDE of your choice (e.g. VSCode with the Dart/Flutter extensions)
 
 ### Install dependencies and generate files
+1. First, clone the repository:
+```sh
+git clone https://github.com/astubenbord/paperless-mobile.git
+```
+   
+You can now either run the `install_dependencies.sh` script at the root of the project, which will automatically install dependencies and generate code for both the app and subpackages, or you can manually run the following steps:
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/astubenbord/paperless-mobile.git
-   ```
-2. Install the dependencies
+#### Inside the `packages/paperless_api/` folder:
+
+2. Install the dependencies for `paperless_api`
    ```sh
    flutter pub get
    ```
-3. Build generated files (for json_serializable etc.)
+3. Build generated files for `paperless_api`
+   ```sh
+    flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+   
+#### Inside the project's root folder
+4. Install the dependencies for the app
+   ```sh
+   flutter pub get
+   ```
+5. Build generated files for the app
    ```sh
    flutter packages pub run build_runner build --delete-conflicting-outputs
    ```
-4. Generate the localization files
+6. Generate the localization files for the app
    ```sh
    flutter pub run intl_utils:generate
    ```
@@ -117,13 +131,17 @@ buildTypes {
 ```
 2. Build the app with release profile (here for android):
 ```sh
-flutter build apk --split-per-abi
+flutter build apk
 ```
-(the --release flag is implicit for the build command)
+The --release flag is implicit for the build command. You can also run this command with --split-per-abi, which will generate three separate (smaller) binaries.
 
-3. Install the app to your device
+3. Install the app to your device (when omitting the `--split-per-abi` flag)
 ```sh
 flutter install
+```
+or when you built with `--split-per-abi`
+```sh
+flutter install --use-application-binary=build/pp/outputs/flutter-apk/<apk_file_name>.apk
 ```
   
 ## Languages and Translations
@@ -138,17 +156,13 @@ This project is registered as an open source project in Localizely, which offers
 
 <!-- ROADMAP -->
 ## Roadmap
-- [x] Add download functionality (implemented, but flutter cannot download to useful directories except app directory)
-- [x] Add document share support
-- [x] Improvements to UX (e.g. form fields show clear button while empty)
+- [ ] Fully custom document scanner optimized for common white A4 documents and optimized for the use with Paperless
 - [ ] Add more languages
-- [ ] Support for IOS
+- [ ] Support for IOS and publish to AppStore
 - [ ] Automatic releases and CI/CD with fastlane
 - [ ] Templates for recurring scans (e.g. monthly payrolls with same title, dates at end of month, fixed correspondent and document type)
-- [ ] Custom document scanner optimized for common white A4 documents (currently using edge_detection, which is okay but not optimal for this use case)
-- [ ] Support multiple instances (low prio)
 
-See the [open issues](https://github.com/astubenbord/paperless-mobile/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/astubenbord/paperless-mobile/issues) for a full list of issues and [open feature requests](https://github.com/astubenbord/paperless-mobile/discussions/categories/feature-requests) for requested features.
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -172,35 +186,6 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.txt` for mor
 I do this in my free time, so if you like the project, consider buying me a coffee! Any donation is much appreciated :)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/astubenbord)
-
-
-<!-- USAGE EXAMPLES -->
-## Screenshots
-Here are some impressions from the app!
-
-#### Login Page
-<img src="https://user-images.githubusercontent.com/79228196/198392006-f3badfb3-17c7-4b46-91c7-595c93b146b7.png" width=200/> <img src="https://user-images.githubusercontent.com/79228196/198392041-1ef5de1e-7d26-47f6-bdfb-f5ac831ddb30.png" width=200/>
-
-#### Documents Overview (List)
-<img src="https://user-images.githubusercontent.com/79228196/198392750-a0e4c0b1-9c1c-4346-980a-64d1cc192a99.png" width=200> <img src="https://user-images.githubusercontent.com/79228196/198392767-995536e4-5737-476a-9e78-34c37fac9c60.png" width=200>
-
-#### Documents Overview (Grid)
-<img src="https://user-images.githubusercontent.com/79228196/198393000-83a32969-c0d8-4f81-bb20-8afc79057d62.png" width=200> <img src="https://user-images.githubusercontent.com/79228196/198393018-2f1d02fc-a410-45d8-a022-32c0ae377717.png" width=200>
-
-#### Document Filter/Search (More filters below!)
-<img src="https://user-images.githubusercontent.com/79228196/198393168-60aa5114-85a8-4def-9ca9-5374e0b92aef.png" width=200> <img src="https://user-images.githubusercontent.com/79228196/198393173-db38e99e-f408-4a31-bc6a-fcce91a2a900.png" width=200>
-
-#### Document Details
-<img src="https://user-images.githubusercontent.com/79228196/198393856-6b11dbdc-77ce-44e8-a69c-b0a2536cd38b.png" width=200> <img src="https://user-images.githubusercontent.com/79228196/198393867-39e2148e-53a7-4fc9-8b6d-2ab038dfea64.png" width=200>
-
-#### Edit Document
-<img src="https://user-images.githubusercontent.com/79228196/198393926-1adc3fe8-6981-4b20-854e-6d17611a1d7a.png" width=200><img src="https://user-images.githubusercontent.com/79228196/198393931-c3b214db-e96e-4da4-8327-9c4779c2c64a.png" width=200>
-
-#### Scan
-<img src="https://user-images.githubusercontent.com/79228196/198394782-0955a57b-90c6-4c42-946c-ecf5f94bf704.png" width=200><img src="https://user-images.githubusercontent.com/79228196/198394796-cc7a5bb3-81b4-4010-9444-33440eb9aef7.png" width=200>
-
-#### Upload
-<img src="https://user-images.githubusercontent.com/79228196/198394876-7438dcfe-d901-4ac8-8e7f-0eba7c72a5d7.png" width=200><img src="https://user-images.githubusercontent.com/79228196/198394883-2721211b-17dc-405b-9ee9-2ca943e630fa.png" width=200>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -229,4 +214,4 @@ Made with [contrib.rocks](https://contrib.rocks).
 
 ## Troubleshooting
 #### Suggestions are not selectable in any of the label form fields
-This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue to occur. Luckily, this can be resolved by turning off the accessibility features in these apps.
+This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue. Luckily, this can be resolved by turning off the accessibility features in these apps. This could also be observed with apps that are allowed to display over other apps, such as emulations of the dynamic island on android.

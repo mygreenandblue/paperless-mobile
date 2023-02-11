@@ -1,0 +1,15 @@
+With this app you can conveniently add, manage or simply find documents stored in your paperless server without any compromises.
+
+🚀 Features
+✔️ View your documents at a glance, in a compact list or a more detailed grid view
+✔️ Add, delete or edit your documents
+✔️ Share, download and preview PDF files
+✔️ Manage and assign correspondents, document types, tags and storage paths
+✔️ Scan and upload documents to paperless with preset correspondent, document type, tags and creation date
+✔️ Upload existing documents from other apps via Paperless Mobile
+✔️ See all new documents in a dedicated inbox
+✔️ Search for documents using a wide range of filter criteria
+✔️ Secure your data with biometric authentication across sessions
+✔️ Support for TLS mutual authentication (client certificates)
+✔️ Modern, intuitive UI built according to the Material Design 3 specification
+✔️ Available in English and German language (more to come!)

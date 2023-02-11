@@ -1,13 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 
 part 'similar_documents_state.dart';
 
 class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
-    with PagedDocumentsMixin {
+    with DocumentPagingBlocMixin {
   final int documentId;
 
   @override

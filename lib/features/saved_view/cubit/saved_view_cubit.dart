@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_state.dart';
+
+part 'saved_view_state.dart';
 
 class SavedViewCubit extends Cubit<SavedViewState> {
   final SavedViewRepository _repository;
