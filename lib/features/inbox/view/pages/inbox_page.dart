@@ -12,6 +12,7 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
+import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -23,35 +24,15 @@ class InboxPage extends StatefulWidget {
   State<InboxPage> createState() => _InboxPageState();
 }
 
-class _InboxPageState extends State<InboxPage> {
-  final ScrollController _scrollController = ScrollController();
+class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin {
+  @override
+  final pagingScrollController = ScrollController();
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
     context.read<InboxCubit>().loadInbox();
-    _scrollController.addListener(_listenForLoadNewData);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_listenForLoadNewData);
-    super.dispose();
-  }
-
-  void _listenForLoadNewData() {
-    final currState = context.read<InboxCubit>().state;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent * 0.75 &&
-        !currState.isLoading &&
-        !currState.isLastPageLoaded) {
-      try {
-        context.read<InboxCubit>().loadMore();
-      } on PaperlessServerException catch (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
-      }
-    }
   }
 
   @override
@@ -143,7 +124,7 @@ class _InboxPageState extends State<InboxPage> {
                     physics: state.documents.isEmpty
                         ? const NeverScrollableScrollPhysics()
                         : const AlwaysScrollableScrollPhysics(),
-                    controller: _scrollController,
+                    controller: pagingScrollController,
                     slivers: [
                       SearchAppBar(
                         hintText: S.of(context).documentSearchSearchDocuments,

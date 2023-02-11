@@ -1,7 +1,7 @@
 part of 'inbox_cubit.dart';
 
 @JsonSerializable(ignoreUnannotated: true)
-class InboxState extends PagedDocumentsState {
+class InboxState extends DocumentPagingState {
   final Iterable<int> inboxTags;
 
   final Map<int, Tag> availableTags;

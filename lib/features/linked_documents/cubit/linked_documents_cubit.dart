@@ -2,15 +2,15 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 part 'linked_documents_state.dart';
 
 part 'linked_documents_cubit.g.dart';
 
 class LinkedDocumentsCubit extends HydratedCubit<LinkedDocumentsState>
-    with PagedDocumentsMixin {
+    with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 

@@ -25,6 +25,7 @@ import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
@@ -271,8 +272,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ],
         child: const LabelsPage(),
       ),
-      BlocProvider.value(
-        value: _inboxCubit,
+      MultiBlocProvider(
+        providers: [
+          // We need to manually downcast the inboxcubit to the
+          // mixed-in DocumentPagingBlocMixin to use the
+          // DocumentPagingViewMixin in the inbox.
+          BlocProvider<DocumentPagingBlocMixin>.value(
+            value: _inboxCubit,
+          ),
+          BlocProvider<InboxCubit>.value(
+            value: _inboxCubit,
+          ),
+        ],
         child: const InboxPage(),
       ),
       // const SettingsPage(),

@@ -6,8 +6,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/confirm_delete_saved_view_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
+import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SavedViewDetailsPage extends StatefulWidget {
@@ -21,33 +21,14 @@ class SavedViewDetailsPage extends StatefulWidget {
   State<SavedViewDetailsPage> createState() => _SavedViewDetailsPageState();
 }
 
-class _SavedViewDetailsPageState extends State<SavedViewDetailsPage> {
-  final _scrollController = ScrollController();
-
+class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
+    with DocumentPagingViewMixin {
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_listenForLoadNewData);
-  }
-
-  void _listenForLoadNewData() async {
-    final currState = context.read<SavedViewDetailsCubit>().state;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent * 0.7 &&
-        !currState.isLoading &&
-        !currState.isLastPageLoaded) {
-      try {
-        await context.read<SavedViewDetailsCubit>().loadMore();
-      } on PaperlessServerException catch (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
-      }
-    }
-  }
+  final pagingScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<SavedViewDetailsCubit>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(cubit.savedView.name),
@@ -57,8 +38,9 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage> {
             onPressed: () async {
               final shouldDelete = await showDialog<bool>(
                     context: context,
-                    builder: (context) =>
-                        ConfirmDeleteSavedViewDialog(view: cubit.savedView),
+                    builder: (context) => ConfirmDeleteSavedViewDialog(
+                      view: cubit.savedView,
+                    ),
                   ) ??
                   false;
               if (shouldDelete) {
@@ -85,7 +67,7 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage> {
           return BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectivity) {
               return CustomScrollView(
-                controller: _scrollController,
+                controller: pagingScrollController,
                 slivers: [
                   SliverAdaptiveDocumentsView(
                     documents: state.documents,
@@ -93,7 +75,16 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage> {
                     isLabelClickable: false,
                     isLoading: state.isLoading,
                     hasLoaded: state.hasLoaded,
-                    onTap: _onOpenDocumentDetails,
+                    onTap: (document) {
+                      Navigator.pushNamed(
+                        context,
+                        DocumentDetailsRoute.routeName,
+                        arguments: DocumentDetailsRouteArguments(
+                          document: document,
+                          isLabelClickable: false,
+                        ),
+                      );
+                    },
                     viewType: state.viewType,
                   ),
                   if (state.hasLoaded && state.isLoading)
@@ -107,17 +98,6 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void _onOpenDocumentDetails(DocumentModel document) {
-    Navigator.pushNamed(
-      context,
-      DocumentDetailsRoute.routeName,
-      arguments: DocumentDetailsRouteArguments(
-        document: document,
-        isLabelClickable: false,
       ),
     );
   }

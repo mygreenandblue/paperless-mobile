@@ -4,31 +4,27 @@ import 'package:badges/badges.dart' as b;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
-import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
+import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
-import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 
 //TODO: Refactor this into several widgets
 class DocumentDetailsPage extends StatefulWidget {
@@ -49,7 +45,7 @@ class DocumentDetailsPage extends StatefulWidget {
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   late Future<DocumentMetaData> _metaData;
-
+  static const double _itemPadding = 24;
   @override
   void initState() {
     super.initState();
@@ -70,7 +66,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         length: 4,
         child: Scaffold(
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: widget.allowEdit ? _buildAppBar() : null,
+          floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
           bottomNavigationBar: _buildBottomAppBar(),
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -96,27 +92,30 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         child: Text(
                           S.of(context).documentDetailsPageTabOverviewLabel,
                           style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
                         ),
                       ),
                       Tab(
                         child: Text(
                           S.of(context).documentDetailsPageTabContentLabel,
                           style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
                         ),
                       ),
                       Tab(
                         child: Text(
                           S.of(context).documentDetailsPageTabMetaDataLabel,
                           style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
                         ),
                       ),
                       Tab(
@@ -146,20 +145,26 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   ),
                   child: TabBarView(
                     children: [
-                      _buildDocumentOverview(
-                        state.document,
+                      DocumentOverviewWidget(
+                        document: state.document,
+                        itemSpacing: _itemPadding,
+                        queryString: widget.titleAndContentQueryString,
                       ),
-                      _buildDocumentContentView(
-                        state.document,
-                        state,
+                      DocumentContentWidget(
+                        isFullContentLoaded: state.isFullContentLoaded,
+                        document: state.document,
+                        fullContent: state.fullContent,
+                        queryString: widget.titleAndContentQueryString,
                       ),
-                      _buildDocumentMetaDataView(
-                        state.document,
+                      DocumentMetaDataWidget(
+                        document: state.document,
+                        itemSpacing: _itemPadding,
+                        metaData: _metaData,
                       ),
                       const SimilarDocumentsView(),
                     ],
                   ),
-                ).paddedSymmetrically(horizontal: 8);
+                );
               },
             ),
           ),
@@ -168,7 +173,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     );
   }
 
-  BlocBuilder<DocumentDetailsCubit, DocumentDetailsState> _buildAppBar() {
+  Widget _buildEditButton() {
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
         final _filteredSuggestions =
@@ -176,7 +181,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         return BlocBuilder<ConnectivityCubit, ConnectivityState>(
           builder: (context, connectivityState) {
             if (!connectivityState.isConnected) {
-              return Container();
+              return const SizedBox.shrink();
             }
             return b.Badge(
               position: b.BadgePosition.topEnd(top: -12, end: -6),
@@ -244,8 +249,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   IconButton(
                     tooltip: S.of(context).documentDetailsPageShareTooltip,
                     icon: const Icon(Icons.share),
-                    onPressed:
-                        isConnected ? () => _onShare(state.document) : null,
+                    onPressed: isConnected
+                        ? () =>
+                            context.read<DocumentDetailsCubit>().shareDocument()
+                        : null,
                   ),
                 ],
               );
@@ -317,203 +324,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     }
   }
 
-  Widget _buildDocumentMetaDataView(DocumentModel document) {
-    return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-      builder: (context, state) {
-        if (!state.isConnected) {
-          return const Center(
-            child: OfflineWidget(),
-          );
-        }
-        return FutureBuilder<DocumentMetaData>(
-          future: _metaData,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final meta = snapshot.data!;
-            return ListView(
-              children: [
-                _DetailsItem.text(DateFormat().format(document.modified),
-                        label: S.of(context).documentModifiedPropertyLabel,
-                        context: context)
-                    .paddedOnly(bottom: 16),
-                _DetailsItem.text(DateFormat().format(document.added),
-                        label: S.of(context).documentAddedPropertyLabel,
-                        context: context)
-                    .paddedSymmetrically(vertical: 16),
-                _DetailsItem(
-                  label: S
-                      .of(context)
-                      .documentArchiveSerialNumberPropertyLongLabel,
-                  content: document.archiveSerialNumber != null
-                      ? Text(document.archiveSerialNumber.toString())
-                      : TextButton.icon(
-                          icon: const Icon(Icons.archive_outlined),
-                          label: Text(S
-                              .of(context)
-                              .documentDetailsPageAssignAsnButtonLabel),
-                          onPressed: widget.allowEdit
-                              ? () => _assignAsn(document)
-                              : null,
-                        ),
-                ).paddedSymmetrically(vertical: 16),
-                _DetailsItem.text(
-                  meta.mediaFilename,
-                  context: context,
-                  label:
-                      S.of(context).documentMetaDataMediaFilenamePropertyLabel,
-                ).paddedSymmetrically(vertical: 16),
-                _DetailsItem.text(
-                  meta.originalChecksum,
-                  context: context,
-                  label: S.of(context).documentMetaDataChecksumLabel,
-                ).paddedSymmetrically(vertical: 16),
-                _DetailsItem.text(formatBytes(meta.originalSize, 2),
-                        label:
-                            S.of(context).documentMetaDataOriginalFileSizeLabel,
-                        context: context)
-                    .paddedSymmetrically(vertical: 16),
-                _DetailsItem.text(
-                  meta.originalMimeType,
-                  label: S.of(context).documentMetaDataOriginalMimeTypeLabel,
-                  context: context,
-                ).paddedSymmetrically(vertical: 16),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _assignAsn(DocumentModel document) async {
-    try {
-      await context.read<DocumentDetailsCubit>().assignAsn(document);
-    } on PaperlessServerException catch (error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-    }
-  }
-
-  Widget _buildDocumentContentView(
-    DocumentModel document,
-    DocumentDetailsState state,
-  ) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HighlightedText(
-            text: (state.isFullContentLoaded
-                    ? state.fullContent
-                    : document.content) ??
-                "",
-            highlights: widget.titleAndContentQueryString != null
-                ? widget.titleAndContentQueryString!.split(" ")
-                : [],
-            style: Theme.of(context).textTheme.bodyMedium,
-            caseSensitive: false,
-          ),
-          if (!state.isFullContentLoaded && (document.content ?? '').isNotEmpty)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: TextButton(
-                child:
-                    Text(S.of(context).documentDetailsPageLoadFullContentLabel),
-                onPressed: () {
-                  context.read<DocumentDetailsCubit>().loadFullContent();
-                },
-              ),
-            ),
-        ],
-      ).padded(8).paddedOnly(top: 14),
-    );
-  }
-
-  Widget _buildDocumentOverview(DocumentModel document) {
-    return ListView(
-      children: [
-        _DetailsItem(
-          label: S.of(context).documentTitlePropertyLabel,
-          content: HighlightedText(
-            text: document.title,
-            highlights: widget.titleAndContentQueryString?.split(" ") ?? [],
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ).paddedOnly(bottom: 16),
-        _DetailsItem.text(
-          DateFormat.yMMMMd().format(document.created),
-          context: context,
-          label: S.of(context).documentCreatedPropertyLabel,
-        ).paddedSymmetrically(vertical: 16),
-        Visibility(
-          visible: document.documentType != null,
-          child: _DetailsItem(
-            label: S.of(context).documentDocumentTypePropertyLabel,
-            content: LabelText<DocumentType>(
-              style: Theme.of(context).textTheme.bodyLarge,
-              id: document.documentType,
-            ),
-          ).paddedSymmetrically(vertical: 16),
-        ),
-        Visibility(
-          visible: document.correspondent != null,
-          child: _DetailsItem(
-            label: S.of(context).documentCorrespondentPropertyLabel,
-            content: LabelText<Correspondent>(
-              style: Theme.of(context).textTheme.bodyLarge,
-              id: document.correspondent,
-            ),
-          ).paddedSymmetrically(vertical: 16),
-        ),
-        Visibility(
-          visible: document.storagePath != null,
-          child: _DetailsItem(
-            label: S.of(context).documentStoragePathPropertyLabel,
-            content: StoragePathWidget(
-              pathId: document.storagePath,
-            ),
-          ).paddedSymmetrically(vertical: 16),
-        ),
-        Visibility(
-          visible: document.tags.isNotEmpty,
-          child: _DetailsItem(
-            label: S.of(context).documentTagsPropertyLabel,
-            content: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: TagsWidget(
-                isClickable: widget.isLabelClickable,
-                tagIds: document.tags,
-              ),
-            ),
-          ).paddedSymmetrically(vertical: 16),
-        ),
-      ],
-    );
-  }
-
-  ///
-  /// Downloads file to temporary directory, from which it can then be shared.
-  ///
-  Future<void> _onShare(DocumentModel document) async {
-    Uint8List documentBytes =
-        await context.read<PaperlessDocumentsApi>().download(document);
-    final dir = await getTemporaryDirectory();
-    final String path = "${dir.path}/${document.originalFileName}";
-    await File(path).writeAsBytes(documentBytes);
-    Share.shareXFiles(
-      [
-        XFile(
-          path,
-          name: document.originalFileName,
-          mimeType: "application/pdf",
-          lastModified: document.modified,
-        )
-      ],
-      subject: document.title,
-    );
-  }
-
   void _onDelete(DocumentModel document) async {
     final delete = await showDialog(
           context: context,
@@ -544,42 +354,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       ),
     );
   }
-}
-
-class _DetailsItem extends StatelessWidget {
-  final String label;
-  final Widget content;
-  const _DetailsItem({
-    Key? key,
-    required this.label,
-    required this.content,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          content,
-        ],
-      ),
-    );
-  }
-
-  _DetailsItem.text(
-    String text, {
-    required this.label,
-    required BuildContext context,
-  }) : content = Text(
-          text,
-          style: Theme.of(context).textTheme.bodyLarge,
-        );
 }
 
 class ColoredTabBar extends Container implements PreferredSizeWidget {

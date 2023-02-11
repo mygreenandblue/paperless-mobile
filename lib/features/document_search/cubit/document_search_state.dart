@@ -6,7 +6,7 @@ enum SearchView {
 }
 
 @JsonSerializable(ignoreUnannotated: true)
-class DocumentSearchState extends PagedDocumentsState {
+class DocumentSearchState extends DocumentPagingState {
   @JsonKey()
   final List<String> searchHistory;
   final SearchView view;

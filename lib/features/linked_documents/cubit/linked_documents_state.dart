@@ -1,7 +1,7 @@
 part of 'linked_documents_cubit.dart';
 
 @JsonSerializable(ignoreUnannotated: true)
-class LinkedDocumentsState extends PagedDocumentsState {
+class LinkedDocumentsState extends DocumentPagingState {
   @JsonKey()
   final ViewType viewType;
   const LinkedDocumentsState({

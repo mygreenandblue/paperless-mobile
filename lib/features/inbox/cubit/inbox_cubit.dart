@@ -5,13 +5,14 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/paged_document_view/model/paged_documents_state.dart';
-import 'package:paperless_mobile/features/paged_document_view/paged_documents_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
 
-class InboxCubit extends HydratedCubit<InboxState> with PagedDocumentsMixin {
+class InboxCubit extends HydratedCubit<InboxState>
+    with DocumentPagingBlocMixin {
   final LabelRepository<Tag> _tagsRepository;
   final LabelRepository<Correspondent> _correspondentRepository;
   final LabelRepository<DocumentType> _documentTypeRepository;

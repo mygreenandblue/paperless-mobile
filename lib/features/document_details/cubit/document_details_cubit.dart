@@ -7,6 +7,8 @@ import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 part 'document_details_state.dart';
 
@@ -71,6 +73,24 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   void replace(DocumentModel document) {
     emit(state.copyWith(document: document));
+  }
+
+  Future<void> shareDocument() async {
+    final documentBytes = await _api.download(state.document);
+    final dir = await getTemporaryDirectory();
+    final String path = "${dir.path}/${state.document.originalFileName}";
+    await File(path).writeAsBytes(documentBytes);
+    Share.shareXFiles(
+      [
+        XFile(
+          path,
+          name: state.document.originalFileName,
+          mimeType: "application/pdf",
+          lastModified: state.document.modified,
+        ),
+      ],
+      subject: state.document.title,
+    );
   }
 
   @override

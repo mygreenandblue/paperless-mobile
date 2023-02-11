@@ -1,7 +1,7 @@
 part of 'saved_view_details_cubit.dart';
 
 @JsonSerializable(ignoreUnannotated: true)
-class SavedViewDetailsState extends PagedDocumentsState {
+class SavedViewDetailsState extends DocumentPagingState {
   @JsonKey()
   final ViewType viewType;
 

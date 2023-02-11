@@ -1,7 +1,7 @@
 part of 'documents_cubit.dart';
 
 @JsonSerializable()
-class DocumentsState extends PagedDocumentsState {
+class DocumentsState extends DocumentPagingState {
   @JsonKey(includeFromJson: false, includeToJson: false)
   final List<DocumentModel> selection;
 

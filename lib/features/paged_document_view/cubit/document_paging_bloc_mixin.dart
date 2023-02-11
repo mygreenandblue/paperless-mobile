@@ -1,17 +1,15 @@
-import 'dart:developer';
-
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 
-import 'model/paged_documents_state.dart';
+import 'paged_documents_state.dart';
 
 ///
 /// Mixin which can be used on cubits that handle documents.
 /// This implements all paging and filtering logic.
 ///
-mixin PagedDocumentsMixin<State extends PagedDocumentsState>
+mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     on BlocBase<State> {
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;

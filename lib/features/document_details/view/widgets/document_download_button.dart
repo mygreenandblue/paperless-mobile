@@ -6,7 +6,6 @@ import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 import 'package:provider/provider.dart';
 
 class DocumentDownloadButton extends StatefulWidget {
