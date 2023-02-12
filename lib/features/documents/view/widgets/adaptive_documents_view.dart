@@ -23,6 +23,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onCorrespondentSelected;
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
+  final double maxItemExtent;
 
   bool get showLoadingPlaceholder => (!hasLoaded && isLoading);
   const AdaptiveDocumentsView({
@@ -41,6 +42,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.isLoading,
     required this.hasLoaded,
     this.enableHeroAnimation = true,
+    required this.maxItemExtent,
   });
 }
 
@@ -61,6 +63,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.enableHeroAnimation,
     required super.isLoading,
     required super.hasLoaded,
+    super.maxItemExtent = double.infinity,
   });
 
   @override
@@ -71,7 +74,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
       case ViewType.list:
         return _buildListView();
       case ViewType.detailed:
-        return _buildFullView();
+        return _buildFullView(context);
     }
   }
 
@@ -104,18 +107,19 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     );
   }
 
-  Widget _buildFullView() {
+  Widget _buildFullView(BuildContext context) {
     if (showLoadingPlaceholder) {
       //TODO: Build detailed loading animation
       return DocumentsListLoadingWidget.sliver();
     }
-    return SliverList(
+    return SliverFixedExtentList(
+      itemExtent: maxItemExtent,
       delegate: SliverChildBuilderDelegate(
         childCount: documents.length,
         (context, index) {
           final document = documents.elementAt(index);
           return LabelRepositoriesProvider(
-            child: DocumentDetailedItem(
+            child: DocumentGridItem(
               isLabelClickable: isLabelClickable,
               document: document,
               onTap: onTap,
@@ -185,6 +189,7 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.selectedDocumentIds,
     super.viewType,
     super.enableHeroAnimation = true,
+    super.maxItemExtent = double.infinity,
   });
 
   @override
