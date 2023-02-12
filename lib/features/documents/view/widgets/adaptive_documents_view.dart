@@ -3,6 +3,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_grid_loading_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -69,6 +70,8 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
         return _buildGridView();
       case ViewType.list:
         return _buildListView();
+      case ViewType.detailed:
+        return _buildFullView();
     }
   }
 
@@ -83,6 +86,36 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
           final document = documents.elementAt(index);
           return LabelRepositoriesProvider(
             child: DocumentListItem(
+              isLabelClickable: isLabelClickable,
+              document: document,
+              onTap: onTap,
+              isSelected: selectedDocumentIds.contains(document.id),
+              onSelected: onSelected,
+              isSelectionActive: selectedDocumentIds.isNotEmpty,
+              onTagSelected: onTagSelected,
+              onCorrespondentSelected: onCorrespondentSelected,
+              onDocumentTypeSelected: onDocumentTypeSelected,
+              onStoragePathSelected: onStoragePathSelected,
+              enableHeroAnimation: enableHeroAnimation,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFullView() {
+    if (showLoadingPlaceholder) {
+      //TODO: Build detailed loading animation
+      return DocumentsListLoadingWidget.sliver();
+    }
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        childCount: documents.length,
+        (context, index) {
+          final document = documents.elementAt(index);
+          return LabelRepositoriesProvider(
+            child: DocumentDetailedItem(
               isLabelClickable: isLabelClickable,
               document: document,
               onTap: onTap,
@@ -161,6 +194,8 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
         return _buildGridView();
       case ViewType.list:
         return _buildListView();
+      case ViewType.detailed:
+        return _buildFullView();
     }
   }
 
@@ -177,6 +212,37 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
         final document = documents.elementAt(index);
         return LabelRepositoriesProvider(
           child: DocumentListItem(
+            isLabelClickable: isLabelClickable,
+            document: document,
+            onTap: onTap,
+            isSelected: selectedDocumentIds.contains(document.id),
+            onSelected: onSelected,
+            isSelectionActive: selectedDocumentIds.isNotEmpty,
+            onTagSelected: onTagSelected,
+            onCorrespondentSelected: onCorrespondentSelected,
+            onDocumentTypeSelected: onDocumentTypeSelected,
+            onStoragePathSelected: onStoragePathSelected,
+            enableHeroAnimation: enableHeroAnimation,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFullView() {
+    if (showLoadingPlaceholder) {
+      return DocumentsListLoadingWidget();
+    }
+
+    return ListView.builder(
+      physics: const PageScrollPhysics(),
+      controller: scrollController,
+      primary: false,
+      itemCount: documents.length,
+      itemBuilder: (context, index) {
+        final document = documents.elementAt(index);
+        return LabelRepositoriesProvider(
+          child: DocumentDetailedItem(
             isLabelClickable: isLabelClickable,
             document: document,
             onTap: onTap,

@@ -18,6 +18,7 @@ import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart
 import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
+import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -247,55 +248,62 @@ class _DocumentsPageState extends State<DocumentsPage>
                               onRefresh: _onReloadDocuments,
                               notificationPredicate: (_) =>
                                   connectivityState.isConnected,
-                              child: CustomScrollView(
-                                key: const PageStorageKey<String>("documents"),
-                                slivers: <Widget>[
-                                  SliverOverlapInjector(
-                                    handle: NestedScrollView
-                                        .sliverOverlapAbsorberHandleFor(
-                                            context),
-                                  ),
-                                  _buildViewActions(),
+                              child:
                                   BlocBuilder<DocumentsCubit, DocumentsState>(
-                                    builder: (context, state) {
-                                      if (state.hasLoaded &&
-                                          state.documents.isEmpty) {
-                                        return SliverToBoxAdapter(
-                                          child: DocumentsEmptyState(
-                                            state: state,
-                                            onReset: () {
-                                              context
-                                                  .read<DocumentsCubit>()
-                                                  .resetFilter();
-                                            },
-                                          ),
-                                        );
-                                      }
+                                builder: (context, state) {
+                                  return CustomScrollView(
+                                    key: const PageStorageKey<String>(
+                                        "documents"),
+                                    slivers: <Widget>[
+                                      SliverOverlapInjector(
+                                        handle: NestedScrollView
+                                            .sliverOverlapAbsorberHandleFor(
+                                                context),
+                                      ),
+                                      _buildViewActions(),
+                                      Builder(
+                                        builder: (context) {
+                                          if (state.hasLoaded &&
+                                              state.documents.isEmpty) {
+                                            return SliverToBoxAdapter(
+                                              child: DocumentsEmptyState(
+                                                state: state,
+                                                onReset: () {
+                                                  context
+                                                      .read<DocumentsCubit>()
+                                                      .resetFilter();
+                                                },
+                                              ),
+                                            );
+                                          }
 
-                                      return SliverAdaptiveDocumentsView(
-                                        viewType: state.viewType,
-                                        onTap: _openDetails,
-                                        onSelected: context
-                                            .read<DocumentsCubit>()
-                                            .toggleDocumentSelection,
-                                        hasInternetConnection:
-                                            connectivityState.isConnected,
-                                        onTagSelected: _addTagToFilter,
-                                        onCorrespondentSelected:
-                                            _addCorrespondentToFilter,
-                                        onDocumentTypeSelected:
-                                            _addDocumentTypeToFilter,
-                                        onStoragePathSelected:
-                                            _addStoragePathToFilter,
-                                        documents: state.documents,
-                                        hasLoaded: state.hasLoaded,
-                                        isLabelClickable: true,
-                                        isLoading: state.isLoading,
-                                        selectedDocumentIds: state.selectedIds,
-                                      );
-                                    },
-                                  ),
-                                ],
+                                          return SliverAdaptiveDocumentsView(
+                                            viewType: state.viewType,
+                                            onTap: _openDetails,
+                                            onSelected: context
+                                                .read<DocumentsCubit>()
+                                                .toggleDocumentSelection,
+                                            hasInternetConnection:
+                                                connectivityState.isConnected,
+                                            onTagSelected: _addTagToFilter,
+                                            onCorrespondentSelected:
+                                                _addCorrespondentToFilter,
+                                            onDocumentTypeSelected:
+                                                _addDocumentTypeToFilter,
+                                            onStoragePathSelected:
+                                                _addStoragePathToFilter,
+                                            documents: state.documents,
+                                            hasLoaded: state.hasLoaded,
+                                            isLabelClickable: true,
+                                            isLoading: state.isLoading,
+                                            selectedDocumentIds:
+                                                state.selectedIds,
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             );
                           },
