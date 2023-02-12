@@ -10,8 +10,10 @@ class DioFileService extends FileService {
   DioFileService(this.dio);
 
   @override
-  Future<FileServiceResponse> get(String url,
-      {Map<String, String>? headers}) async {
+  Future<FileServiceResponse> get(
+    String url, {
+    Map<String, String>? headers,
+  }) async {
     final response = await dio.get<ResponseBody>(
       url,
       options: Options(
