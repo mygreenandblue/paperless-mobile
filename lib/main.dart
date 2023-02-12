@@ -161,8 +161,7 @@ void main() async {
           value: connectivityStatusService,
         ),
         Provider<LocalNotificationService>.value(
-          value: localNotificationService,
-        ),
+            value: localNotificationService),
         Provider.value(value: DocumentChangedNotifier()),
       ],
       child: MultiRepositoryProvider(
