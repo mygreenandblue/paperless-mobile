@@ -103,7 +103,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -122,7 +122,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -142,7 +142,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -160,7 +160,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -178,7 +178,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -195,7 +195,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -215,7 +215,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -235,7 +235,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -256,7 +256,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -273,7 +273,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -316,7 +316,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -333,7 +333,7 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       }
       throw const PaperlessServerException(ErrorCode.unknown);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 }

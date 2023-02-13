@@ -39,7 +39,7 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -55,7 +55,7 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
         httpStatusCode: response.statusCode,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 

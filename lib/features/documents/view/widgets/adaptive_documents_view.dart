@@ -23,7 +23,6 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onCorrespondentSelected;
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
-  final double maxItemExtent;
 
   bool get showLoadingPlaceholder => (!hasLoaded && isLoading);
   const AdaptiveDocumentsView({
@@ -42,7 +41,6 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.isLoading,
     required this.hasLoaded,
     this.enableHeroAnimation = true,
-    required this.maxItemExtent,
   });
 }
 
@@ -63,7 +61,6 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.enableHeroAnimation,
     required super.isLoading,
     required super.hasLoaded,
-    super.maxItemExtent = double.infinity,
   });
 
   @override
@@ -112,8 +109,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
       //TODO: Build detailed loading animation
       return DocumentsListLoadingWidget.sliver();
     }
-    return SliverFixedExtentList(
-      itemExtent: maxItemExtent,
+    return SliverList(
       delegate: SliverChildBuilderDelegate(
         childCount: documents.length,
         (context, index) {
@@ -189,7 +185,6 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.selectedDocumentIds,
     super.viewType,
     super.enableHeroAnimation = true,
-    super.maxItemExtent = double.infinity,
   });
 
   @override

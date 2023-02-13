@@ -2,14 +2,10 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/constants.dart';
-import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
 class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
-  static const _dateTimeConverter = LocalDateTimeJsonConverter();
-
   final Dio client;
 
   PaperlessDocumentsApiImpl(this.client);
@@ -65,7 +61,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         );
       }
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -82,7 +78,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentUpdateFailed);
       }
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -109,7 +105,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentLoadFailed);
       }
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -123,7 +119,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.documentDeleteFailed);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -150,7 +146,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.documentPreviewFailed);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -172,7 +168,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     } on PaperlessServerException {
       throw const PaperlessServerException(ErrorCode.documentAsnQueryFailed);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -191,7 +187,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         );
       }
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -204,7 +200,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       );
       return response.data;
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -218,7 +214,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         response.data as Map<String, dynamic>,
       );
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -237,7 +233,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.autocompleteQueryError);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -252,7 +248,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.suggestionsQueryError);
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 
@@ -266,7 +262,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         return null;
       }
     } on DioError catch (err) {
-      throw err.error;
+      throw err.error!;
     }
   }
 }

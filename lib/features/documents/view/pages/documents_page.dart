@@ -242,13 +242,6 @@ class _DocumentsPageState extends State<DocumentsPage>
                       children: [
                         Builder(
                           builder: (context) {
-                            final itemHeight =
-                                MediaQuery.sizeOf(context).height -
-                                    MediaQuery.viewInsetsOf(context).bottom -
-                                    MediaQuery.viewInsetsOf(context).top -
-                                    kToolbarHeight -
-                                    kTextTabBarHeight -
-                                    56;
                             return RefreshIndicator(
                               edgeOffset: kToolbarHeight + kTextTabBarHeight,
                               onRefresh: _onReloadDocuments,
@@ -281,7 +274,6 @@ class _DocumentsPageState extends State<DocumentsPage>
 
                                       return SliverAdaptiveDocumentsView(
                                         viewType: state.viewType,
-                                        maxItemExtent: itemHeight,
                                         onTap: _openDetails,
                                         onSelected: context
                                             .read<DocumentsCubit>()

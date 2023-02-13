@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -20,9 +19,9 @@ class SessionManager {
   static Dio _initDio(List<Interceptor> interceptors) {
     //en- and decoded by utf8 by default
     final Dio dio = Dio(BaseOptions());
-    dio.options.receiveTimeout = const Duration(seconds: 25).inMilliseconds;
+    dio.options.receiveTimeout = const Duration(seconds: 25);
     dio.options.responseType = ResponseType.json;
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (client) => client..badCertificateCallback = (cert, host, port) => true;
     dio.interceptors.addAll([
       ...interceptors,
@@ -59,7 +58,7 @@ class SessionManager {
           clientCertificate.bytes,
           password: clientCertificate.passphrase,
         );
-      final adapter = DefaultHttpClientAdapter()
+      final adapter = IOHttpClientAdapter()
         ..onHttpClientCreate = (client) => HttpClient(context: context)
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) => true;
@@ -81,7 +80,7 @@ class SessionManager {
   }
 
   void resetSettings() {
-    client.httpClientAdapter = DefaultHttpClientAdapter();
+    client.httpClientAdapter = IOHttpClientAdapter();
     client.options.baseUrl = '';
     client.options.headers.remove('Authorization');
     serverInformation = PaperlessServerInformationModel();

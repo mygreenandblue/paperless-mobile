@@ -29,7 +29,7 @@ Future<T> getSingleResult<T>(
       httpStatusCode: response.statusCode,
     );
   } on DioError catch (err) {
-    throw err.error;
+    throw err.error!;
   }
 }
 
@@ -66,12 +66,13 @@ Future<List<T>> getCollection<T>(
       httpStatusCode: response.statusCode,
     );
   } on DioError catch (err) {
-    throw err.error;
+    throw err.error!;
   }
 }
 
 List<T> _collectionFromJson<T>(
-    _CollectionFromJsonSerializationParams<T> params) {
+  _CollectionFromJsonSerializationParams<T> params,
+) {
   return params.list.map<T>((result) => params.fromJson(result)).toList();
 }
 
