@@ -1,24 +1,15 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_item_placeholder.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
-import 'package:shimmer/shimmer.dart';
 
-class DocumentGridLoadingWidget extends StatelessWidget
-    with DocumentItemPlaceholder {
+class DocumentGridLoadingWidget extends StatelessWidget {
   final bool _isSliver;
   @override
-  final Random random = Random(1257195195);
-  DocumentGridLoadingWidget({super.key}) : _isSliver = false;
+  const DocumentGridLoadingWidget({super.key}) : _isSliver = false;
 
-  DocumentGridLoadingWidget.sliver({super.key}) : _isSliver = true;
+  const DocumentGridLoadingWidget.sliver({super.key}) : _isSliver = true;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +32,6 @@ class DocumentGridLoadingWidget extends StatelessWidget
   }
 
   Widget _buildPlaceholderGridItem(BuildContext context) {
-    final values = nextValues;
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -68,21 +57,25 @@ class DocumentGridLoadingWidget extends StatelessWidget
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextPlaceholder(
-                        length: values.correspondentLength,
+                      const TextPlaceholder(
+                        length: 70,
+                        fontSize: 16,
+                      ).padded(1),
+                      const TextPlaceholder(
+                        length: 50,
                         fontSize: 16,
                       ).padded(1),
                       TextPlaceholder(
-                        length: values.titleLength,
-                        fontSize: 16,
+                        length: 200,
+                        fontSize:
+                            Theme.of(context).textTheme.titleMedium?.fontSize ??
+                                10,
+                      ).padded(1),
+                      const Spacer(),
+                      const TagsPlaceholder(
+                        count: 2,
+                        dense: true,
                       ),
-                      if (values.tagCount > 0) ...[
-                        const Spacer(),
-                        TagsPlaceholder(
-                          count: values.tagCount,
-                          dense: true,
-                        ),
-                      ],
                       const Spacer(),
                       TextPlaceholder(
                         length: 100,

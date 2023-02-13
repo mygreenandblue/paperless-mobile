@@ -122,7 +122,7 @@ class DocumentListItem extends DocumentItem {
           aspectRatio: _a4AspectRatio,
           child: GestureDetector(
             child: DocumentPreview(
-              id: document.id,
+              document: document,
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
               enableHero: enableHeroAnimation,

@@ -22,7 +22,7 @@ class SavedViewDetailsPage extends StatefulWidget {
 }
 
 class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
-    with DocumentPagingViewMixin {
+    with DocumentPagingViewMixin<SavedViewDetailsPage, SavedViewDetailsCubit> {
   @override
   final pagingScrollController = ScrollController();
 
@@ -56,7 +56,7 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
                 onChanged: cubit.setViewType,
               );
             },
-          )
+          ),
         ],
       ),
       body: BlocBuilder<SavedViewDetailsCubit, SavedViewDetailsState>(

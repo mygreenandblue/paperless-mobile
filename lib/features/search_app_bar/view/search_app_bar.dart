@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
 import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
@@ -29,13 +32,13 @@ class _SearchAppBarState extends State<SearchAppBar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      automaticallyImplyLeading: false,
       floating: true,
       pinned: true,
       snap: true,
+      automaticallyImplyLeading: false,
       backgroundColor: widget.backgroundColor,
       title: SearchBar(
-        height: kToolbarHeight - 8,
+        height: kToolbarHeight - 12,
         supportingText: widget.hintText,
         onTap: () => widget.onOpenSearch(context),
         leadingIcon: IconButton(
@@ -43,17 +46,22 @@ class _SearchAppBarState extends State<SearchAppBar> {
           onPressed: Scaffold.of(context).openDrawer,
         ),
         trailingIcon: IconButton(
-          icon: const CircleAvatar(
-            child: Text("A"),
+          icon: BlocBuilder<PaperlessServerInformationCubit,
+              PaperlessServerInformationState>(
+            builder: (context, state) {
+              return CircleAvatar(
+                child: Text(state.information?.userInitials ?? ''),
+              );
+            },
           ),
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => AccountSettingsDialog(),
+              builder: (context) => const AccountSettingsDialog(),
             );
           },
         ),
-      ).paddedOnly(top: 4, bottom: 4),
+      ).paddedOnly(top: 8, bottom: 4),
       bottom: widget.bottom,
     );
   }

@@ -25,66 +25,62 @@ class DocumentGridItem extends DocumentItem {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _onTap,
-      onLongPress: onSelected != null ? () => onSelected!(document) : null,
-      child: AbsorbPointer(
-        absorbing: isSelectionActive,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            elevation: 1.0,
-            color: isSelected
-                ? Theme.of(context).colorScheme.inversePrimary
-                : Theme.of(context).cardColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: DocumentPreview(
-                    id: document.id,
-                    borderRadius: 12.0,
-                    enableHero: enableHeroAnimation,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 1.0,
+        color: isSelected
+            ? Theme.of(context).colorScheme.inversePrimary
+            : Theme.of(context).cardColor,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: _onTap,
+          onLongPress: onSelected != null ? () => onSelected!(document) : null,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: DocumentPreview(
+                  document: document,
+                  borderRadius: 12.0,
+                  enableHero: enableHeroAnimation,
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CorrespondentWidget(
+                        correspondentId: document.correspondent,
+                      ),
+                      DocumentTypeWidget(
+                        documentTypeId: document.documentType,
+                      ),
+                      Text(
+                        document.title,
+                        maxLines: document.tags.isEmpty ? 3 : 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const Spacer(),
+                      TagsWidget(
+                        tagIds: document.tags,
+                        isMultiLine: false,
+                        onTagSelected: onTagSelected,
+                      ),
+                      const Spacer(),
+                      Text(
+                        DateFormat.yMMMd().format(document.created),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CorrespondentWidget(
-                          correspondentId: document.correspondent,
-                        ),
-                        DocumentTypeWidget(
-                          documentTypeId: document.documentType,
-                        ),
-                        Text(
-                          document.title,
-                          maxLines: document.tags.isEmpty ? 3 : 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const Spacer(),
-                        TagsWidget(
-                          tagIds: document.tags,
-                          isMultiLine: false,
-                          onTagSelected: onTagSelected,
-                        ),
-                        const Spacer(),
-                        Text(
-                          DateFormat.yMMMd().format(
-                            document.created,
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

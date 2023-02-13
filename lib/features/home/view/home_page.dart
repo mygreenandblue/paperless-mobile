@@ -25,7 +25,6 @@ import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
@@ -63,7 +62,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context.read(),
     );
     _listenToInboxChanges();
-    context.read<ConnectivityCubit>().reload();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
     });
@@ -82,12 +81,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && !_inboxTimer.isActive) {
-      log('App is now in foreground, start polling for statistics.');
-      _listenToInboxChanges();
-    } else if (state != AppLifecycleState.resumed) {
-      log('App is now in background, stop polling for statistics.');
-      _inboxTimer.cancel();
+    switch (state) {
+      case AppLifecycleState.resumed:
+        log('App is now in foreground');
+        context.read<ConnectivityCubit>().reload();
+        log("Reloaded device connectivity state");
+        if (!_inboxTimer.isActive) {
+          _listenToInboxChanges();
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      default:
+        log('App is now in background');
+        _inboxTimer.cancel();
+        break;
     }
   }
 
@@ -272,21 +281,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ],
         child: const LabelsPage(),
       ),
-      MultiBlocProvider(
-        providers: [
-          // We need to manually downcast the inboxcubit to the
-          // mixed-in DocumentPagingBlocMixin to use the
-          // DocumentPagingViewMixin in the inbox.
-          BlocProvider<DocumentPagingBlocMixin>.value(
-            value: _inboxCubit,
-          ),
-          BlocProvider<InboxCubit>.value(
-            value: _inboxCubit,
-          ),
-        ],
+      BlocProvider<InboxCubit>.value(
+        value: _inboxCubit,
         child: const InboxPage(),
       ),
-      // const SettingsPage(),
     ];
     return MultiBlocListener(
       listeners: [

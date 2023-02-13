@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 /// Meant to be used with blocbuilder.
@@ -28,22 +27,26 @@ class ViewTypeSelectionWidget extends StatelessWidget {
         break;
     }
     return PopupMenuButton<ViewType>(
-      child: Icon(icon),
+      initialValue: viewType,
+      icon: Icon(icon),
       itemBuilder: (context) => [
         _buildViewTypeOption(
-          ViewType.list,
-          'List',
-          Icons.list,
+          context,
+          type: ViewType.list,
+          label: 'List', //TODO: INTL
+          icon: Icons.list,
         ),
         _buildViewTypeOption(
-          ViewType.grid,
-          'Grid',
-          Icons.grid_view_rounded,
+          context,
+          type: ViewType.grid,
+          label: 'Grid', //TODO: INTL
+          icon: Icons.grid_view_rounded,
         ),
         _buildViewTypeOption(
-          ViewType.detailed,
-          'Detailed',
-          Icons.article_outlined,
+          context,
+          type: ViewType.detailed,
+          label: 'Detailed', //TODO: INTL
+          icon: Icons.article_outlined,
         ),
       ],
       onSelected: (next) {
@@ -53,17 +56,22 @@ class ViewTypeSelectionWidget extends StatelessWidget {
   }
 
   PopupMenuItem<ViewType> _buildViewTypeOption(
-    ViewType type,
-    String label,
-    IconData icon,
-  ) {
+    BuildContext context, {
+    required ViewType type,
+    required String label,
+    required IconData icon,
+  }) {
+    final selected = type == viewType;
     return PopupMenuItem(
       value: type,
       child: ListTile(
-        selected: type == viewType,
-        trailing: type == viewType ? const Icon(Icons.done) : null,
+        selected: selected,
+        trailing: selected ? const Icon(Icons.done) : null,
         title: Text(label),
+        iconColor: Theme.of(context).colorScheme.onSurface,
+        textColor: Theme.of(context).colorScheme.onSurface,
         leading: Icon(icon),
+        contentPadding: EdgeInsets.zero,
       ),
     );
   }

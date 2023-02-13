@@ -1,21 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_item_placeholder.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
 
-class DocumentsListLoadingWidget extends StatelessWidget
-    with DocumentItemPlaceholder {
+class DocumentsListLoadingWidget extends StatelessWidget {
   final bool _isSliver;
-  DocumentsListLoadingWidget({super.key}) : _isSliver = false;
+  const DocumentsListLoadingWidget({super.key}) : _isSliver = false;
 
-  DocumentsListLoadingWidget.sliver({super.key}) : _isSliver = true;
-
-  @override
-  final Random random = Random(1209571050);
+  const DocumentsListLoadingWidget.sliver({super.key}) : _isSliver = true;
 
   @override
   Widget build(BuildContext context) {
@@ -35,25 +27,30 @@ class DocumentsListLoadingWidget extends StatelessWidget
 
   Widget _buildFakeListItem(BuildContext context) {
     const fontSize = 14.0;
-    final values = nextValues;
     return ShimmerPlaceholder(
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         dense: true,
         isThreeLine: true,
         leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
             color: Colors.white,
             height: double.infinity,
             width: 35,
           ),
         ),
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextPlaceholder(
-              length: values.correspondentLength,
+            const TextPlaceholder(
+              length: 120,
               fontSize: fontSize,
+            ),
+            const SizedBox(height: 2),
+            TextPlaceholder(
+              length: 220,
+              fontSize: Theme.of(context).textTheme.titleMedium!.fontSize!,
             ),
           ],
         ),
@@ -63,14 +60,10 @@ class DocumentsListLoadingWidget extends StatelessWidget
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              TagsPlaceholder(count: 2, dense: true),
+              SizedBox(height: 2),
               TextPlaceholder(
-                length: values.titleLength,
-                fontSize: fontSize,
-              ),
-              if (values.tagCount > 0)
-                TagsPlaceholder(count: values.tagCount, dense: true),
-              TextPlaceholder(
-                length: 100,
+                length: 250,
                 fontSize: Theme.of(context).textTheme.labelSmall!.fontSize!,
               ),
             ],

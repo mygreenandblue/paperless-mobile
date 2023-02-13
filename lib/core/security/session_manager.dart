@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -18,7 +19,9 @@ class SessionManager {
 
   static Dio _initDio(List<Interceptor> interceptors) {
     //en- and decoded by utf8 by default
-    final Dio dio = Dio(BaseOptions());
+    final Dio dio = Dio(
+      BaseOptions(contentType: Headers.jsonContentType),
+    );
     dio.options.receiveTimeout = const Duration(seconds: 25);
     dio.options.responseType = ResponseType.json;
     (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
@@ -71,7 +74,9 @@ class SessionManager {
     }
 
     if (authToken != null) {
-      client.options.headers.addAll({'Authorization': 'Token $authToken'});
+      client.options.headers.addAll({
+        HttpHeaders.authorizationHeader: 'Token $authToken',
+      });
     }
 
     if (serverInformation != null) {
@@ -82,7 +87,7 @@ class SessionManager {
   void resetSettings() {
     client.httpClientAdapter = IOHttpClientAdapter();
     client.options.baseUrl = '';
-    client.options.headers.remove('Authorization');
+    client.options.headers.remove(HttpHeaders.authorizationHeader);
     serverInformation = PaperlessServerInformationModel();
   }
 }

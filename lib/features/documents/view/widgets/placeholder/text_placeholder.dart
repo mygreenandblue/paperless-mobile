@@ -1,9 +1,4 @@
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 
 class TextPlaceholder extends StatelessWidget {
   final double length;

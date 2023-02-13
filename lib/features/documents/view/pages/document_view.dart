@@ -36,11 +36,14 @@ class _DocumentViewState extends State<DocumentView> {
       ),
       body: PdfView(
         builders: PdfViewBuilders<DefaultBuilderOptions>(
-          options: const DefaultBuilderOptions(),
+          options: const DefaultBuilderOptions(
+            loaderSwitchDuration: Duration(milliseconds: 500),
+          ),
           pageLoaderBuilder: (context) => const Center(
             child: CircularProgressIndicator(),
           ),
         ),
+        scrollDirection: Axis.vertical,
         controller: _pdfController,
       ),
     );
