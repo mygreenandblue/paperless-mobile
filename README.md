@@ -75,22 +75,17 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 * Install an IDE of your choice (e.g. VSCode with the Dart/Flutter extensions)
-
+* Install the flutter SDK (https://docs.flutter.dev/get-started/install) _or_ use the flutter git submodule pinned in this project by running `git submodule update --init` inside the project root directory.
+* 
 ### Install dependencies and generate files
 1. First, clone the repository:
 ```sh
 git clone https://github.com/astubenbord/paperless-mobile.git
 ```
-In this project, flutter is pinned at a specific version as a git submodule to ensure all contributors work with the same environment and build with the same flutter version. You can also use your local flutter installation, just make sure that the app also compiles with the same flutter version as pinned in the `flutter` submodule when opening a pull request.
 
-To download the pinned flutter SDK from the submodule and plan to install the dependencies manually in the next step, simply run
-```sh
-git submodule update --init
-```
+You can now run the `scripts/install_dependencies.sh` script at the root of the project, which will automatically install dependencies and generate files for both the app and local packages.
 
-You can now run the `scripts/install_dependencies.sh` script at the root of the project, which will automatically install dependencies and generate files for both the app and subpackages. Note that the `install_dependencies.sh` script will pull the flutter submodule and use the SDK to execute the flutter commands.
-
-If you don't want to use submodules, you can also run the following commands using your local flutter installation:
+If you want to manually install dependencies and build generated files, you can also run the following commands:
 
 #### Inside the `packages/paperless_api/` folder:
 2. Install the dependencies for `paperless_api`
