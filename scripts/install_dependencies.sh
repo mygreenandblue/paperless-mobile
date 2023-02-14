@@ -1,6 +1,4 @@
 #!/bin/bash
-# Uses flutter submodule dependency
-git submodules update --init
 pushd ../
 pushd packages/paperless_api
 flutter pub get
