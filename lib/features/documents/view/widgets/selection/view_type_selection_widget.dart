@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
+import 'package:paperless_mobile/generated/l10n.dart';
 
 /// Meant to be used with blocbuilder.
 class ViewTypeSelectionWidget extends StatelessWidget {
@@ -33,19 +34,19 @@ class ViewTypeSelectionWidget extends StatelessWidget {
         _buildViewTypeOption(
           context,
           type: ViewType.list,
-          label: 'List', //TODO: INTL
+          label: S.of(context).viewTypeListOption,
           icon: Icons.list,
         ),
         _buildViewTypeOption(
           context,
           type: ViewType.grid,
-          label: 'Grid', //TODO: INTL
+          label: S.of(context).viewTypeGridOption,
           icon: Icons.grid_view_rounded,
         ),
         _buildViewTypeOption(
           context,
           type: ViewType.detailed,
-          label: 'Detailed', //TODO: INTL
+          label: S.of(context).viewTypeDetailedOption,
           icon: Icons.article_outlined,
         ),
       ],

@@ -53,16 +53,15 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       final downloadOriginal = await showDialog<bool>(
         context: context,
         builder: (context) => RadioSettingsDialog(
-          titleText: "Choose filetype", //TODO: INTL
+          titleText: S.of(context).documentDownloadDialogChooseFiletype,
           options: [
             RadioOption(
-              value: true,
-              label:
-                  "Original (${meta.originalMimeType.split("/").last})", //TODO: INTL
-            ),
+                value: true,
+                label: S.of(context).documentDownloadDialogOriginalOption +
+                    " (${meta.originalMimeType.split("/").last})"),
             RadioOption(
               value: false,
-              label: "Archived (pdf)", //TODO: INTL
+              label: S.of(context).documentDownloadDialogArchivedOption,
             ),
           ],
           initialValue: false,

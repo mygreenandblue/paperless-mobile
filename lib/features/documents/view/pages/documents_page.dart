@@ -296,7 +296,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             _nestedScrollViewKey.currentState?.outerController.jumpTo(0);
           },
           label: Text(
-            "Go to top", //TODO: INTL
+            S.of(context).scrollToTopLabel,
             style: DefaultTextStyle.of(context).style.apply(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
