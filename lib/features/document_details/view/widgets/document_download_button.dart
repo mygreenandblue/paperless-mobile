@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
@@ -14,10 +15,12 @@ import 'package:permission_handler/permission_handler.dart';
 class DocumentDownloadButton extends StatefulWidget {
   final DocumentModel? document;
   final bool enabled;
+  final Future<DocumentMetaData> metaData;
   const DocumentDownloadButton({
     super.key,
     required this.document,
     this.enabled = true,
+    required this.metaData,
   });
 
   @override
@@ -44,24 +47,47 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
   }
 
   Future<void> _onDownload(DocumentModel document) async {
-    // if (!Platform.isAndroid) {
-    //   showSnackBar(
-    //       context, "This feature is currently only supported on Android!");
-    //   return;
-    // }
-    if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
-      final isGranted = await askForPermission(Permission.storage);
-      if (!isGranted) {
+    final api = context.read<PaperlessDocumentsApi>();
+    final meta = await widget.metaData;
+    try {
+      final downloadOriginal = await showDialog<bool>(
+        context: context,
+        builder: (context) => RadioSettingsDialog(
+          titleText: "Choose filetype", //TODO: INTL
+          options: [
+            RadioOption(
+              value: true,
+              label:
+                  "Original (${meta.originalMimeType.split("/").last})", //TODO: INTL
+            ),
+            RadioOption(
+              value: false,
+              label: "Archived (pdf)", //TODO: INTL
+            ),
+          ],
+          initialValue: false,
+        ),
+      );
+      if (downloadOriginal == null) {
+        // Download was cancelled
         return;
       }
-    }
-    setState(() => _isDownloadPending = true);
-    final service = context.read<PaperlessDocumentsApi>();
-    try {
-      final bytes = await service.download(document);
-      final meta = await service.getMetaData(document);
+      if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
+        final isGranted = await askForPermission(Permission.storage);
+        if (!isGranted) {
+          return;
+        }
+      }
+      setState(() => _isDownloadPending = true);
+      final bytes = await api.download(
+        document,
+        original: downloadOriginal,
+      );
       final Directory dir = await FileService.downloadsDirectory;
-      String filePath = "${dir.path}/${meta.mediaFilename}";
+      final fileExtension =
+          downloadOriginal ? meta.mediaFilename.split(".").last : 'pdf';
+      String filePath = "${dir.path}/${meta.mediaFilename}".split(".").first;
+      filePath += ".$fileExtension";
       final createdFile = File(filePath);
       createdFile.createSync(recursive: true);
       createdFile.writeAsBytesSync(bytes);

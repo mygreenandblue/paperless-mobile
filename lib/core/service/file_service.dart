@@ -58,14 +58,12 @@ class FileService {
 
   static Future<Directory> get downloadsDirectory async {
     if (Platform.isAndroid) {
-      Directory? directory;
-      directory = Directory('/storage/emulated/0/Download');
-      // Try the default global folder, if it exists
-      if (!await directory.exists()) {
-        directory = (await getExternalStorageDirectories(
+      Directory directory = Directory('/storage/emulated/0/Download');
+      if (!directory.existsSync()) {
+        final downloadsDir = await getExternalStorageDirectories(
           type: StorageDirectory.downloads,
-        ))!
-            .first;
+        );
+        directory = downloadsDir!.first;
       }
       return directory;
     } else if (Platform.isIOS) {
@@ -77,8 +75,10 @@ class FileService {
 
   static Future<Directory?> get scanDirectory async {
     if (Platform.isAndroid) {
-      return (await getExternalStorageDirectories(type: StorageDirectory.dcim))!
-          .first;
+      final scanDir = await getExternalStorageDirectories(
+        type: StorageDirectory.dcim,
+      );
+      return scanDir!.first;
     } else if (Platform.isIOS) {
       return getApplicationDocumentsDirectory();
     } else {
