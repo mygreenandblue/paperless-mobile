@@ -9,6 +9,10 @@ class PaperlessServerInformationModel {
   final String? username;
   final String? host;
 
+  String? get userInitials {
+    return username?.substring(0, 1).toUpperCase();
+  }
+
   PaperlessServerInformationModel({
     this.host,
     this.username,

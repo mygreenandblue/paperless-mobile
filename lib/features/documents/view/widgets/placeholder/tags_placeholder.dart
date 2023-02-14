@@ -15,6 +15,7 @@ class TagsPlaceholder extends StatelessWidget {
     return SizedBox(
       height: 32,
       child: ListView.separated(
+        padding: EdgeInsets.zero,
         itemCount: count,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => FilterChip(

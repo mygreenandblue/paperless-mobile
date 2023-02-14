@@ -54,7 +54,7 @@ class _InboxItemState extends State<InboxItem> {
                   AspectRatio(
                     aspectRatio: InboxItem._a4AspectRatio,
                     child: DocumentPreview(
-                      id: widget.document.id,
+                      document: widget.document,
                       fit: BoxFit.cover,
                       alignment: Alignment.topCenter,
                       enableHero: false,

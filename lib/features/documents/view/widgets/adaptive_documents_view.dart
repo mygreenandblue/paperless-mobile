@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/document_grid_loading_widget.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/documents_list_loading_widget.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_grid_loading_widget.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/placeholder/documents_list_loading_widget.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 abstract class AdaptiveDocumentsView extends StatelessWidget {
@@ -41,6 +43,24 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.hasLoaded,
     this.enableHeroAnimation = true,
   });
+
+  AdaptiveDocumentsView.fromPagedState(
+    DocumentPagingState state, {
+    super.key,
+    this.onSelected,
+    this.onTap,
+    this.onCorrespondentSelected,
+    this.onDocumentTypeSelected,
+    this.onStoragePathSelected,
+    this.onTagSelected,
+    this.isLabelClickable = true,
+    this.enableHeroAnimation = true,
+    required this.hasInternetConnection,
+    this.viewType = ViewType.list,
+    this.selectedDocumentIds = const [],
+  })  : documents = state.documents,
+        isLoading = state.isLoading,
+        hasLoaded = state.hasLoaded;
 }
 
 class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
@@ -69,6 +89,8 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
         return _buildGridView();
       case ViewType.list:
         return _buildListView();
+      case ViewType.detailed:
+        return _buildFullView(context);
     }
   }
 
@@ -101,9 +123,39 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     );
   }
 
+  Widget _buildFullView(BuildContext context) {
+    if (showLoadingPlaceholder) {
+      //TODO: Build detailed loading animation
+      return DocumentsListLoadingWidget.sliver();
+    }
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        childCount: documents.length,
+        (context, index) {
+          final document = documents.elementAt(index);
+          return LabelRepositoriesProvider(
+            child: DocumentDetailedItem(
+              isLabelClickable: isLabelClickable,
+              document: document,
+              onTap: onTap,
+              isSelected: selectedDocumentIds.contains(document.id),
+              onSelected: onSelected,
+              isSelectionActive: selectedDocumentIds.isNotEmpty,
+              onTagSelected: onTagSelected,
+              onCorrespondentSelected: onCorrespondentSelected,
+              onDocumentTypeSelected: onDocumentTypeSelected,
+              onStoragePathSelected: onStoragePathSelected,
+              enableHeroAnimation: enableHeroAnimation,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildGridView() {
     if (showLoadingPlaceholder) {
-      return DocumentGridLoadingWidget.sliver();
+      return const DocumentGridLoadingWidget.sliver();
     }
     return SliverGrid.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -161,6 +213,8 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
         return _buildGridView();
       case ViewType.list:
         return _buildListView();
+      case ViewType.detailed:
+        return _buildFullView();
     }
   }
 
@@ -170,6 +224,7 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     }
 
     return ListView.builder(
+      padding: EdgeInsets.zero,
       controller: scrollController,
       primary: false,
       itemCount: documents.length,
@@ -194,11 +249,44 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     );
   }
 
+  Widget _buildFullView() {
+    if (showLoadingPlaceholder) {
+      return DocumentsListLoadingWidget();
+    }
+
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      physics: const PageScrollPhysics(),
+      controller: scrollController,
+      primary: false,
+      itemCount: documents.length,
+      itemBuilder: (context, index) {
+        final document = documents.elementAt(index);
+        return LabelRepositoriesProvider(
+          child: DocumentDetailedItem(
+            isLabelClickable: isLabelClickable,
+            document: document,
+            onTap: onTap,
+            isSelected: selectedDocumentIds.contains(document.id),
+            onSelected: onSelected,
+            isSelectionActive: selectedDocumentIds.isNotEmpty,
+            onTagSelected: onTagSelected,
+            onCorrespondentSelected: onCorrespondentSelected,
+            onDocumentTypeSelected: onDocumentTypeSelected,
+            onStoragePathSelected: onStoragePathSelected,
+            enableHeroAnimation: enableHeroAnimation,
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildGridView() {
     if (showLoadingPlaceholder) {
       return DocumentGridLoadingWidget();
     }
     return GridView.builder(
+      padding: EdgeInsets.zero,
       controller: scrollController,
       primary: false,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

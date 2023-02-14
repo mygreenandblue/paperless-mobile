@@ -28,10 +28,12 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
   }
 
   bool _shouldRetryOnHttpException(DioError err) {
-    return err.type == DioErrorType.other &&
-        ((err.error is HttpException &&
-            err.message.contains(
-                'Connection closed before full header was received')));
+    return err.type == DioErrorType.unknown &&
+        (err.error is HttpException &&
+            (err.message?.contains(
+                  'Connection closed before full header was received',
+                ) ??
+                false));
   }
 }
 

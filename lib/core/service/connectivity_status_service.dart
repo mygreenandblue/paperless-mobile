@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:paperless_mobile/core/global/os_error_codes.dart';
 import 'package:paperless_mobile/core/interceptor/server_reachability_error_interceptor.dart';
@@ -71,8 +69,8 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
       SessionManager manager =
           SessionManager([ServerReachabilityErrorInterceptor()])
             ..updateSettings(clientCertificate: clientCertificate)
-            ..client.options.connectTimeout = 5000
-            ..client.options.receiveTimeout = 5000;
+            ..client.options.connectTimeout = const Duration(seconds: 5)
+            ..client.options.receiveTimeout = const Duration(seconds: 5);
 
       final response = await manager.client.get('$serverAddress/api/');
       if (response.statusCode == 200) {
@@ -80,7 +78,7 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
       }
       return ReachabilityStatus.notReachable;
     } on DioError catch (error) {
-      if (error.type == DioErrorType.other &&
+      if (error.type == DioErrorType.unknown &&
           error.error is ReachabilityStatus) {
         return error.error as ReachabilityStatus;
       }

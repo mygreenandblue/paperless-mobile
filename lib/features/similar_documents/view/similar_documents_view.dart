@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
@@ -17,7 +18,7 @@ class SimilarDocumentsView extends StatefulWidget {
 }
 
 class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
-    with DocumentPagingViewMixin {
+    with DocumentPagingViewMixin<SimilarDocumentsView, SimilarDocumentsCubit> {
   @override
   final pagingScrollController = ScrollController();
 
@@ -33,44 +34,50 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
-      builder: (context, state) {
-        if (state.hasLoaded && !state.isLoading && state.documents.isEmpty) {
-          return DocumentsEmptyState(
-            state: state,
-            onReset: () => context.read<SimilarDocumentsCubit>().updateFilter(
-                  filter: DocumentFilter.initial.copyWith(
-                    moreLike: () =>
-                        context.read<SimilarDocumentsCubit>().documentId,
-                  ),
-                ),
-          );
-        }
-
-        return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-          builder: (context, connectivity) {
-            return CustomScrollView(
-              controller: pagingScrollController,
-              slivers: [
-                SliverAdaptiveDocumentsView(
-                  documents: state.documents,
-                  hasInternetConnection: connectivity.isConnected,
-                  isLabelClickable: false,
-                  isLoading: state.isLoading,
-                  hasLoaded: state.hasLoaded,
-                  enableHeroAnimation: false,
-                  onTap: (document) {
-                    Navigator.pushNamed(
-                      context,
-                      DocumentDetailsRoute.routeName,
-                      arguments: DocumentDetailsRouteArguments(
-                        document: document,
-                        isLabelClickable: false,
+    return BlocConsumer<ConnectivityCubit, ConnectivityState>(
+      listenWhen: (previous, current) =>
+          !previous.isConnected && current.isConnected,
+      listener: (context, state) =>
+          context.read<SimilarDocumentsCubit>().initialize(),
+      builder: (context, connectivity) {
+        return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
+          builder: (context, state) {
+            if (!connectivity.isConnected && !state.hasLoaded) {
+              return const OfflineWidget();
+            }
+            if (state.hasLoaded &&
+                !state.isLoading &&
+                state.documents.isEmpty) {
+              return DocumentsEmptyState(
+                state: state,
+                onReset: () => context
+                    .read<SimilarDocumentsCubit>()
+                    .updateFilter(
+                      filter: DocumentFilter.initial.copyWith(
+                        moreLike: () =>
+                            context.read<SimilarDocumentsCubit>().documentId,
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ),
+              );
+            }
+            return DefaultAdaptiveDocumentsView(
+              scrollController: pagingScrollController,
+              documents: state.documents,
+              hasInternetConnection: connectivity.isConnected,
+              isLabelClickable: false,
+              isLoading: state.isLoading,
+              hasLoaded: state.hasLoaded,
+              enableHeroAnimation: false,
+              onTap: (document) {
+                Navigator.pushNamed(
+                  context,
+                  DocumentDetailsRoute.routeName,
+                  arguments: DocumentDetailsRouteArguments(
+                    document: document,
+                    isLabelClickable: false,
+                  ),
+                );
+              },
             );
           },
         );

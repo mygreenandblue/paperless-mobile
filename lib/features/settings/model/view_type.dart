@@ -1,8 +1,9 @@
 enum ViewType {
   grid,
-  list;
+  list,
+  detailed;
 
   ViewType toggle() {
-    return this == grid ? list : grid;
+    return ViewType.values[(index + 1) % ViewType.values.length];
   }
 }

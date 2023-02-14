@@ -25,18 +25,17 @@ class DocumentMetaDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-      builder: (context, state) {
-        if (!state.isConnected) {
-          return const Center(
-            child: OfflineWidget(),
-          );
-        }
+      builder: (context, connectivity) {
         return FutureBuilder<DocumentMetaData>(
           future: metaData,
           builder: (context, snapshot) {
+            if (!connectivity.isConnected && !snapshot.hasData) {
+              return OfflineWidget();
+            }
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
+
             final meta = snapshot.data!;
             return ListView(
               padding: const EdgeInsets.symmetric(
@@ -55,7 +54,9 @@ class DocumentMetaDataWidget extends StatelessWidget {
                           label: Text(S
                               .of(context)
                               .documentDetailsPageAssignAsnButtonLabel),
-                          onPressed: () => _assignAsn(context),
+                          onPressed: connectivity.isConnected
+                              ? () => _assignAsn(context)
+                              : null,
                         ),
                 ).paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(DateFormat().format(document.modified),

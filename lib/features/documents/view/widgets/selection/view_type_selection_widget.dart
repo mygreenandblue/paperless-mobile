@@ -14,13 +14,65 @@ class ViewTypeSelectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final next = viewType.toggle();
-    final icon = next == ViewType.grid ? Icons.grid_view_rounded : Icons.list;
-    return IconButton(
+    late final IconData icon;
+    switch (viewType) {
+      case ViewType.grid:
+        icon = Icons.grid_view_rounded;
+        break;
+      case ViewType.list:
+        icon = Icons.list;
+        break;
+      case ViewType.detailed:
+        icon = Icons.article_outlined;
+        break;
+    }
+    return PopupMenuButton<ViewType>(
+      initialValue: viewType,
       icon: Icon(icon),
-      onPressed: () {
+      itemBuilder: (context) => [
+        _buildViewTypeOption(
+          context,
+          type: ViewType.list,
+          label: 'List', //TODO: INTL
+          icon: Icons.list,
+        ),
+        _buildViewTypeOption(
+          context,
+          type: ViewType.grid,
+          label: 'Grid', //TODO: INTL
+          icon: Icons.grid_view_rounded,
+        ),
+        _buildViewTypeOption(
+          context,
+          type: ViewType.detailed,
+          label: 'Detailed', //TODO: INTL
+          icon: Icons.article_outlined,
+        ),
+      ],
+      onSelected: (next) {
         onChanged(next);
       },
+    );
+  }
+
+  PopupMenuItem<ViewType> _buildViewTypeOption(
+    BuildContext context, {
+    required ViewType type,
+    required String label,
+    required IconData icon,
+  }) {
+    final selected = type == viewType;
+    return PopupMenuItem(
+      value: type,
+      child: ListTile(
+        selected: selected,
+        trailing: selected ? const Icon(Icons.done) : null,
+        title: Text(label),
+        iconColor: Theme.of(context).colorScheme.onSurface,
+        textColor: Theme.of(context).colorScheme.onSurface,
+        leading: Icon(icon),
+        contentPadding: EdgeInsets.zero,
+      ),
     );
   }
 }

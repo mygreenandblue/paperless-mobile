@@ -35,10 +35,7 @@ class AccountSettingsDialog extends StatelessWidget {
             children: [
               ExpansionTile(
                 leading: CircleAvatar(
-                  child: Text(state.information?.username
-                          ?.toUpperCase()
-                          .substring(0, 1) ??
-                      ''),
+                  child: Text(state.information?.userInitials ?? ''),
                 ),
                 title: Text(state.information?.username ?? ''),
                 subtitle: Text(state.information?.host ?? ''),

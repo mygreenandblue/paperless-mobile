@@ -16,7 +16,7 @@ class LinkedDocumentsPage extends StatefulWidget {
 }
 
 class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
-    with DocumentPagingViewMixin {
+    with DocumentPagingViewMixin<LinkedDocumentsPage, LinkedDocumentsCubit> {
   @override
   final pagingScrollController = ScrollController();
 

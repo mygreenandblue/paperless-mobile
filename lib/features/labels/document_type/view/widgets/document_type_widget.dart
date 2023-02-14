@@ -31,6 +31,8 @@ class DocumentTypeWidget extends StatelessWidget {
                 state.labels[documentTypeId]?.toString() ?? "-",
                 style: (textStyle ?? Theme.of(context).textTheme.bodyMedium)
                     ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               );
             },
           ),

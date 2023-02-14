@@ -22,7 +22,7 @@ class DioHttpErrorInterceptor extends Interceptor {
           DioError(
             error: const PaperlessServerException(ErrorCode.deviceOffline),
             requestOptions: err.requestOptions,
-            type: DioErrorType.connectTimeout,
+            type: DioErrorType.connectionTimeout,
           ),
         );
       }
@@ -52,7 +52,7 @@ class DioHttpErrorInterceptor extends Interceptor {
       DioError(
         error: errorMessages,
         requestOptions: err.requestOptions,
-        type: DioErrorType.response,
+        type: DioErrorType.badResponse,
       ),
     );
   }
@@ -66,7 +66,7 @@ class DioHttpErrorInterceptor extends Interceptor {
       handler.reject(
         DioError(
           requestOptions: err.requestOptions,
-          type: DioErrorType.response,
+          type: DioErrorType.badResponse,
           error: const PaperlessServerException(
               ErrorCode.missingClientCertificate),
         ),

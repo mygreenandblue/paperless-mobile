@@ -24,7 +24,7 @@ class PaperlessAuthenticationApiImpl implements PaperlessAuthenticationApi {
     } on DioError catch (error) {
       if (error.error is PaperlessServerException ||
           error.error is Map<String, String>) {
-        throw error.error;
+        throw error.error as Map<String, String>;
       } else {
         throw PaperlessServerException(
           ErrorCode.authenticationFailed,

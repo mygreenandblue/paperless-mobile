@@ -19,7 +19,7 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
         );
       }
     }
-    if (err.type == DioErrorType.connectTimeout) {
+    if (err.type == DioErrorType.connectionTimeout) {
       return _rejectWithStatus(
         ReachabilityStatus.connectionTimeout,
         err,
@@ -55,6 +55,6 @@ void _rejectWithStatus(
     error: reachabilityStatus,
     requestOptions: err.requestOptions,
     response: err.response,
-    type: DioErrorType.other,
+    type: DioErrorType.unknown,
   ));
 }

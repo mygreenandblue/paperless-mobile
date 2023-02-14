@@ -49,6 +49,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _loadMetaData();
+  }
+
+  void _loadMetaData() {
     _metaData = context
         .read<PaperlessDocumentsApi>()
         .getMetaData(context.read<DocumentDetailsCubit>().state.document);
@@ -64,108 +68,117 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       },
       child: DefaultTabController(
         length: 4,
-        child: Scaffold(
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
-          bottomNavigationBar: _buildBottomAppBar(),
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverAppBar(
-                leading: const BackButton(),
-                floating: true,
-                pinned: true,
-                expandedHeight: 200.0,
-                flexibleSpace:
-                    BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                  builder: (context, state) => DocumentPreview(
-                    id: state.document.id,
-                    fit: BoxFit.cover,
+        child: BlocListener<ConnectivityCubit, ConnectivityState>(
+          listenWhen: (previous, current) =>
+              !previous.isConnected && current.isConnected,
+          listener: (context, state) {
+            _loadMetaData();
+            setState(() {});
+          },
+          child: Scaffold(
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.endDocked,
+            floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
+            bottomNavigationBar: _buildBottomAppBar(),
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverAppBar(
+                  leading: const BackButton(),
+                  floating: true,
+                  pinned: true,
+                  expandedHeight: 200.0,
+                  flexibleSpace:
+                      BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+                    builder: (context, state) => DocumentPreview(
+                      document: state.document,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  bottom: ColoredTabBar(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                    tabBar: TabBar(
+                      isScrollable: true,
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            S.of(context).documentDetailsPageTabOverviewLabel,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            S.of(context).documentDetailsPageTabContentLabel,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            S.of(context).documentDetailsPageTabMetaDataLabel,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            S
+                                .of(context)
+                                .documentDetailsPageTabSimilarDocumentsLabel,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                bottom: ColoredTabBar(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.primaryContainer,
-                  tabBar: TabBar(
-                    isScrollable: true,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          S.of(context).documentDetailsPageTabOverviewLabel,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+              ],
+              body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+                builder: (context, state) {
+                  return BlocProvider(
+                    create: (context) => SimilarDocumentsCubit(
+                      context.read(),
+                      context.read(),
+                      documentId: state.document.id,
+                    ),
+                    child: TabBarView(
+                      children: [
+                        DocumentOverviewWidget(
+                          document: state.document,
+                          itemSpacing: _itemPadding,
+                          queryString: widget.titleAndContentQueryString,
                         ),
-                      ),
-                      Tab(
-                        child: Text(
-                          S.of(context).documentDetailsPageTabContentLabel,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        DocumentContentWidget(
+                          isFullContentLoaded: state.isFullContentLoaded,
+                          document: state.document,
+                          fullContent: state.fullContent,
+                          queryString: widget.titleAndContentQueryString,
                         ),
-                      ),
-                      Tab(
-                        child: Text(
-                          S.of(context).documentDetailsPageTabMetaDataLabel,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        DocumentMetaDataWidget(
+                          document: state.document,
+                          itemSpacing: _itemPadding,
+                          metaData: _metaData,
                         ),
-                      ),
-                      Tab(
-                        child: Text(
-                          S
-                              .of(context)
-                              .documentDetailsPageTabSimilarDocumentsLabel,
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                        const SimilarDocumentsView(),
+                      ],
+                    ),
+                  );
+                },
               ),
-            ],
-            body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-              builder: (context, state) {
-                return BlocProvider(
-                  create: (context) => SimilarDocumentsCubit(
-                    context.read(),
-                    context.read(),
-                    documentId: state.document.id,
-                  ),
-                  child: TabBarView(
-                    children: [
-                      DocumentOverviewWidget(
-                        document: state.document,
-                        itemSpacing: _itemPadding,
-                        queryString: widget.titleAndContentQueryString,
-                      ),
-                      DocumentContentWidget(
-                        isFullContentLoaded: state.isFullContentLoaded,
-                        document: state.document,
-                        fullContent: state.fullContent,
-                        queryString: widget.titleAndContentQueryString,
-                      ),
-                      DocumentMetaDataWidget(
-                        document: state.document,
-                        itemSpacing: _itemPadding,
-                        metaData: _metaData,
-                      ),
-                      const SimilarDocumentsView(),
-                    ],
-                  ),
-                );
-              },
             ),
           ),
         ),
