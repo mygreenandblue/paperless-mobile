@@ -58,13 +58,13 @@ class SettingsPage extends StatelessWidget {
                 Text(S.of(context).settingsPageSecuritySettingsDescriptionText),
             onTap: () => _goto(const SecuritySettingsPage(), context),
           ),
-          ListTile(
-            // leading: const Icon(Icons.storage_outlined),
-            title: Text(S.of(context).settingsPageStorageSettingsLabel),
-            subtitle:
-                Text(S.of(context).settingsPageStorageSettingsDescriptionText),
-            onTap: () => _goto(const StorageSettingsPage(), context),
-          ),
+          // ListTile(
+          //   // leading: const Icon(Icons.storage_outlined),
+          //   title: Text(S.of(context).settingsPageStorageSettingsLabel),
+          //   subtitle:
+          //       Text(S.of(context).settingsPageStorageSettingsDescriptionText),
+          //   onTap: () => _goto(const StorageSettingsPage(), context),
+          // ),
         ],
       ),
     );
