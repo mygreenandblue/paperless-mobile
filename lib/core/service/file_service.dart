@@ -50,7 +50,10 @@ class FileService {
       ))!
           .first;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/documents');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }
@@ -58,11 +61,19 @@ class FileService {
 
   static Future<Directory> get downloadsDirectory async {
     if (Platform.isAndroid) {
-      return (await getExternalStorageDirectories(
-              type: StorageDirectory.downloads))!
-          .first;
+      Directory directory = Directory('/storage/emulated/0/Download');
+      if (!directory.existsSync()) {
+        final downloadsDir = await getExternalStorageDirectories(
+          type: StorageDirectory.downloads,
+        );
+        directory = downloadsDir!.first;
+      }
+      return directory;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/downloads');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }
@@ -70,10 +81,15 @@ class FileService {
 
   static Future<Directory?> get scanDirectory async {
     if (Platform.isAndroid) {
-      return (await getExternalStorageDirectories(type: StorageDirectory.dcim))!
-          .first;
+      final scanDir = await getExternalStorageDirectories(
+        type: StorageDirectory.dcim,
+      );
+      return scanDir!.first;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/scans');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }

@@ -66,6 +66,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-    <string>Allow this app access to your camera to scan documents.</string>
+	<string>Allow this app access to your camera to scan documents.</string>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
 </dict>
 </plist>
