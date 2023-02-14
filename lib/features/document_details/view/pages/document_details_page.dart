@@ -244,6 +244,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     child: DocumentDownloadButton(
                       document: state.document,
                       enabled: isConnected,
+                      metaData: _metaData,
                     ),
                   ),
                   IconButton(

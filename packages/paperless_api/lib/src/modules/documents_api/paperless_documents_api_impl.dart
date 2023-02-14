@@ -192,10 +192,14 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   }
 
   @override
-  Future<Uint8List> download(DocumentModel document) async {
+  Future<Uint8List> download(
+    DocumentModel document, {
+    bool original = false,
+  }) async {
     try {
       final response = await client.get(
         "/api/documents/${document.id}/download/",
+        queryParameters: original ? {'original': true} : {},
         options: Options(responseType: ResponseType.bytes),
       );
       return response.data;
