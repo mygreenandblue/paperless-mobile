@@ -50,7 +50,10 @@ class FileService {
       ))!
           .first;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/documents');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }
@@ -67,7 +70,10 @@ class FileService {
       }
       return directory;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/downloads');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }
@@ -80,7 +86,10 @@ class FileService {
       );
       return scanDir!.first;
     } else if (Platform.isIOS) {
-      return getApplicationDocumentsDirectory();
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/scans');
+      dir.createSync();
+      return dir;
     } else {
       throw UnsupportedError("Platform not supported.");
     }

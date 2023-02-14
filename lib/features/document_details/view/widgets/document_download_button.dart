@@ -91,6 +91,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       final createdFile = File(filePath);
       createdFile.createSync(recursive: true);
       createdFile.writeAsBytesSync(bytes);
+      debugPrint("Downloaded file to $filePath");
       showSnackBar(context, S.of(context).documentDownloadSuccessMessage);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
