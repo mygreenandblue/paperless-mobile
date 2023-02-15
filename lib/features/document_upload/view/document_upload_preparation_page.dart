@@ -162,7 +162,14 @@ class _DocumentUploadPreparationPageState
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
                     labelText:
                         S.of(context).documentCreatedPropertyLabel + " *",
-                  ),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        _formKey
+                            .currentState!.fields[DocumentModel.createdKey]
+                            ?.didChange(null);
+                      },
+                    )),
                 ),
                 LabelFormField<DocumentType>(
                   notAssignedSelectable: false,
