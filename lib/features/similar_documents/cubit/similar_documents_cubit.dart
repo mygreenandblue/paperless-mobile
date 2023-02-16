@@ -31,9 +31,11 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
   Future<void> initialize() async {
     if (!state.hasLoaded) {
       await updateFilter(
-        filter: state.filter.copyWith(moreLike: () => documentId),
+        filter: state.filter.copyWith(
+          moreLike: () => documentId,
+          sortField: SortField.score,
+        ),
       );
-      emit(state.copyWith(hasLoaded: true));
     }
   }
 }
