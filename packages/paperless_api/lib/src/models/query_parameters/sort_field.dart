@@ -8,7 +8,8 @@ enum SortField {
   documentType("document_type__name"),
   created("created"),
   added("added"),
-  modified("modified");
+  modified("modified"),
+  score("score");
 
   final String queryString;
 
