@@ -74,7 +74,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
           visible: MediaQuery.of(context).viewInsets.bottom == 0,
           child: FloatingActionButton.extended(
             icon: const Icon(Icons.done),
-            label: Text(S.of(context).documentFilterApplyFilterLabel),
+            label: Text(S.of(context).apply),
             onPressed: _onApplyFilter,
           ),
         ),
@@ -85,7 +85,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
               TextButton.icon(
                 onPressed: _resetFilter,
                 icon: const Icon(Icons.refresh),
-                label: Text(S.of(context).documentFilterResetLabel),
+                label: Text(S.of(context).reset),
               ),
             ],
           ),
@@ -133,7 +133,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: _heightAnimationValue * 48),
-                    child: Text(S.of(context).documentFilterTitle),
+                    child: Text(S.of(context).filterDocuments),
                   ),
                 ],
               ),

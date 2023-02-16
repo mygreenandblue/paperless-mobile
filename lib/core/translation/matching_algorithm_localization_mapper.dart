@@ -8,17 +8,17 @@ String translateMatchingAlgorithmDescription(
 ) {
   switch (algorithm) {
     case MatchingAlgorithm.anyWord:
-      return S.of(context).matchingAlgorithmAnyDescription;
+      return S.of(context).documentContainsAnyOfTheseWords;
     case MatchingAlgorithm.allWords:
-      return S.of(context).matchingAlgorithmAllDescription;
+      return S.of(context).documentContainsAllOfTheseWords;
     case MatchingAlgorithm.exactMatch:
-      return S.of(context).matchingAlgorithmExactDescription;
+      return S.of(context).documentContainsThisString;
     case MatchingAlgorithm.regex:
-      return S.of(context).matchingAlgorithmRegexDescription;
+      return S.of(context).documentMatchesThisRegularExpression;
     case MatchingAlgorithm.fuzzy:
-      return S.of(context).matchingAlgorithmFuzzyDescription;
+      return S.of(context).documentContainsAWordSimilarToThisWord;
     case MatchingAlgorithm.auto:
-      return S.of(context).matchingAlgorithmAutoDescription;
+      return S.of(context).learnMatchingAutomatically;
   }
 }
 
@@ -28,16 +28,16 @@ String translateMatchingAlgorithmName(
 ) {
   switch (algorithm) {
     case MatchingAlgorithm.anyWord:
-      return S.of(context).matchingAlgorithmAnyName;
+      return S.of(context).any;
     case MatchingAlgorithm.allWords:
-      return S.of(context).matchingAlgorithmAllName;
+      return S.of(context).all;
     case MatchingAlgorithm.exactMatch:
-      return S.of(context).matchingAlgorithmExactName;
+      return S.of(context).exact;
     case MatchingAlgorithm.regex:
-      return S.of(context).matchingAlgorithmRegexName;
+      return S.of(context).regularExpression;
     case MatchingAlgorithm.fuzzy:
-      return S.of(context).matchingAlgorithmFuzzyName;
+      return S.of(context).fuzzy;
     case MatchingAlgorithm.auto:
-      return S.of(context).matchingAlgorithmAutoName;
+      return S.of(context).auto;
   }
 }

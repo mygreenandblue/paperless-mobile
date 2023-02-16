@@ -99,7 +99,7 @@ class _InboxItemState extends State<InboxItem> {
         child: ActionChip(
           avatar: const Icon(Icons.delete_outline),
           shape: chipShape,
-          label: Text(S.of(context).inboxActionDeleteDocument),
+          label: Text(S.of(context).deleteDocument),
           onPressed: () async {
             final shouldDelete = await showDialog<bool>(
                   context: context,
@@ -147,7 +147,7 @@ class _InboxItemState extends State<InboxItem> {
                 maxWidth: 50,
               ),
               child: Text(
-                S.of(context).inboxPageQuickActionsLabel,
+                S.of(context).quickAction,
                 textAlign: TextAlign.center,
                 maxLines: 3,
                 style: Theme.of(context).textTheme.labelSmall,
@@ -190,9 +190,9 @@ class _InboxItemState extends State<InboxItem> {
         shape: chipShape,
         label: hasAsn
             ? Text(
-                '${S.of(context).documentArchiveSerialNumberPropertyShortLabel} #${widget.document.archiveSerialNumber}',
+                '${S.of(context).asn} #${widget.document.archiveSerialNumber}',
               )
-            : Text(S.of(context).inboxActionAssignAsn),
+            : Text(S.of(context).assignASN),
         onPressed: !hasAsn
             ? () {
                 setState(() {
@@ -294,7 +294,7 @@ class _InboxItemState extends State<InboxItem> {
   //                       context,
   //                       S
   //                           .of(context)
-  //                           .inboxPageSuggestionSuccessfullyAppliedMessage));
+  //                           .suggestionSuccessfullyApplied));
   //             },
   //           ),
   //         )
@@ -316,7 +316,7 @@ class _InboxItemState extends State<InboxItem> {
   //                     context,
   //                     S
   //                         .of(context)
-  //                         .inboxPageSuggestionSuccessfullyAppliedMessage)),
+  //                         .suggestionSuccessfullyApplied)),
   //           ),
   //         )
   //         .toList(),
@@ -340,7 +340,7 @@ class _InboxItemState extends State<InboxItem> {
   //                       context,
   //                       S
   //                           .of(context)
-  //                           .inboxPageSuggestionSuccessfullyAppliedMessage));
+  //                           .suggestionSuccessfullyApplied));
   //             },
   //           ),
   //         )
@@ -352,7 +352,7 @@ class _InboxItemState extends State<InboxItem> {
   //             avatar: const Icon(Icons.calendar_today_outlined),
   //             shape: chipShape,
   //             label: Text(
-  //               "${S.of(context).documentCreatedPropertyLabel}: ${DateFormat.yMd().format(e)}",
+  //               "${S.of(context).createdAt}: ${DateFormat.yMd().format(e)}",
   //             ),
   //             onPressed: () => context
   //                 .read<InboxCubit>()
@@ -364,7 +364,7 @@ class _InboxItemState extends State<InboxItem> {
   //                     context,
   //                     S
   //                         .of(context)
-  //                         .inboxPageSuggestionSuccessfullyAppliedMessage)),
+  //                         .suggestionSuccessfullyApplied)),
   //           ),
   //         )
   //         .toList(),

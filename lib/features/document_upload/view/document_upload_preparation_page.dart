@@ -62,7 +62,7 @@ class _DocumentUploadPreparationPageState
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(S.of(context).documentsUploadPageTitle),
+        title: Text(S.of(context).prepareDocument),
         bottom: _isUploadLoading
             ? const PreferredSize(
                 child: LinearProgressIndicator(),
@@ -73,7 +73,7 @@ class _DocumentUploadPreparationPageState
         visible: MediaQuery.of(context).viewInsets.bottom == 0,
         child: FloatingActionButton.extended(
           onPressed: _onSubmit,
-          label: Text(S.of(context).genericActionUploadLabel),
+          label: Text(S.of(context).upload),
           icon: const Icon(Icons.upload),
         ),
       ),
@@ -91,7 +91,7 @@ class _DocumentUploadPreparationPageState
                       widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
                   validator: FormBuilderValidators.required(),
                   decoration: InputDecoration(
-                    labelText: S.of(context).documentTitlePropertyLabel,
+                    labelText: S.of(context).title,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
@@ -121,7 +121,7 @@ class _DocumentUploadPreparationPageState
                   enabled: !_syncTitleAndFilename,
                   name: fkFileName,
                   decoration: InputDecoration(
-                    labelText: S.of(context).documentUploadFileNameLabel,
+                    labelText: S.of(context).fileName,
                     suffixText: widget.fileExtension,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
@@ -151,9 +151,7 @@ class _DocumentUploadPreparationPageState
                     }
                   },
                   title: Text(
-                    S
-                        .of(context)
-                        .documentUploadPageSynchronizeTitleAndFilenameLabel,
+                    S.of(context).synchronizeTitleAndFilename,
                   ),
                 ),
                 // Created at
@@ -168,8 +166,7 @@ class _DocumentUploadPreparationPageState
                   },
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
-                    labelText:
-                        S.of(context).documentCreatedPropertyLabel + " *",
+                    labelText: S.of(context).createdAt + " *",
                     suffixIcon: _showDatePickerDeleteIcon
                         ? IconButton(
                             icon: const Icon(Icons.close),
@@ -192,8 +189,7 @@ class _DocumentUploadPreparationPageState
                         context.read<LabelRepository<Correspondent>>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
-                  textFieldLabel:
-                      S.of(context).documentCorrespondentPropertyLabel + " *",
+                  textFieldLabel: S.of(context).correspondent + " *",
                   name: DocumentModel.correspondentKey,
                   labelOptions: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
@@ -208,8 +204,7 @@ class _DocumentUploadPreparationPageState
                         context.read<LabelRepository<DocumentType>>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
-                  textFieldLabel:
-                      S.of(context).documentDocumentTypePropertyLabel + " *",
+                  textFieldLabel: S.of(context).documentType + " *",
                   name: DocumentModel.documentTypeKey,
                   labelOptions: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
@@ -223,10 +218,7 @@ class _DocumentUploadPreparationPageState
                   //Label: "Tags" + " *",
                 ),
                 Text(
-                  "* " +
-                      S
-                          .of(context)
-                          .uploadPageAutomaticallInferredFieldsHintText,
+                  "* " + S.of(context).uploadInferValuesHint,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 SizedBox(height: 300),
@@ -265,7 +257,8 @@ class _DocumentUploadPreparationPageState
           tags: tags.ids,
           createdAt: createdAt,
         );
-        showSnackBar(context, S.of(context).documentUploadSuccessText);
+        showSnackBar(
+            context, S.of(context).documentSuccessfullyUploadedProcessing);
         Navigator.pop(context, taskId);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);

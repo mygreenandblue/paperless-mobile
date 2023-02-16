@@ -63,20 +63,19 @@ class TextQueryFormField extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           child: ListTile(
-            title: Text(
-                S.of(context).documentFilterQueryOptionsTitleAndContentLabel),
+            title: Text(S.of(context).titleAndContent),
           ),
           value: QueryType.titleAndContent,
         ),
         PopupMenuItem(
           child: ListTile(
-            title: Text(S.of(context).documentFilterQueryOptionsTitleLabel),
+            title: Text(S.of(context).title),
           ),
           value: QueryType.title,
         ),
         PopupMenuItem(
           child: ListTile(
-            title: Text(S.of(context).documentFilterQueryOptionsExtendedLabel),
+            title: Text(S.of(context).extended),
           ),
           value: QueryType.extended,
         ),
@@ -90,11 +89,11 @@ class TextQueryFormField extends StatelessWidget {
   String _buildLabelText(BuildContext context, QueryType queryType) {
     switch (queryType) {
       case QueryType.title:
-        return S.of(context).documentFilterQueryOptionsTitleLabel;
+        return S.of(context).title;
       case QueryType.titleAndContent:
-        return S.of(context).documentFilterQueryOptionsTitleAndContentLabel;
+        return S.of(context).titleAndContent;
       case QueryType.extended:
-        return S.of(context).documentFilterQueryOptionsExtendedLabel;
+        return S.of(context).extended;
       default:
         return '';
     }

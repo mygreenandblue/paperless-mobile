@@ -23,11 +23,11 @@ class InboxEmptyWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(S.of(context).inboxPageNoNewDocumentsText),
+            Text(S.of(context).youDoNotHaveUnseenDocuments),
             TextButton(
               onPressed: () =>
                   _emptyStateRefreshIndicatorKey.currentState?.show(),
-              child: Text(S.of(context).inboxPageNoNewDocumentsRefreshLabel),
+              child: Text(S.of(context).refresh),
             ),
           ],
         ),

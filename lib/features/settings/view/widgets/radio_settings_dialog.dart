@@ -41,11 +41,11 @@ class _RadioSettingsDialogState<T> extends State<RadioSettingsDialog<T>> {
         widget.confirmButton ??
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(S.of(context).genericActionCancelLabel)),
+                child: Text(S.of(context).cancel)),
         widget.confirmButton ??
             TextButton(
                 onPressed: () => Navigator.pop(context, _groupValue),
-                child: Text(S.of(context).genericActionOkLabel)),
+                child: Text(S.of(context).ok)),
       ],
       title: widget.titleText != null ? Text(widget.titleText!) : null,
       content: Column(

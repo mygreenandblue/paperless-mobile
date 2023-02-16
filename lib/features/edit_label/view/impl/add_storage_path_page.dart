@@ -19,7 +19,7 @@ class AddStoragePathPage extends StatelessWidget {
         context.read<LabelRepository<StoragePath>>(),
       ),
       child: AddLabelPage<StoragePath>(
-        pageTitle: Text(S.of(context).addStoragePathPageTitle),
+        pageTitle: Text(S.of(context).addStoragePath),
         fromJsonT: StoragePath.fromJson,
         initialName: initalValue,
         additionalFields: const [

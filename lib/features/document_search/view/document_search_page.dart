@@ -60,7 +60,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hintStyle: theme.textTheme.bodyLarge?.apply(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            hintText: S.of(context).documentSearchSearchDocuments,
+            hintText: S.of(context).searchDocuments,
             border: InputBorder.none,
           ),
           controller: _queryController,
@@ -181,7 +181,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
 
   Widget _buildResultsView(DocumentSearchState state) {
     final header = Text(
-      S.of(context).documentSearchResults,
+      S.of(context).results,
       style: Theme.of(context).textTheme.labelSmall,
     ).padded();
     return CustomScrollView(
@@ -190,7 +190,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
         if (state.hasLoaded && !state.isLoading && state.documents.isEmpty)
           SliverToBoxAdapter(
             child: Center(
-              child: Text(S.of(context).documentSearchNoMatchesFound),
+              child: Text(S.of(context).noMatchesFound),
             ),
           )
         else

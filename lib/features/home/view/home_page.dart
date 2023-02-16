@@ -153,7 +153,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
     final filename = extractFilenameFromPath(mediaFile.path);
     final extension = p.extension(mediaFile.path);
-    try {
       if (await File(mediaFile.path).exists()) {
         final bytes = File(mediaFile.path).readAsBytesSync();
         final success = await Navigator.push<bool>(
@@ -178,23 +177,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             false;
         if (success) {
           await Fluttertoast.showToast(
-            msg: S.of(context).documentUploadSuccessText,
+            msg: S.of(context).documentSuccessfullyUploadedProcessing,
           );
           SystemNavigator.pop();
         }
       } else {
         Fluttertoast.showToast(
-          msg: S.of(context).receiveSharedFilePermissionDeniedMessage,
+          msg: S.of(context).couldNotAccessReceivedFile,
           toastLength: Toast.LENGTH_LONG,
         );
       }
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: S.of(context).receiveSharedFilePermissionDeniedMessage,
-        toastLength: Toast.LENGTH_LONG,
-      );
     }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +198,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.description,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).bottomNavDocumentsPageLabel,
+        label: S.of(context).documents,
       ),
       RouteDescription(
         icon: const Icon(Icons.document_scanner_outlined),
@@ -213,7 +206,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.document_scanner,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).bottomNavScannerPageLabel,
+        label: S.of(context).scanner,
       ),
       RouteDescription(
         icon: const Icon(Icons.sell_outlined),
@@ -221,7 +214,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.sell,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).bottomNavLabelsPageLabel,
+        label: S.of(context).labels,
       ),
       RouteDescription(
           icon: const Icon(Icons.inbox_outlined),
@@ -229,7 +222,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             Icons.inbox,
             color: Theme.of(context).colorScheme.primary,
           ),
-          label: S.of(context).bottomNavInboxPageLabel,
+          label: S.of(context).inbox,
           badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
                 bloc: _inboxCubit,
                 builder: (context, state) {

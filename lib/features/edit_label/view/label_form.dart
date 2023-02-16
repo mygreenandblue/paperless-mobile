@@ -75,7 +75,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
             FormBuilderTextField(
               name: Label.nameKey,
               decoration: InputDecoration(
-                labelText: S.of(context).labelNamePropertyLabel,
+                labelText: S.of(context).name,
                 errorText: _errors[Label.nameKey],
               ),
               validator: FormBuilderValidators.required(),
@@ -88,7 +88,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                       MatchingAlgorithm.defaultValue)
                   .value,
               decoration: InputDecoration(
-                labelText: S.of(context).labelMatchingAlgorithmPropertyLabel,
+                labelText: S.of(context).matchingAlgorithm,
                 errorText: _errors[Label.matchingAlgorithmKey],
               ),
               onChanged: (val) {
@@ -112,7 +112,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               FormBuilderTextField(
                 name: Label.matchKey,
                 decoration: InputDecoration(
-                  labelText: S.of(context).labelMatchPropertyLabel,
+                  labelText: S.of(context).match,
                   errorText: _errors[Label.matchKey],
                 ),
                 initialValue: widget.initialValue?.match,
@@ -121,7 +121,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
             FormBuilderCheckbox(
               name: Label.isInsensitiveKey,
               initialValue: widget.initialValue?.isInsensitive ?? true,
-              title: Text(S.of(context).labelIsInsensivitePropertyLabel),
+              title: Text(S.of(context).caseIrrelevant),
             ),
             ...widget.additionalFields,
           ].padded(),

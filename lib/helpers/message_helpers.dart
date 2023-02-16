@@ -68,7 +68,7 @@ void showGenericError(
     context,
     error.toString(),
     action: SnackBarActionConfig(
-      label: S.of(context).errorReportLabel,
+      label: S.of(context).report,
       onPressed: () => GithubIssueService.createIssueFromError(
         context,
         stackTrace: stackTrace,

@@ -24,7 +24,7 @@ class AccountSettingsDialog extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(S.of(context).accountSettingsTitle),
+          Text(S.of(context).account),
           const CloseButton(),
         ],
       ),
@@ -49,7 +49,7 @@ class AccountSettingsDialog extends StatelessWidget {
               ListTile(
                 dense: true,
                 leading: const Icon(Icons.person_add_rounded),
-                title: Text(S.of(context).accountSettingsAddAnotherAccount),
+                title: Text(S.of(context).addAnotherAccount),
                 onTap: () {},
               ),
               const Divider(),
@@ -60,7 +60,7 @@ class AccountSettingsDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  S.of(context).appDrawerLogoutLabel,
+                  S.of(context).disconnect,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onError,
                   ),

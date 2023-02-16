@@ -112,7 +112,7 @@ class _ScannedImageItemState extends State<ScannedImageItem> {
         builder: (context) => Scaffold(
           appBar: AppBar(
             title: Text(
-                "${S.of(context).scannerPageImagePreviewTitle} ${widget.index + 1}/${widget.totalNumberOfFiles}"),
+                "${S.of(context).scan} ${widget.index + 1}/${widget.totalNumberOfFiles}"),
           ),
           body: PhotoView(imageProvider: FileImage(widget.file)),
         ),

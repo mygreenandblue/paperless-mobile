@@ -19,12 +19,12 @@ class VerifyIdentityPage extends StatelessWidget {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
-          title: Text(S.of(context).verifyIdentityPageTitle),
+          title: Text(S.of(context).verifyYourIdentity),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(S.of(context).verifyIdentityPageDescriptionText)
+            Text(S.of(context).useTheConfiguredBiometricFactorToAuthenticate)
                 .paddedSymmetrically(horizontal: 16),
             const Icon(
               Icons.fingerprint,
@@ -39,7 +39,7 @@ class VerifyIdentityPage extends StatelessWidget {
                 TextButton(
                   onPressed: () => _logout(context),
                   child: Text(
-                    S.of(context).verifyIdentityPageLogoutButtonLabel,
+                    S.of(context).disconnect,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -52,9 +52,7 @@ class VerifyIdentityPage extends StatelessWidget {
                           .read<ApplicationSettingsCubit>()
                           .state
                           .isLocalAuthenticationEnabled),
-                  child: Text(S
-                      .of(context)
-                      .verifyIdentityPageVerifyIdentityButtonLabel),
+                  child: Text(S.of(context).verifyIdentity),
                 ),
               ],
             ).padded(16),

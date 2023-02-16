@@ -21,7 +21,7 @@ class AddDocumentTypePage extends StatelessWidget {
         context.read<LabelRepository<DocumentType>>(),
       ),
       child: AddLabelPage<DocumentType>(
-        pageTitle: Text(S.of(context).addDocumentTypePageTitle),
+        pageTitle: Text(S.of(context).addDocumentType),
         fromJsonT: DocumentType.fromJson,
         initialName: initialName,
       ),

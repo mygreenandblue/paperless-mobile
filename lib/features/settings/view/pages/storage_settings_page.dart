@@ -9,7 +9,7 @@ class StorageSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).settingsPageStorageSettingsLabel),
+        title: Text(S.of(context).storage),
       ),
       body: ListView(
         children: const [

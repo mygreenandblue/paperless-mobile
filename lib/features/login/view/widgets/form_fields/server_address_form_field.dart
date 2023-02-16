@@ -44,18 +44,16 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: FormBuilderValidators.compose([
         FormBuilderValidators.required(
-          errorText:
-              S.of(context).loginPageServerUrlValidatorMessageRequiredText,
+          errorText: S.of(context).serverAddressMustNotBeEmpty,
         ),
         FormBuilderValidators.match(
           r"https?://.*",
-          errorText:
-              S.of(context).loginPageServerUrlValidatorMessageMissingSchemeText,
+          errorText: S.of(context).serverAddressMustIncludeAScheme,
         )
       ]),
       decoration: InputDecoration(
         hintText: "http://192.168.1.50:8000",
-        labelText: S.of(context).loginPageServerUrlFieldLabel,
+        labelText: S.of(context).serverAddress,
         suffixIcon: _canClear
             ? IconButton(
                 icon: const Icon(Icons.clear),

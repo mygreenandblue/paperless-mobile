@@ -37,22 +37,22 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
                     UserCredentials(username: username),
               ),
               validator: FormBuilderValidators.required(
-                errorText: S.of(context).loginPageUsernameValidatorMessageText,
+                errorText: S.of(context).usernameMustNotBeEmpty,
               ),
               autofillHints: const [AutofillHints.username],
               decoration: InputDecoration(
-                label: Text(S.of(context).loginPageUsernameLabel),
+                label: Text(S.of(context).username),
               ),
             ),
             ObscuredInputTextFormField(
               key: const ValueKey('login-password'),
-              label: S.of(context).loginPagePasswordFieldLabel,
+              label: S.of(context).password,
               onChanged: (password) => field.didChange(
                 field.value?.copyWith(password: password) ??
                     UserCredentials(password: password),
               ),
               validator: FormBuilderValidators.required(
-                errorText: S.of(context).loginPagePasswordValidatorMessageText,
+                errorText: S.of(context).passwordMustNotBeEmpty,
               ),
             ),
           ].map((child) => child.padded()).toList(),
@@ -73,11 +73,11 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
               FocusScope.of(context).requestFocus(_focusNodes[fkPassword]);
             },
             validator: FormBuilderValidators.required(
-              errorText: S.of(context).loginPageUsernameValidatorMessageText,
+              errorText: S.of(context).usernameMustNotBeEmpty,
             ),
             autofillHints: const [AutofillHints.username],
             decoration: InputDecoration(
-              labelText: S.of(context).loginPageUsernameLabel,
+              labelText: S.of(context).username,
             ),
           ).padded(),
           FormBuilderTextField(
@@ -88,11 +88,11 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
             },
             autofillHints: const [AutofillHints.password],
             validator: FormBuilderValidators.required(
-              errorText: S.of(context).loginPagePasswordValidatorMessageText,
+              errorText: S.of(context).passwordMustNotBeEmpty,
             ),
             obscureText: true,
             decoration: InputDecoration(
-              labelText: S.of(context).loginPagePasswordFieldLabel,
+              labelText: S.of(context).password,
             ),
           ).padded(),
         ],

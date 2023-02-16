@@ -32,7 +32,7 @@ class _DocumentViewState extends State<DocumentView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).documentPreviewPageTitle),
+        title: Text(S.of(context).preview),
       ),
       body: PdfView(
         builders: PdfViewBuilders<DefaultBuilderOptions>(

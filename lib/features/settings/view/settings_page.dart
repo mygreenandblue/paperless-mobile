@@ -5,7 +5,6 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_state.da
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/pages/application_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
-import 'package:paperless_mobile/features/settings/view/pages/storage_settings_page.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -15,24 +14,21 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).appDrawerSettingsLabel),
+        title: Text(S.of(context).settings),
       ),
       bottomNavigationBar: BlocBuilder<PaperlessServerInformationCubit,
           PaperlessServerInformationState>(
         builder: (context, state) {
           final info = state.information!;
-
           return ListTile(
             title: Text(
-              S.of(context).appDrawerHeaderLoggedInAsText +
-                  " " +
-                  (info.username ?? 'unknown') +
+              S.of(context).loggedInAs(info.username ?? 'unknown') +
                   "@${info.host}",
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),
             subtitle: Text(
-              S.of(context).serverInformationPaperlessVersionText +
+              S.of(context).paperlessServerVersion +
                   ' ' +
                   info.version.toString() +
                   ' (API v${info.apiVersion})',
@@ -46,23 +42,21 @@ class SettingsPage extends StatelessWidget {
         children: [
           ListTile(
             // leading: const Icon(Icons.style_outlined),
-            title: Text(S.of(context).settingsPageApplicationSettingsLabel),
-            subtitle: Text(
-                S.of(context).settingsPageApplicationSettingsDescriptionText),
+            title: Text(S.of(context).applicationSettings),
+            subtitle: Text(S.of(context).languageAndVisualAppearance),
             onTap: () => _goto(const ApplicationSettingsPage(), context),
           ),
           ListTile(
             // leading: const Icon(Icons.security_outlined),
-            title: Text(S.of(context).settingsPageSecuritySettingsLabel),
-            subtitle:
-                Text(S.of(context).settingsPageSecuritySettingsDescriptionText),
+            title: Text(S.of(context).security),
+            subtitle: Text(S.of(context).biometricAuthentication),
             onTap: () => _goto(const SecuritySettingsPage(), context),
           ),
           // ListTile(
           //   // leading: const Icon(Icons.storage_outlined),
-          //   title: Text(S.of(context).settingsPageStorageSettingsLabel),
+          //   title: Text(S.of(context).storage),
           //   subtitle:
-          //       Text(S.of(context).settingsPageStorageSettingsDescriptionText),
+          //       Text(S.of(context).mangeFilesAndStorageSpace),
           //   onTap: () => _goto(const StorageSettingsPage(), context),
           // ),
         ],

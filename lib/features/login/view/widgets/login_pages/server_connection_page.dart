@@ -32,7 +32,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight - 4,
-        title: Text(S.of(context).loginPageTitle),
+        title: Text(S.of(context).connectToPaperless),
         bottom: PreferredSize(
           child: _isCheckingConnection
               ? const LinearProgressIndicator()
@@ -61,11 +61,11 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextButton(
-              child: Text("Test connection"),
+              child: Text("Test connection"), //TODO: INTL
               onPressed: _updateReachability,
             ),
             FilledButton(
-              child: Text(S.of(context).loginPageContinueLabel),
+              child: Text(S.of(context).continueLabel),
               onPressed: _reachabilityStatus == ReachabilityStatus.reachable
                   ? widget.onContinue
                   : null,
@@ -108,19 +108,19 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
       case ReachabilityStatus.reachable:
         return _buildIconText(
           Icons.done,
-          S.of(context).loginPageReachabilitySuccessText,
+          S.of(context).connectionSuccessfulylEstablished,
           Colors.green,
         );
       case ReachabilityStatus.notReachable:
         return _buildIconText(
           Icons.close,
-          S.of(context).loginPageReachabilityNotReachableText,
+          S.of(context).couldNotEstablishConnectionToTheServer,
           errorColor,
         );
       case ReachabilityStatus.unknownHost:
         return _buildIconText(
           Icons.close,
-          S.of(context).loginPageReachabilityUnresolvedHostText,
+          S.of(context).hostCouldNotBeResolved,
           errorColor,
         );
       case ReachabilityStatus.missingClientCertificate:
@@ -132,15 +132,13 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
       case ReachabilityStatus.invalidClientCertificateConfiguration:
         return _buildIconText(
           Icons.close,
-          S
-              .of(context)
-              .loginPageReachabilityInvalidClientCertificateConfigurationText,
+          S.of(context).incorrectOrMissingCertificatePassphrase,
           errorColor,
         );
       case ReachabilityStatus.connectionTimeout:
         return _buildIconText(
           Icons.close,
-          S.of(context).loginPageReachabilityConnectionTimeoutText,
+          S.of(context).connectionTimedOut,
           errorColor,
         );
     }

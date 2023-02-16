@@ -15,7 +15,7 @@ class OfflineWidget extends StatelessWidget {
               color: Theme.of(context).disabledColor,
               size: (Theme.of(context).iconTheme.size ?? 24) * 3),
           Text(
-            S.of(context).offlineWidgetText,
+            S.of(context).anInternetConnectionCouldNotBeEstablished,
             textAlign: TextAlign.center,
           ),
         ],

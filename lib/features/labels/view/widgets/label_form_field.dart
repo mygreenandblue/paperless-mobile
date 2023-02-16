@@ -79,7 +79,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       noItemsFoundBuilder: (context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Text(
-          S.of(context).labelFormFieldNoItemsFoundText,
+          S.of(context).noItemsFound,
           textAlign: TextAlign.center,
           style:
               TextStyle(color: Theme.of(context).disabledColor, fontSize: 18.0),
@@ -97,8 +97,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       ),
       itemBuilder: (context, suggestion) => ListTile(
         title: Text(
-          widget.labelOptions[suggestion.id]?.name ??
-              S.of(context).labelNotAssignedText,
+          widget.labelOptions[suggestion.id]?.name ?? S.of(context).notAssigned,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -142,7 +141,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       ),
       selectionToTextTransformer: (suggestion) {
         if (suggestion == const IdQueryParameter.notAssigned()) {
-          return S.of(context).labelNotAssignedText;
+          return S.of(context).notAssigned;
         }
         return widget.labelOptions[suggestion.id]?.name ?? "";
       },
@@ -195,11 +194,11 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
 
   String _getLocalizedHint(BuildContext context) {
     if (T == Correspondent) {
-      return S.of(context).correspondentFormFieldSearchHintText;
+      return S.of(context).startTyping;
     } else if (T == DocumentType) {
-      return S.of(context).documentTypeFormFieldSearchHintText;
+      return S.of(context).startTyping;
     } else {
-      return S.of(context).tagFormFieldSearchHintText;
+      return S.of(context).filterTags;
     }
   }
 }

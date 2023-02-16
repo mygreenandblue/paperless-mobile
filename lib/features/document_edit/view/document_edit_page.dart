@@ -59,10 +59,10 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => _onSubmit(state.document),
               icon: const Icon(Icons.save),
-              label: Text(S.of(context).genericActionUpdateLabel),
+              label: Text(S.of(context).saveChanges),
             ),
             appBar: AppBar(
-              title: Text(S.of(context).documentEditPageTitle),
+              title: Text(S.of(context).editDocument),
               bottom: _isSubmitLoading
                   ? const PreferredSize(
                       preferredSize: Size.fromHeight(4),
@@ -159,7 +159,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             create: (context) => context.read<LabelRepository<StoragePath>>(),
             child: AddStoragePathPage(initalValue: initialValue),
           ),
-          textFieldLabel: S.of(context).documentStoragePathPropertyLabel,
+          textFieldLabel: S.of(context).storagePath,
           labelOptions: options,
           initialValue: IdQueryParameter.fromId(initialId),
           name: fkStoragePath,
@@ -180,7 +180,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             create: (context) => context.read<LabelRepository<Correspondent>>(),
             child: AddCorrespondentPage(initialName: initialValue),
           ),
-          textFieldLabel: S.of(context).documentCorrespondentPropertyLabel,
+          textFieldLabel: S.of(context).correspondent,
           labelOptions: options,
           initialValue: IdQueryParameter.fromId(initialId),
           name: fkCorrespondent,
@@ -214,7 +214,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
               initialName: currentInput,
             ),
           ),
-          textFieldLabel: S.of(context).documentDocumentTypePropertyLabel,
+          textFieldLabel: S.of(context).documentType,
           initialValue: IdQueryParameter.fromId(initialId),
           labelOptions: options,
           name: fkDocumentType,
@@ -249,7 +249,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       });
       try {
         await context.read<DocumentEditCubit>().updateDocument(mergedDocument);
-        showSnackBar(context, S.of(context).documentUpdateSuccessMessage);
+        showSnackBar(context, S.of(context).documentSuccessfullyUpdated);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
@@ -266,7 +266,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       name: fkTitle,
       validator: FormBuilderValidators.required(),
       decoration: InputDecoration(
-        label: Text(S.of(context).documentTitlePropertyLabel),
+        label: Text(S.of(context).title),
       ),
       initialValue: initialTitle,
     );
@@ -281,7 +281,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkCreatedDate,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.calendar_month_outlined),
-            label: Text(S.of(context).documentCreatedPropertyLabel),
+            label: Text(S.of(context).createdAt),
           ),
           initialValue: initialCreatedAtDate,
           format: DateFormat.yMMMMd(),
@@ -311,7 +311,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          S.of(context).documentEditPageSuggestionsLabel,
+          S.of(context).suggestions,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         SizedBox(

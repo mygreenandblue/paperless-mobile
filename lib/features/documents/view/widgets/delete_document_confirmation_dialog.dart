@@ -9,12 +9,12 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.of(context).documentsPageSelectionBulkDeleteDialogTitle),
+      title: Text(S.of(context).confirmDeletion),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            S.of(context).documentsPageSelectionBulkDeleteDialogWarningTextOne,
+            S.of(context).areYouSureYouWantToDeleteTheFollowingDocuments(1),
           ),
           const SizedBox(height: 16),
           Text(
@@ -26,14 +26,13 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-              S.of(context).documentsPageSelectionBulkDeleteDialogContinueText),
+          Text(S.of(context).thisActionIsIrreversibleDoYouWishToProceedAnyway),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: Text(S.of(context).genericActionCancelLabel),
+          child: Text(S.of(context).cancel),
         ),
         TextButton(
           style: ButtonStyle(
@@ -43,7 +42,7 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text(S.of(context).genericActionDeleteLabel),
+          child: Text(S.of(context).delete),
         ),
       ],
     );

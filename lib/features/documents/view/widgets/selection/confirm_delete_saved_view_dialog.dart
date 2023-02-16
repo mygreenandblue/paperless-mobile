@@ -14,18 +14,18 @@ class ConfirmDeleteSavedViewDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        S.of(context).deleteViewDialogTitleText + view.name + "?",
+        S.of(context).deleteView + view.name + "?",
         softWrap: true,
       ),
-      content: Text(S.of(context).deleteViewDialogContentText),
+      content: Text(S.of(context).doYouReallyWantToDeleteThisView),
       actions: [
         TextButton(
-          child: Text(S.of(context).genericActionCancelLabel),
+          child: Text(S.of(context).cancel),
           onPressed: () => Navigator.pop(context, false),
         ),
         TextButton(
           child: Text(
-            S.of(context).genericActionDeleteLabel,
+            S.of(context).delete,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
           onPressed: () => Navigator.pop(context, true),

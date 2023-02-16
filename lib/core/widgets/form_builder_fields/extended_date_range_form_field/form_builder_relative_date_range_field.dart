@@ -46,14 +46,12 @@ class _FormBuilderRelativeDateRangePickerState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(S.of(context).extendedDateRangeDialogRelativeLastLabel),
+              Text(S.of(context).last),
               SizedBox(
                 width: 80,
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: S
-                        .of(context)
-                        .extendedDateRangeDialogRelativeAmountLabel,
+                    labelText: S.of(context).amount,
                   ),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -92,9 +90,7 @@ class _FormBuilderRelativeDateRangePickerState
                   onChanged: (value) =>
                       field.didChange(field.value!.copyWith(unit: value)),
                   decoration: InputDecoration(
-                    labelText: S
-                        .of(context)
-                        .extendedDateRangeDialogRelativeTimeUnitLabel,
+                    labelText: S.of(context).timeUnit,
                   ),
                 ),
               ),
@@ -117,13 +113,13 @@ class _FormBuilderRelativeDateRangePickerState
   String _dateRangeUnitToLocalizedString(DateRangeUnit unit, int? count) {
     switch (unit) {
       case DateRangeUnit.day:
-        return S.of(context).extendedDateRangePickerDayText(count ?? 1);
+        return S.of(context).days(count ?? 1);
       case DateRangeUnit.week:
-        return S.of(context).extendedDateRangePickerWeekText(count ?? 1);
+        return S.of(context).weeks(count ?? 1);
       case DateRangeUnit.month:
-        return S.of(context).extendedDateRangePickerMonthText(count ?? 1);
+        return S.of(context).months(count ?? 1);
       case DateRangeUnit.year:
-        return S.of(context).extendedDateRangePickerYearText(count ?? 1);
+        return S.of(context).years(count ?? 1);
     }
   }
 }

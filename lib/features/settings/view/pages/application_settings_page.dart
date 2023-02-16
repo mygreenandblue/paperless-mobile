@@ -15,7 +15,7 @@ class ApplicationSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).settingsPageApplicationSettingsLabel),
+        title: Text(S.of(context).applicationSettings),
       ),
       body: ListView(
         children: const [

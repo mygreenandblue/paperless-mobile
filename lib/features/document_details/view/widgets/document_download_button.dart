@@ -53,15 +53,15 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       final downloadOriginal = await showDialog<bool>(
         context: context,
         builder: (context) => RadioSettingsDialog(
-          titleText: S.of(context).documentDownloadDialogChooseFiletype,
+          titleText: S.of(context).chooseFiletype,
           options: [
             RadioOption(
                 value: true,
-                label: S.of(context).documentDownloadDialogOriginalOption +
+                label: S.of(context).original +
                     " (${meta.originalMimeType.split("/").last})"),
             RadioOption(
               value: false,
-              label: S.of(context).documentDownloadDialogArchivedOption,
+              label: S.of(context).archivedPdf,
             ),
           ],
           initialValue: false,
@@ -91,7 +91,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       createdFile.createSync(recursive: true);
       createdFile.writeAsBytesSync(bytes);
       debugPrint("Downloaded file to $filePath");
-      showSnackBar(context, S.of(context).documentDownloadSuccessMessage);
+      showSnackBar(context, S.of(context).documentSuccessfullyDownloaded);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {

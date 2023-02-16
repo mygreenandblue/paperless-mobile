@@ -72,7 +72,7 @@ class _ScannerPageState extends State<ScannerPage>
                     state.isEmpty ? const NeverScrollableScrollPhysics() : null,
                 slivers: [
                   SearchAppBar(
-                    hintText: S.of(context).documentSearchSearchDocuments,
+                    hintText: S.of(context).searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: PreferredSize(
                       child: _buildActions(connectedState.isConnected),
@@ -97,7 +97,7 @@ class _ScannerPageState extends State<ScannerPage>
                 floatHeaderSlivers: false,
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SearchAppBar(
-                    hintText: S.of(context).documentSearchSearchDocuments,
+                    hintText: S.of(context).searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: PreferredSize(
                       child: _buildActions(connectedState.isConnected),
@@ -134,7 +134,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).scannerPagePreviewLabel),
+                label: Text(S.of(context).previewScan),
                 onPressed: state.isNotEmpty
                     ? () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -154,7 +154,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).scannerPageClearAllLabel),
+                label: Text(S.of(context).clearAll),
                 onPressed: state.isEmpty ? null : () => _reset(context),
                 icon: const Icon(Icons.delete_sweep_outlined),
               );
@@ -163,7 +163,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).scannerPageUploadLabel),
+                label: Text(S.of(context).upload),
                 onPressed: state.isEmpty || !isConnected
                     ? null
                     : () => _onPrepareDocumentUpload(context),
@@ -173,55 +173,6 @@ class _ScannerPageState extends State<ScannerPage>
           ),
         ],
       ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context, bool isConnected) {
-    return AppBar(
-      title: Text(S.of(context).documentScannerPageTitle),
-      bottom: !isConnected ? const OfflineBanner() : null,
-      actions: [
-        BlocBuilder<DocumentScannerCubit, List<File>>(
-          builder: (context, state) {
-            return IconButton(
-              onPressed: state.isNotEmpty
-                  ? () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DocumentView(
-                            documentBytes: _assembleFileBytes(
-                              state,
-                              forcePdf: true,
-                            ).then((file) => file.bytes),
-                          ),
-                        ),
-                      )
-                  : null,
-              icon: const Icon(Icons.visibility),
-              tooltip: S.of(context).documentScannerPageResetButtonTooltipText,
-            );
-          },
-        ),
-        BlocBuilder<DocumentScannerCubit, List<File>>(
-          builder: (context, state) {
-            return IconButton(
-              onPressed: state.isEmpty ? null : () => _reset(context),
-              icon: const Icon(Icons.delete_sweep),
-              tooltip: S.of(context).documentScannerPageResetButtonTooltipText,
-            );
-          },
-        ),
-        BlocBuilder<DocumentScannerCubit, List<File>>(
-          builder: (context, state) {
-            return IconButton(
-              onPressed: state.isEmpty || !isConnected
-                  ? null
-                  : () => _onPrepareDocumentUpload(context),
-              icon: const Icon(Icons.done),
-              tooltip: S.of(context).documentScannerPageUploadButtonTooltip,
-            );
-          },
-        ),
-      ],
     );
   }
 
@@ -296,19 +247,16 @@ class _ScannerPageState extends State<ScannerPage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  S.of(context).documentScannerPageEmptyStateText,
+                  S.of(context).noDocumentsScannedYet,
                   textAlign: TextAlign.center,
                 ),
                 TextButton(
-                  child:
-                      Text(S.of(context).documentScannerPageAddScanButtonLabel),
+                  child: Text(S.of(context).scanADocument),
                   onPressed: () => _openDocumentScanner(context),
                 ),
-                Text(S.of(context).documentScannerPageOrText),
+                Text(S.of(context).or),
                 TextButton(
-                  child: Text(S
-                      .of(context)
-                      .documentScannerPageUploadFromThisDeviceButtonLabel),
+                  child: Text(S.of(context).uploadADocumentFromThisDevice),
                   onPressed: isConnected ? _onUploadFromFilesystem : null,
                 ),
               ],

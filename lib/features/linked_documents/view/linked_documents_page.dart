@@ -24,7 +24,7 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).linkedDocumentsPageTitle),
+        title: Text(S.of(context).linkedDocuments),
         actions: [
           BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
             builder: (context, state) {

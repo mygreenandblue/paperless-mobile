@@ -18,7 +18,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
     return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
       builder: (context, settings) {
         return ListTile(
-          title: Text(S.of(context).settingsPageColorSchemeSettingLabel),
+          title: Text(S.of(context).colors),
           subtitle: Text(
             translateColorSchemeOption(
               context,
@@ -28,9 +28,8 @@ class ColorSchemeOptionSetting extends StatelessWidget {
           onTap: () => showDialog(
             context: context,
             builder: (_) => RadioSettingsDialog<ColorSchemeOption>(
-              titleText: S.of(context).settingsPageColorSchemeSettingLabel,
-              descriptionText:
-                  S.of(context).settingsPageColorSchemeSettingDialogDescription,
+              titleText: S.of(context).colors,
+              descriptionText: S.of(context).colorSchemeHint,
               options: [
                 RadioOption(
                   value: ColorSchemeOption.classic,
@@ -47,9 +46,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
               ],
               footer: _isBelowAndroid12()
                   ? HintCard(
-                      hintText: S
-                          .of(context)
-                          .settingsPageColorSchemeSettingDynamicThemeingVersionMismatchWarning,
+                      hintText: S.of(context).colorSchemeNotSupportedWarning,
                       hintIcon: Icons.warning_amber,
                     )
                   : null,

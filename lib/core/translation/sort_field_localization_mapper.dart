@@ -5,19 +5,19 @@ import 'package:paperless_mobile/generated/l10n.dart';
 String translateSortField(BuildContext context, SortField? sortField) {
   switch (sortField) {
     case SortField.archiveSerialNumber:
-      return S.of(context).documentArchiveSerialNumberPropertyShortLabel;
+      return S.of(context).asn;
     case SortField.correspondentName:
-      return S.of(context).documentCorrespondentPropertyLabel;
+      return S.of(context).correspondent;
     case SortField.title:
-      return S.of(context).documentTitlePropertyLabel;
+      return S.of(context).title;
     case SortField.documentType:
-      return S.of(context).documentDocumentTypePropertyLabel;
+      return S.of(context).documentType;
     case SortField.created:
-      return S.of(context).documentCreatedPropertyLabel;
+      return S.of(context).createdAt;
     case SortField.added:
-      return S.of(context).documentAddedPropertyLabel;
+      return S.of(context).addedAt;
     case SortField.modified:
-      return S.of(context).documentModifiedPropertyLabel;
+      return S.of(context).modifiedAt;
     default:
       return '';
   }

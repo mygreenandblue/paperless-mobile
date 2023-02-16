@@ -25,7 +25,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
       builder: (context, settings) {
         return ListTile(
-          title: Text(S.of(context).settingsPageLanguageSettingLabel),
+          title: Text(S.of(context).language),
           subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!),
           onTap: () => showDialog<String>(
             context: context,
@@ -33,7 +33,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
               footer: const Text(
                 "* Work in progress, not fully translated yet. Some words may be displayed in English!",
               ),
-              titleText: S.of(context).settingsPageLanguageSettingLabel,
+              titleText: S.of(context).language,
               options: [
                 RadioOption(
                   value: 'en',
