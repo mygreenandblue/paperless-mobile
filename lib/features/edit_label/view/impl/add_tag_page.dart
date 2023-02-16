@@ -22,7 +22,7 @@ class AddTagPage extends StatelessWidget {
         context.read<LabelRepository<Tag>>(),
       ),
       child: AddLabelPage<Tag>(
-        pageTitle: Text(S.of(context).addTagPageTitle),
+        pageTitle: Text(S.of(context).addTag),
         fromJsonT: Tag.fromJson,
         initialName: initialValue,
         additionalFields: [
@@ -30,7 +30,7 @@ class AddTagPage extends StatelessWidget {
             name: Tag.colorKey,
             valueTransformer: (color) => "#${color?.value.toRadixString(16)}",
             decoration: InputDecoration(
-              label: Text(S.of(context).tagColorPropertyLabel),
+              label: Text(S.of(context).color),
             ),
             colorPickerType: ColorPickerType.materialPicker,
             initialValue: Color((Random().nextDouble() * 0xFFFFFF).toInt())
@@ -38,7 +38,7 @@ class AddTagPage extends StatelessWidget {
           ),
           FormBuilderCheckbox(
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context).tagInboxTagPropertyLabel),
+            title: Text(S.of(context).inboxTag),
           ),
         ],
       ),

@@ -28,14 +28,14 @@ class EditTagPage extends StatelessWidget {
             initialValue: tag.color,
             name: Tag.colorKey,
             decoration: InputDecoration(
-              label: Text(S.of(context).tagColorPropertyLabel),
+              label: Text(S.of(context).color),
             ),
             colorPickerType: ColorPickerType.blockPicker,
           ),
           FormBuilderCheckbox(
             initialValue: tag.isInboxTag,
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context).tagInboxTagPropertyLabel),
+            title: Text(S.of(context).inboxTag),
           ),
         ],
       ),

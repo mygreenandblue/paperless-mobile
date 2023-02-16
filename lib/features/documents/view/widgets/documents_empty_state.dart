@@ -18,13 +18,13 @@ class DocumentsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: EmptyState(
-        title: S.of(context).documentsPageEmptyStateOopsText,
-        subtitle: S.of(context).documentsPageEmptyStateNothingHereText,
+        title: S.of(context).oops,
+        subtitle: S.of(context).thereSeemsToBeNothingHere,
         bottomChild: state.filter != DocumentFilter.initial && onReset != null
             ? TextButton(
                 onPressed: onReset,
                 child: Text(
-                  S.of(context).documentsEmptyStateResetFilterLabel,
+                  S.of(context).resetFilter,
                 ),
               ).padded()
             : null,

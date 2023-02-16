@@ -34,19 +34,19 @@ class ViewTypeSelectionWidget extends StatelessWidget {
         _buildViewTypeOption(
           context,
           type: ViewType.list,
-          label: S.of(context).viewTypeListOption,
+          label: S.of(context).list,
           icon: Icons.list,
         ),
         _buildViewTypeOption(
           context,
           type: ViewType.grid,
-          label: S.of(context).viewTypeGridOption,
+          label: S.of(context).grid,
           icon: Icons.grid_view_rounded,
         ),
         _buildViewTypeOption(
           context,
           type: ViewType.detailed,
-          label: S.of(context).viewTypeDetailedOption,
+          label: S.of(context).detailed,
           icon: Icons.article_outlined,
         ),
       ],

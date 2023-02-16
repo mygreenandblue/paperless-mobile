@@ -14,31 +14,24 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(state.selection.isNotEmpty);
     return AlertDialog(
-      title: Text(S.of(context).documentsPageSelectionBulkDeleteDialogTitle),
+      title: Text(S.of(context).confirmDeletion),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            //TODO: use plurals, didn't use because of crash... investigate later.
-            state.selection.length == 1
-                ? S
-                    .of(context)
-                    .documentsPageSelectionBulkDeleteDialogWarningTextOne
-                : S
-                    .of(context)
-                    .documentsPageSelectionBulkDeleteDialogWarningTextMany,
+            S.of(context).areYouSureYouWantToDeleteTheFollowingDocuments(
+                state.selection.length),
           ),
           const SizedBox(height: 16),
           ...state.selection.map(_buildBulletPoint).toList(),
           const SizedBox(height: 16),
-          Text(
-              S.of(context).documentsPageSelectionBulkDeleteDialogContinueText),
+          Text(S.of(context).thisActionIsIrreversibleDoYouWishToProceedAnyway),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: Text(S.of(context).genericActionCancelLabel),
+          child: Text(S.of(context).cancel),
         ),
         TextButton(
           style: ButtonStyle(
@@ -48,7 +41,7 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text(S.of(context).genericActionDeleteLabel),
+          child: Text(S.of(context).delete),
         ),
       ],
     );

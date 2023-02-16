@@ -31,14 +31,14 @@ class AppDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               dense: true,
-              title: Text(S.of(context).appDrawerAboutLabel),
+              title: Text(S.of(context).aboutThisApp),
               leading: const Icon(Icons.info_outline),
               onTap: () => _showAboutDialog(context),
             ),
             ListTile(
               dense: true,
               leading: const Icon(Icons.bug_report_outlined),
-              title: Text(S.of(context).appDrawerReportBugLabel),
+              title: Text(S.of(context).reportABug),
               onTap: () {
                 launchUrlString(
                     'https://github.com/astubenbord/paperless-mobile/issues/new');
@@ -48,7 +48,7 @@ class AppDrawer extends StatelessWidget {
               dense: true,
               leading: const Icon(Icons.settings_outlined),
               title: Text(
-                S.of(context).appDrawerSettingsLabel,
+                S.of(context).settings,
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -74,7 +74,7 @@ class AppDrawer extends StatelessWidget {
       applicationName: 'Paperless Mobile',
       applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
       children: [
-        Text(S.of(context).aboutDialogDevelopedByText('Anton Stubenbord')),
+        Text(S.of(context).developedBy('Anton Stubenbord')),
         Link(
           uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
           builder: (context, followLink) => GestureDetector(

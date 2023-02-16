@@ -12,21 +12,19 @@ class BiometricAuthenticationSetting extends StatelessWidget {
       builder: (context, settings) {
         return SwitchListTile(
           value: settings.isLocalAuthenticationEnabled,
-          title: Text(S.of(context).appSettingsBiometricAuthenticationLabel),
-          subtitle: Text(
-              S.of(context).appSettingsBiometricAuthenticationDescriptionText),
+          title: Text(S.of(context).biometricAuthentication),
+          subtitle: Text(S.of(context).authenticateOnAppStart),
           onChanged: (val) async {
-            final String localizedReason = val
-                ? S
-                    .of(context)
-                    .appSettingsEnableBiometricAuthenticationReasonText
-                : S
-                    .of(context)
-                    .appSettingsDisableBiometricAuthenticationReasonText;
+            final String localizedReason =
+                S.of(context).authenticateToToggleBiometricAuthentication(
+                      val ? 'enable' : 'disable',
+                    );
             await context
                 .read<ApplicationSettingsCubit>()
-                .setIsBiometricAuthenticationEnabled(val,
-                    localizedReason: localizedReason);
+                .setIsBiometricAuthenticationEnabled(
+                  val,
+                  localizedReason: localizedReason,
+                );
           },
         );
       },

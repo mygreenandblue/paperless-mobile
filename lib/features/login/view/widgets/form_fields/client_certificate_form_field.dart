@@ -40,9 +40,7 @@ class _ClientCertificateFormFieldState
         }
         assert(_selectedFile != null);
         if (_selectedFile?.path.split(".").last != 'pfx') {
-          return S
-              .of(context)
-              .loginPageClientCertificateSettingInvalidFileFormatValidationText;
+          return S.of(context).invalidCertificateFormat;
         }
         return null;
       },
@@ -52,9 +50,8 @@ class _ClientCertificateFormFieldState
         return Theme(
           data: theme,
           child: ExpansionTile(
-            title: Text(S.of(context).loginPageClientCertificateSettingLabel),
-            subtitle: Text(
-                S.of(context).loginPageClientCertificateSettingDescriptionText),
+            title: Text(S.of(context).clientcertificate),
+            subtitle: Text(S.of(context).configureMutualTLSAuthentication),
             children: [
               InputDecorator(
                 decoration: InputDecoration(
@@ -70,8 +67,7 @@ class _ClientCertificateFormFieldState
                           children: [
                             ElevatedButton(
                               onPressed: () => _onSelectFile(field),
-                              child:
-                                  Text(S.of(context).genericActionSelectText),
+                              child: Text(S.of(context).select),
                             ),
                             _buildSelectedFileText(field).paddedOnly(left: 8),
                           ],
@@ -89,7 +85,7 @@ class _ClientCertificateFormFieldState
                     // ListTile(
                     //   leading: ElevatedButton(
                     //     onPressed: () => _onSelectFile(field),
-                    //     child: Text(S.of(context).genericActionSelectText),
+                    //     child: Text(S.of(context).select),
                     //   ),
                     //   title: _buildSelectedFileText(field),
                     //   trailing: AbsorbPointer(
@@ -112,9 +108,7 @@ class _ClientCertificateFormFieldState
                         onChanged: (value) => field.didChange(
                           field.value?.copyWith(passphrase: value),
                         ),
-                        label: S
-                            .of(context)
-                            .loginPageClientCertificatePassphraseLabel,
+                        label: S.of(context).passphrase,
                       ).padded(),
                     ] else
                       ...[]
@@ -149,7 +143,7 @@ class _ClientCertificateFormFieldState
     if (field.value == null) {
       assert(_selectedFile == null);
       return Text(
-        S.of(context).loginPageClientCertificateSettingSelectFileText,
+        S.of(context).selectFile,
         style: Theme.of(context).textTheme.labelMedium?.apply(
               color: Theme.of(context).hintColor,
             ),

@@ -94,8 +94,8 @@ class _TagFormFieldState extends State<TagFormField> {
                     Icons.label_outline,
                   ),
                   suffixIcon: _buildSuffixIcon(context, field),
-                  labelText: S.of(context).documentTagsPropertyLabel,
-                  hintText: S.of(context).tagFormFieldSearchHintText,
+                  labelText: S.of(context).tags,
+                  hintText: S.of(context).filterTags,
                 ),
                 controller: _textEditingController,
               ),
@@ -138,10 +138,10 @@ class _TagFormFieldState extends State<TagFormField> {
                 late String? title;
                 switch (data) {
                   case _onlyNotAssignedId:
-                    title = S.of(context).labelNotAssignedText;
+                    title = S.of(context).notAssigned;
                     break;
                   case _anyAssignedId:
-                    title = S.of(context).labelAnyAssignedText;
+                    title = S.of(context).anyAssigned;
                     break;
                   default:
                     title = widget.selectableOptions[data]?.name;
@@ -270,7 +270,7 @@ class _TagFormFieldState extends State<TagFormField> {
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         side: BorderSide.none,
         label: Text(
-          S.of(context).labelNotAssignedText,
+          S.of(context).notAssigned,
         ),
         backgroundColor:
             Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
@@ -323,7 +323,7 @@ class _TagFormFieldState extends State<TagFormField> {
         padding: const EdgeInsets.all(4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         side: BorderSide.none,
-        label: Text(S.of(context).labelAnyAssignedText),
+        label: Text(S.of(context).anyAssigned),
         backgroundColor:
             Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),
         onDeleted: () => field.didChange(const IdsTagsQuery()),

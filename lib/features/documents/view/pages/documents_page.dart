@@ -112,11 +112,9 @@ class _DocumentsPageState extends State<DocumentsPage>
       listener: (context, state) {
         showSnackBar(
           context,
-          S.of(context).documentsPageNewDocumentAvailableText,
+          S.of(context).newDocumentAvailable,
           action: SnackBarActionConfig(
-            label: S
-                .of(context)
-                .documentUploadProcessingSuccessfulReloadActionText,
+            label: S.of(context).reload,
             onPressed: () {
               context.read<TaskStatusCubit>().acknowledgeCurrentTask();
               context.read<DocumentsCubit>().reload();
@@ -202,7 +200,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                                       .resetSelection(),
                                 ),
                                 title: Text(
-                                  "${state.selection.length} ${S.of(context).documentsSelectedText}",
+                                  "${state.selection.length} ${S.of(context).countSelected}",
                                 ),
                                 actions: [
                                   IconButton(
@@ -213,14 +211,13 @@ class _DocumentsPageState extends State<DocumentsPage>
                               );
                             }
                             return SearchAppBar(
-                              hintText:
-                                  S.of(context).documentSearchSearchDocuments,
+                              hintText: S.of(context).searchDocuments,
                               onOpenSearch: showDocumentSearchPage,
                               bottom: TabBar(
                                 controller: _tabController,
                                 tabs: [
-                                  Tab(text: S.of(context).documentsPageTitle),
-                                  Tab(text: S.of(context).savedViewsLabel),
+                                  Tab(text: S.of(context).documents),
+                                  Tab(text: S.of(context).views),
                                 ],
                               ),
                             );
@@ -296,7 +293,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             _nestedScrollViewKey.currentState?.outerController.jumpTo(0);
           },
           label: Text(
-            S.of(context).scrollToTopLabel,
+            S.of(context).scrollToTop,
             style: DefaultTextStyle.of(context).style.apply(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
@@ -411,7 +408,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             .bulkDelete(documentsState.selection);
         showSnackBar(
           context,
-          S.of(context).documentsPageBulkDeleteSuccessfulText,
+          S.of(context).documentsSuccessfullyDeleted,
         );
         context.read<DocumentsCubit>().resetSelection();
       } on PaperlessServerException catch (error, stackTrace) {

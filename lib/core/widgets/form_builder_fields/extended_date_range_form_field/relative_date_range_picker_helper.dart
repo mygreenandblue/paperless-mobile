@@ -49,19 +49,19 @@ class _RelativeDateRangePickerHelperState
 
   List<_ExtendedDateRangeQueryOption> get _options => [
         _ExtendedDateRangeQueryOption(
-          S.of(context).extendedDateRangePickerLastWeeksLabel(1),
+          S.of(context).lastNWeeks(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.week),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).extendedDateRangePickerLastMonthsLabel(1),
+          S.of(context).lastNMonths(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.month),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).extendedDateRangePickerLastMonthsLabel(3),
+          S.of(context).lastNMonths(3),
           const RelativeDateRangeQuery(3, DateRangeUnit.month),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).extendedDateRangePickerLastYearsLabel(1),
+          S.of(context).lastNYears(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.year),
         ),
       ];

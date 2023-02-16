@@ -10,11 +10,11 @@ class RemoveHistoryEntryDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(entry),
-      content: Text(S.of(context).documentSearchRemoveHistoryEntryText),
+      content: Text(S.of(context).removeQueryFromSearchHistory),
       actions: [
         const DialogCancelButton(),
         TextButton(
-          child: Text(S.of(context).genericActionRemoveLabel),
+          child: Text(S.of(context).remove),
           onPressed: () {
             Navigator.pop(context, true);
           },

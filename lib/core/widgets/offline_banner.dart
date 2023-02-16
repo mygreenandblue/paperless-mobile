@@ -21,7 +21,7 @@ class OfflineBanner extends StatelessWidget with PreferredSizeWidget {
             ),
           ),
           Text(
-            S.of(context).genericMessageOfflineText,
+            S.of(context).youreOffline,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),

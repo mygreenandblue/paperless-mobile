@@ -18,7 +18,7 @@ class AddCorrespondentPage extends StatelessWidget {
         context.read<LabelRepository<Correspondent>>(),
       ),
       child: AddLabelPage<Correspondent>(
-        pageTitle: Text(S.of(context).addCorrespondentPageTitle),
+        pageTitle: Text(S.of(context).addCorrespondent),
         fromJsonT: Correspondent.fromJson,
         initialName: initialName,
       ),

@@ -48,12 +48,12 @@ class _SortFieldSelectionBottomSheetState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  S.of(context).documentsPageOrderByLabel,
+                  S.of(context).orderBy,
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.start,
                 ),
                 TextButton(
-                  child: Text(S.of(context).documentFilterApplyFilterLabel),
+                  child: Text(S.of(context).apply),
                   onPressed: () {
                     widget.onSubmit(
                       _currentSortField,
@@ -105,12 +105,12 @@ class _SortFieldSelectionBottomSheetState
                       ButtonSegment(
                         icon: const FaIcon(FontAwesomeIcons.arrowDownAZ),
                         value: SortOrder.descending,
-                        label: Text(S.of(context).sortDocumentDescending),
+                        label: Text(S.of(context).descending),
                       ),
                       ButtonSegment(
                         icon: const FaIcon(FontAwesomeIcons.arrowUpZA),
                         value: SortOrder.ascending,
-                        label: Text(S.of(context).sortDocumentAscending),
+                        label: Text(S.of(context).ascending),
                       ),
                     ],
                     emptySelectionAllowed: false,

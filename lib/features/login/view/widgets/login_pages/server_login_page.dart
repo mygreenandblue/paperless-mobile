@@ -39,8 +39,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
       ),
       body: ListView(
         children: [
-          Text(S.of(context).loginPageSignInToPrefixText(serverAddress))
-              .padded(),
+          Text(S.of(context).signInToServer(serverAddress)).padded(),
           const UserCredentialsFormField(),
         ],
       ),
@@ -54,7 +53,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
                 await widget.onDone();
                 setState(() => _isLoginLoading = false);
               },
-              child: Text(S.of(context).loginPageSignInButtonLabel),
+              child: Text(S.of(context).signIn),
             )
           ],
         ),

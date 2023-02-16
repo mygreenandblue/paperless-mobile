@@ -55,7 +55,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).genericActionEditLabel),
+        title: Text(S.of(context).edit),
         actions: [
           IconButton(
             onPressed: () => _onDelete(context),
@@ -68,7 +68,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(
           icon: const Icon(Icons.save),
-          label: Text(S.of(context).genericActionUpdateLabel),
+          label: Text(S.of(context).saveChanges),
           onSubmit: context.read<EditLabelCubit<T>>().update,
         ),
         additionalFields: additionalFields,
@@ -81,22 +81,21 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
       final shouldDelete = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title:
-                  Text(S.of(context).editLabelPageConfirmDeletionDialogTitle),
+              title: Text(S.of(context).confirmDeletion),
               content: Text(
-                S.of(context).editLabelPageDeletionDialogText,
+                S.of(context).deleteLabelWarningText,
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: Text(S.of(context).genericActionCancelLabel),
+                  child: Text(S.of(context).cancel),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                   child: Text(
-                    S.of(context).genericActionDeleteLabel,
+                    S.of(context).delete,
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),

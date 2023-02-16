@@ -6,8 +6,8 @@ String translateColorSchemeOption(
     BuildContext context, ColorSchemeOption option) {
   switch (option) {
     case ColorSchemeOption.classic:
-      return S.of(context).colorSchemeOptionClassic;
+      return S.of(context).classic;
     case ColorSchemeOption.dynamic:
-      return S.of(context).colorSchemeOptionDynamic;
+      return S.of(context).dynamic;
   }
 }

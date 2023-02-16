@@ -20,7 +20,8 @@ class SavedViewList extends StatelessWidget {
             if (state.value.isEmpty) {
               return SliverToBoxAdapter(
                 child: HintCard(
-                  hintText: S.of(context).savedViewsEmptyStateText,
+                  hintText:
+                      S.of(context).createViewsToQuicklyFilterYourDocuments,
                 ),
               );
             }
@@ -32,9 +33,7 @@ class SavedViewList extends StatelessWidget {
                     enabled: connectivity.isConnected,
                     title: Text(view.name),
                     subtitle: Text(
-                      S
-                          .of(context)
-                          .savedViewsFiltersSetCount(view.filterRules.length),
+                      S.of(context).nFiltersSet(view.filterRules.length),
                     ),
                     onTap: () {
                       Navigator.of(context).push(

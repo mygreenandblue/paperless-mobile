@@ -72,7 +72,7 @@ class _LabelsPageState extends State<LabelsPage>
                     context,
                   ),
                   sliver: SearchAppBar(
-                    hintText: S.of(context).documentSearchSearchDocuments,
+                    hintText: S.of(context).searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: TabBar(
                       controller: _tabController,
@@ -160,12 +160,10 @@ class _LabelsPageState extends State<LabelsPage>
                                   pageSize: label.documentCount ?? 0,
                                 ),
                                 onEdit: _openEditCorrespondentPage,
-                                emptyStateActionButtonLabel: S
-                                    .of(context)
-                                    .labelsPageCorrespondentEmptyStateAddNewLabel,
-                                emptyStateDescription: S
-                                    .of(context)
-                                    .labelsPageCorrespondentEmptyStateDescriptionText,
+                                emptyStateActionButtonLabel:
+                                    S.of(context).addNewCorrespondent,
+                                emptyStateDescription:
+                                    S.of(context).noCorrespondentsSetUp,
                                 onAddNew: _openAddCorrespondentPage,
                               ),
                             ],
@@ -187,12 +185,10 @@ class _LabelsPageState extends State<LabelsPage>
                                   pageSize: label.documentCount ?? 0,
                                 ),
                                 onEdit: _openEditDocumentTypePage,
-                                emptyStateActionButtonLabel: S
-                                    .of(context)
-                                    .labelsPageDocumentTypeEmptyStateAddNewLabel,
-                                emptyStateDescription: S
-                                    .of(context)
-                                    .labelsPageDocumentTypeEmptyStateDescriptionText,
+                                emptyStateActionButtonLabel:
+                                    S.of(context).addNewDocumentType,
+                                emptyStateDescription:
+                                    S.of(context).noDocumentTypesSetUp,
                                 onAddNew: _openAddDocumentTypePage,
                               ),
                             ],
@@ -222,12 +218,10 @@ class _LabelsPageState extends State<LabelsPage>
                                         )
                                       : null,
                                 ),
-                                emptyStateActionButtonLabel: S
-                                    .of(context)
-                                    .labelsPageTagsEmptyStateAddNewLabel,
-                                emptyStateDescription: S
-                                    .of(context)
-                                    .labelsPageTagsEmptyStateDescriptionText,
+                                emptyStateActionButtonLabel:
+                                    S.of(context).addNewTag,
+                                emptyStateDescription:
+                                    S.of(context).noTagsSetUp,
                                 onAddNew: _openAddTagPage,
                               ),
                             ],
@@ -250,12 +244,10 @@ class _LabelsPageState extends State<LabelsPage>
                                   pageSize: label.documentCount ?? 0,
                                 ),
                                 contentBuilder: (path) => Text(path.path),
-                                emptyStateActionButtonLabel: S
-                                    .of(context)
-                                    .labelsPageStoragePathEmptyStateAddNewLabel,
-                                emptyStateDescription: S
-                                    .of(context)
-                                    .labelsPageStoragePathEmptyStateDescriptionText,
+                                emptyStateActionButtonLabel:
+                                    S.of(context).addNewStoragePath,
+                                emptyStateDescription:
+                                    S.of(context).noStoragePathsSetUp,
                                 onAddNew: _openAddStoragePathPage,
                               ),
                             ],

@@ -12,13 +12,13 @@ class ThemeModeSetting extends StatelessWidget {
     return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
       builder: (context, settings) {
         return ListTile(
-          title: Text(S.of(context).settingsPageAppearanceSettingTitle),
+          title: Text(S.of(context).appearance),
           subtitle: Text(_mapThemeModeToLocalizedString(
               settings.preferredThemeMode, context)),
           onTap: () => showDialog<ThemeMode>(
             context: context,
             builder: (_) => RadioSettingsDialog<ThemeMode>(
-              titleText: S.of(context).settingsPageAppearanceSettingTitle,
+              titleText: S.of(context).appearance,
               initialValue: context
                   .read<ApplicationSettingsCubit>()
                   .state
@@ -26,20 +26,15 @@ class ThemeModeSetting extends StatelessWidget {
               options: [
                 RadioOption(
                   value: ThemeMode.system,
-                  label: S
-                      .of(context)
-                      .settingsPageAppearanceSettingSystemThemeLabel,
+                  label: S.of(context).systemTheme,
                 ),
                 RadioOption(
                   value: ThemeMode.light,
-                  label: S
-                      .of(context)
-                      .settingsPageAppearanceSettingLightThemeLabel,
+                  label: S.of(context).lightTheme,
                 ),
                 RadioOption(
                   value: ThemeMode.dark,
-                  label:
-                      S.of(context).settingsPageAppearanceSettingDarkThemeLabel,
+                  label: S.of(context).darkTheme,
                 )
               ],
             ),
@@ -56,11 +51,11 @@ class ThemeModeSetting extends StatelessWidget {
   String _mapThemeModeToLocalizedString(ThemeMode theme, BuildContext context) {
     switch (theme) {
       case ThemeMode.system:
-        return S.of(context).settingsThemeModeSystemLabel;
+        return S.of(context).system;
       case ThemeMode.light:
-        return S.of(context).settingsThemeModeLightLabel;
+        return S.of(context).light;
       case ThemeMode.dark:
-        return S.of(context).settingsThemeModeDarkLabel;
+        return S.of(context).dark;
     }
   }
 }

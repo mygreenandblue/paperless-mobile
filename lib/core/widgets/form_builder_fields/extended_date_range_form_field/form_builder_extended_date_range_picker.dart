@@ -90,29 +90,21 @@ class _FormBuilderExtendedDateRangePickerState
         return '${df.format(query.after!)} – ${df.format(query.before!)}';
       }
       if (query.before != null) {
-        return '${S.of(context).extendedDateRangePickerBeforeLabel} ${df.format(query.before!)}';
+        return '${S.of(context).before} ${df.format(query.before!)}';
       }
       if (query.after != null) {
-        return '${S.of(context).extendedDateRangePickerAfterLabel} ${df.format(query.after!)}';
+        return '${S.of(context).after} ${df.format(query.after!)}';
       }
     } else if (query is RelativeDateRangeQuery) {
       switch (query.unit) {
         case DateRangeUnit.day:
-          return S
-              .of(context)
-              .extendedDateRangePickerLastDaysLabel(query.offset);
+          return S.of(context).lastNDays(query.offset);
         case DateRangeUnit.week:
-          return S
-              .of(context)
-              .extendedDateRangePickerLastWeeksLabel(query.offset);
+          return S.of(context).lastNWeeks(query.offset);
         case DateRangeUnit.month:
-          return S
-              .of(context)
-              .extendedDateRangePickerLastMonthsLabel(query.offset);
+          return S.of(context).lastNMonths(query.offset);
         case DateRangeUnit.year:
-          return S
-              .of(context)
-              .extendedDateRangePickerLastYearsLabel(query.offset);
+          return S.of(context).lastNYears(query.offset);
         default:
       }
     }

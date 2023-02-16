@@ -121,7 +121,7 @@
 //       password: testPassword,
 //     ));
 //     expect(
-//       find.textContaining(t.translations.loginPagePasswordValidatorMessageText),
+//       find.textContaining(t.translations.passwordMustNotBeEmpty),
 //       findsOneWidget,
 //     );
 //   });
@@ -169,7 +169,7 @@
 //       password: testPassword,
 //     ));
 //     expect(
-//       find.textContaining(t.translations.loginPageUsernameValidatorMessageText),
+//       find.textContaining(t.translations.usernameMustNotBeEmpty),
 //       findsOneWidget,
 //     );
 //   });

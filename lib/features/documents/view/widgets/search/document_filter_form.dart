@@ -96,14 +96,14 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          S.of(context).documentFilterAdvancedLabel,
+          S.of(context).advanced,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkCreatedAt,
         initialValue: widget.initialFilter.created,
-        labelText: S.of(context).documentCreatedPropertyLabel,
+        labelText: S.of(context).createdAt,
         onChanged: (_) {
           _checkQueryConstraints();
         },
@@ -111,7 +111,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkAddedAt,
         initialValue: widget.initialFilter.added,
-        labelText: S.of(context).documentAddedPropertyLabel,
+        labelText: S.of(context).addedAt,
         onChanged: (_) {
           _checkQueryConstraints();
         },
@@ -151,7 +151,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkDocumentType,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).documentDocumentTypePropertyLabel,
+          textFieldLabel: S.of(context).documentType,
           initialValue: widget.initialFilter.documentType,
           prefixIcon: const Icon(Icons.description_outlined),
         );
@@ -166,7 +166,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkCorrespondent,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).documentCorrespondentPropertyLabel,
+          textFieldLabel: S.of(context).correspondent,
           initialValue: widget.initialFilter.correspondent,
           prefixIcon: const Icon(Icons.person_outline),
         );
@@ -181,7 +181,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkStoragePath,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).documentStoragePathPropertyLabel,
+          textFieldLabel: S.of(context).storagePath,
           initialValue: widget.initialFilter.storagePath,
           prefixIcon: const Icon(Icons.folder_outlined),
         );

@@ -62,7 +62,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(
           icon: const Icon(Icons.add),
-          label: Text(S.of(context).genericActionCreateLabel),
+          label: Text(S.of(context).create),
           onSubmit: context.read<EditLabelCubit<T>>().create,
         ),
         additionalFields: additionalFields,

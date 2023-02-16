@@ -52,7 +52,7 @@ class HintCard extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomRight,
                 child: TextButton(
-                  child: Text(S.of(context).genericAcknowledgeLabel),
+                  child: Text(S.of(context).gotIt),
                   onPressed: onHintAcknowledged,
                 ),
               )

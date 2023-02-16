@@ -74,7 +74,7 @@
 //       padding: EdgeInsets.zero,
 //       child: ListTile(
 //         leading: const Icon(Icons.bug_report),
-//         title: Text(S.of(context).appDrawerReportBugLabel),
+//         title: Text(S.of(context).reportABug),
 //       ),
 //     );
 //   }
@@ -85,7 +85,7 @@
 //       value: AppPopupMenuEntries.openSettings,
 //       child: ListTile(
 //         leading: const Icon(Icons.settings_outlined),
-//         title: Text(S.of(context).appDrawerSettingsLabel),
+//         title: Text(S.of(context).settings),
 //       ),
 //     );
 //   }
@@ -96,7 +96,7 @@
 //       value: AppPopupMenuEntries.openAboutThisAppDialog,
 //       child: ListTile(
 //         leading: const Icon(Icons.info_outline),
-//         title: Text(S.of(context).appDrawerAboutLabel),
+//         title: Text(S.of(context).aboutThisApp),
 //       ),
 //     );
 //   }
@@ -146,7 +146,7 @@
 //       applicationName: 'Paperless Mobile',
 //       applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
 //       children: [
-//         Text(S.of(context).aboutDialogDevelopedByText('Anton Stubenbord')),
+//         Text(S.of(context).developedBy('Anton Stubenbord')),
 //         Link(
 //           uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
 //           builder: (context, followLink) => GestureDetector(

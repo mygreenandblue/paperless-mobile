@@ -26,8 +26,8 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
       child: IntroductionScreen(
         globalBackgroundColor: Theme.of(context).canvasColor,
         showDoneButton: true,
-        next: Text(S.of(context).onboardingNextButtonLabel),
-        done: Text(S.of(context).onboardingDoneButtonLabel),
+        next: Text(S.of(context).next),
+        done: Text(S.of(context).done),
         onDone: () => Navigator.pop(context),
         dotsDecorator: DotsDecorator(
           color: Theme.of(context).colorScheme.onBackground,

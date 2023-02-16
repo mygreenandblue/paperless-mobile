@@ -38,8 +38,7 @@ class DocumentContentWidget extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: TextButton(
-                child:
-                    Text(S.of(context).documentDetailsPageLoadFullContentLabel),
+                child: Text(S.of(context).loadFullContent),
                 onPressed: () {
                   context.read<DocumentDetailsCubit>().loadFullContent();
                 },

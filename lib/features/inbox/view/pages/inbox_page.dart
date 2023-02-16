@@ -52,7 +52,7 @@ class _InboxPageState extends State<InboxPage>
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(
-            label: Text(S.of(context).inboxPageMarkAllAsSeenLabel),
+            label: Text(S.of(context).allSeen),
             icon: const Icon(Icons.done_all),
             onPressed: state.hasLoaded && state.documents.isNotEmpty
                 ? () => _onMarkAllAsSeen(
@@ -128,7 +128,7 @@ class _InboxPageState extends State<InboxPage>
                     controller: pagingScrollController,
                     slivers: [
                       SearchAppBar(
-                        hintText: S.of(context).documentSearchSearchDocuments,
+                        hintText: S.of(context).searchDocuments,
                         onOpenSearch: showDocumentSearchPage,
                       ),
                       if (state.documents.isEmpty)
@@ -149,7 +149,8 @@ class _InboxPageState extends State<InboxPage>
                         SliverToBoxAdapter(
                           child: HintCard(
                             show: !state.isHintAcknowledged,
-                            hintText: S.of(context).inboxPageUsageHintText,
+                            hintText:
+                                S.of(context).swipeLeftToMarkADocumentAsSeen,
                             onHintAcknowledged: () =>
                                 context.read<InboxCubit>().acknowledgeHint(),
                           ),
@@ -177,7 +178,7 @@ class _InboxPageState extends State<InboxPage>
             color: Theme.of(context).colorScheme.primary,
           ).padded(),
           Text(
-            S.of(context).inboxPageMarkAsSeenText,
+            S.of(context).markAsSeen,
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -197,21 +198,19 @@ class _InboxPageState extends State<InboxPage>
     final isActionConfirmed = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text(S
-                .of(context)
-                .inboxPageMarkAllAsSeenConfirmationDialogTitleText),
+            title: Text(S.of(context).markAllAsSeen),
             content: Text(
-              S.of(context).inboxPageMarkAllAsSeenConfirmationDialogText,
+              S.of(context).areYouSureYouWantToMarkAllDocumentsAsSeen,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(S.of(context).genericActionCancelLabel),
+                child: Text(S.of(context).cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 child: Text(
-                  S.of(context).genericActionOkLabel,
+                  S.of(context).ok,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
@@ -229,9 +228,9 @@ class _InboxPageState extends State<InboxPage>
       final removedTags = await context.read<InboxCubit>().removeFromInbox(doc);
       showSnackBar(
         context,
-        S.of(context).inboxPageDocumentRemovedMessageText,
+        S.of(context).removeDocumentFromInbox,
         action: SnackBarActionConfig(
-          label: S.of(context).inboxPageUndoRemoveText,
+          label: S.of(context).undo,
           onPressed: () => _onUndoMarkAsSeen(doc, removedTags),
         ),
       );
@@ -268,10 +267,10 @@ class _InboxPageState extends State<InboxPage>
       documents,
       (doc) {
         if (doc.added.isToday) {
-          return S.of(context).inboxPageTodayText;
+          return S.of(context).today;
         }
         if (doc.added.isYesterday) {
-          return S.of(context).inboxPageYesterdayText;
+          return S.of(context).yesterday;
         }
         return DateFormat.yMMMMd().format(doc.added);
       },

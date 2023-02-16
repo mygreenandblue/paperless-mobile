@@ -44,48 +44,39 @@ class DocumentMetaDataWidget extends StatelessWidget {
               ),
               children: [
                 DetailsItem(
-                  label: S
-                      .of(context)
-                      .documentArchiveSerialNumberPropertyLongLabel,
+                  label: S.of(context).archiveSerialNumber,
                   content: document.archiveSerialNumber != null
                       ? Text(document.archiveSerialNumber.toString())
                       : TextButton.icon(
                           icon: const Icon(Icons.archive_outlined),
-                          label: Text(S
-                              .of(context)
-                              .documentDetailsPageAssignAsnButtonLabel),
+                          label: Text(S.of(context).AssignAsn),
                           onPressed: connectivity.isConnected
                               ? () => _assignAsn(context)
                               : null,
                         ),
                 ).paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(DateFormat().format(document.modified),
-                        label: S.of(context).documentModifiedPropertyLabel,
-                        context: context)
+                        label: S.of(context).modifiedAt, context: context)
                     .paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(DateFormat().format(document.added),
-                        label: S.of(context).documentAddedPropertyLabel,
-                        context: context)
+                        label: S.of(context).addedAt, context: context)
                     .paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(
                   meta.mediaFilename,
                   context: context,
-                  label:
-                      S.of(context).documentMetaDataMediaFilenamePropertyLabel,
+                  label: S.of(context).mediaFilename,
                 ).paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(
                   meta.originalChecksum,
                   context: context,
-                  label: S.of(context).documentMetaDataChecksumLabel,
+                  label: S.of(context).originalMD5Checksum,
                 ).paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(formatBytes(meta.originalSize, 2),
-                        label:
-                            S.of(context).documentMetaDataOriginalFileSizeLabel,
-                        context: context)
+                        label: S.of(context).originalFileSize, context: context)
                     .paddedOnly(bottom: itemSpacing),
                 DetailsItem.text(
                   meta.originalMimeType,
-                  label: S.of(context).documentMetaDataOriginalMimeTypeLabel,
+                  label: S.of(context).originalMIMEType,
                   context: context,
                 ).paddedOnly(bottom: itemSpacing),
               ],

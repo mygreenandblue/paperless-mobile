@@ -8,8 +8,7 @@ class SecuritySettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text(S.of(context).settingsPageSecuritySettingsLabel)),
+      appBar: AppBar(title: Text(S.of(context).security)),
       body: ListView(
         children: const [
           BiometricAuthenticationSetting(),
