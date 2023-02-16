@@ -146,15 +146,13 @@ or when you built with `--split-per-abi`
 flutter install --use-application-binary=build/pp/outputs/flutter-apk/<apk_file_name>.apk
 ```
   
-## Languages and Translations
-If you want to contribute to translate the app into your language, create a new <a href="https://github.com/astubenbord/paperless-mobile/discussions/categories/languages-and-translations">Discussion</a> and you will be invited to the <a href="https://localizely.com/">Localizely</a> project.
+## Languages and Translations [![Crowdin](https://badges.crowdin.net/paperless-mobile/localized.svg)](https://crowdin.com/project/paperless-mobile)
+If you want to contribute by translating a language, feel free to join the [Crowdin](https://crowdin.com/project/paperless-mobile) project!
 
 Thanks to the following contributors for providing translations:
 - German and English by <a href="https://github.com/astubenbord">astubenbord</a>
 - Czech language by <a href="https://github.com/svetlemodry">svetlemodry</a>
 - Turkish language by <a href="https://github.com/imsakg">imsakg</a>
-
-This project is registered as an open source project in Localizely, which offers full benefits for free! 
 
 <!-- ROADMAP -->
 ## Roadmap
