@@ -52,9 +52,15 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
   }
 
   bool _hasActiveInternetConnection(ConnectivityResult conn) {
-    return conn == ConnectivityResult.mobile ||
-        conn == ConnectivityResult.wifi ||
-        conn == ConnectivityResult.ethernet;
+    switch (conn) {
+      case ConnectivityResult.wifi:
+      case ConnectivityResult.ethernet:
+      case ConnectivityResult.mobile:
+      case ConnectivityResult.vpn:
+        return true;
+      default:
+        return false;
+    }
   }
 
   @override

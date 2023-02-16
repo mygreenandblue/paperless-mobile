@@ -284,7 +284,6 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     ReceiveSharingIntent.getMediaStream()
         .listen(ShareIntentQueue.instance.addAll);
     // For sharing files coming from outside the app while the app is closed
-    // TODO: This does not work currently, app does not have permission to access the shared file
     ReceiveSharingIntent.getInitialMedia()
         .then(ShareIntentQueue.instance.addAll);
   }
