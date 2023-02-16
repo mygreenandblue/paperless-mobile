@@ -101,9 +101,6 @@ void main() async {
   // Initialize Blocs/Cubits
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
 
-  // Remove temporarily downloaded files.
-  await FileService.clearDirectoryContent(PaperlessDirectoryType.temporary);
-
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();
 
