@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class RemoveHistoryEntryDialog extends StatelessWidget {
   final String entry;
@@ -10,11 +10,11 @@ class RemoveHistoryEntryDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(entry),
-      content: Text(S.of(context).removeQueryFromSearchHistory),
+      content: Text(S.of(context)!.removeQueryFromSearchHistory),
       actions: [
         const DialogCancelButton(),
         TextButton(
-          child: Text(S.of(context).remove),
+          child: Text(S.of(context)!.remove),
           onPressed: () {
             Navigator.pop(context, true);
           },

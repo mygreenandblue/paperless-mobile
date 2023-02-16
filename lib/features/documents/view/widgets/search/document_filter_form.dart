@@ -6,7 +6,7 @@ import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'text_query_form_field.dart';
 
@@ -96,14 +96,14 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       Align(
         alignment: Alignment.centerLeft,
         child: Text(
-          S.of(context).advanced,
+          S.of(context)!.advanced,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkCreatedAt,
         initialValue: widget.initialFilter.created,
-        labelText: S.of(context).createdAt,
+        labelText: S.of(context)!.createdAt,
         onChanged: (_) {
           _checkQueryConstraints();
         },
@@ -111,7 +111,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkAddedAt,
         initialValue: widget.initialFilter.added,
-        labelText: S.of(context).addedAt,
+        labelText: S.of(context)!.addedAt,
         onChanged: (_) {
           _checkQueryConstraints();
         },
@@ -151,7 +151,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkDocumentType,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).documentType,
+          textFieldLabel: S.of(context)!.documentType,
           initialValue: widget.initialFilter.documentType,
           prefixIcon: const Icon(Icons.description_outlined),
         );
@@ -166,7 +166,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkCorrespondent,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).correspondent,
+          textFieldLabel: S.of(context)!.correspondent,
           initialValue: widget.initialFilter.correspondent,
           prefixIcon: const Icon(Icons.person_outline),
         );
@@ -181,7 +181,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           formBuilderState: widget.formKey.currentState,
           name: DocumentFilterForm.fkStoragePath,
           labelOptions: state.labels,
-          textFieldLabel: S.of(context).storagePath,
+          textFieldLabel: S.of(context)!.storagePath,
           initialValue: widget.initialFilter.storagePath,
           prefixIcon: const Icon(Icons.folder_outlined),
         );

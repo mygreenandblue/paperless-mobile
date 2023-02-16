@@ -14,7 +14,8 @@ import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class InboxPage extends StatefulWidget {
@@ -52,7 +53,7 @@ class _InboxPageState extends State<InboxPage>
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(
-            label: Text(S.of(context).allSeen),
+            label: Text(S.of(context)!.allSeen),
             icon: const Icon(Icons.done_all),
             onPressed: state.hasLoaded && state.documents.isNotEmpty
                 ? () => _onMarkAllAsSeen(
@@ -128,7 +129,7 @@ class _InboxPageState extends State<InboxPage>
                     controller: pagingScrollController,
                     slivers: [
                       SearchAppBar(
-                        hintText: S.of(context).searchDocuments,
+                        hintText: S.of(context)!.searchDocuments,
                         onOpenSearch: showDocumentSearchPage,
                       ),
                       if (state.documents.isEmpty)
@@ -150,7 +151,7 @@ class _InboxPageState extends State<InboxPage>
                           child: HintCard(
                             show: !state.isHintAcknowledged,
                             hintText:
-                                S.of(context).swipeLeftToMarkADocumentAsSeen,
+                                S.of(context)!.swipeLeftToMarkADocumentAsSeen,
                             onHintAcknowledged: () =>
                                 context.read<InboxCubit>().acknowledgeHint(),
                           ),
@@ -178,7 +179,7 @@ class _InboxPageState extends State<InboxPage>
             color: Theme.of(context).colorScheme.primary,
           ).padded(),
           Text(
-            S.of(context).markAsSeen,
+            S.of(context)!.markAsSeen,
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -198,19 +199,19 @@ class _InboxPageState extends State<InboxPage>
     final isActionConfirmed = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text(S.of(context).markAllAsSeen),
+            title: Text(S.of(context)!.markAllAsSeen),
             content: Text(
-              S.of(context).areYouSureYouWantToMarkAllDocumentsAsSeen,
+              S.of(context)!.areYouSureYouWantToMarkAllDocumentsAsSeen,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(S.of(context).cancel),
+                child: Text(S.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 child: Text(
-                  S.of(context).ok,
+                  S.of(context)!.ok,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
@@ -228,9 +229,9 @@ class _InboxPageState extends State<InboxPage>
       final removedTags = await context.read<InboxCubit>().removeFromInbox(doc);
       showSnackBar(
         context,
-        S.of(context).removeDocumentFromInbox,
+        S.of(context)!.removeDocumentFromInbox,
         action: SnackBarActionConfig(
-          label: S.of(context).undo,
+          label: S.of(context)!.undo,
           onPressed: () => _onUndoMarkAsSeen(doc, removedTags),
         ),
       );
@@ -267,10 +268,10 @@ class _InboxPageState extends State<InboxPage>
       documents,
       (doc) {
         if (doc.added.isToday) {
-          return S.of(context).today;
+          return S.of(context)!.today;
         }
         if (doc.added.isYesterday) {
-          return S.of(context).yesterday;
+          return S.of(context)!.yesterday;
         }
         return DateFormat.yMMMMd().format(doc.added);
       },

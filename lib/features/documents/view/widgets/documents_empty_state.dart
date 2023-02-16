@@ -3,7 +3,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/empty_state.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentsEmptyState extends StatelessWidget {
   final DocumentPagingState state;
@@ -18,13 +18,13 @@ class DocumentsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: EmptyState(
-        title: S.of(context).oops,
-        subtitle: S.of(context).thereSeemsToBeNothingHere,
+        title: S.of(context)!.oops,
+        subtitle: S.of(context)!.thereSeemsToBeNothingHere,
         bottomChild: state.filter != DocumentFilter.initial && onReset != null
             ? TextButton(
                 onPressed: onReset,
                 child: Text(
-                  S.of(context).resetFilter,
+                  S.of(context)!.resetFilter,
                 ),
               ).padded()
             : null,

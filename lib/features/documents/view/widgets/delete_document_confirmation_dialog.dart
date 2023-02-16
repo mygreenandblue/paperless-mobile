@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DeleteDocumentConfirmationDialog extends StatelessWidget {
   final DocumentModel document;
@@ -9,12 +9,12 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.of(context).confirmDeletion),
+      title: Text(S.of(context)!.confirmDeletion),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            S.of(context).areYouSureYouWantToDeleteTheFollowingDocuments(1),
+            S.of(context)!.areYouSureYouWantToDeleteTheFollowingDocuments(1),
           ),
           const SizedBox(height: 16),
           Text(
@@ -26,13 +26,13 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(S.of(context).thisActionIsIrreversibleDoYouWishToProceedAnyway),
+          Text(S.of(context)!.thisActionIsIrreversibleDoYouWishToProceedAnyway),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: Text(S.of(context).cancel),
+          child: Text(S.of(context)!.cancel),
         ),
         TextButton(
           style: ButtonStyle(
@@ -42,7 +42,7 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context, true);
           },
-          child: Text(S.of(context).delete),
+          child: Text(S.of(context)!.delete),
         ),
       ],
     );

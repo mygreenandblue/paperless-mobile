@@ -5,7 +5,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddLabelPage<T extends Label> extends StatelessWidget {
   final String? initialName;
@@ -62,7 +62,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(
           icon: const Icon(Icons.add),
-          label: Text(S.of(context).create),
+          label: Text(S.of(context)!.create),
           onSubmit: context.read<EditLabelCubit<T>>().create,
         ),
         additionalFields: additionalFields,

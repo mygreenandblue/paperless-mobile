@@ -20,7 +20,8 @@ import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.da
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
@@ -112,9 +113,9 @@ class _DocumentsPageState extends State<DocumentsPage>
       listener: (context, state) {
         showSnackBar(
           context,
-          S.of(context).newDocumentAvailable,
+          S.of(context)!.newDocumentAvailable,
           action: SnackBarActionConfig(
-            label: S.of(context).reload,
+            label: S.of(context)!.reload,
             onPressed: () {
               context.read<TaskStatusCubit>().acknowledgeCurrentTask();
               context.read<DocumentsCubit>().reload();
@@ -200,7 +201,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                                       .resetSelection(),
                                 ),
                                 title: Text(
-                                  "${state.selection.length} ${S.of(context).countSelected}",
+                                  "${state.selection.length} ${S.of(context)!.countSelected}",
                                 ),
                                 actions: [
                                   IconButton(
@@ -211,13 +212,13 @@ class _DocumentsPageState extends State<DocumentsPage>
                               );
                             }
                             return SearchAppBar(
-                              hintText: S.of(context).searchDocuments,
+                              hintText: S.of(context)!.searchDocuments,
                               onOpenSearch: showDocumentSearchPage,
                               bottom: TabBar(
                                 controller: _tabController,
                                 tabs: [
-                                  Tab(text: S.of(context).documents),
-                                  Tab(text: S.of(context).views),
+                                  Tab(text: S.of(context)!.documents),
+                                  Tab(text: S.of(context)!.views),
                                 ],
                               ),
                             );
@@ -293,7 +294,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             _nestedScrollViewKey.currentState?.outerController.jumpTo(0);
           },
           label: Text(
-            S.of(context).scrollToTop,
+            S.of(context)!.scrollToTop,
             style: DefaultTextStyle.of(context).style.apply(
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
@@ -408,7 +409,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             .bulkDelete(documentsState.selection);
         showSnackBar(
           context,
-          S.of(context).documentsSuccessfullyDeleted,
+          S.of(context)!.documentsSuccessfullyDeleted,
         );
         context.read<DocumentsCubit>().resetSelection();
       } on PaperlessServerException catch (error, stackTrace) {

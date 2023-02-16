@@ -19,6 +19,7 @@ class DocumentsListLoadingWidget extends StatelessWidget {
       );
     } else {
       return ListView.builder(
+        padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) => _buildFakeListItem(context),
       );

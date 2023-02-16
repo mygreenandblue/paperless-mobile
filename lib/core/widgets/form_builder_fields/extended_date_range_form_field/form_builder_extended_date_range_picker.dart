@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/extended_date_range_dialog.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/relative_date_range_picker_helper.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class FormBuilderExtendedDateRangePicker extends StatefulWidget {
   final String name;
@@ -90,21 +90,21 @@ class _FormBuilderExtendedDateRangePickerState
         return '${df.format(query.after!)} – ${df.format(query.before!)}';
       }
       if (query.before != null) {
-        return '${S.of(context).before} ${df.format(query.before!)}';
+        return '${S.of(context)!.before} ${df.format(query.before!)}';
       }
       if (query.after != null) {
-        return '${S.of(context).after} ${df.format(query.after!)}';
+        return '${S.of(context)!.after} ${df.format(query.after!)}';
       }
     } else if (query is RelativeDateRangeQuery) {
       switch (query.unit) {
         case DateRangeUnit.day:
-          return S.of(context).lastNDays(query.offset);
+          return S.of(context)!.lastNDays(query.offset);
         case DateRangeUnit.week:
-          return S.of(context).lastNWeeks(query.offset);
+          return S.of(context)!.lastNWeeks(query.offset);
         case DateRangeUnit.month:
-          return S.of(context).lastNMonths(query.offset);
+          return S.of(context)!.lastNMonths(query.offset);
         case DateRangeUnit.year:
-          return S.of(context).lastNYears(query.offset);
+          return S.of(context)!.lastNYears(query.offset);
         default:
       }
     }

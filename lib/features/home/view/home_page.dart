@@ -28,7 +28,8 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path/path.dart' as p;
@@ -153,41 +154,41 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
     final filename = extractFilenameFromPath(mediaFile.path);
     final extension = p.extension(mediaFile.path);
-      if (await File(mediaFile.path).exists()) {
-        final bytes = File(mediaFile.path).readAsBytesSync();
-        final success = await Navigator.push<bool>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BlocProvider.value(
-                  value: DocumentUploadCubit(
-                    documentApi: context.read(),
-                    tagRepository: context.read(),
-                    correspondentRepository: context.read(),
-                    documentTypeRepository: context.read(),
-                  ),
-                  child: DocumentUploadPreparationPage(
-                    fileBytes: bytes,
-                    filename: filename,
-                    title: filename,
-                    fileExtension: extension,
-                  ),
+    if (await File(mediaFile.path).exists()) {
+      final bytes = File(mediaFile.path).readAsBytesSync();
+      final success = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider.value(
+                value: DocumentUploadCubit(
+                  documentApi: context.read(),
+                  tagRepository: context.read(),
+                  correspondentRepository: context.read(),
+                  documentTypeRepository: context.read(),
+                ),
+                child: DocumentUploadPreparationPage(
+                  fileBytes: bytes,
+                  filename: filename,
+                  title: filename,
+                  fileExtension: extension,
                 ),
               ),
-            ) ??
-            false;
-        if (success) {
-          await Fluttertoast.showToast(
-            msg: S.of(context).documentSuccessfullyUploadedProcessing,
-          );
-          SystemNavigator.pop();
-        }
-      } else {
-        Fluttertoast.showToast(
-          msg: S.of(context).couldNotAccessReceivedFile,
-          toastLength: Toast.LENGTH_LONG,
+            ),
+          ) ??
+          false;
+      if (success) {
+        await Fluttertoast.showToast(
+          msg: S.of(context)!.documentSuccessfullyUploadedProcessing,
         );
+        SystemNavigator.pop();
       }
+    } else {
+      Fluttertoast.showToast(
+        msg: S.of(context)!.couldNotAccessReceivedFile,
+        toastLength: Toast.LENGTH_LONG,
+      );
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +199,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.description,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).documents,
+        label: S.of(context)!.documents,
       ),
       RouteDescription(
         icon: const Icon(Icons.document_scanner_outlined),
@@ -206,7 +207,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.document_scanner,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).scanner,
+        label: S.of(context)!.scanner,
       ),
       RouteDescription(
         icon: const Icon(Icons.sell_outlined),
@@ -214,7 +215,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Icons.sell,
           color: Theme.of(context).colorScheme.primary,
         ),
-        label: S.of(context).labels,
+        label: S.of(context)!.labels,
       ),
       RouteDescription(
           icon: const Icon(Icons.inbox_outlined),
@@ -222,7 +223,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             Icons.inbox,
             color: Theme.of(context).colorScheme.primary,
           ),
-          label: S.of(context).inbox,
+          label: S.of(context)!.inbox,
           badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
                 bloc: _inboxCubit,
                 builder: (context, state) {

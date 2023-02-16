@@ -5,7 +5,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SortFieldSelectionBottomSheet extends StatefulWidget {
   final SortOrder initialSortOrder;
@@ -48,12 +48,12 @@ class _SortFieldSelectionBottomSheetState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  S.of(context).orderBy,
+                  S.of(context)!.orderBy,
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.start,
                 ),
                 TextButton(
-                  child: Text(S.of(context).apply),
+                  child: Text(S.of(context)!.apply),
                   onPressed: () {
                     widget.onSubmit(
                       _currentSortField,
@@ -105,12 +105,12 @@ class _SortFieldSelectionBottomSheetState
                       ButtonSegment(
                         icon: const FaIcon(FontAwesomeIcons.arrowDownAZ),
                         value: SortOrder.descending,
-                        label: Text(S.of(context).descending),
+                        label: Text(S.of(context)!.descending),
                       ),
                       ButtonSegment(
                         icon: const FaIcon(FontAwesomeIcons.arrowUpZA),
                         value: SortOrder.ascending,
-                        label: Text(S.of(context).ascending),
+                        label: Text(S.of(context)!.ascending),
                       ),
                     ],
                     emptySelectionAllowed: false,

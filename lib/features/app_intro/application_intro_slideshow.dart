@@ -4,7 +4,7 @@ import 'package:paperless_mobile/core/global/asset_images.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/biometric_authentication_setting.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/language_selection_setting.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/theme_mode_setting.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ApplicationIntroSlideshow extends StatefulWidget {
   const ApplicationIntroSlideshow({super.key});
@@ -26,8 +26,8 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
       child: IntroductionScreen(
         globalBackgroundColor: Theme.of(context).canvasColor,
         showDoneButton: true,
-        next: Text(S.of(context).next),
-        done: Text(S.of(context).done),
+        next: Text(S.of(context)!.next),
+        done: Text(S.of(context)!.done),
         onDone: () => Navigator.pop(context),
         dotsDecorator: DotsDecorator(
           color: Theme.of(context).colorScheme.onBackground,

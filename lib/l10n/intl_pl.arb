@@ -1,5 +1,4 @@
 {
-  "@@locale": "pl",
   "developedBy": "Developed by {name}",
   "@developedBy": {
     "placeholders": {
@@ -11,28 +10,46 @@
   "account": "Account",
   "@account": {},
   "addCorrespondent": "New Correspondent",
-  "@addCorrespondent": {},
+  "@addCorrespondent": {
+    "description": "Title when adding a new correspondent"
+  },
   "addDocumentType": "Nowy rodzaj dokumentu",
-  "@addDocumentType": {},
+  "@addDocumentType": {
+    "description": "Title when adding a new document type"
+  },
   "addStoragePath": "New Storage Path",
-  "@addStoragePath": {},
+  "@addStoragePath": {
+    "description": "Title when adding a new storage path"
+  },
   "addTag": "Nowy tag",
-  "@addTag": {},
+  "@addTag": {
+    "description": "Title when adding a new tag"
+  },
   "aboutThisApp": "O aplikacji",
-  "@aboutThisApp": {},
-  "loggedInAs": "Zalogowano jako",
-  "@loggedInAs": {},
+  "@aboutThisApp": {
+    "description": "Label for about this app tile displayed in the drawer"
+  },
+  "loggedInAs": "Zalogowano jako {name}",
+  "@loggedInAs": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "disconnect": "Disconnect",
-  "@disconnect": {},
+  "@disconnect": {
+    "description": "Logout button label"
+  },
   "reportABug": "Report a Bug",
   "@reportABug": {},
   "settings": "Ustawienia",
   "@settings": {},
   "authenticateOnAppStart": "Authenticate on app start",
-  "@authenticateOnAppStart": {},
+  "@authenticateOnAppStart": {
+    "description": "Description of the biometric authentication settings tile"
+  },
   "biometricAuthentication": "Biometric authentication",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate enable biometric authentication} disable{Authenticate to disable biometric authentication}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}
@@ -46,10 +63,6 @@
   "@labels": {},
   "scanner": "Scanner",
   "@scanner": {},
-  "classic": "Classic",
-  "@classic": {},
-  "dynamic": "Dynamic",
-  "@dynamic": {},
   "startTyping": "Zacznij pisać...",
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Do you really want to delete this view?",
@@ -68,14 +81,20 @@
   "@createdAt": {},
   "documentSuccessfullyDeleted": "Dokument pomyślnie usunięty.",
   "@documentSuccessfullyDeleted": {},
-  "AssignAsn": "Assign",
-  "@AssignAsn": {},
+  "assignAsn": "Assign ASN",
+  "@assignAsn": {},
   "deleteDocumentTooltip": "Usuń",
-  "@deleteDocumentTooltip": {},
+  "@deleteDocumentTooltip": {
+    "description": "Tooltip shown for the delete button on details page"
+  },
   "downloadDocumentTooltip": "Pobierz",
-  "@downloadDocumentTooltip": {},
+  "@downloadDocumentTooltip": {
+    "description": "Tooltip shown for the download button on details page"
+  },
   "editDocumentTooltip": "Edytuj",
-  "@editDocumentTooltip": {},
+  "@editDocumentTooltip": {
+    "description": "Tooltip shown for the edit button on details page"
+  },
   "loadFullContent": "Load full content",
   "@loadFullContent": {},
   "noAppToDisplayPDFFilesFound": "Nie znaleziono aplikacji do wyświetlania plików PDF",
@@ -85,25 +104,41 @@
   "couldNotOpenFilePermissionDenied": "Nie można otworzyć pliku: ",
   "@couldNotOpenFilePermissionDenied": {},
   "previewTooltip": "Podgląd",
-  "@previewTooltip": {},
+  "@previewTooltip": {
+    "description": "Tooltip shown for the preview button on details page"
+  },
   "shareTooltip": "Udostępnij",
-  "@shareTooltip": {},
+  "@shareTooltip": {
+    "description": "Tooltip shown for the share button on details page"
+  },
   "similarDocuments": "Podobne Dokumenty",
-  "@similarDocuments": {},
+  "@similarDocuments": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "content": "Treść",
-  "@content": {},
+  "@content": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "metaData": "Meta dane",
-  "@metaData": {},
+  "@metaData": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "overview": "Przegląd",
-  "@overview": {},
+  "@overview": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "documentType": "Rodzaj dokumentu",
   "@documentType": {},
   "archivedPdf": "Archived (pdf)",
-  "@archivedPdf": {},
+  "@archivedPdf": {
+    "description": "Option to chose when downloading a document"
+  },
   "chooseFiletype": "Choose filetype",
   "@chooseFiletype": {},
   "original": "Original",
-  "@original": {},
+  "@original": {
+    "description": "Option to chose when downloading a document"
+  },
   "documentSuccessfullyDownloaded": "Document successfully downloaded.",
   "@documentSuccessfullyDownloaded": {},
   "suggestions": "Suggestions: ",
@@ -123,7 +158,9 @@
   "reset": "Reset",
   "@reset": {},
   "filterDocuments": "Filter Documents",
-  "@filterDocuments": {},
+  "@filterDocuments": {
+    "description": "Title of the document filter"
+  },
   "originalMD5Checksum": "Original MD5-Checksum",
   "@originalMD5Checksum": {},
   "mediaFilename": "Media Filename",
@@ -135,23 +172,33 @@
   "modifiedAt": "Modified at",
   "@modifiedAt": {},
   "preview": "Podgląd",
-  "@preview": {},
+  "@preview": {
+    "description": "Title of the document preview page"
+  },
   "scanADocument": "Zeskanuj dokument",
   "@scanADocument": {},
   "noDocumentsScannedYet": "No documents scanned yet.",
   "@noDocumentsScannedYet": {},
   "or": "lub",
-  "@or": {},
+  "@or": {
+    "description": "Used on the scanner page between both main actions when no scans have been captured."
+  },
   "deleteAllScans": "Delete all scans",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Upload a document from this device",
-  "@uploadADocumentFromThisDevice": {},
+  "@uploadADocumentFromThisDevice": {
+    "description": "Button label on scanner page"
+  },
   "noMatchesFound": "No matches found.",
-  "@noMatchesFound": {},
+  "@noMatchesFound": {
+    "description": "Displayed when no documents were found in the document search."
+  },
   "removeFromSearchHistory": "Usunąć z historii wyszukiwania?",
   "@removeFromSearchHistory": {},
   "results": "Wyniki",
-  "@results": {},
+  "@results": {
+    "description": "Label displayed above search results in document search."
+  },
   "searchDocuments": "Search documents",
   "@searchDocuments": {},
   "resetFilter": "Reset filter",
@@ -180,10 +227,19 @@
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
   "confirmDeletion": "Potwierdź usunięcie",
   "@confirmDeletion": {},
-  "areYouSureYouWantToDeleteTheFollowingDocuments": "Are you sure you want to delete the following documents?",
-  "@areYouSureYouWantToDeleteTheFollowingDocuments": {},
+  "areYouSureYouWantToDeleteTheFollowingDocuments": "{count, plural, one{Are you sure you want to delete the following document?} other{Are you sure you want to delete the following documents?}}",
+  "@areYouSureYouWantToDeleteTheFollowingDocuments": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "countSelected": "{count} selected",
-  "@countSelected": {},
+  "@countSelected": {
+    "description": "Displayed in the appbar when at least one document is selected.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "storagePath": "Storage Path",
   "@storagePath": {},
   "prepareDocument": "Prepare document",
@@ -275,7 +331,9 @@
   "absolute": "Absolute",
   "@absolute": {},
   "hintYouCanAlsoSpecifyRelativeValues": "Hint: Apart from concrete dates, you can also specify a time range relative to the current date.",
-  "@hintYouCanAlsoSpecifyRelativeValues": {},
+  "@hintYouCanAlsoSpecifyRelativeValues": {
+    "description": "Displayed in the extended date range picker"
+  },
   "amount": "Amount",
   "@amount": {},
   "relative": "Relative",
@@ -362,10 +420,10 @@
   "@upload": {},
   "youreOffline": "Jesteście w trybie offline.",
   "@youreOffline": {},
-  "assignASN": "Assign ASN",
-  "@assignASN": {},
   "deleteDocument": "Delete document",
-  "@deleteDocument": {},
+  "@deleteDocument": {
+    "description": "Used as an action label on each inbox item"
+  },
   "removeDocumentFromInbox": "Dokument usunięty ze skrzynki odbiorczej",
   "@removeDocumentFromInbox": {},
   "areYouSureYouWantToMarkAllDocumentsAsSeen": "Are you sure you want to mark all documents as seen? This will perform a bulk edit operation removing all inbox tags from the documents. This action is not reversible! Are you sure you want to continue?",
@@ -389,7 +447,11 @@
   "undo": "Cofnij",
   "@undo": {},
   "nUnseen": "{count} unseen",
-  "@nUnseen": {},
+  "@nUnseen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "swipeLeftToMarkADocumentAsSeen": "Hint: Swipe left to mark a document as seen and remove all inbox tags from the document.",
   "@swipeLeftToMarkADocumentAsSeen": {},
   "yesterday": "Wczoraj",
@@ -611,5 +673,9 @@
   "list": "List",
   "@list": {},
   "remove": "Remove",
-  "removeQueryFromSearchHistory": "Remove query from search history?"
+  "removeQueryFromSearchHistory": "Remove query from search history?",
+  "dynamicColorScheme": "Dynamic",
+  "@dynamicColorScheme": {},
+  "classicColorScheme": "Classic",
+  "@classicColorScheme": {}
 }

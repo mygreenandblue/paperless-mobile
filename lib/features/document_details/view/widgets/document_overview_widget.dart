@@ -7,7 +7,7 @@ import 'package:paperless_mobile/features/document_details/view/widgets/details_
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentOverviewWidget extends StatelessWidget {
   final DocumentModel document;
@@ -29,7 +29,7 @@ class DocumentOverviewWidget extends StatelessWidget {
       ),
       children: [
         DetailsItem(
-          label: S.of(context).title,
+          label: S.of(context)!.title,
           content: HighlightedText(
             text: document.title,
             highlights: queryString?.split(" ") ?? [],
@@ -39,12 +39,12 @@ class DocumentOverviewWidget extends StatelessWidget {
         DetailsItem.text(
           DateFormat.yMMMMd().format(document.created),
           context: context,
-          label: S.of(context).createdAt,
+          label: S.of(context)!.createdAt,
         ).paddedOnly(bottom: itemSpacing),
         Visibility(
           visible: document.documentType != null,
           child: DetailsItem(
-            label: S.of(context).documentType,
+            label: S.of(context)!.documentType,
             content: LabelText<DocumentType>(
               style: Theme.of(context).textTheme.bodyLarge,
               id: document.documentType,
@@ -54,7 +54,7 @@ class DocumentOverviewWidget extends StatelessWidget {
         Visibility(
           visible: document.correspondent != null,
           child: DetailsItem(
-            label: S.of(context).correspondent,
+            label: S.of(context)!.correspondent,
             content: LabelText<Correspondent>(
               style: Theme.of(context).textTheme.bodyLarge,
               id: document.correspondent,
@@ -64,7 +64,7 @@ class DocumentOverviewWidget extends StatelessWidget {
         Visibility(
           visible: document.storagePath != null,
           child: DetailsItem(
-            label: S.of(context).storagePath,
+            label: S.of(context)!.storagePath,
             content: StoragePathWidget(
               pathId: document.storagePath,
             ),
@@ -73,7 +73,7 @@ class DocumentOverviewWidget extends StatelessWidget {
         Visibility(
           visible: document.tags.isNotEmpty,
           child: DetailsItem(
-            label: S.of(context).tags,
+            label: S.of(context)!.tags,
             content: Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TagsWidget(

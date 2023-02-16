@@ -3,7 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_type_ahead.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
 
 class TextQueryFormField extends StatelessWidget {
@@ -63,19 +64,19 @@ class TextQueryFormField extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           child: ListTile(
-            title: Text(S.of(context).titleAndContent),
+            title: Text(S.of(context)!.titleAndContent),
           ),
           value: QueryType.titleAndContent,
         ),
         PopupMenuItem(
           child: ListTile(
-            title: Text(S.of(context).title),
+            title: Text(S.of(context)!.title),
           ),
           value: QueryType.title,
         ),
         PopupMenuItem(
           child: ListTile(
-            title: Text(S.of(context).extended),
+            title: Text(S.of(context)!.extended),
           ),
           value: QueryType.extended,
         ),
@@ -89,11 +90,11 @@ class TextQueryFormField extends StatelessWidget {
   String _buildLabelText(BuildContext context, QueryType queryType) {
     switch (queryType) {
       case QueryType.title:
-        return S.of(context).title;
+        return S.of(context)!.title;
       case QueryType.titleAndContent:
-        return S.of(context).titleAndContent;
+        return S.of(context)!.titleAndContent;
       case QueryType.extended:
-        return S.of(context).extended;
+        return S.of(context)!.extended;
       default:
         return '';
     }

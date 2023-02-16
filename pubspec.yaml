@@ -61,7 +61,6 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   local_auth: ^2.1.2
   connectivity_plus: ^3.0.3
-
   flutter_native_splash: ^2.2.11
   share_plus: ^6.2.0
   introduction_screen: ^3.0.2
@@ -148,12 +147,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-flutter_intl:
-  enabled: true
-  main_locale: en
-  localizely:
-    project_id: 84b4144d-a628-4ba6-a8d0-4f9917444057
-    download_empty_as: main
+
 
 flutter_native_splash:
   image: assets/logos/paperless_logo_green.png

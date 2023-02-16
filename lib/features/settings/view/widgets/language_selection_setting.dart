@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class LanguageSelectionSetting extends StatefulWidget {
   const LanguageSelectionSetting({super.key});
@@ -25,7 +25,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
       builder: (context, settings) {
         return ListTile(
-          title: Text(S.of(context).language),
+          title: Text(S.of(context)!.language),
           subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!),
           onTap: () => showDialog<String>(
             context: context,
@@ -33,7 +33,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
               footer: const Text(
                 "* Work in progress, not fully translated yet. Some words may be displayed in English!",
               ),
-              titleText: S.of(context).language,
+              titleText: S.of(context)!.language,
               options: [
                 RadioOption(
                   value: 'en',

@@ -4,7 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/user_credentials.model.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/obscured_input_text_form_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class UserCredentialsFormField extends StatefulWidget {
   static const fkCredentials = 'credentials';
@@ -37,22 +37,22 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
                     UserCredentials(username: username),
               ),
               validator: FormBuilderValidators.required(
-                errorText: S.of(context).usernameMustNotBeEmpty,
+                errorText: S.of(context)!.usernameMustNotBeEmpty,
               ),
               autofillHints: const [AutofillHints.username],
               decoration: InputDecoration(
-                label: Text(S.of(context).username),
+                label: Text(S.of(context)!.username),
               ),
             ),
             ObscuredInputTextFormField(
               key: const ValueKey('login-password'),
-              label: S.of(context).password,
+              label: S.of(context)!.password,
               onChanged: (password) => field.didChange(
                 field.value?.copyWith(password: password) ??
                     UserCredentials(password: password),
               ),
               validator: FormBuilderValidators.required(
-                errorText: S.of(context).passwordMustNotBeEmpty,
+                errorText: S.of(context)!.passwordMustNotBeEmpty,
               ),
             ),
           ].map((child) => child.padded()).toList(),
@@ -73,11 +73,11 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
               FocusScope.of(context).requestFocus(_focusNodes[fkPassword]);
             },
             validator: FormBuilderValidators.required(
-              errorText: S.of(context).usernameMustNotBeEmpty,
+              errorText: S.of(context)!.usernameMustNotBeEmpty,
             ),
             autofillHints: const [AutofillHints.username],
             decoration: InputDecoration(
-              labelText: S.of(context).username,
+              labelText: S.of(context)!.username,
             ),
           ).padded(),
           FormBuilderTextField(
@@ -88,11 +88,11 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
             },
             autofillHints: const [AutofillHints.password],
             validator: FormBuilderValidators.required(
-              errorText: S.of(context).passwordMustNotBeEmpty,
+              errorText: S.of(context)!.passwordMustNotBeEmpty,
             ),
             obscureText: true,
             decoration: InputDecoration(
-              labelText: S.of(context).password,
+              labelText: S.of(context)!.password,
             ),
           ).padded(),
         ],

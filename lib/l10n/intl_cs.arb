@@ -1,5 +1,4 @@
 {
-  "@@locale": "cs",
   "developedBy": "Vyvíjí {name}",
   "@developedBy": {
     "placeholders": {
@@ -11,29 +10,51 @@
   "account": "Účet",
   "@account": {},
   "addCorrespondent": "Nový korespondent",
-  "@addCorrespondent": {},
+  "@addCorrespondent": {
+    "description": "Title when adding a new correspondent"
+  },
   "addDocumentType": "Nový typ dokumentu",
-  "@addDocumentType": {},
+  "@addDocumentType": {
+    "description": "Title when adding a new document type"
+  },
   "addStoragePath": "Nová cesta úložiště",
-  "@addStoragePath": {},
+  "@addStoragePath": {
+    "description": "Title when adding a new storage path"
+  },
   "addTag": "Nový tag",
-  "@addTag": {},
+  "@addTag": {
+    "description": "Title when adding a new tag"
+  },
   "aboutThisApp": "O aplikaci",
-  "@aboutThisApp": {},
-  "loggedInAs": "Přihlášeno jako ",
-  "@loggedInAs": {},
+  "@aboutThisApp": {
+    "description": "Label for about this app tile displayed in the drawer"
+  },
+  "loggedInAs": "Přihlášeno jako {name}",
+  "@loggedInAs": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "disconnect": "Odpojit",
-  "@disconnect": {},
+  "@disconnect": {
+    "description": "Logout button label"
+  },
   "reportABug": "Nahlásit chybu",
   "@reportABug": {},
   "settings": "Nastavení",
   "@settings": {},
   "authenticateOnAppStart": "Přihlášení při spuštění aplikace",
-  "@authenticateOnAppStart": {},
+  "@authenticateOnAppStart": {
+    "description": "Description of the biometric authentication settings tile"
+  },
   "biometricAuthentication": "Zapnout biometrické ověření",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Pro zapnutí biometrického ověřování je třeba se přihlásit.} disable{Pro vypnutí biometrického ověřování je třeba se přihlásit.}}",
-  "@authenticateToToggleBiometricAuthentication": {},
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Pro zapnutí biometrického ověřování je třeba se přihlásit} disable{Pro vypnutí biometrického ověřování je třeba se přihlásit} other{}}",
+  "@authenticateToToggleBiometricAuthentication": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
   "documents": "Dokumenty",
   "@documents": {},
   "inbox": "Inbox",
@@ -42,10 +63,6 @@
   "@labels": {},
   "scanner": "Skener",
   "@scanner": {},
-  "classic": "Klasicky",
-  "@classic": {},
-  "dynamic": "Dynamicky",
-  "@dynamic": {},
   "startTyping": "Začni psát...",
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Opravdu chceš tento náhled smazat?",
@@ -64,14 +81,20 @@
   "@createdAt": {},
   "documentSuccessfullyDeleted": "Dokument byl úspěšně smazán.",
   "@documentSuccessfullyDeleted": {},
-  "AssignAsn": "Přiřadit",
-  "@AssignAsn": {},
+  "assignAsn": "Assign ASN",
+  "@assignAsn": {},
   "deleteDocumentTooltip": "Smazat",
-  "@deleteDocumentTooltip": {},
+  "@deleteDocumentTooltip": {
+    "description": "Tooltip shown for the delete button on details page"
+  },
   "downloadDocumentTooltip": "Stáhnout",
-  "@downloadDocumentTooltip": {},
+  "@downloadDocumentTooltip": {
+    "description": "Tooltip shown for the download button on details page"
+  },
   "editDocumentTooltip": "Upravit",
-  "@editDocumentTooltip": {},
+  "@editDocumentTooltip": {
+    "description": "Tooltip shown for the edit button on details page"
+  },
   "loadFullContent": "Načíst celý obsah",
   "@loadFullContent": {},
   "noAppToDisplayPDFFilesFound": "Aplikace pro otevírání PDF souborů nenalezena.",
@@ -81,25 +104,41 @@
   "couldNotOpenFilePermissionDenied": "Soubor nelze otevřít: přístup zamítnut.",
   "@couldNotOpenFilePermissionDenied": {},
   "previewTooltip": "Náhled",
-  "@previewTooltip": {},
+  "@previewTooltip": {
+    "description": "Tooltip shown for the preview button on details page"
+  },
   "shareTooltip": "Sdílet",
-  "@shareTooltip": {},
+  "@shareTooltip": {
+    "description": "Tooltip shown for the share button on details page"
+  },
   "similarDocuments": "Podobné dokumenty",
-  "@similarDocuments": {},
+  "@similarDocuments": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "content": "Obsah",
-  "@content": {},
+  "@content": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "metaData": "Metadata",
-  "@metaData": {},
+  "@metaData": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "overview": "Přehled",
-  "@overview": {},
+  "@overview": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "documentType": "Typ dokumentu",
   "@documentType": {},
   "archivedPdf": "Archived (pdf)",
-  "@archivedPdf": {},
+  "@archivedPdf": {
+    "description": "Option to chose when downloading a document"
+  },
   "chooseFiletype": "Choose filetype",
   "@chooseFiletype": {},
   "original": "Original",
-  "@original": {},
+  "@original": {
+    "description": "Option to chose when downloading a document"
+  },
   "documentSuccessfullyDownloaded": "Dokument úspěšně stažen.",
   "@documentSuccessfullyDownloaded": {},
   "suggestions": "Návrhy:",
@@ -119,7 +158,9 @@
   "reset": "Zrušit",
   "@reset": {},
   "filterDocuments": "Filtrovat dokumenty",
-  "@filterDocuments": {},
+  "@filterDocuments": {
+    "description": "Title of the document filter"
+  },
   "originalMD5Checksum": "MD5 součet originálu",
   "@originalMD5Checksum": {},
   "mediaFilename": "Jméno souboru média",
@@ -131,23 +172,33 @@
   "modifiedAt": "Pozměněno",
   "@modifiedAt": {},
   "preview": "Náhled",
-  "@preview": {},
+  "@preview": {
+    "description": "Title of the document preview page"
+  },
   "scanADocument": "Oskenovat dokument",
   "@scanADocument": {},
   "noDocumentsScannedYet": "Zatím nebyly naskenovány žádné dokumenty.",
   "@noDocumentsScannedYet": {},
   "or": "nebo",
-  "@or": {},
+  "@or": {
+    "description": "Used on the scanner page between both main actions when no scans have been captured."
+  },
   "deleteAllScans": "Smazat všechny skeny",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Nahrát jeden dokument z tohoto zařízení",
-  "@uploadADocumentFromThisDevice": {},
+  "@uploadADocumentFromThisDevice": {
+    "description": "Button label on scanner page"
+  },
   "noMatchesFound": "Žádné shody.",
-  "@noMatchesFound": {},
+  "@noMatchesFound": {
+    "description": "Displayed when no documents were found in the document search."
+  },
   "removeFromSearchHistory": "Odstranit z historie vyhledávání?",
   "@removeFromSearchHistory": {},
   "results": "Výsledky",
-  "@results": {},
+  "@results": {
+    "description": "Label displayed above search results in document search."
+  },
   "searchDocuments": "Prohledat dokumenty",
   "@searchDocuments": {},
   "resetFilter": "Zrušit",
@@ -176,10 +227,19 @@
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
   "confirmDeletion": "Potvrdit smazání",
   "@confirmDeletion": {},
-  "areYouSureYouWantToDeleteTheFollowingDocuments": "Jste si jisti že chcete smazat následující dokumenty?",
-  "@areYouSureYouWantToDeleteTheFollowingDocuments": {},
+  "areYouSureYouWantToDeleteTheFollowingDocuments": "{count, plural, one{Jste si jisti že chcete smazat následující dokument?} other{Jste si jisti že chcete smazat následující dokumenty?}}",
+  "@areYouSureYouWantToDeleteTheFollowingDocuments": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "countSelected": "{count} vybrány",
-  "@countSelected": {},
+  "@countSelected": {
+    "description": "Displayed in the appbar when at least one document is selected.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "storagePath": "Cesta k úložišti",
   "@storagePath": {},
   "prepareDocument": "Připravit dokument",
@@ -271,7 +331,9 @@
   "absolute": "Absolutní",
   "@absolute": {},
   "hintYouCanAlsoSpecifyRelativeValues": "Tip: Kromě konkrétního data lze také specifikovat relativní časovou odchylku k aktuálnímu datu.",
-  "@hintYouCanAlsoSpecifyRelativeValues": {},
+  "@hintYouCanAlsoSpecifyRelativeValues": {
+    "description": "Displayed in the extended date range picker"
+  },
   "amount": "Počet",
   "@amount": {},
   "relative": "Relativní",
@@ -358,10 +420,10 @@
   "@upload": {},
   "youreOffline": "Jste offline.",
   "@youreOffline": {},
-  "assignASN": "Přiřadit ASČ",
-  "@assignASN": {},
   "deleteDocument": "Smazat dokument",
-  "@deleteDocument": {},
+  "@deleteDocument": {
+    "description": "Used as an action label on each inbox item"
+  },
   "removeDocumentFromInbox": "Dokument odstraněn z inboxu.",
   "@removeDocumentFromInbox": {},
   "areYouSureYouWantToMarkAllDocumentsAsSeen": "Opravdu chcete označit všechny dokumenty jako shlédnuté? Toto provede hromadnou úpravu a odstraní inbox tag u všech dokumentů.\nToto je nevratná akce! Opravdu chcete pokračovat?",
@@ -385,7 +447,11 @@
   "undo": "Vrátit",
   "@undo": {},
   "nUnseen": "{count} neshlédnuté",
-  "@nUnseen": {},
+  "@nUnseen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "swipeLeftToMarkADocumentAsSeen": "Tip: Potáhnutím doleva označit dokument jako shlédnutý a odstranit všechny inbox tagy.",
   "@swipeLeftToMarkADocumentAsSeen": {},
   "yesterday": "Včera",
@@ -514,8 +580,8 @@
   "@done": {},
   "next": "Další",
   "@next": {},
-  "receiveSharedFilePermissionDeniedMessage": "Přístup k obdrženému souboru zamítnut. Než budeš sdílet, zkus nejdříve otevřít aplikaci.",
-  "@receiveSharedFilePermissionDeniedMessage": {},
+  "couldNotAccessReceivedFile": "Could not access the received file. Please try to open the app before sharing.",
+  "@couldNotAccessReceivedFile": {},
   "newView": "Nový náhled",
   "@newView": {},
   "createsASavedViewBasedOnTheCurrentFilterCriteria": "Vytvoří nový náhled na základě aktuálních pravidel filtru.",
@@ -607,5 +673,9 @@
   "list": "List",
   "@list": {},
   "remove": "Remove",
-  "removeQueryFromSearchHistory": "Remove query from search history?"
+  "removeQueryFromSearchHistory": "Remove query from search history?",
+  "dynamicColorScheme": "Dynamicky",
+  "@dynamicColorScheme": {},
+  "classicColorScheme": "Klasicky",
+  "@classicColorScheme": {}
 }

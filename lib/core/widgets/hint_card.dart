@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class HintCard extends StatelessWidget {
   final String hintText;
@@ -52,7 +52,7 @@ class HintCard extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomRight,
                 child: TextButton(
-                  child: Text(S.of(context).gotIt),
+                  child: Text(S.of(context)!.gotIt),
                   onPressed: onHintAcknowledged,
                 ),
               )

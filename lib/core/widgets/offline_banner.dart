@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class OfflineBanner extends StatelessWidget with PreferredSizeWidget {
   const OfflineBanner({super.key});
@@ -21,7 +21,7 @@ class OfflineBanner extends StatelessWidget with PreferredSizeWidget {
             ),
           ),
           Text(
-            S.of(context).youreOffline,
+            S.of(context)!.youreOffline,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),

@@ -9,7 +9,7 @@ import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_color_picker.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddTagPage extends StatelessWidget {
   final String? initialValue;
@@ -22,7 +22,7 @@ class AddTagPage extends StatelessWidget {
         context.read<LabelRepository<Tag>>(),
       ),
       child: AddLabelPage<Tag>(
-        pageTitle: Text(S.of(context).addTag),
+        pageTitle: Text(S.of(context)!.addTag),
         fromJsonT: Tag.fromJson,
         initialName: initialValue,
         additionalFields: [
@@ -30,7 +30,7 @@ class AddTagPage extends StatelessWidget {
             name: Tag.colorKey,
             valueTransformer: (color) => "#${color?.value.toRadixString(16)}",
             decoration: InputDecoration(
-              label: Text(S.of(context).color),
+              label: Text(S.of(context)!.color),
             ),
             colorPickerType: ColorPickerType.materialPicker,
             initialValue: Color((Random().nextDouble() * 0xFFFFFF).toInt())
@@ -38,7 +38,7 @@ class AddTagPage extends StatelessWidget {
           ),
           FormBuilderCheckbox(
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context).inboxTag),
+            title: Text(S.of(context)!.inboxTag),
           ),
         ],
       ),

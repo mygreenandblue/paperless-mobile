@@ -6,7 +6,8 @@ import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
 
 class VerifyIdentityPage extends StatelessWidget {
@@ -19,12 +20,12 @@ class VerifyIdentityPage extends StatelessWidget {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.background,
-          title: Text(S.of(context).verifyYourIdentity),
+          title: Text(S.of(context)!.verifyYourIdentity),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(S.of(context).useTheConfiguredBiometricFactorToAuthenticate)
+            Text(S.of(context)!.useTheConfiguredBiometricFactorToAuthenticate)
                 .paddedSymmetrically(horizontal: 16),
             const Icon(
               Icons.fingerprint,
@@ -39,7 +40,7 @@ class VerifyIdentityPage extends StatelessWidget {
                 TextButton(
                   onPressed: () => _logout(context),
                   child: Text(
-                    S.of(context).disconnect,
+                    S.of(context)!.disconnect,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -52,7 +53,7 @@ class VerifyIdentityPage extends StatelessWidget {
                           .read<ApplicationSettingsCubit>()
                           .state
                           .isLocalAuthenticationEnabled),
-                  child: Text(S.of(context).verifyIdentity),
+                  child: Text(S.of(context)!.verifyIdentity),
                 ),
               ],
             ).padded(16),

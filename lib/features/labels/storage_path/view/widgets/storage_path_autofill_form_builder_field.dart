@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class StoragePathAutofillFormBuilderField extends StatefulWidget {
   final String name;
@@ -48,7 +48,7 @@ class _StoragePathAutofillFormBuilderFieldState
             controller: _textEditingController,
             validator: FormBuilderValidators.required(), //TODO: INTL
             decoration: InputDecoration(
-                label: Text(S.of(context).storagePath),
+                label: Text(S.of(context)!.storagePath),
                 suffixIcon: _showClearIcon
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -69,65 +69,65 @@ class _StoragePathAutofillFormBuilderFieldState
               runSpacing: 4.0,
               children: [
                 InputChip(
-                  label: Text(S.of(context).archiveSerialNumber),
+                  label: Text(S.of(context)!.archiveSerialNumber),
                   onPressed: () => _addParameterToInput("{asn}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).correspondent),
+                  label: Text(S.of(context)!.correspondent),
                   onPressed: () =>
                       _addParameterToInput("{correspondent}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).documentType),
+                  label: Text(S.of(context)!.documentType),
                   onPressed: () =>
                       _addParameterToInput("{document_type}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).tags),
+                  label: Text(S.of(context)!.tags),
                   onPressed: () => _addParameterToInput("{tag_list}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).title),
+                  label: Text(S.of(context)!.title),
                   onPressed: () => _addParameterToInput("{title}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt),
+                  label: Text(S.of(context)!.createdAt),
                   onPressed: () => _addParameterToInput("{created}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathYear})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathYear})"),
                   onPressed: () =>
                       _addParameterToInput("{created_year}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathMonth})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathMonth})"),
                   onPressed: () =>
                       _addParameterToInput("{created_month}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathDay})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathDay})"),
                   onPressed: () => _addParameterToInput("{created_day}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt),
+                  label: Text(S.of(context)!.createdAt),
                   onPressed: () => _addParameterToInput("{added}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathYear})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathYear})"),
                   onPressed: () => _addParameterToInput("{added_year}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathMonth})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathMonth})"),
                   onPressed: () => _addParameterToInput("{added_month}", field),
                 ),
                 InputChip(
-                  label: Text(S.of(context).createdAt +
-                      " (${S.of(context).storagePathDay})"),
+                  label: Text(S.of(context)!.createdAt +
+                      " (${S.of(context)!.storagePathDay})"),
                   onPressed: () => _addParameterToInput("{added_day}", field),
                 ),
               ],

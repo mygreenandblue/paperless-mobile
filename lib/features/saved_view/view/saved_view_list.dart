@@ -5,7 +5,7 @@ import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/view/saved_view_details_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SavedViewList extends StatelessWidget {
   const SavedViewList({super.key});
@@ -21,7 +21,7 @@ class SavedViewList extends StatelessWidget {
               return SliverToBoxAdapter(
                 child: HintCard(
                   hintText:
-                      S.of(context).createViewsToQuicklyFilterYourDocuments,
+                      S.of(context)!.createViewsToQuicklyFilterYourDocuments,
                 ),
               );
             }
@@ -33,7 +33,7 @@ class SavedViewList extends StatelessWidget {
                     enabled: connectivity.isConnected,
                     title: Text(view.name),
                     subtitle: Text(
-                      S.of(context).nFiltersSet(view.filterRules.length),
+                      S.of(context)!.nFiltersSet(view.filterRules.length),
                     ),
                     onTap: () {
                       Navigator.of(context).push(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 String translateMatchingAlgorithmDescription(
   BuildContext context,
@@ -8,17 +8,17 @@ String translateMatchingAlgorithmDescription(
 ) {
   switch (algorithm) {
     case MatchingAlgorithm.anyWord:
-      return S.of(context).documentContainsAnyOfTheseWords;
+      return S.of(context)!.documentContainsAnyOfTheseWords;
     case MatchingAlgorithm.allWords:
-      return S.of(context).documentContainsAllOfTheseWords;
+      return S.of(context)!.documentContainsAllOfTheseWords;
     case MatchingAlgorithm.exactMatch:
-      return S.of(context).documentContainsThisString;
+      return S.of(context)!.documentContainsThisString;
     case MatchingAlgorithm.regex:
-      return S.of(context).documentMatchesThisRegularExpression;
+      return S.of(context)!.documentMatchesThisRegularExpression;
     case MatchingAlgorithm.fuzzy:
-      return S.of(context).documentContainsAWordSimilarToThisWord;
+      return S.of(context)!.documentContainsAWordSimilarToThisWord;
     case MatchingAlgorithm.auto:
-      return S.of(context).learnMatchingAutomatically;
+      return S.of(context)!.learnMatchingAutomatically;
   }
 }
 
@@ -28,16 +28,16 @@ String translateMatchingAlgorithmName(
 ) {
   switch (algorithm) {
     case MatchingAlgorithm.anyWord:
-      return S.of(context).any;
+      return S.of(context)!.any;
     case MatchingAlgorithm.allWords:
-      return S.of(context).all;
+      return S.of(context)!.all;
     case MatchingAlgorithm.exactMatch:
-      return S.of(context).exact;
+      return S.of(context)!.exact;
     case MatchingAlgorithm.regex:
-      return S.of(context).regularExpression;
+      return S.of(context)!.regularExpression;
     case MatchingAlgorithm.fuzzy:
-      return S.of(context).fuzzy;
+      return S.of(context)!.fuzzy;
     case MatchingAlgorithm.auto:
-      return S.of(context).auto;
+      return S.of(context)!.auto;
   }
 }

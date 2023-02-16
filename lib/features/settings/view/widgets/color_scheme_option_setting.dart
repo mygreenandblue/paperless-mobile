@@ -8,7 +8,7 @@ import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ColorSchemeOptionSetting extends StatelessWidget {
   const ColorSchemeOptionSetting({super.key});
@@ -18,7 +18,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
     return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
       builder: (context, settings) {
         return ListTile(
-          title: Text(S.of(context).colors),
+          title: Text(S.of(context)!.colors),
           subtitle: Text(
             translateColorSchemeOption(
               context,
@@ -28,8 +28,8 @@ class ColorSchemeOptionSetting extends StatelessWidget {
           onTap: () => showDialog(
             context: context,
             builder: (_) => RadioSettingsDialog<ColorSchemeOption>(
-              titleText: S.of(context).colors,
-              descriptionText: S.of(context).colorSchemeHint,
+              titleText: S.of(context)!.colors,
+              descriptionText: S.of(context)!.colorSchemeHint,
               options: [
                 RadioOption(
                   value: ColorSchemeOption.classic,
@@ -46,7 +46,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
               ],
               footer: _isBelowAndroid12()
                   ? HintCard(
-                      hintText: S.of(context).colorSchemeNotSupportedWarning,
+                      hintText: S.of(context)!.colorSchemeNotSupportedWarning,
                       hintIcon: Icons.warning_amber,
                     )
                   : null,

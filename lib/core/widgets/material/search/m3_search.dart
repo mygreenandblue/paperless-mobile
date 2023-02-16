@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 /// Shows a full screen search page and returns the search result selected by
 /// the user when the page is closed.
@@ -308,7 +309,7 @@ abstract class SearchDelegate<T> {
   /// The hint text that is shown in the search field when it is empty.
   ///
   /// If this value is set to null, the value of
-  /// `MaterialLocalizations.of(context).searchFieldLabel` will be used instead.
+  /// `MaterialLocalizationS.of(context)!.searchFieldLabel` will be used instead.
   final String? searchFieldLabel;
 
   /// The style of the [searchFieldLabel].
@@ -532,8 +533,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterialLocalizations(context));
     final ThemeData theme = widget.delegate.appBarTheme(context);
-    final String searchFieldLabel = widget.delegate.searchFieldLabel ??
-        MaterialLocalizations.of(context).searchFieldLabel;
+    final String searchFieldLabel =
+        widget.delegate.searchFieldLabel ?? S.of(context)!.search;
     Widget? body;
     switch (widget.delegate._currentBody) {
       case _SearchBody.suggestions:

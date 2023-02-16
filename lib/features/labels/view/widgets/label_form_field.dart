@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_type_ahead.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 ///
 /// Form field allowing to select labels (i.e. correspondent, documentType)
@@ -79,7 +79,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       noItemsFoundBuilder: (context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Text(
-          S.of(context).noItemsFound,
+          S.of(context)!.noItemsFound,
           textAlign: TextAlign.center,
           style:
               TextStyle(color: Theme.of(context).disabledColor, fontSize: 18.0),
@@ -97,7 +97,8 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       ),
       itemBuilder: (context, suggestion) => ListTile(
         title: Text(
-          widget.labelOptions[suggestion.id]?.name ?? S.of(context).notAssigned,
+          widget.labelOptions[suggestion.id]?.name ??
+              S.of(context)!.notAssigned,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -141,7 +142,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       ),
       selectionToTextTransformer: (suggestion) {
         if (suggestion == const IdQueryParameter.notAssigned()) {
-          return S.of(context).notAssigned;
+          return S.of(context)!.notAssigned;
         }
         return widget.labelOptions[suggestion.id]?.name ?? "";
       },
@@ -194,11 +195,11 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
 
   String _getLocalizedHint(BuildContext context) {
     if (T == Correspondent) {
-      return S.of(context).startTyping;
+      return S.of(context)!.startTyping;
     } else if (T == DocumentType) {
-      return S.of(context).startTyping;
+      return S.of(context)!.startTyping;
     } else {
-      return S.of(context).filterTags;
+      return S.of(context)!.filterTags;
     }
   }
 }

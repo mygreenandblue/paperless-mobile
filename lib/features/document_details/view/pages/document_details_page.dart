@@ -21,7 +21,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/delete_document
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -102,7 +103,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       tabs: [
                         Tab(
                           child: Text(
-                            S.of(context).overview,
+                            S.of(context)!.overview,
                             style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
@@ -112,7 +113,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         ),
                         Tab(
                           child: Text(
-                            S.of(context).content,
+                            S.of(context)!.content,
                             style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
@@ -122,7 +123,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         ),
                         Tab(
                           child: Text(
-                            S.of(context).metaData,
+                            S.of(context)!.metaData,
                             style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
@@ -132,7 +133,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         ),
                         Tab(
                           child: Text(
-                            S.of(context).similarDocuments,
+                            S.of(context)!.similarDocuments,
                             style: TextStyle(
                               color: Theme.of(context)
                                   .colorScheme
@@ -198,7 +199,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               position: b.BadgePosition.topEnd(top: -12, end: -6),
               showBadge: _filteredSuggestions.hasSuggestions,
               child: Tooltip(
-                message: S.of(context).editDocumentTooltip,
+                message: S.of(context)!.editDocumentTooltip,
                 preferBelow: false,
                 verticalOffset: 40,
                 child: FloatingActionButton(
@@ -231,14 +232,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
-                    tooltip: S.of(context).deleteDocumentTooltip,
+                    tooltip: S.of(context)!.deleteDocumentTooltip,
                     icon: const Icon(Icons.delete),
                     onPressed: widget.allowEdit && isConnected
                         ? () => _onDelete(state.document)
                         : null,
                   ).paddedSymmetrically(horizontal: 4),
                   Tooltip(
-                    message: S.of(context).downloadDocumentTooltip,
+                    message: S.of(context)!.downloadDocumentTooltip,
                     child: DocumentDownloadButton(
                       document: state.document,
                       enabled: isConnected,
@@ -246,18 +247,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     ),
                   ),
                   IconButton(
-                    tooltip: S.of(context).previewTooltip,
+                    tooltip: S.of(context)!.previewTooltip,
                     icon: const Icon(Icons.visibility),
                     onPressed:
                         isConnected ? () => _onOpen(state.document) : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
-                    tooltip: S.of(context).openInSystemViewer,
+                    tooltip: S.of(context)!.openInSystemViewer,
                     icon: const Icon(Icons.open_in_new),
                     onPressed: isConnected ? _onOpenFileInSystemViewer : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
-                    tooltip: S.of(context).shareTooltip,
+                    tooltip: S.of(context)!.shareTooltip,
                     icon: const Icon(Icons.share),
                     onPressed: isConnected
                         ? () =>
@@ -322,13 +323,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         await context.read<DocumentDetailsCubit>().openDocumentInSystemViewer();
     if (status == ResultType.done) return;
     if (status == ResultType.noAppToOpen) {
-      showGenericError(context, S.of(context).noAppToDisplayPDFFilesFound);
+      showGenericError(context, S.of(context)!.noAppToDisplayPDFFilesFound);
     }
     if (status == ResultType.fileNotFound) {
       showGenericError(context, translateError(context, ErrorCode.unknown));
     }
     if (status == ResultType.permissionDenied) {
-      showGenericError(context, S.of(context).couldNotOpenFilePermissionDenied);
+      showGenericError(
+          context, S.of(context)!.couldNotOpenFilePermissionDenied);
     }
   }
 
@@ -342,7 +344,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     if (delete) {
       try {
         await context.read<DocumentDetailsCubit>().delete(document);
-        showSnackBar(context, S.of(context).documentSuccessfullyDeleted);
+        showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {

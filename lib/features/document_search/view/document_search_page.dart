@@ -7,7 +7,8 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'dart:math' as math;
 
@@ -60,7 +61,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hintStyle: theme.textTheme.bodyLarge?.apply(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            hintText: S.of(context).searchDocuments,
+            hintText: S.of(context)!.searchDocuments,
             border: InputBorder.none,
           ),
           controller: _queryController,
@@ -181,7 +182,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
 
   Widget _buildResultsView(DocumentSearchState state) {
     final header = Text(
-      S.of(context).results,
+      S.of(context)!.results,
       style: Theme.of(context).textTheme.labelSmall,
     ).padded();
     return CustomScrollView(
@@ -190,7 +191,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
         if (state.hasLoaded && !state.isLoading && state.documents.isEmpty)
           SliverToBoxAdapter(
             child: Center(
-              child: Text(S.of(context).noMatchesFound),
+              child: Text(S.of(context)!.noMatchesFound),
             ),
           )
         else

@@ -44,7 +44,7 @@ class ApplicationSettingsState {
 
   static String get _defaultPreferredLocaleSubtag {
     String preferredLocale = Platform.localeName.split("_").first;
-    if (!S.delegate.supportedLocales
+    if (!S.supportedLocales
         .any((locale) => locale.languageCode == preferredLocale)) {
       preferredLocale = 'en';
     }
