@@ -23,7 +23,8 @@ import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_c
 import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
@@ -72,7 +73,7 @@ class _ScannerPageState extends State<ScannerPage>
                     state.isEmpty ? const NeverScrollableScrollPhysics() : null,
                 slivers: [
                   SearchAppBar(
-                    hintText: S.of(context).searchDocuments,
+                    hintText: S.of(context)!.searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: PreferredSize(
                       child: _buildActions(connectedState.isConnected),
@@ -97,7 +98,7 @@ class _ScannerPageState extends State<ScannerPage>
                 floatHeaderSlivers: false,
                 headerSliverBuilder: (context, innerBoxIsScrolled) => [
                   SearchAppBar(
-                    hintText: S.of(context).searchDocuments,
+                    hintText: S.of(context)!.searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: PreferredSize(
                       child: _buildActions(connectedState.isConnected),
@@ -134,7 +135,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).previewScan),
+                label: Text(S.of(context)!.previewScan),
                 onPressed: state.isNotEmpty
                     ? () => Navigator.of(context).push(
                           MaterialPageRoute(
@@ -154,7 +155,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).clearAll),
+                label: Text(S.of(context)!.clearAll),
                 onPressed: state.isEmpty ? null : () => _reset(context),
                 icon: const Icon(Icons.delete_sweep_outlined),
               );
@@ -163,7 +164,7 @@ class _ScannerPageState extends State<ScannerPage>
           BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return TextButton.icon(
-                label: Text(S.of(context).upload),
+                label: Text(S.of(context)!.upload),
                 onPressed: state.isEmpty || !isConnected
                     ? null
                     : () => _onPrepareDocumentUpload(context),
@@ -247,16 +248,16 @@ class _ScannerPageState extends State<ScannerPage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  S.of(context).noDocumentsScannedYet,
+                  S.of(context)!.noDocumentsScannedYet,
                   textAlign: TextAlign.center,
                 ),
                 TextButton(
-                  child: Text(S.of(context).scanADocument),
+                  child: Text(S.of(context)!.scanADocument),
                   onPressed: () => _openDocumentScanner(context),
                 ),
-                Text(S.of(context).or),
+                Text(S.of(context)!.or),
                 TextButton(
-                  child: Text(S.of(context).uploadADocumentFromThisDevice),
+                  child: Text(S.of(context)!.uploadADocumentFromThisDevice),
                   onPressed: isConnected ? _onUploadFromFilesystem : null,
                 ),
               ],

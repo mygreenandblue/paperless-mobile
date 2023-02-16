@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class InboxEmptyWidget extends StatelessWidget {
   const InboxEmptyWidget({
@@ -23,11 +23,11 @@ class InboxEmptyWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(S.of(context).youDoNotHaveUnseenDocuments),
+            Text(S.of(context)!.youDoNotHaveUnseenDocuments),
             TextButton(
               onPressed: () =>
                   _emptyStateRefreshIndicatorKey.currentState?.show(),
-              child: Text(S.of(context).refresh),
+              child: Text(S.of(context)!.refresh),
             ),
           ],
         ),

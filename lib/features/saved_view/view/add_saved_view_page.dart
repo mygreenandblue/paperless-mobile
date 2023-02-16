@@ -4,7 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddSavedViewPage extends StatefulWidget {
   final DocumentFilter currentFilter;
@@ -25,12 +25,12 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).newView),
+        title: Text(S.of(context)!.newView),
       ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         onPressed: () => _onCreate(context),
-        label: Text(S.of(context).create),
+        label: Text(S.of(context)!.create),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -46,18 +46,18 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                     name: _AddSavedViewPageState.fkName,
                     validator: FormBuilderValidators.required(),
                     decoration: InputDecoration(
-                      label: Text(S.of(context).name),
+                      label: Text(S.of(context)!.name),
                     ),
                   ),
                   FormBuilderCheckbox(
                     name: _AddSavedViewPageState.fkShowOnDashboard,
                     initialValue: false,
-                    title: Text(S.of(context).showOnDashboard),
+                    title: Text(S.of(context)!.showOnDashboard),
                   ),
                   FormBuilderCheckbox(
                     name: _AddSavedViewPageState.fkShowInSidebar,
                     initialValue: false,
-                    title: Text(S.of(context).showInSidebar),
+                    title: Text(S.of(context)!.showInSidebar),
                   ),
                 ],
               ),
@@ -94,18 +94,18 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                     name: fkName,
                     validator: FormBuilderValidators.required(),
                     decoration: InputDecoration(
-                      label: Text(S.of(context).name),
+                      label: Text(S.of(context)!.name),
                     ),
                   ),
                   FormBuilderCheckbox(
                     name: fkShowOnDashboard,
                     initialValue: false,
-                    title: Text(S.of(context).showOnDashboard),
+                    title: Text(S.of(context)!.showOnDashboard),
                   ),
                   FormBuilderCheckbox(
                     name: fkShowInSidebar,
                     initialValue: false,
-                    title: Text(S.of(context).showInSidebar),
+                    title: Text(S.of(context)!.showInSidebar),
                   ),
                 ],
               ),

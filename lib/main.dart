@@ -42,7 +42,7 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -136,7 +136,7 @@ void main() async {
   //Update language header in interceptor on language change.
   appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
       .preferredLocaleSubtag = event.preferredLocaleSubtag);
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -232,7 +232,7 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                   preferredColorScheme: settings.preferredColorSchemeOption,
                 ),
                 themeMode: settings.preferredThemeMode,
-                supportedLocales: S.delegate.supportedLocales,
+                supportedLocales: S.supportedLocales,
                 locale: Locale.fromSubtags(
                   languageCode: settings.preferredLocaleSubtag,
                 ),

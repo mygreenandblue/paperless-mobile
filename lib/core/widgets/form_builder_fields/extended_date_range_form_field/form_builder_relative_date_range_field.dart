@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class FormBuilderRelativeDateRangePicker extends StatefulWidget {
   final String name;
@@ -46,12 +46,12 @@ class _FormBuilderRelativeDateRangePickerState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(S.of(context).last),
+              Text(S.of(context)!.last),
               SizedBox(
                 width: 80,
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: S.of(context).amount,
+                    labelText: S.of(context)!.amount,
                   ),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -90,7 +90,7 @@ class _FormBuilderRelativeDateRangePickerState
                   onChanged: (value) =>
                       field.didChange(field.value!.copyWith(unit: value)),
                   decoration: InputDecoration(
-                    labelText: S.of(context).timeUnit,
+                    labelText: S.of(context)!.timeUnit,
                   ),
                 ),
               ),
@@ -113,13 +113,13 @@ class _FormBuilderRelativeDateRangePickerState
   String _dateRangeUnitToLocalizedString(DateRangeUnit unit, int? count) {
     switch (unit) {
       case DateRangeUnit.day:
-        return S.of(context).days(count ?? 1);
+        return S.of(context)!.days(count ?? 1);
       case DateRangeUnit.week:
-        return S.of(context).weeks(count ?? 1);
+        return S.of(context)!.weeks(count ?? 1);
       case DateRangeUnit.month:
-        return S.of(context).months(count ?? 1);
+        return S.of(context)!.months(count ?? 1);
       case DateRangeUnit.year:
-        return S.of(context).years(count ?? 1);
+        return S.of(context)!.years(count ?? 1);
     }
   }
 }

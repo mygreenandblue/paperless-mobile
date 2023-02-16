@@ -6,7 +6,8 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:provider/provider.dart';
 
 class ServerConnectionPage extends StatefulWidget {
@@ -32,7 +33,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight - 4,
-        title: Text(S.of(context).connectToPaperless),
+        title: Text(S.of(context)!.connectToPaperless),
         bottom: PreferredSize(
           child: _isCheckingConnection
               ? const LinearProgressIndicator()
@@ -65,7 +66,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
               onPressed: _updateReachability,
             ),
             FilledButton(
-              child: Text(S.of(context).continueLabel),
+              child: Text(S.of(context)!.continueLabel),
               onPressed: _reachabilityStatus == ReachabilityStatus.reachable
                   ? widget.onContinue
                   : null,
@@ -108,37 +109,37 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
       case ReachabilityStatus.reachable:
         return _buildIconText(
           Icons.done,
-          S.of(context).connectionSuccessfulylEstablished,
+          S.of(context)!.connectionSuccessfulylEstablished,
           Colors.green,
         );
       case ReachabilityStatus.notReachable:
         return _buildIconText(
           Icons.close,
-          S.of(context).couldNotEstablishConnectionToTheServer,
+          S.of(context)!.couldNotEstablishConnectionToTheServer,
           errorColor,
         );
       case ReachabilityStatus.unknownHost:
         return _buildIconText(
           Icons.close,
-          S.of(context).hostCouldNotBeResolved,
+          S.of(context)!.hostCouldNotBeResolved,
           errorColor,
         );
       case ReachabilityStatus.missingClientCertificate:
         return _buildIconText(
           Icons.close,
-          S.of(context).loginPageReachabilityMissingClientCertificateText,
+          S.of(context)!.loginPageReachabilityMissingClientCertificateText,
           errorColor,
         );
       case ReachabilityStatus.invalidClientCertificateConfiguration:
         return _buildIconText(
           Icons.close,
-          S.of(context).incorrectOrMissingCertificatePassphrase,
+          S.of(context)!.incorrectOrMissingCertificatePassphrase,
           errorColor,
         );
       case ReachabilityStatus.connectionTimeout:
         return _buildIconText(
           Icons.close,
-          S.of(context).connectionTimedOut,
+          S.of(context)!.connectionTimedOut,
           errorColor,
         );
     }

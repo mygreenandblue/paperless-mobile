@@ -5,7 +5,8 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -53,15 +54,15 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       final downloadOriginal = await showDialog<bool>(
         context: context,
         builder: (context) => RadioSettingsDialog(
-          titleText: S.of(context).chooseFiletype,
+          titleText: S.of(context)!.chooseFiletype,
           options: [
             RadioOption(
                 value: true,
-                label: S.of(context).original +
+                label: S.of(context)!.original +
                     " (${meta.originalMimeType.split("/").last})"),
             RadioOption(
               value: false,
-              label: S.of(context).archivedPdf,
+              label: S.of(context)!.archivedPdf,
             ),
           ],
           initialValue: false,
@@ -91,7 +92,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       createdFile.createSync(recursive: true);
       createdFile.writeAsBytesSync(bytes);
       debugPrint("Downloaded file to $filePath");
-      showSnackBar(context, S.of(context).documentSuccessfullyDownloaded);
+      showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {

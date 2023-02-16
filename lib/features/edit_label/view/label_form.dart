@@ -5,7 +5,8 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
 
@@ -75,7 +76,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
             FormBuilderTextField(
               name: Label.nameKey,
               decoration: InputDecoration(
-                labelText: S.of(context).name,
+                labelText: S.of(context)!.name,
                 errorText: _errors[Label.nameKey],
               ),
               validator: FormBuilderValidators.required(),
@@ -88,7 +89,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                       MatchingAlgorithm.defaultValue)
                   .value,
               decoration: InputDecoration(
-                labelText: S.of(context).matchingAlgorithm,
+                labelText: S.of(context)!.matchingAlgorithm,
                 errorText: _errors[Label.matchingAlgorithmKey],
               ),
               onChanged: (val) {
@@ -112,7 +113,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               FormBuilderTextField(
                 name: Label.matchKey,
                 decoration: InputDecoration(
-                  labelText: S.of(context).match,
+                  labelText: S.of(context)!.match,
                   errorText: _errors[Label.matchKey],
                 ),
                 initialValue: widget.initialValue?.match,
@@ -121,7 +122,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
             FormBuilderCheckbox(
               name: Label.isInsensitiveKey,
               initialValue: widget.initialValue?.isInsensitive ?? true,
-              title: Text(S.of(context).caseIrrelevant),
+              title: Text(S.of(context)!.caseIrrelevant),
             ),
             ...widget.additionalFields,
           ].padded(),

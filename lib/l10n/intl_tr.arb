@@ -1,5 +1,4 @@
 {
-  "@@locale": "tr",
   "developedBy": "Developed by {name}",
   "@developedBy": {
     "placeholders": {
@@ -11,35 +10,51 @@
   "account": "Account",
   "@account": {},
   "addCorrespondent": "Yeni ek yazar",
-  "@addCorrespondent": {},
+  "@addCorrespondent": {
+    "description": "Title when adding a new correspondent"
+  },
   "addDocumentType": "Yeni Belge Türü",
-  "@addDocumentType": {},
+  "@addDocumentType": {
+    "description": "Title when adding a new document type"
+  },
   "addStoragePath": "Yeni Depolama Yolu",
-  "@addStoragePath": {},
+  "@addStoragePath": {
+    "description": "Title when adding a new storage path"
+  },
   "addTag": "Yeni Etiket",
-  "@addTag": {},
+  "@addTag": {
+    "description": "Title when adding a new tag"
+  },
   "aboutThisApp": "Bu uygulama hakkında",
-  "@aboutThisApp": {},
-  "loggedInAs": "Olarak giriş yapıldı",
-  "@loggedInAs": {},
+  "@aboutThisApp": {
+    "description": "Label for about this app tile displayed in the drawer"
+  },
+  "loggedInAs": "Olarak giriş yapıldı {name}",
+  "@loggedInAs": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "disconnect": "Bağlantıyı kes",
-  "@disconnect": {},
+  "@disconnect": {
+    "description": "Logout button label"
+  },
   "reportABug": "Hata Bildir",
   "@reportABug": {},
   "settings": "Ayarlar",
   "@settings": {},
   "authenticateOnAppStart": "Uygulama başlangıcında kimlik doğrulaması yapın",
-  "@authenticateOnAppStart": {},
+  "@authenticateOnAppStart": {
+    "description": "Description of the biometric authentication settings tile"
+  },
   "biometricAuthentication": "Biyometrik kimlik doğrulama",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Biyometrik kimlik doğrulamayı etkinleştirmek için kimlik doğrulaması yapın} disable{Biyometrik kimlik doğrulamayı devre dışı bırakmak için kimlik doğrulaması yapın}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Biyometrik kimlik doğrulamayı etkinleştirmek için kimlik doğrulaması yapın} disable{Biyometrik kimlik doğrulamayı devre dışı bırakmak için kimlik doğrulaması yapın} other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}
     }
   },
-  "authenticateToEnableBiometricAuthentication": "",
-  "@authenticateToEnableBiometricAuthentication": {},
   "documents": "Dökümanlar",
   "@documents": {},
   "inbox": "Gelen Kutusu",
@@ -48,10 +63,6 @@
   "@labels": {},
   "scanner": "Tarayıcı",
   "@scanner": {},
-  "classic": "Classic",
-  "@classic": {},
-  "dynamic": "Dynamic",
-  "@dynamic": {},
   "startTyping": "Yazmaya başlayın...",
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Bu görünümü gerçekten silmek istiyor musunuz?",
@@ -70,14 +81,20 @@
   "@createdAt": {},
   "documentSuccessfullyDeleted": "Doküman başarıyla silindi.",
   "@documentSuccessfullyDeleted": {},
-  "AssignAsn": "Ata",
-  "@AssignAsn": {},
+  "assignAsn": "Assign ASN",
+  "@assignAsn": {},
   "deleteDocumentTooltip": "Delete",
-  "@deleteDocumentTooltip": {},
+  "@deleteDocumentTooltip": {
+    "description": "Tooltip shown for the delete button on details page"
+  },
   "downloadDocumentTooltip": "Download",
-  "@downloadDocumentTooltip": {},
+  "@downloadDocumentTooltip": {
+    "description": "Tooltip shown for the download button on details page"
+  },
   "editDocumentTooltip": "Edit",
-  "@editDocumentTooltip": {},
+  "@editDocumentTooltip": {
+    "description": "Tooltip shown for the edit button on details page"
+  },
   "loadFullContent": "Tüm içeriği yükle",
   "@loadFullContent": {},
   "noAppToDisplayPDFFilesFound": "No app to display PDF files found!",
@@ -87,25 +104,41 @@
   "couldNotOpenFilePermissionDenied": "Could not open file: Permission denied.",
   "@couldNotOpenFilePermissionDenied": {},
   "previewTooltip": "Preview",
-  "@previewTooltip": {},
+  "@previewTooltip": {
+    "description": "Tooltip shown for the preview button on details page"
+  },
   "shareTooltip": "Share",
-  "@shareTooltip": {},
+  "@shareTooltip": {
+    "description": "Tooltip shown for the share button on details page"
+  },
   "similarDocuments": "Benzer Belgeler",
-  "@similarDocuments": {},
+  "@similarDocuments": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "content": "İçerik",
-  "@content": {},
+  "@content": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "metaData": "Meta Veri",
-  "@metaData": {},
+  "@metaData": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "overview": "Genel bakış",
-  "@overview": {},
+  "@overview": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "documentType": "Döküman tipi",
   "@documentType": {},
   "archivedPdf": "Archived (pdf)",
-  "@archivedPdf": {},
+  "@archivedPdf": {
+    "description": "Option to chose when downloading a document"
+  },
   "chooseFiletype": "Choose filetype",
   "@chooseFiletype": {},
   "original": "Original",
-  "@original": {},
+  "@original": {
+    "description": "Option to chose when downloading a document"
+  },
   "documentSuccessfullyDownloaded": "Döküman başarıyla indirildi.",
   "@documentSuccessfullyDownloaded": {},
   "suggestions": "Öneriler:",
@@ -125,7 +158,9 @@
   "reset": "Sıfırla",
   "@reset": {},
   "filterDocuments": "Dökümanları Filtrele",
-  "@filterDocuments": {},
+  "@filterDocuments": {
+    "description": "Title of the document filter"
+  },
   "originalMD5Checksum": "Orijinal MD5-Sağlaması",
   "@originalMD5Checksum": {},
   "mediaFilename": "Medya Dosya Adı",
@@ -137,23 +172,33 @@
   "modifiedAt": "Modified at",
   "@modifiedAt": {},
   "preview": "Ön izleme",
-  "@preview": {},
+  "@preview": {
+    "description": "Title of the document preview page"
+  },
   "scanADocument": "Belge tarat",
   "@scanADocument": {},
   "noDocumentsScannedYet": "Henüz taranan belge yok.",
   "@noDocumentsScannedYet": {},
   "or": "yada",
-  "@or": {},
+  "@or": {
+    "description": "Used on the scanner page between both main actions when no scans have been captured."
+  },
   "deleteAllScans": "Tüm tarananları sil",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Bu cihazdan bir döküman yükleyin",
-  "@uploadADocumentFromThisDevice": {},
+  "@uploadADocumentFromThisDevice": {
+    "description": "Button label on scanner page"
+  },
   "noMatchesFound": "No matches found.",
-  "@noMatchesFound": {},
+  "@noMatchesFound": {
+    "description": "Displayed when no documents were found in the document search."
+  },
   "removeFromSearchHistory": "Remove from search history?",
   "@removeFromSearchHistory": {},
   "results": "Results",
-  "@results": {},
+  "@results": {
+    "description": "Label displayed above search results in document search."
+  },
   "searchDocuments": "Search documents",
   "@searchDocuments": {},
   "resetFilter": "Filtreyi sıfırla",
@@ -182,10 +227,19 @@
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
   "confirmDeletion": "Silmeyi onayla",
   "@confirmDeletion": {},
-  "areYouSureYouWantToDeleteTheFollowingDocuments": "Aşağıdaki belgeleri silmek istediğinizden emin misiniz?",
-  "@areYouSureYouWantToDeleteTheFollowingDocuments": {},
+  "areYouSureYouWantToDeleteTheFollowingDocuments": "{count, plural, one{Aşağıdaki belgeyi silmek istediğinizden emin misiniz?} other{Aşağıdaki belgeleri silmek istediğinizden emin misiniz?}}",
+  "@areYouSureYouWantToDeleteTheFollowingDocuments": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "countSelected": "{count} seçilmiş",
-  "@countSelected": {},
+  "@countSelected": {
+    "description": "Displayed in the appbar when at least one document is selected.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "storagePath": "Depolama Yolu",
   "@storagePath": {},
   "prepareDocument": "Belge hazırla",
@@ -277,7 +331,9 @@
   "absolute": "Mutlak",
   "@absolute": {},
   "hintYouCanAlsoSpecifyRelativeValues": "İpucu: Somut tarihlerin yanı sıra, geçerli tarihe göre bir zaman aralığı da belirleyebilirsiniz.",
-  "@hintYouCanAlsoSpecifyRelativeValues": {},
+  "@hintYouCanAlsoSpecifyRelativeValues": {
+    "description": "Displayed in the extended date range picker"
+  },
   "amount": "Miktar",
   "@amount": {},
   "relative": "Bağıl",
@@ -364,10 +420,10 @@
   "@upload": {},
   "youreOffline": "Çevrimdışısınız.",
   "@youreOffline": {},
-  "assignASN": "Assign ASN",
-  "@assignASN": {},
   "deleteDocument": "Delete document",
-  "@deleteDocument": {},
+  "@deleteDocument": {
+    "description": "Used as an action label on each inbox item"
+  },
   "removeDocumentFromInbox": "Döküman gelen kutusundan kaldırıldı.",
   "@removeDocumentFromInbox": {},
   "areYouSureYouWantToMarkAllDocumentsAsSeen": "Tüm belgeleri görüntülendi olarak işaretlemek istediğinizden emin misiniz? Bu, tüm gelen kutusu etiketlerini belgelerden kaldırarak, toplu bir düzenleme işlemi gerçekleştirecektir. Bu eylem geri alınamaz! Devam etmek istediğine emin misiniz?",
@@ -391,7 +447,11 @@
   "undo": "Geri al",
   "@undo": {},
   "nUnseen": "{count} görüntülenmemiş",
-  "@nUnseen": {},
+  "@nUnseen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "swipeLeftToMarkADocumentAsSeen": "İpucu: Bir belgeyi görüntülendi olarak işaretlemek ve tüm gelen kutusu etiketlerini belgeden kaldırmak için sola kaydırın.",
   "@swipeLeftToMarkADocumentAsSeen": {},
   "yesterday": "Dün",
@@ -613,5 +673,9 @@
   "list": "List",
   "@list": {},
   "remove": "Remove",
-  "removeQueryFromSearchHistory": "Remove query from search history?"
+  "removeQueryFromSearchHistory": "Remove query from search history?",
+  "dynamicColorScheme": "Dynamic",
+  "@dynamicColorScheme": {},
+  "classicColorScheme": "Classic",
+  "@classicColorScheme": {}
 }

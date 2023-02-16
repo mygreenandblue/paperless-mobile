@@ -1,0 +1,8 @@
+files: [
+ {
+  "source" : "/lib/l10n/intl_en.arb",
+  "translation" : "/lib/l10n/intl_%two_letters_code%.arb",
+  "type" : "arb",
+ }
+]
+# Add your credentials here

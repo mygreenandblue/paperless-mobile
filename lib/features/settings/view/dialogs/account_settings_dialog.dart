@@ -10,7 +10,8 @@ import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class AccountSettingsDialog extends StatelessWidget {
@@ -24,7 +25,7 @@ class AccountSettingsDialog extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(S.of(context).account),
+          Text(S.of(context)!.account),
           const CloseButton(),
         ],
       ),
@@ -49,7 +50,7 @@ class AccountSettingsDialog extends StatelessWidget {
               ListTile(
                 dense: true,
                 leading: const Icon(Icons.person_add_rounded),
-                title: Text(S.of(context).addAnotherAccount),
+                title: Text(S.of(context)!.addAnotherAccount),
                 onTap: () {},
               ),
               const Divider(),
@@ -60,7 +61,7 @@ class AccountSettingsDialog extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  S.of(context).disconnect,
+                  S.of(context)!.disconnect,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onError,
                   ),

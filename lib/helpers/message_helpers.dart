@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/github_issue_service.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SnackBarActionConfig {
   final String label;
@@ -68,7 +68,7 @@ void showGenericError(
     context,
     error.toString(),
     action: SnackBarActionConfig(
-      label: S.of(context).report,
+      label: S.of(context)!.report,
       onPressed: () => GithubIssueService.createIssueFromError(
         context,
         stackTrace: stackTrace,

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_relative_date_range_field.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ExtendedDateRangeDialog extends StatefulWidget {
   final DateRangeQuery initialValue;
@@ -47,7 +47,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       insetPadding: const EdgeInsets.all(24.0),
-      title: Text(S.of(context).selectDateRange),
+      title: Text(S.of(context)!.selectDateRange),
       content: FormBuilder(
         key: _formKey,
         child: Column(
@@ -56,7 +56,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
           children: [
             _buildDateRangeQueryTypeSelection(),
             Text(
-              S.of(context).hintYouCanAlsoSpecifyRelativeValues,
+              S.of(context)!.hintYouCanAlsoSpecifyRelativeValues,
               style: Theme.of(context).textTheme.bodySmall,
             ).paddedOnly(top: 8, bottom: 16),
             Builder(
@@ -83,11 +83,11 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
       ),
       actions: [
         TextButton(
-          child: Text(S.of(context).cancel),
+          child: Text(S.of(context)!.cancel),
           onPressed: () => Navigator.pop(context),
         ),
         TextButton(
-          child: Text(S.of(context).save),
+          child: Text(S.of(context)!.save),
           onPressed: () {
             _formKey.currentState?.save();
             if (_formKey.currentState?.validate() ?? false) {
@@ -110,12 +110,12 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
         ButtonSegment(
           value: DateRangeType.absolute,
           enabled: true,
-          label: Text(S.of(context).absolute),
+          label: Text(S.of(context)!.absolute),
         ),
         ButtonSegment(
           value: DateRangeType.relative,
           enabled: true,
-          label: Text(S.of(context).relative),
+          label: Text(S.of(context)!.relative),
         ),
       ],
       selected: {_selectedDateRangeType},
@@ -133,7 +133,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
               : null,
           initialDate: _before?.subtract(const Duration(days: 1)),
           decoration: InputDecoration(
-            labelText: S.of(context).after,
+            labelText: S.of(context)!.after,
             prefixIcon: const Icon(Icons.date_range),
             suffixIcon: _after != null
                 ? IconButton(
@@ -161,7 +161,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
               : null,
           inputType: InputType.date,
           decoration: InputDecoration(
-            labelText: S.of(context).before,
+            labelText: S.of(context)!.before,
             prefixIcon: const Icon(Icons.date_range),
             suffixIcon: _before != null
                 ? IconButton(

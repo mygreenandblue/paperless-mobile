@@ -1,5 +1,4 @@
 {
-  "@@locale": "de",
   "developedBy": "Entwickelt von {name}",
   "@developedBy": {
     "placeholders": {
@@ -11,28 +10,46 @@
   "account": "Account",
   "@account": {},
   "addCorrespondent": "Neuer Korrespondent",
-  "@addCorrespondent": {},
+  "@addCorrespondent": {
+    "description": "Title when adding a new correspondent"
+  },
   "addDocumentType": "Neuer Dokumenttyp",
-  "@addDocumentType": {},
+  "@addDocumentType": {
+    "description": "Title when adding a new document type"
+  },
   "addStoragePath": "Neuer Speicherpfad",
-  "@addStoragePath": {},
+  "@addStoragePath": {
+    "description": "Title when adding a new storage path"
+  },
   "addTag": "Neuer Tag",
-  "@addTag": {},
+  "@addTag": {
+    "description": "Title when adding a new tag"
+  },
   "aboutThisApp": "Über diese App",
-  "@aboutThisApp": {},
-  "loggedInAs": "Eingeloggt als ",
-  "@loggedInAs": {},
+  "@aboutThisApp": {
+    "description": "Label for about this app tile displayed in the drawer"
+  },
+  "loggedInAs": "Eingeloggt als {name}",
+  "@loggedInAs": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "disconnect": "Verbindung trennen",
-  "@disconnect": {},
+  "@disconnect": {
+    "description": "Logout button label"
+  },
   "reportABug": "Einen Fehler melden",
   "@reportABug": {},
   "settings": "Einstellungen",
   "@settings": {},
   "authenticateOnAppStart": "Authentifizierung beim Start der Anwendung",
-  "@authenticateOnAppStart": {},
+  "@authenticateOnAppStart": {
+    "description": "Description of the biometric authentication settings tile"
+  },
   "biometricAuthentication": "Biometrische Authentifizierung aktivieren",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authentifizieren, um die biometrische Authentifizierung zu aktivieren.} disable{Authentifizieren, um die biometrische Authentifizierung zu deaktivieren.}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authentifizieren, um die biometrische Authentifizierung zu aktivieren} disable{Authentifizieren, um die biometrische Authentifizierung zu deaktivieren}  other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}
@@ -46,10 +63,6 @@
   "@labels": {},
   "scanner": "Scanner",
   "@scanner": {},
-  "classic": "Klassisch",
-  "@classic": {},
-  "dynamic": "Dynamisch",
-  "@dynamic": {},
   "startTyping": "Beginne zu tippen...",
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Möchtest Du diese Ansicht wirklich löschen?",
@@ -68,14 +81,20 @@
   "@createdAt": {},
   "documentSuccessfullyDeleted": "Das Dokument wurde erfolgreich gelöscht.",
   "@documentSuccessfullyDeleted": {},
-  "AssignAsn": "Zuweisen",
-  "@AssignAsn": {},
+  "assignAsn": "ASN zuweisen",
+  "@assignAsn": {},
   "deleteDocumentTooltip": "Löschen",
-  "@deleteDocumentTooltip": {},
+  "@deleteDocumentTooltip": {
+    "description": "Tooltip shown for the delete button on details page"
+  },
   "downloadDocumentTooltip": "Herunterladen",
-  "@downloadDocumentTooltip": {},
+  "@downloadDocumentTooltip": {
+    "description": "Tooltip shown for the download button on details page"
+  },
   "editDocumentTooltip": "Bearbeiten",
-  "@editDocumentTooltip": {},
+  "@editDocumentTooltip": {
+    "description": "Tooltip shown for the edit button on details page"
+  },
   "loadFullContent": "Lade gesamten Inhalt",
   "@loadFullContent": {},
   "noAppToDisplayPDFFilesFound": "Es wurde keine App zum Anzeigen von PDF Dateien gefunden!",
@@ -85,25 +104,41 @@
   "couldNotOpenFilePermissionDenied": "Datei konnte nicht geöffnet werden: Zugriff verweigert.",
   "@couldNotOpenFilePermissionDenied": {},
   "previewTooltip": "Vorschau",
-  "@previewTooltip": {},
+  "@previewTooltip": {
+    "description": "Tooltip shown for the preview button on details page"
+  },
   "shareTooltip": "Teilen",
-  "@shareTooltip": {},
+  "@shareTooltip": {
+    "description": "Tooltip shown for the share button on details page"
+  },
   "similarDocuments": "Similar Documents",
-  "@similarDocuments": {},
+  "@similarDocuments": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "content": "Inhalt",
-  "@content": {},
+  "@content": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "metaData": "Metadaten",
-  "@metaData": {},
+  "@metaData": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "overview": "Übersicht",
-  "@overview": {},
+  "@overview": {
+    "description": "Label shown in the tabbar on details page"
+  },
   "documentType": "Dokumenttyp",
   "@documentType": {},
   "archivedPdf": "Archiviert (pdf)",
-  "@archivedPdf": {},
+  "@archivedPdf": {
+    "description": "Option to chose when downloading a document"
+  },
   "chooseFiletype": "Wähle Dateityp",
   "@chooseFiletype": {},
   "original": "Original",
-  "@original": {},
+  "@original": {
+    "description": "Option to chose when downloading a document"
+  },
   "documentSuccessfullyDownloaded": "Dokument erfolgreich heruntergeladen.",
   "@documentSuccessfullyDownloaded": {},
   "suggestions": "Vorschläge: ",
@@ -123,7 +158,9 @@
   "reset": "Zurücksetzen",
   "@reset": {},
   "filterDocuments": "Dokumente filtern",
-  "@filterDocuments": {},
+  "@filterDocuments": {
+    "description": "Title of the document filter"
+  },
   "originalMD5Checksum": "MD5-Prüfsumme Original",
   "@originalMD5Checksum": {},
   "mediaFilename": "Media-Dateiname",
@@ -135,23 +172,33 @@
   "modifiedAt": "Geändert am",
   "@modifiedAt": {},
   "preview": "Vorschau",
-  "@preview": {},
+  "@preview": {
+    "description": "Title of the document preview page"
+  },
   "scanADocument": "Scanne ein Dokument",
   "@scanADocument": {},
   "noDocumentsScannedYet": "Es wurden noch keine Dokumente gescannt.",
   "@noDocumentsScannedYet": {},
   "or": "oder",
-  "@or": {},
+  "@or": {
+    "description": "Used on the scanner page between both main actions when no scans have been captured."
+  },
   "deleteAllScans": "Alle scans löschen",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Lade ein Dokument von diesem Gerät hoch",
-  "@uploadADocumentFromThisDevice": {},
+  "@uploadADocumentFromThisDevice": {
+    "description": "Button label on scanner page"
+  },
   "noMatchesFound": "Keine Treffer.",
-  "@noMatchesFound": {},
+  "@noMatchesFound": {
+    "description": "Displayed when no documents were found in the document search."
+  },
   "removeFromSearchHistory": "Aus dem Suchverlauf entfernen?",
   "@removeFromSearchHistory": {},
   "results": "Ergebnisse",
-  "@results": {},
+  "@results": {
+    "description": "Label displayed above search results in document search."
+  },
   "searchDocuments": "Durchsuche Dokumente",
   "@searchDocuments": {},
   "resetFilter": "Filter zurücksetzen",
@@ -180,10 +227,19 @@
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
   "confirmDeletion": "Löschen bestätigen",
   "@confirmDeletion": {},
-  "areYouSureYouWantToDeleteTheFollowingDocuments": "Bist Du sicher, dass Du folgende Dokumente löschen möchtest?",
-  "@areYouSureYouWantToDeleteTheFollowingDocuments": {},
+  "areYouSureYouWantToDeleteTheFollowingDocuments": "{count, plural, one{Bist Du sicher, dass Du folgendes Dokument löschen möchtest?} other{Bist Du sicher, dass Du folgende Dokumente löschen möchtest?}}",
+  "@areYouSureYouWantToDeleteTheFollowingDocuments": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "countSelected": "{count} ausgewählt",
-  "@countSelected": {},
+  "@countSelected": {
+    "description": "Displayed in the appbar when at least one document is selected.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "storagePath": "Speicherpfad",
   "@storagePath": {},
   "prepareDocument": "Dokument vorbereiten",
@@ -275,7 +331,9 @@
   "absolute": "Absolut",
   "@absolute": {},
   "hintYouCanAlsoSpecifyRelativeValues": "Hinweis: Neben konkreten Daten kannst du den Zeitraum auch über eine relative Zeitspanne einschränken.",
-  "@hintYouCanAlsoSpecifyRelativeValues": {},
+  "@hintYouCanAlsoSpecifyRelativeValues": {
+    "description": "Displayed in the extended date range picker"
+  },
   "amount": "Anzahl",
   "@amount": {},
   "relative": "Relativ",
@@ -362,10 +420,10 @@
   "@upload": {},
   "youreOffline": "Du bist offline.",
   "@youreOffline": {},
-  "assignASN": "ASN zuweisen",
-  "@assignASN": {},
   "deleteDocument": "Dokument löschen",
-  "@deleteDocument": {},
+  "@deleteDocument": {
+    "description": "Used as an action label on each inbox item"
+  },
   "removeDocumentFromInbox": "Dokument aus Posteingang entfernt.",
   "@removeDocumentFromInbox": {},
   "areYouSureYouWantToMarkAllDocumentsAsSeen": "Bist Du sicher, dass Du alle Dokumente als gesehen markieren möchtest? Dadurch wird eine Massenbearbeitung durchgeführt, bei der alle Posteingangs-Tags von den Dokumenten entfernt werden. Diese Aktion kann nicht rückgängig gemacht werden! Möchtest Du trotzdem fortfahren?",
@@ -389,7 +447,11 @@
   "undo": "Undo",
   "@undo": {},
   "nUnseen": "{count} ungesehen",
-  "@nUnseen": {},
+  "@nUnseen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "swipeLeftToMarkADocumentAsSeen": "Tipp: Wische nach links um ein Dokument als gesehen zu markieren und alle Posteingangs-Tags von diesem Dokument zu entfernen.",
   "@swipeLeftToMarkADocumentAsSeen": {},
   "yesterday": "Gestern",
@@ -611,5 +673,9 @@
   "list": "Liste",
   "@list": {},
   "remove": "Remove",
-  "removeQueryFromSearchHistory": "Remove query from search history?"
+  "removeQueryFromSearchHistory": "Remove query from search history?",
+  "dynamicColorScheme": "Dynamisch",
+  "@dynamicColorScheme": {},
+  "classicColorScheme": "Klassisch",
+  "@classicColorScheme": {}
 }

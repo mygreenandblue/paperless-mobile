@@ -5,7 +5,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddCorrespondentPage extends StatelessWidget {
   final String? initialName;
@@ -18,7 +18,7 @@ class AddCorrespondentPage extends StatelessWidget {
         context.read<LabelRepository<Correspondent>>(),
       ),
       child: AddLabelPage<Correspondent>(
-        pageTitle: Text(S.of(context).addCorrespondent),
+        pageTitle: Text(S.of(context)!.addCorrespondent),
         fromJsonT: Correspondent.fromJson,
         initialName: initialName,
       ),

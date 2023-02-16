@@ -18,7 +18,7 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dar
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class LabelsPage extends StatefulWidget {
   const LabelsPage({Key? key}) : super(key: key);
@@ -72,7 +72,7 @@ class _LabelsPageState extends State<LabelsPage>
                     context,
                   ),
                   sliver: SearchAppBar(
-                    hintText: S.of(context).searchDocuments,
+                    hintText: S.of(context)!.searchDocuments,
                     onOpenSearch: showDocumentSearchPage,
                     bottom: TabBar(
                       controller: _tabController,
@@ -161,9 +161,9 @@ class _LabelsPageState extends State<LabelsPage>
                                 ),
                                 onEdit: _openEditCorrespondentPage,
                                 emptyStateActionButtonLabel:
-                                    S.of(context).addNewCorrespondent,
+                                    S.of(context)!.addNewCorrespondent,
                                 emptyStateDescription:
-                                    S.of(context).noCorrespondentsSetUp,
+                                    S.of(context)!.noCorrespondentsSetUp,
                                 onAddNew: _openAddCorrespondentPage,
                               ),
                             ],
@@ -186,9 +186,9 @@ class _LabelsPageState extends State<LabelsPage>
                                 ),
                                 onEdit: _openEditDocumentTypePage,
                                 emptyStateActionButtonLabel:
-                                    S.of(context).addNewDocumentType,
+                                    S.of(context)!.addNewDocumentType,
                                 emptyStateDescription:
-                                    S.of(context).noDocumentTypesSetUp,
+                                    S.of(context)!.noDocumentTypesSetUp,
                                 onAddNew: _openAddDocumentTypePage,
                               ),
                             ],
@@ -219,9 +219,9 @@ class _LabelsPageState extends State<LabelsPage>
                                       : null,
                                 ),
                                 emptyStateActionButtonLabel:
-                                    S.of(context).addNewTag,
+                                    S.of(context)!.addNewTag,
                                 emptyStateDescription:
-                                    S.of(context).noTagsSetUp,
+                                    S.of(context)!.noTagsSetUp,
                                 onAddNew: _openAddTagPage,
                               ),
                             ],
@@ -245,9 +245,9 @@ class _LabelsPageState extends State<LabelsPage>
                                 ),
                                 contentBuilder: (path) => Text(path.path),
                                 emptyStateActionButtonLabel:
-                                    S.of(context).addNewStoragePath,
+                                    S.of(context)!.addNewStoragePath,
                                 emptyStateDescription:
-                                    S.of(context).noStoragePathsSetUp,
+                                    S.of(context)!.noStoragePathsSetUp,
                                 onAddNew: _openAddStoragePathPage,
                               ),
                             ],

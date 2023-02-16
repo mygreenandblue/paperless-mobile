@@ -5,7 +5,8 @@ import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -31,14 +32,14 @@ class AppDrawer extends StatelessWidget {
             const Divider(),
             ListTile(
               dense: true,
-              title: Text(S.of(context).aboutThisApp),
+              title: Text(S.of(context)!.aboutThisApp),
               leading: const Icon(Icons.info_outline),
               onTap: () => _showAboutDialog(context),
             ),
             ListTile(
               dense: true,
               leading: const Icon(Icons.bug_report_outlined),
-              title: Text(S.of(context).reportABug),
+              title: Text(S.of(context)!.reportABug),
               onTap: () {
                 launchUrlString(
                     'https://github.com/astubenbord/paperless-mobile/issues/new');
@@ -48,7 +49,7 @@ class AppDrawer extends StatelessWidget {
               dense: true,
               leading: const Icon(Icons.settings_outlined),
               title: Text(
-                S.of(context).settings,
+                S.of(context)!.settings,
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -74,7 +75,7 @@ class AppDrawer extends StatelessWidget {
       applicationName: 'Paperless Mobile',
       applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
       children: [
-        Text(S.of(context).developedBy('Anton Stubenbord')),
+        Text(S.of(context)!.developedBy('Anton Stubenbord')),
         Link(
           uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
           builder: (context, followLink) => GestureDetector(

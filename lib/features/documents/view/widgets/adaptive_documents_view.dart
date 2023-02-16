@@ -220,7 +220,7 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
 
   Widget _buildListView() {
     if (showLoadingPlaceholder) {
-      return DocumentsListLoadingWidget();
+      return const DocumentsListLoadingWidget();
     }
 
     return ListView.builder(

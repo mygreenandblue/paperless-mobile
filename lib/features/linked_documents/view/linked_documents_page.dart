@@ -5,7 +5,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {
@@ -24,7 +25,7 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).linkedDocuments),
+        title: Text(S.of(context)!.linkedDocuments),
         actions: [
           BlocBuilder<LinkedDocumentsCubit, LinkedDocumentsState>(
             builder: (context, state) {

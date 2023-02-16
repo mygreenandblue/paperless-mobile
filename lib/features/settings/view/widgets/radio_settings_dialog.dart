@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class RadioSettingsDialog<T> extends StatefulWidget {
   final List<RadioOption<T>> options;
@@ -41,11 +41,11 @@ class _RadioSettingsDialogState<T> extends State<RadioSettingsDialog<T>> {
         widget.confirmButton ??
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(S.of(context).cancel)),
+                child: Text(S.of(context)!.cancel)),
         widget.confirmButton ??
             TextButton(
                 onPressed: () => Navigator.pop(context, _groupValue),
-                child: Text(S.of(context).ok)),
+                child: Text(S.of(context)!.ok)),
       ],
       title: widget.titleText != null ? Text(widget.titleText!) : null,
       content: Column(

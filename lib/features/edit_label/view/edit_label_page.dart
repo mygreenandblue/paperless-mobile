@@ -8,7 +8,8 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/constants.dart';
 
@@ -55,7 +56,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).edit),
+        title: Text(S.of(context)!.edit),
         actions: [
           IconButton(
             onPressed: () => _onDelete(context),
@@ -68,7 +69,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(
           icon: const Icon(Icons.save),
-          label: Text(S.of(context).saveChanges),
+          label: Text(S.of(context)!.saveChanges),
           onSubmit: context.read<EditLabelCubit<T>>().update,
         ),
         additionalFields: additionalFields,
@@ -81,21 +82,21 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
       final shouldDelete = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text(S.of(context).confirmDeletion),
+              title: Text(S.of(context)!.confirmDeletion),
               content: Text(
-                S.of(context).deleteLabelWarningText,
+                S.of(context)!.deleteLabelWarningText,
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: Text(S.of(context).cancel),
+                  child: Text(S.of(context)!.cancel),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                   child: Text(
-                    S.of(context).delete,
+                    S.of(context)!.delete,
                     style:
                         TextStyle(color: Theme.of(context).colorScheme.error),
                   ),

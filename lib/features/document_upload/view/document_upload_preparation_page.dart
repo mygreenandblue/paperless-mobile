@@ -15,7 +15,8 @@ import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class DocumentUploadPreparationPage extends StatefulWidget {
@@ -62,7 +63,7 @@ class _DocumentUploadPreparationPageState
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(S.of(context).prepareDocument),
+        title: Text(S.of(context)!.prepareDocument),
         bottom: _isUploadLoading
             ? const PreferredSize(
                 child: LinearProgressIndicator(),
@@ -73,7 +74,7 @@ class _DocumentUploadPreparationPageState
         visible: MediaQuery.of(context).viewInsets.bottom == 0,
         child: FloatingActionButton.extended(
           onPressed: _onSubmit,
-          label: Text(S.of(context).upload),
+          label: Text(S.of(context)!.upload),
           icon: const Icon(Icons.upload),
         ),
       ),
@@ -91,7 +92,7 @@ class _DocumentUploadPreparationPageState
                       widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
                   validator: FormBuilderValidators.required(),
                   decoration: InputDecoration(
-                    labelText: S.of(context).title,
+                    labelText: S.of(context)!.title,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
@@ -121,7 +122,7 @@ class _DocumentUploadPreparationPageState
                   enabled: !_syncTitleAndFilename,
                   name: fkFileName,
                   decoration: InputDecoration(
-                    labelText: S.of(context).fileName,
+                    labelText: S.of(context)!.fileName,
                     suffixText: widget.fileExtension,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
@@ -151,7 +152,7 @@ class _DocumentUploadPreparationPageState
                     }
                   },
                   title: Text(
-                    S.of(context).synchronizeTitleAndFilename,
+                    S.of(context)!.synchronizeTitleAndFilename,
                   ),
                 ),
                 // Created at
@@ -166,7 +167,7 @@ class _DocumentUploadPreparationPageState
                   },
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
-                    labelText: S.of(context).createdAt + " *",
+                    labelText: S.of(context)!.createdAt + " *",
                     suffixIcon: _showDatePickerDeleteIcon
                         ? IconButton(
                             icon: const Icon(Icons.close),
@@ -189,7 +190,7 @@ class _DocumentUploadPreparationPageState
                         context.read<LabelRepository<Correspondent>>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context).correspondent + " *",
+                  textFieldLabel: S.of(context)!.correspondent + " *",
                   name: DocumentModel.correspondentKey,
                   labelOptions: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
@@ -204,7 +205,7 @@ class _DocumentUploadPreparationPageState
                         context.read<LabelRepository<DocumentType>>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context).documentType + " *",
+                  textFieldLabel: S.of(context)!.documentType + " *",
                   name: DocumentModel.documentTypeKey,
                   labelOptions: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
@@ -218,7 +219,7 @@ class _DocumentUploadPreparationPageState
                   //Label: "Tags" + " *",
                 ),
                 Text(
-                  "* " + S.of(context).uploadInferValuesHint,
+                  "* " + S.of(context)!.uploadInferValuesHint,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 SizedBox(height: 300),
@@ -258,7 +259,7 @@ class _DocumentUploadPreparationPageState
           createdAt: createdAt,
         );
         showSnackBar(
-            context, S.of(context).documentSuccessfullyUploadedProcessing);
+            context, S.of(context)!.documentSuccessfullyUploadedProcessing);
         Navigator.pop(context, taskId);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);

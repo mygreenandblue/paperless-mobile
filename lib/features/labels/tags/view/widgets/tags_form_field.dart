@@ -10,7 +10,7 @@ import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class TagFormField extends StatefulWidget {
   final TagsQuery? initialValue;
@@ -94,8 +94,8 @@ class _TagFormFieldState extends State<TagFormField> {
                     Icons.label_outline,
                   ),
                   suffixIcon: _buildSuffixIcon(context, field),
-                  labelText: S.of(context).tags,
-                  hintText: S.of(context).filterTags,
+                  labelText: S.of(context)!.tags,
+                  hintText: S.of(context)!.filterTags,
                 ),
                 controller: _textEditingController,
               ),
@@ -138,10 +138,10 @@ class _TagFormFieldState extends State<TagFormField> {
                 late String? title;
                 switch (data) {
                   case _onlyNotAssignedId:
-                    title = S.of(context).notAssigned;
+                    title = S.of(context)!.notAssigned;
                     break;
                   case _anyAssignedId:
-                    title = S.of(context).anyAssigned;
+                    title = S.of(context)!.anyAssigned;
                     break;
                   default:
                     title = widget.selectableOptions[data]?.name;
@@ -270,7 +270,7 @@ class _TagFormFieldState extends State<TagFormField> {
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         side: BorderSide.none,
         label: Text(
-          S.of(context).notAssigned,
+          S.of(context)!.notAssigned,
         ),
         backgroundColor:
             Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
@@ -323,7 +323,7 @@ class _TagFormFieldState extends State<TagFormField> {
         padding: const EdgeInsets.all(4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         side: BorderSide.none,
-        label: Text(S.of(context).anyAssigned),
+        label: Text(S.of(context)!.anyAssigned),
         backgroundColor:
             Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),
         onDeleted: () => field.didChange(const IdsTagsQuery()),

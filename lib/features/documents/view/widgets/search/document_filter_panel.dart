@@ -5,7 +5,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 enum DateRangeSelection { before, after }
 
@@ -74,7 +74,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
           visible: MediaQuery.of(context).viewInsets.bottom == 0,
           child: FloatingActionButton.extended(
             icon: const Icon(Icons.done),
-            label: Text(S.of(context).apply),
+            label: Text(S.of(context)!.apply),
             onPressed: _onApplyFilter,
           ),
         ),
@@ -85,7 +85,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
               TextButton.icon(
                 onPressed: _resetFilter,
                 icon: const Icon(Icons.refresh),
-                label: Text(S.of(context).reset),
+                label: Text(S.of(context)!.reset),
               ),
             ],
           ),
@@ -133,7 +133,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: _heightAnimationValue * 48),
-                    child: Text(S.of(context).filterDocuments),
+                    child: Text(S.of(context)!.filterDocuments),
                   ),
                 ],
               ),

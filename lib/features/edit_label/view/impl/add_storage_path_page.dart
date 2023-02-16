@@ -6,7 +6,7 @@ import 'package:paperless_mobile/core/repository/state/impl/storage_path_reposit
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
 import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_autofill_form_builder_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddStoragePathPage extends StatelessWidget {
   final String? initalValue;
@@ -19,7 +19,7 @@ class AddStoragePathPage extends StatelessWidget {
         context.read<LabelRepository<StoragePath>>(),
       ),
       child: AddLabelPage<StoragePath>(
-        pageTitle: Text(S.of(context).addStoragePath),
+        pageTitle: Text(S.of(context)!.addStoragePath),
         fromJsonT: StoragePath.fromJson,
         initialName: initalValue,
         additionalFields: const [

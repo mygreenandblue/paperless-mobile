@@ -5,7 +5,8 @@
 // import 'package:paperless_mobile/features/settings/bloc/application_settings_state.dart';
 // import 'package:paperless_mobile/features/settings/model/view_type.dart';
 // import 'package:paperless_mobile/features/settings/view/settings_page.dart';
-// import 'package:paperless_mobile/generated/l10n.dart';
+// import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 // import 'package:url_launcher/link.dart';
 // import 'package:url_launcher/url_launcher_string.dart';
 
@@ -74,7 +75,7 @@
 //       padding: EdgeInsets.zero,
 //       child: ListTile(
 //         leading: const Icon(Icons.bug_report),
-//         title: Text(S.of(context).reportABug),
+//         title: Text(S.of(context)!.reportABug),
 //       ),
 //     );
 //   }
@@ -85,7 +86,7 @@
 //       value: AppPopupMenuEntries.openSettings,
 //       child: ListTile(
 //         leading: const Icon(Icons.settings_outlined),
-//         title: Text(S.of(context).settings),
+//         title: Text(S.of(context)!.settings),
 //       ),
 //     );
 //   }
@@ -96,7 +97,7 @@
 //       value: AppPopupMenuEntries.openAboutThisAppDialog,
 //       child: ListTile(
 //         leading: const Icon(Icons.info_outline),
-//         title: Text(S.of(context).aboutThisApp),
+//         title: Text(S.of(context)!.aboutThisApp),
 //       ),
 //     );
 //   }
@@ -146,7 +147,7 @@
 //       applicationName: 'Paperless Mobile',
 //       applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
 //       children: [
-//         Text(S.of(context).developedBy('Anton Stubenbord')),
+//         Text(S.of(context)!.developedBy('Anton Stubenbord')),
 //         Link(
 //           uri: Uri.parse('https://github.com/astubenbord/paperless-mobile'),
 //           builder: (context, followLink) => GestureDetector(

@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ServerLoginPage extends StatefulWidget {
   final Future<void> Function() onDone;
@@ -29,7 +29,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
         '';
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).loginPageSignInTitle),
+        title: Text(S.of(context)!.loginPageSignInTitle),
         bottom: _isLoginLoading
             ? const PreferredSize(
                 preferredSize: Size.fromHeight(4.0),
@@ -39,7 +39,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
       ),
       body: ListView(
         children: [
-          Text(S.of(context).signInToServer(serverAddress)).padded(),
+          Text(S.of(context)!.signInToServer(serverAddress)).padded(),
           const UserCredentialsFormField(),
         ],
       ),
@@ -53,7 +53,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
                 await widget.onDone();
                 setState(() => _isLoginLoading = false);
               },
-              child: Text(S.of(context).signIn),
+              child: Text(S.of(context)!.signIn),
             )
           ],
         ),

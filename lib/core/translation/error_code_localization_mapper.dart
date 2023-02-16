@@ -1,76 +1,76 @@
 import 'package:flutter/cupertino.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 String translateError(BuildContext context, ErrorCode code) {
   switch (code) {
     case ErrorCode.unknown:
-      return S.of(context).anUnknownErrorOccurred;
+      return S.of(context)!.anUnknownErrorOccurred;
     case ErrorCode.authenticationFailed:
-      return S.of(context).authenticationFailedPleaseTryAgain;
+      return S.of(context)!.authenticationFailedPleaseTryAgain;
     case ErrorCode.notAuthenticated:
-      return S.of(context).userIsNotAuthenticated;
+      return S.of(context)!.userIsNotAuthenticated;
     case ErrorCode.documentUploadFailed:
-      return S.of(context).couldNotUploadDocument;
+      return S.of(context)!.couldNotUploadDocument;
     case ErrorCode.documentUpdateFailed:
-      return S.of(context).couldNotUpdateDocument;
+      return S.of(context)!.couldNotUpdateDocument;
     case ErrorCode.documentLoadFailed:
-      return S.of(context).couldNotLoadDocuments;
+      return S.of(context)!.couldNotLoadDocuments;
     case ErrorCode.documentDeleteFailed:
-      return S.of(context).couldNotDeleteDocument;
+      return S.of(context)!.couldNotDeleteDocument;
     case ErrorCode.documentPreviewFailed:
-      return S.of(context).couldNotLoadDocumentPreview;
+      return S.of(context)!.couldNotLoadDocumentPreview;
     case ErrorCode.documentAsnQueryFailed:
-      return S.of(context).couldNotAssignArchiveSerialNumber;
+      return S.of(context)!.couldNotAssignArchiveSerialNumber;
     case ErrorCode.tagCreateFailed:
-      return S.of(context).couldNotCreateTag;
+      return S.of(context)!.couldNotCreateTag;
     case ErrorCode.tagLoadFailed:
-      return S.of(context).couldNotLoadTags;
+      return S.of(context)!.couldNotLoadTags;
     case ErrorCode.documentTypeCreateFailed:
-      return S.of(context).couldNotCreateDocument;
+      return S.of(context)!.couldNotCreateDocument;
     case ErrorCode.documentTypeLoadFailed:
-      return S.of(context).couldNotLoadDocumentTypes;
+      return S.of(context)!.couldNotLoadDocumentTypes;
     case ErrorCode.correspondentCreateFailed:
-      return S.of(context).couldNotCreateCorrespondent;
+      return S.of(context)!.couldNotCreateCorrespondent;
     case ErrorCode.correspondentLoadFailed:
-      return S.of(context).couldNotLoadCorrespondents;
+      return S.of(context)!.couldNotLoadCorrespondents;
     case ErrorCode.scanRemoveFailed:
-      return S.of(context).anErrorOccurredRemovingTheScans;
+      return S.of(context)!.anErrorOccurredRemovingTheScans;
     case ErrorCode.invalidClientCertificateConfiguration:
-      return S.of(context).invalidCertificateOrMissingPassphrase;
+      return S.of(context)!.invalidCertificateOrMissingPassphrase;
     case ErrorCode.documentBulkActionFailed:
-      return S.of(context).couldNotBulkEditDocuments;
+      return S.of(context)!.couldNotBulkEditDocuments;
     case ErrorCode.biometricsNotSupported:
-      return S.of(context).biometricAuthenticationNotSupported;
+      return S.of(context)!.biometricAuthenticationNotSupported;
     case ErrorCode.biometricAuthenticationFailed:
-      return S.of(context).biometricAuthenticationFailed;
+      return S.of(context)!.biometricAuthenticationFailed;
     case ErrorCode.deviceOffline:
-      return S.of(context).youAreCurrentlyOffline;
+      return S.of(context)!.youAreCurrentlyOffline;
     case ErrorCode.serverUnreachable:
-      return S.of(context).couldNotReachYourPaperlessServer;
+      return S.of(context)!.couldNotReachYourPaperlessServer;
     case ErrorCode.similarQueryError:
-      return S.of(context).couldNotLoadSimilarDocuments;
+      return S.of(context)!.couldNotLoadSimilarDocuments;
     case ErrorCode.autocompleteQueryError:
-      return S.of(context).anErrorOccurredWhileTryingToAutocompleteYourQuery;
+      return S.of(context)!.anErrorOccurredWhileTryingToAutocompleteYourQuery;
     case ErrorCode.storagePathLoadFailed:
-      return S.of(context).couldNotLoadStoragePaths;
+      return S.of(context)!.couldNotLoadStoragePaths;
     case ErrorCode.storagePathCreateFailed:
-      return S.of(context).couldNotCreateStoragePath;
+      return S.of(context)!.couldNotCreateStoragePath;
     case ErrorCode.loadSavedViewsError:
-      return S.of(context).couldNotLoadSavedViews;
+      return S.of(context)!.couldNotLoadSavedViews;
     case ErrorCode.createSavedViewError:
-      return S.of(context).couldNotCreateSavedView;
+      return S.of(context)!.couldNotCreateSavedView;
     case ErrorCode.deleteSavedViewError:
-      return S.of(context).couldNotDeleteSavedView;
+      return S.of(context)!.couldNotDeleteSavedView;
     case ErrorCode.requestTimedOut:
-      return S.of(context).requestTimedOut;
+      return S.of(context)!.requestTimedOut;
     case ErrorCode.unsupportedFileFormat:
-      return S.of(context).fileFormatNotSupported;
+      return S.of(context)!.fileFormatNotSupported;
     case ErrorCode.missingClientCertificate:
-      return S.of(context).aClientCertificateWasExpectedButNotSent;
+      return S.of(context)!.aClientCertificateWasExpectedButNotSent;
     case ErrorCode.suggestionsQueryError:
-      return S.of(context).couldNotLoadSuggestions;
+      return S.of(context)!.couldNotLoadSuggestions;
     case ErrorCode.acknowledgeTasksError:
-      return S.of(context).couldNotAcknowledgeTasks;
+      return S.of(context)!.couldNotAcknowledgeTasks;
   }
 }

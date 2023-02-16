@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 extension on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
@@ -213,7 +214,7 @@ class FormBuilderColorPickerFieldState
       final selected = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
-          final materialLocalizations = MaterialLocalizations.of(context);
+          final materialLocalizations = S.of(context)!;
 
           return AlertDialog(
             // title: null, //const Text('Pick a color!'),
@@ -223,11 +224,11 @@ class FormBuilderColorPickerFieldState
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(materialLocalizations.cancelButtonLabel),
+                child: Text(materialLocalizations.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(materialLocalizations.okButtonLabel),
+                child: Text(materialLocalizations.ok),
               ),
             ],
           );

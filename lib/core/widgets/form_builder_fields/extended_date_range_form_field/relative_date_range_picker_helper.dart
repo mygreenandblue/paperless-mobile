@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class RelativeDateRangePickerHelper extends StatefulWidget {
   final FormFieldState<DateRangeQuery> field;
@@ -49,19 +49,19 @@ class _RelativeDateRangePickerHelperState
 
   List<_ExtendedDateRangeQueryOption> get _options => [
         _ExtendedDateRangeQueryOption(
-          S.of(context).lastNWeeks(1),
+          S.of(context)!.lastNWeeks(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.week),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).lastNMonths(1),
+          S.of(context)!.lastNMonths(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.month),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).lastNMonths(3),
+          S.of(context)!.lastNMonths(3),
           const RelativeDateRangeQuery(3, DateRangeUnit.month),
         ),
         _ExtendedDateRangeQueryOption(
-          S.of(context).lastNYears(1),
+          S.of(context)!.lastNYears(1),
           const RelativeDateRangeQuery(1, DateRangeUnit.year),
         ),
       ];

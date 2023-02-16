@@ -8,7 +8,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/document_previe
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
-import 'package:paperless_mobile/generated/l10n.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class InboxItem extends StatefulWidget {
@@ -99,7 +100,7 @@ class _InboxItemState extends State<InboxItem> {
         child: ActionChip(
           avatar: const Icon(Icons.delete_outline),
           shape: chipShape,
-          label: Text(S.of(context).deleteDocument),
+          label: Text(S.of(context)!.deleteDocument),
           onPressed: () async {
             final shouldDelete = await showDialog<bool>(
                   context: context,
@@ -147,7 +148,7 @@ class _InboxItemState extends State<InboxItem> {
                 maxWidth: 50,
               ),
               child: Text(
-                S.of(context).quickAction,
+                S.of(context)!.quickAction,
                 textAlign: TextAlign.center,
                 maxLines: 3,
                 style: Theme.of(context).textTheme.labelSmall,
@@ -190,9 +191,9 @@ class _InboxItemState extends State<InboxItem> {
         shape: chipShape,
         label: hasAsn
             ? Text(
-                '${S.of(context).asn} #${widget.document.archiveSerialNumber}',
+                '${S.of(context)!.asn} #${widget.document.archiveSerialNumber}',
               )
-            : Text(S.of(context).assignASN),
+            : Text(S.of(context)!.assignAsn),
         onPressed: !hasAsn
             ? () {
                 setState(() {
@@ -352,7 +353,7 @@ class _InboxItemState extends State<InboxItem> {
   //             avatar: const Icon(Icons.calendar_today_outlined),
   //             shape: chipShape,
   //             label: Text(
-  //               "${S.of(context).createdAt}: ${DateFormat.yMd().format(e)}",
+  //               "${S.of(context)!.createdAt}: ${DateFormat.yMd().format(e)}",
   //             ),
   //             onPressed: () => context
   //                 .read<InboxCubit>()
