@@ -667,5 +667,7 @@
   "viewTypeGridOption": "Grid",
   "@viewTypeGridOption": {},
   "viewTypeListOption": "List",
-  "@viewTypeListOption": {}
+  "@viewTypeListOption": {},
+  "genericActionRemoveLabel": "Remove",
+  "documentSearchRemoveHistoryEntryText": "Remove query from search history?"
 }

@@ -3,7 +3,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 
@@ -45,6 +44,16 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
           ...state.searchHistory
               .whereNot((previousQuery) => previousQuery == query)
         ],
+      ),
+    );
+  }
+
+  void removeHistoryEntry(String entry) {
+    emit(
+      state.copyWith(
+        searchHistory: state.searchHistory
+            .whereNot((element) => element == entry)
+            .toList(),
       ),
     );
   }

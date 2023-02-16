@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
+import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
+import 'dart:math' as math;
 
 Future<void> showDocumentSearchPage(BuildContext context) {
   return Navigator.of(context).push(
@@ -30,6 +34,9 @@ class DocumentSearchPage extends StatefulWidget {
 
 class _DocumentSearchPageState extends State<DocumentSearchPage> {
   final _queryController = TextEditingController(text: '');
+  final _queryFocusNode = FocusNode();
+
+  Timer? _debounceTimer;
 
   String get query => _queryController.text;
   @override
@@ -47,6 +54,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           style: theme.textTheme.bodyLarge?.apply(
             color: theme.colorScheme.onSurface,
           ),
+          focusNode: _queryFocusNode,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.zero,
             hintStyle: theme.textTheme.bodyLarge?.apply(
@@ -56,7 +64,12 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             border: InputBorder.none,
           ),
           controller: _queryController,
-          onChanged: context.read<DocumentSearchCubit>().suggest,
+          onChanged: (query) {
+            _debounceTimer?.cancel();
+            _debounceTimer = Timer(const Duration(milliseconds: 700), () {
+              context.read<DocumentSearchCubit>().suggest(query);
+            });
+          },
           textInputAction: TextInputAction.search,
           onSubmitted: (query) {
             FocusScope.of(context).unfocus();
@@ -109,7 +122,9 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             (context, index) => ListTile(
               title: Text(historyMatches[index]),
               leading: const Icon(Icons.history),
+              onLongPress: () => _onDeleteHistoryEntry(historyMatches[index]),
               onTap: () => _selectSuggestion(historyMatches[index]),
+              trailing: _buildInsertSuggestionButton(historyMatches[index]),
             ),
             childCount: historyMatches.length,
           ),
@@ -127,11 +142,40 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
                 title: Text(suggestions[index]),
                 leading: const Icon(Icons.search),
                 onTap: () => _selectSuggestion(suggestions[index]),
+                trailing: _buildInsertSuggestionButton(suggestions[index]),
               ),
               childCount: suggestions.length,
             ),
           )
       ],
+    );
+  }
+
+  void _onDeleteHistoryEntry(String entry) async {
+    final shouldRemove = await showDialog<bool>(
+          context: context,
+          builder: (context) => RemoveHistoryEntryDialog(entry: entry),
+        ) ??
+        false;
+    if (shouldRemove) {
+      context.read<DocumentSearchCubit>().removeHistoryEntry(entry);
+    }
+  }
+
+  Widget _buildInsertSuggestionButton(String suggestion) {
+    return Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.rotationY(math.pi),
+      child: IconButton(
+        icon: Icon(Icons.arrow_outward),
+        onPressed: () {
+          _queryController.text = '$suggestion ';
+          _queryController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _queryController.text.length),
+          );
+          _queryFocusNode.requestFocus();
+        },
+      ),
     );
   }
 
