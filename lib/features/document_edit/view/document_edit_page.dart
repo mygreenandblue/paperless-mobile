@@ -8,9 +8,6 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/storage_path_repository_state.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
@@ -21,7 +18,6 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_fie
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
 class DocumentEditPage extends StatefulWidget {
   final FieldSuggestions suggestions;
@@ -88,13 +84,13 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                   children: [
                     _buildTitleFormField(state.document.title).padded(),
                     _buildCreatedAtFormField(state.document.created).padded(),
-                    _buildDocumentTypeFormField(
-                      state.document.documentType,
-                      state.documentTypes,
-                    ).padded(),
                     _buildCorrespondentFormField(
                       state.document.correspondent,
                       state.correspondents,
+                    ).padded(),
+                    _buildDocumentTypeFormField(
+                      state.document.documentType,
+                      state.documentTypes,
                     ).padded(),
                     _buildStoragePathFormField(
                       state.document.storagePath,

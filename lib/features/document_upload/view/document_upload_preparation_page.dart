@@ -47,6 +47,7 @@ class _DocumentUploadPreparationPageState
   PaperlessValidationErrors _errors = {};
   bool _isUploadLoading = false;
   late bool _syncTitleAndFilename;
+  bool _showDatePickerDeleteIcon = false;
   final _now = DateTime.now();
 
   @override
@@ -82,6 +83,7 @@ class _DocumentUploadPreparationPageState
             key: _formKey,
             child: ListView(
               children: [
+                // Title
                 FormBuilderTextField(
                   autovalidateMode: AutovalidateMode.always,
                   name: DocumentModel.titleKey,
@@ -112,6 +114,7 @@ class _DocumentUploadPreparationPageState
                     }
                   },
                 ),
+                // Filename
                 FormBuilderTextField(
                   autovalidateMode: AutovalidateMode.always,
                   readOnly: _syncTitleAndFilename,
@@ -129,6 +132,7 @@ class _DocumentUploadPreparationPageState
                   initialValue: widget.filename ??
                       "scan_${fileNameDateFormat.format(_now)}",
                 ),
+                // Synchronize title and filename
                 SwitchListTile(
                   value: _syncTitleAndFilename,
                   onChanged: (value) {
@@ -152,33 +156,33 @@ class _DocumentUploadPreparationPageState
                         .documentUploadPageSynchronizeTitleAndFilenameLabel,
                   ),
                 ),
+                // Created at
                 FormBuilderDateTimePicker(
                   autovalidateMode: AutovalidateMode.always,
                   format: DateFormat.yMMMMd(),
                   inputType: InputType.date,
                   name: DocumentModel.createdKey,
                   initialValue: null,
+                  onChanged: (value) {
+                    setState(() => _showDatePickerDeleteIcon = value != null);
+                  },
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
                     labelText:
                         S.of(context).documentCreatedPropertyLabel + " *",
+                    suffixIcon: _showDatePickerDeleteIcon
+                        ? IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              _formKey.currentState!
+                                  .fields[DocumentModel.createdKey]
+                                  ?.didChange(null);
+                            },
+                          )
+                        : null,
                   ),
                 ),
-                LabelFormField<DocumentType>(
-                  notAssignedSelectable: false,
-                  formBuilderState: _formKey.currentState,
-                  labelCreationWidgetBuilder: (initialName) =>
-                      RepositoryProvider(
-                    create: (context) =>
-                        context.read<LabelRepository<DocumentType>>(),
-                    child: AddDocumentTypePage(initialName: initialName),
-                  ),
-                  textFieldLabel:
-                      S.of(context).documentDocumentTypePropertyLabel + " *",
-                  name: DocumentModel.documentTypeKey,
-                  labelOptions: state.documentTypes,
-                  prefixIcon: const Icon(Icons.description_outlined),
-                ),
+                // Correspondent
                 LabelFormField<Correspondent>(
                   notAssignedSelectable: false,
                   formBuilderState: _formKey.currentState,
@@ -193,6 +197,22 @@ class _DocumentUploadPreparationPageState
                   name: DocumentModel.correspondentKey,
                   labelOptions: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
+                ),
+                // Document type
+                LabelFormField<DocumentType>(
+                  notAssignedSelectable: false,
+                  formBuilderState: _formKey.currentState,
+                  labelCreationWidgetBuilder: (initialName) =>
+                      RepositoryProvider(
+                    create: (context) =>
+                        context.read<LabelRepository<DocumentType>>(),
+                    child: AddDocumentTypePage(initialName: initialName),
+                  ),
+                  textFieldLabel:
+                      S.of(context).documentDocumentTypePropertyLabel + " *",
+                  name: DocumentModel.documentTypeKey,
+                  labelOptions: state.documentTypes,
+                  prefixIcon: const Icon(Icons.description_outlined),
                 ),
                 TagFormField(
                   name: DocumentModel.tagsKey,
