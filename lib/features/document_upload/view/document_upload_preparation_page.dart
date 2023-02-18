@@ -19,6 +19,13 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
+class DocumentUploadResult {
+  final bool success;
+  final String? taskId;
+
+  DocumentUploadResult(this.success, this.taskId);
+}
+
 class DocumentUploadPreparationPage extends StatefulWidget {
   final Uint8List fileBytes;
   final String? title;
@@ -259,13 +266,19 @@ class _DocumentUploadPreparationPageState
           createdAt: createdAt,
         );
         showSnackBar(
-            context, S.of(context)!.documentSuccessfullyUploadedProcessing);
-        Navigator.pop(context, taskId);
+          context,
+          S.of(context)!.documentSuccessfullyUploadedProcessing,
+        );
+        Navigator.pop(
+          context,
+          DocumentUploadResult(true, taskId),
+        );
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on PaperlessValidationErrors catch (errors) {
         setState(() => _errors = errors);
       } catch (unknownError, stackTrace) {
+        debugPrint(unknownError.toString());
         showErrorMessage(
             context, const PaperlessServerException.unknown(), stackTrace);
       } finally {

@@ -156,27 +156,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final extension = p.extension(mediaFile.path);
     if (await File(mediaFile.path).exists()) {
       final bytes = File(mediaFile.path).readAsBytesSync();
-      final success = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: DocumentUploadCubit(
-                  documentApi: context.read(),
-                  tagRepository: context.read(),
-                  correspondentRepository: context.read(),
-                  documentTypeRepository: context.read(),
-                ),
-                child: DocumentUploadPreparationPage(
-                  fileBytes: bytes,
-                  filename: filename,
-                  title: filename,
-                  fileExtension: extension,
-                ),
-              ),
+      final result = await Navigator.push<DocumentUploadResult>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+            value: DocumentUploadCubit(
+              documentApi: context.read(),
+              tagRepository: context.read(),
+              correspondentRepository: context.read(),
+              documentTypeRepository: context.read(),
             ),
-          ) ??
-          false;
-      if (success) {
+            child: DocumentUploadPreparationPage(
+              fileBytes: bytes,
+              filename: filename,
+              title: filename,
+              fileExtension: extension,
+            ),
+          ),
+        ),
+      );
+      if (result?.success ?? false) {
         await Fluttertoast.showToast(
           msg: S.of(context)!.documentSuccessfullyUploadedProcessing,
         );

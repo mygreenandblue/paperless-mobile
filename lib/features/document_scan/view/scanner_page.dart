@@ -208,7 +208,7 @@ class _ScannerPageState extends State<ScannerPage>
     final file = await _assembleFileBytes(
       context.read<DocumentScannerCubit>().state,
     );
-    final taskId = await Navigator.of(context).push<String?>(
+    final uploadResult = await Navigator.of(context).push<DocumentUploadResult>(
       MaterialPageRoute(
         builder: (_) => LabelRepositoriesProvider(
           child: BlocProvider(
@@ -228,10 +228,12 @@ class _ScannerPageState extends State<ScannerPage>
         ),
       ),
     );
-    if (taskId != null) {
+    if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context.read<TaskStatusCubit>().listenToTaskChanges(taskId);
+      context
+          .read<TaskStatusCubit>()
+          .listenToTaskChanges(uploadResult!.taskId!);
     }
   }
 
