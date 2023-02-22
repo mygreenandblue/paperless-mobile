@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
@@ -16,6 +17,7 @@ import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/core/widgets/offline_banner.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
@@ -42,17 +44,13 @@ class ScannerPage extends StatefulWidget {
 
 class _ScannerPageState extends State<ScannerPage>
     with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle actionsHandle =
+      SliverOverlapAbsorberHandle();
+
   @override
   Widget build(BuildContext context) {
-    final safeAreaPadding = MediaQuery.of(context).padding;
-    final availableHeight = MediaQuery.of(context).size.height -
-        2 * kToolbarHeight -
-        kTextTabBarHeight -
-        kBottomNavigationBarHeight -
-        safeAreaPadding.top -
-        safeAreaPadding.bottom;
-
-    print(availableHeight);
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
         return Scaffold(
@@ -68,54 +66,49 @@ class _ScannerPageState extends State<ScannerPage>
           // ),
           body: BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
-              return CustomScrollView(
-                physics:
-                    state.isEmpty ? const NeverScrollableScrollPhysics() : null,
-                slivers: [
-                  SearchAppBar(
-                    hintText: S.of(context)!.searchDocuments,
-                    onOpenSearch: showDocumentSearchPage,
-                    bottom: PreferredSize(
-                      child: _buildActions(connectedState.isConnected),
-                      preferredSize: const Size.fromHeight(kTextTabBarHeight),
-                    ),
+              return SafeArea(
+                child: Scaffold(
+                  drawer: const AppDrawer(),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () => _openDocumentScanner(context),
+                    child: const Icon(Icons.add_a_photo_outlined),
                   ),
-                  if (state.isEmpty)
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: availableHeight,
-                        child: Center(
-                          child: _buildEmptyState(connectedState.isConnected),
+                  body: NestedScrollView(
+                    floatHeaderSlivers: true,
+                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      SliverOverlapAbsorber(
+                        handle: searchBarHandle,
+                        sliver: const SliverSearchBar(),
+                      ),
+                      SliverOverlapAbsorber(
+                        handle: actionsHandle,
+                        sliver: SliverPersistentHeader(
+                          pinned: true,
+                          delegate: CustomizableSliverPersistentHeaderDelegate(
+                            child: _buildActions(connectedState.isConnected),
+                            maxExtent: kTextTabBarHeight,
+                            minExtent: kTextTabBarHeight,
+                          ),
                         ),
                       ),
-                    )
-                  else
-                    _buildImageGrid(state)
-                ],
-              );
-
-              NestedScrollView(
-                floatHeaderSlivers: false,
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SearchAppBar(
-                    hintText: S.of(context)!.searchDocuments,
-                    onOpenSearch: showDocumentSearchPage,
-                    bottom: PreferredSize(
-                      child: _buildActions(connectedState.isConnected),
-                      preferredSize: const Size.fromHeight(kTextTabBarHeight),
+                    ],
+                    body: BlocBuilder<DocumentScannerCubit, List<File>>(
+                      builder: (context, state) {
+                        if (state.isEmpty) {
+                          return SizedBox.expand(
+                            child: Center(
+                              child: _buildEmptyState(
+                                connectedState.isConnected,
+                                state,
+                              ),
+                            ),
+                          );
+                        } else {
+                          return _buildImageGrid(state);
+                        }
+                      },
                     ),
                   ),
-                ],
-                body: CustomScrollView(
-                  slivers: [
-                    if (state.isEmpty)
-                      SliverFillViewport(
-                        delegate: SliverChildListDelegate.fixed(
-                            [_buildEmptyState(connectedState.isConnected)]),
-                      )
-                    else
-                      _buildImageGrid(state)
-                  ],
                 ),
               );
             },
@@ -237,36 +230,32 @@ class _ScannerPageState extends State<ScannerPage>
     }
   }
 
-  Widget _buildEmptyState(bool isConnected) {
-    return BlocBuilder<DocumentScannerCubit, List<File>>(
-      builder: (context, scans) {
-        if (scans.isNotEmpty) {
-          return _buildImageGrid(scans);
-        }
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  S.of(context)!.noDocumentsScannedYet,
-                  textAlign: TextAlign.center,
-                ),
-                TextButton(
-                  child: Text(S.of(context)!.scanADocument),
-                  onPressed: () => _openDocumentScanner(context),
-                ),
-                Text(S.of(context)!.or),
-                TextButton(
-                  child: Text(S.of(context)!.uploadADocumentFromThisDevice),
-                  onPressed: isConnected ? _onUploadFromFilesystem : null,
-                ),
-              ],
+  Widget _buildEmptyState(bool isConnected, List<File> scans) {
+    if (scans.isNotEmpty) {
+      return _buildImageGrid(scans);
+    }
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              S.of(context)!.noDocumentsScannedYet,
+              textAlign: TextAlign.center,
             ),
-          ),
-        );
-      },
+            TextButton(
+              child: Text(S.of(context)!.scanADocument),
+              onPressed: () => _openDocumentScanner(context),
+            ),
+            Text(S.of(context)!.or),
+            TextButton(
+              child: Text(S.of(context)!.uploadADocumentFromThisDevice),
+              onPressed: isConnected ? _onUploadFromFilesystem : null,
+            ),
+          ],
+        ),
+      ),
     );
   }
 

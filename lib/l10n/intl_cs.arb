@@ -526,7 +526,7 @@
   "@connectionSuccessfulylEstablished": {},
   "hostCouldNotBeResolved": "Adresa nemohla být rozpoznána. Zkontrolujte prosím adresu serveru a své internetové připojení.",
   "@hostCouldNotBeResolved": {},
-  "serverAddress": "'Adresa serveru",
+  "serverAddress": "Adresa serveru",
   "@serverAddress": {},
   "invalidAddress": "Neplatná adresa",
   "@invalidAddress": {},

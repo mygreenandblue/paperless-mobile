@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
-import 'package:paperless_mobile/core/repository/state/impl/document_type_repository_state.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
@@ -29,6 +30,11 @@ class LabelsPage extends StatefulWidget {
 
 class _LabelsPageState extends State<LabelsPage>
     with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle tabBarHandle =
+      SliverOverlapAbsorberHandle();
+
   late final TabController _tabController;
   int _currentIndex = 0;
 
@@ -46,215 +52,210 @@ class _LabelsPageState extends State<LabelsPage>
       length: 3,
       child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
         builder: (context, connectedState) {
-          return Scaffold(
-            drawer: const AppDrawer(),
-            floatingActionButton: FloatingActionButton(
-              onPressed: [
-                _openAddCorrespondentPage,
-                _openAddDocumentTypePage,
-                _openAddTagPage,
-                _openAddStoragePathPage,
-              ][_currentIndex],
-              child: Icon(Icons.add),
-            ),
-            body: NestedScrollView(
-              floatHeaderSlivers: true,
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverOverlapAbsorber(
-                  // This widget takes the overlapping behavior of the SliverAppBar,
-                  // and redirects it to the SliverOverlapInjector below. If it is
-                  // missing, then it is possible for the nested "inner" scroll view
-                  // below to end up under the SliverAppBar even when the inner
-                  // scroll view thinks it has not been scrolled.
-                  // This is not necessary if the "headerSliverBuilder" only builds
-                  // widgets that do not overlap the next sliver.
-                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context,
+          return SafeArea(
+            child: Scaffold(
+              drawer: const AppDrawer(),
+              floatingActionButton: FloatingActionButton(
+                onPressed: [
+                  _openAddCorrespondentPage,
+                  _openAddDocumentTypePage,
+                  _openAddTagPage,
+                  _openAddStoragePathPage,
+                ][_currentIndex],
+                child: const Icon(Icons.add),
+              ),
+              body: NestedScrollView(
+                floatHeaderSlivers: true,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverOverlapAbsorber(
+                    handle: searchBarHandle,
+                    sliver: const SliverSearchBar(),
                   ),
-                  sliver: SearchAppBar(
-                    hintText: S.of(context)!.searchDocuments,
-                    onOpenSearch: showDocumentSearchPage,
-                    bottom: TabBar(
+                  SliverOverlapAbsorber(
+                    handle: tabBarHandle,
+                    sliver: SliverPersistentHeader(
+                      pinned: true,
+                      delegate: CustomizableSliverPersistentHeaderDelegate(
+                          child: ColoredTabBar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.background,
+                            tabBar: TabBar(
+                              controller: _tabController,
+                              tabs: [
+                                Tab(
+                                  icon: Icon(
+                                    Icons.person_outline,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                                Tab(
+                                  icon: Icon(
+                                    Icons.description_outlined,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                                Tab(
+                                  icon: Icon(
+                                    Icons.label_outline,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                                Tab(
+                                  icon: Icon(
+                                    Icons.folder_open,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          minExtent: kTextTabBarHeight,
+                          maxExtent: kTextTabBarHeight),
+                    ),
+                  ),
+                ],
+                body: NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    final metrics = notification.metrics;
+                    if (metrics.maxScrollExtent == 0) {
+                      return true;
+                    }
+                    final desiredTab =
+                        ((metrics.pixels / metrics.maxScrollExtent) *
+                                (_tabController.length - 1))
+                            .round();
+
+                    if (metrics.axis == Axis.horizontal &&
+                        _currentIndex != desiredTab) {
+                      setState(() => _currentIndex = desiredTab);
+                    }
+                    return true;
+                  },
+                  child: RefreshIndicator(
+                    edgeOffset: kToolbarHeight + kTextTabBarHeight,
+                    notificationPredicate: (notification) =>
+                        connectedState.isConnected,
+                    onRefresh: () => [
+                      context.read<LabelCubit<Correspondent>>(),
+                      context.read<LabelCubit<DocumentType>>(),
+                      context.read<LabelCubit<Tag>>(),
+                      context.read<LabelCubit<StoragePath>>(),
+                    ][_currentIndex]
+                        .reload(),
+                    child: TabBarView(
                       controller: _tabController,
-                      tabs: [
-                        Tab(
-                          icon: Icon(
-                            Icons.person_outline,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            return CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(handle: searchBarHandle),
+                                SliverOverlapInjector(handle: tabBarHandle),
+                                LabelTabView<Correspondent>(
+                                  filterBuilder: (label) => DocumentFilter(
+                                    correspondent:
+                                        IdQueryParameter.fromId(label.id),
+                                    pageSize: label.documentCount ?? 0,
+                                  ),
+                                  onEdit: _openEditCorrespondentPage,
+                                  emptyStateActionButtonLabel:
+                                      S.of(context)!.addNewCorrespondent,
+                                  emptyStateDescription:
+                                      S.of(context)!.noCorrespondentsSetUp,
+                                  onAddNew: _openAddCorrespondentPage,
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                        Tab(
-                          icon: Icon(
-                            Icons.description_outlined,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            return CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(handle: searchBarHandle),
+                                SliverOverlapInjector(handle: tabBarHandle),
+                                LabelTabView<DocumentType>(
+                                  filterBuilder: (label) => DocumentFilter(
+                                    documentType:
+                                        IdQueryParameter.fromId(label.id),
+                                    pageSize: label.documentCount ?? 0,
+                                  ),
+                                  onEdit: _openEditDocumentTypePage,
+                                  emptyStateActionButtonLabel:
+                                      S.of(context)!.addNewDocumentType,
+                                  emptyStateDescription:
+                                      S.of(context)!.noDocumentTypesSetUp,
+                                  onAddNew: _openAddDocumentTypePage,
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                        Tab(
-                          icon: Icon(
-                            Icons.label_outline,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            return CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(handle: searchBarHandle),
+                                SliverOverlapInjector(handle: tabBarHandle),
+                                LabelTabView<Tag>(
+                                  filterBuilder: (label) => DocumentFilter(
+                                    tags: IdsTagsQuery.fromIds([label.id!]),
+                                    pageSize: label.documentCount ?? 0,
+                                  ),
+                                  onEdit: _openEditTagPage,
+                                  leadingBuilder: (t) => CircleAvatar(
+                                    backgroundColor: t.color,
+                                    child: t.isInboxTag ?? false
+                                        ? Icon(
+                                            Icons.inbox,
+                                            color: t.textColor,
+                                          )
+                                        : null,
+                                  ),
+                                  emptyStateActionButtonLabel:
+                                      S.of(context)!.addNewTag,
+                                  emptyStateDescription:
+                                      S.of(context)!.noTagsSetUp,
+                                  onAddNew: _openAddTagPage,
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                        Tab(
-                          icon: Icon(
-                            Icons.folder_open,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            return CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(handle: searchBarHandle),
+                                SliverOverlapInjector(handle: tabBarHandle),
+                                LabelTabView<StoragePath>(
+                                  onEdit: _openEditStoragePathPage,
+                                  filterBuilder: (label) => DocumentFilter(
+                                    storagePath:
+                                        IdQueryParameter.fromId(label.id),
+                                    pageSize: label.documentCount ?? 0,
+                                  ),
+                                  contentBuilder: (path) => Text(path.path),
+                                  emptyStateActionButtonLabel:
+                                      S.of(context)!.addNewStoragePath,
+                                  emptyStateDescription:
+                                      S.of(context)!.noStoragePathsSetUp,
+                                  onAddNew: _openAddStoragePathPage,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ],
-              body: NotificationListener<ScrollNotification>(
-                onNotification: (notification) {
-                  final metrics = notification.metrics;
-                  if (metrics.maxScrollExtent == 0) {
-                    return true;
-                  }
-                  final desiredTab =
-                      ((metrics.pixels / metrics.maxScrollExtent) *
-                              (_tabController.length - 1))
-                          .round();
-
-                  if (metrics.axis == Axis.horizontal &&
-                      _currentIndex != desiredTab) {
-                    setState(() => _currentIndex = desiredTab);
-                  }
-                  return true;
-                },
-                child: RefreshIndicator(
-                  edgeOffset: kToolbarHeight + kTextTabBarHeight,
-                  notificationPredicate: (notification) =>
-                      connectedState.isConnected,
-                  onRefresh: () => [
-                    context.read<LabelCubit<Correspondent>>(),
-                    context.read<LabelCubit<DocumentType>>(),
-                    context.read<LabelCubit<Tag>>(),
-                    context.read<LabelCubit<StoragePath>>(),
-                  ][_currentIndex]
-                      .reload(),
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          return CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              LabelTabView<Correspondent>(
-                                filterBuilder: (label) => DocumentFilter(
-                                  correspondent:
-                                      IdQueryParameter.fromId(label.id),
-                                  pageSize: label.documentCount ?? 0,
-                                ),
-                                onEdit: _openEditCorrespondentPage,
-                                emptyStateActionButtonLabel:
-                                    S.of(context)!.addNewCorrespondent,
-                                emptyStateDescription:
-                                    S.of(context)!.noCorrespondentsSetUp,
-                                onAddNew: _openAddCorrespondentPage,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Builder(
-                        builder: (context) {
-                          return CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              LabelTabView<DocumentType>(
-                                filterBuilder: (label) => DocumentFilter(
-                                  documentType:
-                                      IdQueryParameter.fromId(label.id),
-                                  pageSize: label.documentCount ?? 0,
-                                ),
-                                onEdit: _openEditDocumentTypePage,
-                                emptyStateActionButtonLabel:
-                                    S.of(context)!.addNewDocumentType,
-                                emptyStateDescription:
-                                    S.of(context)!.noDocumentTypesSetUp,
-                                onAddNew: _openAddDocumentTypePage,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Builder(
-                        builder: (context) {
-                          return CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              LabelTabView<Tag>(
-                                filterBuilder: (label) => DocumentFilter(
-                                  tags: IdsTagsQuery.fromIds([label.id!]),
-                                  pageSize: label.documentCount ?? 0,
-                                ),
-                                onEdit: _openEditTagPage,
-                                leadingBuilder: (t) => CircleAvatar(
-                                  backgroundColor: t.color,
-                                  child: t.isInboxTag ?? false
-                                      ? Icon(
-                                          Icons.inbox,
-                                          color: t.textColor,
-                                        )
-                                      : null,
-                                ),
-                                emptyStateActionButtonLabel:
-                                    S.of(context)!.addNewTag,
-                                emptyStateDescription:
-                                    S.of(context)!.noTagsSetUp,
-                                onAddNew: _openAddTagPage,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Builder(
-                        builder: (context) {
-                          return CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              LabelTabView<StoragePath>(
-                                onEdit: _openEditStoragePathPage,
-                                filterBuilder: (label) => DocumentFilter(
-                                  storagePath:
-                                      IdQueryParameter.fromId(label.id),
-                                  pageSize: label.documentCount ?? 0,
-                                ),
-                                contentBuilder: (path) => Text(path.path),
-                                emptyStateActionButtonLabel:
-                                    S.of(context)!.addNewStoragePath,
-                                emptyStateDescription:
-                                    S.of(context)!.noStoragePathsSetUp,
-                                onAddNew: _openAddStoragePathPage,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
                   ),
                 ),
               ),

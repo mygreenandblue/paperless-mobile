@@ -8,6 +8,7 @@ import 'package:paperless_mobile/features/document_search/view/document_search_p
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/dart_extensions.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
@@ -27,6 +28,9 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage>
     with DocumentPagingViewMixin<InboxPage, InboxCubit> {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+
   @override
   final pagingScrollController = ScrollController();
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
@@ -39,12 +43,6 @@ class _InboxPageState extends State<InboxPage>
 
   @override
   Widget build(BuildContext context) {
-    final safeAreaPadding = MediaQuery.of(context).padding;
-    final availableHeight = MediaQuery.of(context).size.height -
-        kToolbarHeight -
-        kBottomNavigationBarHeight -
-        safeAreaPadding.top -
-        safeAreaPadding.bottom;
     return Scaffold(
       drawer: const AppDrawer(),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
@@ -68,99 +66,97 @@ class _InboxPageState extends State<InboxPage>
         builder: (context, state) {
           return SafeArea(
             top: true,
-            child: Builder(
-              builder: (context) {
-                // Build a list of slivers alternating between SliverToBoxAdapter
-                // (group header) and a SliverList (inbox items).
-                final List<Widget> slivers = _groupByDate(state.documents)
-                    .entries
-                    .map(
-                      (entry) => [
-                        SliverToBoxAdapter(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(32.0),
-                              child: Text(
-                                entry.key,
-                                style: Theme.of(context).textTheme.bodySmall,
-                                textAlign: TextAlign.center,
-                              ).padded(),
-                            ),
-                          ).paddedOnly(top: 8.0),
-                        ),
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            childCount: entry.value.length,
-                            (context, index) {
-                              if (index < entry.value.length - 1) {
-                                return Column(
-                                  children: [
-                                    _buildListItem(
-                                      entry.value[index],
-                                    ),
-                                    const Divider(
-                                      indent: 16,
-                                      endIndent: 16,
-                                    ),
-                                  ],
-                                );
-                              }
-                              return _buildListItem(
-                                entry.value[index],
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    )
-                    .flattened
-                    .toList()
-                  ..add(const SliverToBoxAdapter(child: SizedBox(height: 78)));
-                //                              edgeOffset: kToolbarHeight,
-
-                return RefreshIndicator(
-                  edgeOffset: kToolbarHeight,
-                  onRefresh: context.read<InboxCubit>().reload,
-                  child: CustomScrollView(
-                    physics: state.documents.isEmpty
-                        ? const NeverScrollableScrollPhysics()
-                        : const AlwaysScrollableScrollPhysics(),
-                    controller: pagingScrollController,
-                    slivers: [
-                      SearchAppBar(
-                        hintText: S.of(context)!.searchDocuments,
-                        onOpenSearch: showDocumentSearchPage,
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverOverlapAbsorber(
+                  handle: searchBarHandle,
+                  sliver: const SliverSearchBar(),
+                )
+              ],
+              body: Builder(
+                builder: (context) {
+                  if (!state.hasLoaded) {
+                    return const DocumentsListLoadingWidget(); //TODO: Implement InboxLoadingWidget...
+                  } else if (state.documents.isEmpty) {
+                    return Center(
+                      child: InboxEmptyWidget(
+                        emptyStateRefreshIndicatorKey:
+                            _emptyStateRefreshIndicatorKey,
                       ),
-                      if (state.documents.isEmpty)
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: availableHeight,
-                            child: Center(
-                              child: InboxEmptyWidget(
-                                emptyStateRefreshIndicatorKey:
-                                    _emptyStateRefreshIndicatorKey,
-                              ),
+                    );
+                  } else {
+                    return RefreshIndicator(
+                      edgeOffset: kToolbarHeight,
+                      onRefresh: context.read<InboxCubit>().reload,
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: HintCard(
+                              show: !state.isHintAcknowledged,
+                              hintText:
+                                  S.of(context)!.swipeLeftToMarkADocumentAsSeen,
+                              onHintAcknowledged: () =>
+                                  context.read<InboxCubit>().acknowledgeHint(),
                             ),
                           ),
-                        )
-                      else if (!state.hasLoaded)
-                        DocumentsListLoadingWidget()
-                      else
-                        SliverToBoxAdapter(
-                          child: HintCard(
-                            show: !state.isHintAcknowledged,
-                            hintText:
-                                S.of(context)!.swipeLeftToMarkADocumentAsSeen,
-                            onHintAcknowledged: () =>
-                                context.read<InboxCubit>().acknowledgeHint(),
+                          // Build a list of slivers alternating between SliverToBoxAdapter
+                          // (group header) and a SliverList (inbox items).
+                          ..._groupByDate(state.documents)
+                              .entries
+                              .map(
+                                (entry) => [
+                                  SliverToBoxAdapter(
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(32.0),
+                                        child: Text(
+                                          entry.key,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                          textAlign: TextAlign.center,
+                                        ).padded(),
+                                      ),
+                                    ).paddedOnly(top: 8.0),
+                                  ),
+                                  SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                      childCount: entry.value.length,
+                                      (context, index) {
+                                        if (index < entry.value.length - 1) {
+                                          return Column(
+                                            children: [
+                                              _buildListItem(
+                                                entry.value[index],
+                                              ),
+                                              const Divider(
+                                                indent: 16,
+                                                endIndent: 16,
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                        return _buildListItem(
+                                          entry.value[index],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                              .flattened
+                              .toList(),
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 78),
                           ),
-                        ),
-                      ...slivers,
-                    ],
-                  ),
-                );
-              },
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           );
         },

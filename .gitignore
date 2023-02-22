@@ -64,3 +64,5 @@ untranslated_messages.txt
 **/dot_images/*
 
 docker/
+
+crowdin_credentials.yml

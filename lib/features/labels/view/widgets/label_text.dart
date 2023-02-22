@@ -27,6 +27,8 @@ class LabelText<T extends Label> extends StatelessWidget {
           return Text(
             state.labels[id]?.toString() ?? placeholder,
             style: style,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           );
         },
       ),
