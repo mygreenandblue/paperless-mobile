@@ -18,6 +18,8 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'de': 'Deutsch',
     'cs': 'Česky',
     'tr': 'Türkçe',
+    'fr': 'Français',
+    'pl': 'Polska',
   };
 
   @override
@@ -44,12 +46,20 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
                   label: _languageOptions['de']!,
                 ),
                 RadioOption(
+                  value: 'fr',
+                  label: _languageOptions['fr']! + "*",
+                ),
+                RadioOption(
                   value: 'cs',
                   label: _languageOptions['cs']! + "*",
                 ),
                 RadioOption(
                   value: 'tr',
                   label: _languageOptions['tr']! + "*",
+                ),
+                RadioOption(
+                  value: 'pl',
+                  label: _languageOptions['pl']! + "*",
                 )
               ],
               initialValue: context
