@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
@@ -15,6 +16,7 @@ import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/bloc_changes_observer.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
@@ -31,7 +33,6 @@ import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
@@ -45,11 +46,9 @@ import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'package:paperless_mobile/theme.dart';
-import 'package:paperless_mobile/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 
 void main() async {
   Bloc.observer = BlocChangesObserver();
@@ -97,6 +96,7 @@ void main() async {
   final tasksApi = PaperlessTasksApiImpl(
     sessionManager.client,
   );
+  final logsApi = PaperlessLogsApiImpl(sessionManager.client);
 
   // Initialize Blocs/Cubits
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
@@ -110,7 +110,6 @@ void main() async {
   final documentTypeRepository = DocumentTypeRepositoryImpl(labelsApi);
   final storagePathRepository = StoragePathRepositoryImpl(labelsApi);
   final savedViewRepository = SavedViewRepositoryImpl(savedViewsApi);
-
   //Create cubits/blocs
   final authCubit = AuthenticationCubit(
     localAuthService,
@@ -146,6 +145,7 @@ void main() async {
         Provider<PaperlessServerStatsApi>.value(value: statsApi),
         Provider<PaperlessSavedViewsApi>.value(value: savedViewsApi),
         Provider<PaperlessTasksApi>.value(value: tasksApi),
+        Provider<PaperlessLogsApi>.value(value: logsApi),
         Provider<cm.CacheManager>(
           create: (context) => cm.CacheManager(
             cm.Config(
@@ -209,9 +209,7 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => PaperlessServerInformationCubit(
-            context.read<PaperlessServerStatsApi>(),
-          ),
+          create: (context) => PaperlessServerInformationCubit(context.read()),
         ),
       ],
       child: BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
@@ -324,8 +322,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
         if (authentication.isAuthenticated &&
             (authentication.wasLocalAuthenticationSuccessful ?? true)) {
           return BlocProvider(
-            create: (context) =>
-                TaskStatusCubit(context.read<PaperlessTasksApi>()),
+            create: (context) => TaskStatusCubit(context.read()),
             child: const HomePage(),
           );
         } else {

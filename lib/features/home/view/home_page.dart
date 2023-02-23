@@ -35,6 +35,7 @@ import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:paperless_mobile/features/logs/cubit/logs_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

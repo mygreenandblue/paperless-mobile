@@ -72,5 +72,7 @@ String translateError(BuildContext context, ErrorCode code) {
       return S.of(context)!.couldNotLoadSuggestions;
     case ErrorCode.acknowledgeTasksError:
       return S.of(context)!.couldNotAcknowledgeTasks;
+    case ErrorCode.logNotFound:
+      return "No logs found."; //TODO: INTL
   }
 }

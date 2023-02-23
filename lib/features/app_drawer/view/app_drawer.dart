@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/logs/cubit/logs_cubit.dart';
+import 'package:paperless_mobile/features/logs/view/pages/logs_page.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -59,6 +61,22 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.code),
+              title: Text("Logs"), //TODO: INTL
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) =>
+                          LogsCubit(context.read())..initialize(),
+                      child: const LogsPage(),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
