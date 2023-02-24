@@ -129,6 +129,34 @@ class InboxCubit extends HydratedCubit<InboxState>
   }
 
   ///
+  /// Fetches inbox tag ids and loads the inbox items (documents).
+  ///
+  Future<void> reloadInbox() async {
+    emit(state.copyWith(hasLoaded: false, isLoading: true));
+    final inboxTags = await _tagsRepository.findAll().then(
+          (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
+        );
+
+    if (inboxTags.isEmpty) {
+      // no inbox tags = no inbox items.
+      return emit(
+        state.copyWith(
+          hasLoaded: true,
+          value: [],
+          inboxTags: [],
+        ),
+      );
+    }
+    emit(state.copyWith(inboxTags: inboxTags));
+    updateFilter(
+      filter: DocumentFilter(
+        sortField: SortField.added,
+        tags: IdsTagsQuery.fromIds(inboxTags),
+      ),
+    );
+  }
+
+  ///
   /// Updates the document with all inbox tags removed and removes the document
   /// from the inbox.
   ///

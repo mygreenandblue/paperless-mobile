@@ -287,39 +287,39 @@ class _DocumentsPageState extends State<DocumentsPage>
     ConnectivityState connectivityState,
     BuildContext context,
   ) {
-    return RefreshIndicator(
-      edgeOffset: kTextTabBarHeight,
-      onRefresh: _onReloadDocuments,
-      notificationPredicate: (_) => connectivityState.isConnected,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          // Listen for scroll notifications to load new data.
-          // Scroll controller does not work here due to nestedscrollview limitations.
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        // Listen for scroll notifications to load new data.
+        // Scroll controller does not work here due to nestedscrollview limitations.
 
-          final currState = context.read<DocumentsCubit>().state;
-          final max = notification.metrics.maxScrollExtent;
-          if (max == 0 ||
-              _currentTab != 0 ||
-              currState.isLoading ||
-              currState.isLastPageLoaded) {
-            return true;
-          }
+        final currState = context.read<DocumentsCubit>().state;
+        final max = notification.metrics.maxScrollExtent;
+        if (max == 0 ||
+            _currentTab != 0 ||
+            currState.isLoading ||
+            currState.isLastPageLoaded) {
+          return true;
+        }
 
-          final offset = notification.metrics.pixels;
-          if (offset >= max * 0.7) {
-            context
-                .read<DocumentsCubit>()
-                .loadMore()
-                .onError<PaperlessServerException>(
-                  (error, stackTrace) => showErrorMessage(
-                    context,
-                    error,
-                    stackTrace,
-                  ),
-                );
-          }
-          return false;
-        },
+        final offset = notification.metrics.pixels;
+        if (offset >= max * 0.7) {
+          context
+              .read<DocumentsCubit>()
+              .loadMore()
+              .onError<PaperlessServerException>(
+                (error, stackTrace) => showErrorMessage(
+                  context,
+                  error,
+                  stackTrace,
+                ),
+              );
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        edgeOffset: kTextTabBarHeight,
+        onRefresh: _onReloadDocuments,
+        notificationPredicate: (_) => connectivityState.isConnected,
         child: CustomScrollView(
           key: const PageStorageKey<String>("documents"),
           slivers: <Widget>[

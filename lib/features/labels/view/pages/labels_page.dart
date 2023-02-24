@@ -6,7 +6,6 @@ import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_he
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
-import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
@@ -18,7 +17,6 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
-import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class LabelsPage extends StatefulWidget {
@@ -140,7 +138,7 @@ class _LabelsPageState extends State<LabelsPage>
                     return true;
                   },
                   child: RefreshIndicator(
-                    edgeOffset: kToolbarHeight + kTextTabBarHeight,
+                    edgeOffset: kTextTabBarHeight,
                     notificationPredicate: (notification) =>
                         connectedState.isConnected,
                     onRefresh: () => [
