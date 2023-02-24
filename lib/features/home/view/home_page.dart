@@ -12,6 +12,7 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.da
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
+import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
@@ -152,8 +153,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
       return;
     }
-    final filename = extractFilenameFromPath(mediaFile.path);
-    final extension = p.extension(mediaFile.path);
+    final fileDescription = FileDescription.fromPath(mediaFile.path);
     if (await File(mediaFile.path).exists()) {
       final bytes = File(mediaFile.path).readAsBytesSync();
       final result = await Navigator.push<DocumentUploadResult>(
@@ -168,9 +168,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
             child: DocumentUploadPreparationPage(
               fileBytes: bytes,
-              filename: filename,
-              title: filename,
-              fileExtension: extension,
+              filename: fileDescription.filename,
+              title: fileDescription.filename,
+              fileExtension: fileDescription.extension,
             ),
           ),
         ),

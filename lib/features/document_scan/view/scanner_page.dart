@@ -13,20 +13,17 @@ import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_he
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
+import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/core/widgets/offline_banner.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
+import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
-import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
-import 'package:paperless_mobile/features/search_app_bar/view/search_app_bar.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
@@ -59,11 +56,6 @@ class _ScannerPageState extends State<ScannerPage>
             onPressed: () => _openDocumentScanner(context),
             child: const Icon(Icons.add_a_photo_outlined),
           ),
-          //appBar: _buildAppBar(context, connectedState.isConnected),
-          // body: Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: _buildBody(connectedState.isConnected),
-          // ),
           body: BlocBuilder<DocumentScannerCubit, List<File>>(
             builder: (context, state) {
               return SafeArea(
@@ -119,53 +111,56 @@ class _ScannerPageState extends State<ScannerPage>
   }
 
   Widget _buildActions(bool isConnected) {
-    return SizedBox(
-      height: kTextTabBarHeight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          BlocBuilder<DocumentScannerCubit, List<File>>(
-            builder: (context, state) {
-              return TextButton.icon(
-                label: Text(S.of(context)!.previewScan),
-                onPressed: state.isNotEmpty
-                    ? () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => DocumentView(
-                              documentBytes: _assembleFileBytes(
-                                state,
-                                forcePdf: true,
-                              ).then((file) => file.bytes),
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.background,
+      child: SizedBox(
+        height: kTextTabBarHeight,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            BlocBuilder<DocumentScannerCubit, List<File>>(
+              builder: (context, state) {
+                return TextButton.icon(
+                  label: Text(S.of(context)!.previewScan),
+                  onPressed: state.isNotEmpty
+                      ? () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => DocumentView(
+                                documentBytes: _assembleFileBytes(
+                                  state,
+                                  forcePdf: true,
+                                ).then((file) => file.bytes),
+                              ),
                             ),
-                          ),
-                        )
-                    : null,
-                icon: const Icon(Icons.visibility_outlined),
-              );
-            },
-          ),
-          BlocBuilder<DocumentScannerCubit, List<File>>(
-            builder: (context, state) {
-              return TextButton.icon(
-                label: Text(S.of(context)!.clearAll),
-                onPressed: state.isEmpty ? null : () => _reset(context),
-                icon: const Icon(Icons.delete_sweep_outlined),
-              );
-            },
-          ),
-          BlocBuilder<DocumentScannerCubit, List<File>>(
-            builder: (context, state) {
-              return TextButton.icon(
-                label: Text(S.of(context)!.upload),
-                onPressed: state.isEmpty || !isConnected
-                    ? null
-                    : () => _onPrepareDocumentUpload(context),
-                icon: const Icon(Icons.upload_outlined),
-              );
-            },
-          ),
-        ],
+                          )
+                      : null,
+                  icon: const Icon(Icons.visibility_outlined),
+                );
+              },
+            ),
+            BlocBuilder<DocumentScannerCubit, List<File>>(
+              builder: (context, state) {
+                return TextButton.icon(
+                  label: Text(S.of(context)!.clearAll),
+                  onPressed: state.isEmpty ? null : () => _reset(context),
+                  icon: const Icon(Icons.delete_sweep_outlined),
+                );
+              },
+            ),
+            BlocBuilder<DocumentScannerCubit, List<File>>(
+              builder: (context, state) {
+                return TextButton.icon(
+                  label: Text(S.of(context)!.upload),
+                  onPressed: state.isEmpty || !isConnected
+                      ? null
+                      : () => _onPrepareDocumentUpload(context),
+                  icon: const Icon(Icons.upload_outlined),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -260,28 +255,35 @@ class _ScannerPageState extends State<ScannerPage>
   }
 
   Widget _buildImageGrid(List<File> scans) {
-    return SliverGrid.builder(
-        itemCount: scans.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 1 / sqrt(2),
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+    return CustomScrollView(
+      slivers: [
+        SliverOverlapInjector(handle: searchBarHandle),
+        SliverOverlapInjector(handle: actionsHandle),
+        SliverGrid.builder(
+          itemCount: scans.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1 / sqrt(2),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemBuilder: (context, index) {
+            return ScannedImageItem(
+              file: scans[index],
+              onDelete: () async {
+                try {
+                  context.read<DocumentScannerCubit>().removeScan(index);
+                } on PaperlessServerException catch (error, stackTrace) {
+                  showErrorMessage(context, error, stackTrace);
+                }
+              },
+              index: index,
+              totalNumberOfFiles: scans.length,
+            );
+          },
         ),
-        itemBuilder: (context, index) {
-          return ScannedImageItem(
-            file: scans[index],
-            onDelete: () async {
-              try {
-                context.read<DocumentScannerCubit>().removeScan(index);
-              } on PaperlessServerException catch (error, stackTrace) {
-                showErrorMessage(context, error, stackTrace);
-              }
-            },
-            index: index,
-            totalNumberOfFiles: scans.length,
-          );
-        });
+      ],
+    );
   }
 
   void _reset(BuildContext context) {
@@ -300,17 +302,18 @@ class _ScannerPageState extends State<ScannerPage>
       allowMultiple: false,
     );
     if (result?.files.single.path != null) {
-      File file = File(result!.files.single.path!);
-      if (!supportedFileExtensions
-          .contains(file.path.split('.').last.toLowerCase())) {
+      final path = result!.files.single.path!;
+      final fileDescription = FileDescription.fromPath(path);
+      File file = File(path);
+      if (!supportedFileExtensions.contains(
+        fileDescription.extension.toLowerCase(),
+      )) {
         showErrorMessage(
           context,
           const PaperlessServerException(ErrorCode.unsupportedFileFormat),
         );
         return;
       }
-      final filename = extractFilenameFromPath(file.path);
-      final extension = p.extension(file.path);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LabelRepositoriesProvider(
@@ -325,9 +328,9 @@ class _ScannerPageState extends State<ScannerPage>
               ),
               child: DocumentUploadPreparationPage(
                 fileBytes: file.readAsBytesSync(),
-                filename: filename,
-                fileExtension: extension,
-                title: filename,
+                filename: fileDescription.filename,
+                title: fileDescription.filename,
+                fileExtension: fileDescription.extension,
               ),
             ),
           ),
