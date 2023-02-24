@@ -11,10 +11,13 @@ class DocumentSearchState extends DocumentPagingState {
   final List<String> searchHistory;
   final SearchView view;
   final List<String> suggestions;
+  @JsonKey()
+  final ViewType viewType;
   const DocumentSearchState({
     this.view = SearchView.suggestions,
     this.searchHistory = const [],
     this.suggestions = const [],
+    this.viewType = ViewType.detailed,
     super.filter,
     super.hasLoaded,
     super.isLoading,
@@ -27,6 +30,7 @@ class DocumentSearchState extends DocumentPagingState {
         searchHistory,
         suggestions,
         view,
+        viewType,
       ];
 
   @override
@@ -52,6 +56,7 @@ class DocumentSearchState extends DocumentPagingState {
     DocumentFilter? filter,
     List<String>? suggestions,
     SearchView? view,
+    ViewType? viewType,
   }) {
     return DocumentSearchState(
       value: value ?? this.value,
@@ -61,6 +66,7 @@ class DocumentSearchState extends DocumentPagingState {
       searchHistory: searchHistory ?? this.searchHistory,
       view: view ?? this.view,
       suggestions: suggestions ?? this.suggestions,
+      viewType: viewType ?? this.viewType,
     );
   }
 

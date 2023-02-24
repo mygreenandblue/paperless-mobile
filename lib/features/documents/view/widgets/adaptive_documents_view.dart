@@ -146,6 +146,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
               onDocumentTypeSelected: onDocumentTypeSelected,
               onStoragePathSelected: onStoragePathSelected,
               enableHeroAnimation: enableHeroAnimation,
+              highlights: document.searchHit?.highlights,
             ),
           );
         },

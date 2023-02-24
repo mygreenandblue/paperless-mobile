@@ -8,10 +8,13 @@ import 'package:paperless_mobile/features/documents/view/widgets/items/document_
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class DocumentDetailedItem extends DocumentItem {
+  final String? highlights;
   const DocumentDetailedItem({
     super.key,
+    this.highlights,
     required super.document,
     required super.isSelected,
     required super.isSelectionActive,
@@ -37,7 +40,9 @@ class DocumentDetailedItem extends DocumentItem {
         padding.bottom -
         kBottomNavigationBarHeight -
         kToolbarHeight;
-    final maxHeight = min(500.0, availableHeight);
+    final maxHeight = highlights != null
+        ? min(600.0, availableHeight)
+        : min(500.0, availableHeight);
     return Card(
       child: InkWell(
         enableFeedback: true,
@@ -52,90 +57,98 @@ class DocumentDetailedItem extends DocumentItem {
         onLongPress: () {
           onSelected?.call(document);
         },
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints.tightFor(
-                    width: double.infinity,
-                    height: maxHeight / 2,
-                  ),
-                  child: DocumentPreview(
-                    document: document,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      DateFormat.yMMMMd().format(document.created),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.apply(color: Theme.of(context).hintColor),
-                    ),
-                    if (document.archiveSerialNumber != null)
-                      Row(
-                        children: [
-                          Text(
-                            '#${document.archiveSerialNumber}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.apply(color: Theme.of(context).hintColor),
-                          ),
-                        ],
-                      ),
-                  ],
-                ).paddedLTRB(8, 8, 8, 4),
-                Text(
-                  document.title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ).paddedLTRB(8, 0, 8, 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.person_outline,
-                      size: 16,
-                    ).paddedOnly(right: 4.0),
-                    CorrespondentWidget(
-                      onSelected: onCorrespondentSelected,
-                      textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                      correspondentId: document.correspondent,
-                    ),
-                  ],
-                ).paddedLTRB(8, 0, 8, 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.description_outlined,
-                      size: 16,
-                    ).paddedOnly(right: 4.0),
-                    DocumentTypeWidget(
-                      onSelected: onDocumentTypeSelected,
-                      textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                      documentTypeId: document.documentType,
-                    ),
-                  ],
-                ).paddedLTRB(8, 0, 8, 4),
-                TagsWidget(
-                  isMultiLine: false,
-                  tagIds: document.tags,
-                ).padded(),
-              ],
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(
+                width: double.infinity,
+                height: maxHeight / 2,
+              ),
+              child: DocumentPreview(
+                document: document,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+              ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  DateFormat.yMMMMd().format(document.created),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.apply(color: Theme.of(context).hintColor),
+                ),
+                if (document.archiveSerialNumber != null)
+                  Row(
+                    children: [
+                      Text(
+                        '#${document.archiveSerialNumber}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.apply(color: Theme.of(context).hintColor),
+                      ),
+                    ],
+                  ),
+              ],
+            ).paddedLTRB(8, 8, 8, 4),
+            Text(
+              document.title,
+              style: Theme.of(context).textTheme.titleMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ).paddedLTRB(8, 0, 8, 4),
+            Row(
+              children: [
+                const Icon(
+                  Icons.person_outline,
+                  size: 16,
+                ).paddedOnly(right: 4.0),
+                CorrespondentWidget(
+                  onSelected: onCorrespondentSelected,
+                  textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  correspondentId: document.correspondent,
+                ),
+              ],
+            ).paddedLTRB(8, 0, 8, 4),
+            Row(
+              children: [
+                const Icon(
+                  Icons.description_outlined,
+                  size: 16,
+                ).paddedOnly(right: 4.0),
+                DocumentTypeWidget(
+                  onSelected: onDocumentTypeSelected,
+                  textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  documentTypeId: document.documentType,
+                ),
+              ],
+            ).paddedLTRB(8, 0, 8, 4),
+            TagsWidget(
+              isMultiLine: false,
+              tagIds: document.tags,
+            ).padded(),
+            if (highlights != null)
+              Html(
+                data: '<p>${highlights!}</p>',
+                style: {
+                  "span": Style(
+                    backgroundColor: Colors.yellow,
+                    color: Colors.black,
+                  ),
+                  "p": Style(
+                    maxLines: 3,
+                    textOverflow: TextOverflow.ellipsis,
+                  ),
+                },
+              ).padded(),
           ],
         ),
       ),
