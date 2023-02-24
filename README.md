@@ -100,7 +100,7 @@ If you want to manually install dependencies and build generated files, you can 
 #### Inside the project's root folder
 4. Install the dependencies for the app
    ```sh
-   flutter pub get
+   flutter packages pub get
    ```
 5. Build generated files for the app
    ```sh
@@ -108,7 +108,7 @@ If you want to manually install dependencies and build generated files, you can 
    ```
 6. Generate the localization files for the app
    ```sh
-   flutter pub run intl_utils:generate
+   flutter gen-l10n
    ```
    
 ### Build release version
