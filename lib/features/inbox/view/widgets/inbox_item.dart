@@ -13,7 +13,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class InboxItem extends StatefulWidget {
-  static const _a4AspectRatio = 1 / 1.4142;
+  static const a4AspectRatio = 1 / 1.4142;
 
   final DocumentModel document;
   const InboxItem({
@@ -53,7 +53,7 @@ class _InboxItemState extends State<InboxItem> {
               child: Row(
                 children: [
                   AspectRatio(
-                    aspectRatio: InboxItem._a4AspectRatio,
+                    aspectRatio: InboxItem.a4AspectRatio,
                     child: DocumentPreview(
                       document: widget.document,
                       fit: BoxFit.cover,

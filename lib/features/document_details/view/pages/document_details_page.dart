@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:badges/badges.dart' as b;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
@@ -22,12 +19,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/document_previe
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 
-//TODO: Refactor this into several widgets
 class DocumentDetailsPage extends StatefulWidget {
   final bool allowEdit;
   final bool isLabelClickable;
