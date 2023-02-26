@@ -193,6 +193,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x86-mingw32)
     unicode-display_width (1.8.0)
     webrick (1.8.1)
     word_wrap (1.0.0)
@@ -210,6 +211,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   fastlane
