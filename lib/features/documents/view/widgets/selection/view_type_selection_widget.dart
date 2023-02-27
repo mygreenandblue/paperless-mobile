@@ -27,7 +27,9 @@ class ViewTypeSelectionWidget extends StatelessWidget {
         icon = Icons.article_outlined;
         break;
     }
+
     return PopupMenuButton<ViewType>(
+      position: PopupMenuPosition.under,
       initialValue: viewType,
       icon: Icon(icon),
       itemBuilder: (context) => [

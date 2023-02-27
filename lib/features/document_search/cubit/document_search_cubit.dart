@@ -5,6 +5,7 @@ import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 part 'document_search_state.dart';
 
@@ -33,7 +34,7 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
       view: SearchView.results,
     ));
     final searchFilter = DocumentFilter(
-      query: TextQuery.titleAndContent(query),
+      query: TextQuery.extended(query),
     );
 
     await updateFilter(filter: searchFilter);
@@ -46,6 +47,10 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
         ],
       ),
     );
+  }
+
+  void updateViewType(ViewType viewType) {
+    emit(state.copyWith(viewType: viewType));
   }
 
   void removeHistoryEntry(String entry) {

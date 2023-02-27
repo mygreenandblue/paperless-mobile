@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 
 class TagsPlaceholder extends StatelessWidget {
-  static const _lengths = [24, 36, 16, 48];
+  static const _lengths = <double>[90, 70, 130];
   final int count;
   final bool dense;
   const TagsPlaceholder({
@@ -14,24 +15,23 @@ class TagsPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 32,
-      child: ListView.separated(
-        padding: EdgeInsets.zero,
-        itemCount: count,
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => FilterChip(
-          labelPadding:
-              dense ? const EdgeInsets.symmetric(horizontal: 2) : null,
-          padding: dense ? const EdgeInsets.all(4) : null,
-          visualDensity: const VisualDensity(vertical: -2),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          side: BorderSide.none,
-          onSelected: (_) {},
-          selected: false,
-          label: Text(
-            List.filled(_lengths[index], " ").join(),
-          ),
+        physics: const NeverScrollableScrollPhysics(),
+        child: Row(
+          children: List.generate(count, (index) => index)
+              .map(
+                (index) => Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  width: _lengths[index % _lengths.length],
+                  height: 32,
+                ).paddedOnly(right: 4),
+              )
+              .toList(),
         ),
-        separatorBuilder: (context, _) => const SizedBox(width: 4),
       ),
     );
   }

@@ -7,6 +7,8 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
+import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/routes/document_details_route.dart';
@@ -168,7 +170,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
       alignment: Alignment.center,
       transform: Matrix4.rotationY(math.pi),
       child: IconButton(
-        icon: Icon(Icons.arrow_outward),
+        icon: const Icon(Icons.arrow_outward),
         onPressed: () {
           _queryController.text = '$suggestion ';
           _queryController.selection = TextSelection.fromPosition(
@@ -181,9 +183,23 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
   }
 
   Widget _buildResultsView(DocumentSearchState state) {
-    final header = Text(
-      S.of(context)!.results,
-      style: Theme.of(context).textTheme.labelSmall,
+    final header = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          S.of(context)!.results,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
+          builder: (context, state) {
+            return ViewTypeSelectionWidget(
+              viewType: state.viewType,
+              onChanged: (type) =>
+                  context.read<DocumentSearchCubit>().updateViewType(type),
+            );
+          },
+        )
+      ],
     ).padded();
     return CustomScrollView(
       slivers: [
@@ -196,6 +212,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           )
         else
           SliverAdaptiveDocumentsView(
+            viewType: state.viewType,
             documents: state.documents,
             hasInternetConnection: true,
             isLabelClickable: false,
