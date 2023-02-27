@@ -29,12 +29,12 @@ migrate_working_dir/
 .packages
 build/
 
-android/src/main/jniLibs
 android/CMakeFiles
 android/Makefile
 android/.cxx
 CMakeCache.txt
 cmake_install.cmake
 
+include/
+android/src/jniLibs
 ios/opencv2.framework
-include

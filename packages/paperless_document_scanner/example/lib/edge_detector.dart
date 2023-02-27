@@ -46,6 +46,21 @@ class EdgeDetector {
     return await _subscribeToPort<EdgeDetectionResult>(port);
   }
 
+  static Future<EdgeDetectionResult> detectEdges(Uint8List bytes) async {
+    final port = ReceivePort();
+
+    _spawnIsolate<EdgeDetectionInput>(
+      startEdgeDetectionIsolate,
+      EdgeDetectionInput(
+        bytes: bytes,
+        sendPort: port.sendPort,
+      ),
+      port,
+    );
+
+    return await _subscribeToPort<EdgeDetectionResult>(port);
+  }
+
   Future<bool> processImageFromFile(
       String filePath, EdgeDetectionResult edgeDetectionResult) async {
     final port = ReceivePort();
@@ -61,7 +76,7 @@ class EdgeDetector {
     return await _subscribeToPort<bool>(port);
   }
 
-  void _spawnIsolate<T>(
+  static void _spawnIsolate<T>(
     void Function(T) function,
     dynamic input,
     ReceivePort port,
@@ -70,7 +85,7 @@ class EdgeDetector {
         onError: port.sendPort, onExit: port.sendPort);
   }
 
-  Future<T> _subscribeToPort<T>(ReceivePort port) async {
+  static Future<T> _subscribeToPort<T>(ReceivePort port) async {
     late StreamSubscription sub;
 
     var completer = Completer<T>();

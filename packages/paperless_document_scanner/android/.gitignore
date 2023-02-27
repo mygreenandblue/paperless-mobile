@@ -7,3 +7,9 @@
 /build
 /captures
 .cxx
+*.vcxproj
+*.vcxproj.filters
+*.sln
+
+
+src/main/jniLibs/
