@@ -21,8 +21,28 @@ platform :android do
     gradle(task: "test")
   end
 
+  desc "Submit a new alpha build to Google Play"
+  lane :alpha do
+    sh "flutter build appbundle -v"
+    upload_to_play_store(
+      track: 'alpha',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+    )
+  end
+
+  desc "Promote alpha track to beta"
+  lane :promote_to_production do
+    upload_to_play_store(
+      track: 'alpha',
+      track_promote_to: 'beta',
+      skip_upload_changelogs: true,
+      json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+    )
+  end
+
   desc "Submit a new beta build to Google Play"
-  lane :beta do
+  lane :alpha do
     sh "flutter build appbundle -v"
     upload_to_play_store(
       track: 'beta',

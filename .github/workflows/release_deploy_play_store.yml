@@ -12,6 +12,7 @@ on:
         type: choice
         options:
           - alpha
+          - promote_to_beta
           - beta
           - promote_to_production
           - production
