@@ -1,0 +1,18 @@
+An (almost) fully fledged mobile Paperless client compatible with Paperless.
+
+Using this app requires access to running a Paperless-ng*x instance.
+
+✔️ View and search documents
+✔️ Add, delete or edit documents
+✔️ Share, download and preview your files
+✔️ Manage correspondents, document types, tags and storage paths
+✔️ Scan and upload documents with preset correspondent, document type, tags and creation date
+✔️ Review and quickly process newly added documents in the inbox
+✔️ Secure your data with biometric authentication
+✔️ Support for TLS mutual authentication (client certificates)
+✔️ Modern, intuitive UI built according to the Material Design 3 specification
+✔️ Light and dark theme and support for dynamic color (Android 12+)
+✔️ Available in English, German, Czech* and Turkish* language
+
+
+* Not fully translated yet
