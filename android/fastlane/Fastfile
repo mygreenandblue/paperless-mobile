@@ -42,7 +42,7 @@ platform :android do
   end
 
   desc "Submit a new beta build to Google Play"
-  lane :alpha do
+  lane :beta do
     sh "flutter build appbundle -v"
     upload_to_play_store(
       track: 'beta',
