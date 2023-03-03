@@ -33,7 +33,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
             context: context,
             builder: (_) => RadioSettingsDialog<String>(
               footer: const Text(
-                "* Work in progress, not fully translated yet. Some words may be displayed in English!",
+                "* Not fully translated yet. Some words may be displayed in English!",
               ),
               titleText: S.of(context)!.language,
               options: [
@@ -47,7 +47,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
                 ),
                 RadioOption(
                   value: 'fr',
-                  label: _languageOptions['fr']! + "*",
+                  label: _languageOptions['fr']!,
                 ),
                 RadioOption(
                   value: 'cs',
