@@ -5,6 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
+import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
@@ -89,8 +90,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     ),
                   ),
                   bottom: ColoredTabBar(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
                     tabBar: TabBar(
                       isScrollable: true,
                       tabs: [
@@ -357,23 +356,4 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       ),
     );
   }
-}
-
-class ColoredTabBar extends Container implements PreferredSizeWidget {
-  ColoredTabBar({
-    super.key,
-    required this.backgroundColor,
-    required this.tabBar,
-  });
-
-  final TabBar tabBar;
-  final Color backgroundColor;
-  @override
-  Size get preferredSize => tabBar.preferredSize;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        color: backgroundColor,
-        child: tabBar,
-      );
 }
