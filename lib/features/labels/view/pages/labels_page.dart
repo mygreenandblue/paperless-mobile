@@ -4,6 +4,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
@@ -75,8 +76,6 @@ class _LabelsPageState extends State<LabelsPage>
                       pinned: true,
                       delegate: CustomizableSliverPersistentHeaderDelegate(
                           child: ColoredTabBar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.background,
                             tabBar: TabBar(
                               controller: _tabController,
                               tabs: [

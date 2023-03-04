@@ -22,6 +22,6 @@ class CustomizableSliverPersistentHeaderDelegate
 
   @override
   bool shouldRebuild(CustomizableSliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+    return true;
   }
 }
