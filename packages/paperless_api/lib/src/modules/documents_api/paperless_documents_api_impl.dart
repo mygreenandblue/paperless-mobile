@@ -199,8 +199,29 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     try {
       final response = await client.get(
         "/api/documents/${document.id}/download/",
-        queryParameters: original ? {'original': true} : {},
+        queryParameters: {'original': original},
         options: Options(responseType: ResponseType.bytes),
+      );
+      return response.data;
+    } on DioError catch (err) {
+      throw err.error!;
+    }
+  }
+
+  @override
+  Future<void> downloadToFile(
+    DocumentModel document,
+    String localFilePath, {
+    bool original = false,
+    void Function(double)? onProgressChanged,
+  }) async {
+    try {
+      final response = await client.download(
+        "/api/documents/${document.id}/download/",
+        localFilePath,
+        onReceiveProgress: (count, total) =>
+            onProgressChanged?.call(count / total),
+        queryParameters: {'original': original},
       );
       return response.data;
     } on DioError catch (err) {

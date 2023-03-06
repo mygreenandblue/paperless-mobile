@@ -12,6 +12,7 @@ import 'package:paperless_mobile/features/document_details/view/widgets/document
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
@@ -40,7 +41,7 @@ class DocumentDetailsPage extends StatefulWidget {
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   late Future<DocumentMetaData> _metaData;
-  static const double _itemPadding = 24;
+  static const double _itemSpacing = 24;
   @override
   void initState() {
     super.initState();
@@ -71,6 +72,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             setState(() {});
           },
           child: Scaffold(
+            extendBodyBehindAppBar: false,
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.endDocked,
             floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
@@ -78,15 +80,47 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
+                  title: Text(context
+                      .watch<DocumentDetailsCubit>()
+                      .state
+                      .document
+                      .title),
                   leading: const BackButton(),
-                  floating: true,
                   pinned: true,
-                  expandedHeight: 200.0,
-                  flexibleSpace:
-                      BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                    builder: (context, state) => DocumentPreview(
-                      document: state.document,
-                      fit: BoxFit.cover,
+                  forceElevated: innerBoxIsScrolled,
+                  collapsedHeight: kToolbarHeight,
+                  expandedHeight: 250.0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+                          builder: (context, state) => Positioned.fill(
+                            child: DocumentPreview(
+                              document: state.document,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned.fill(
+                          top: 0,
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.black.withOpacity(0.7),
+                                  Colors.black.withOpacity(0.2),
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   bottom: ColoredTabBar(
@@ -150,7 +184,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       children: [
                         DocumentOverviewWidget(
                           document: state.document,
-                          itemSpacing: _itemPadding,
+                          itemSpacing: _itemSpacing,
                           queryString: widget.titleAndContentQueryString,
                         ),
                         DocumentContentWidget(
@@ -161,8 +195,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         ),
                         DocumentMetaDataWidget(
                           document: state.document,
-                          itemSpacing: _itemPadding,
-                          metaData: _metaData,
+                          itemSpacing: _itemSpacing,
                         ),
                         const SimilarDocumentsView(),
                       ],
@@ -230,13 +263,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         ? () => _onDelete(state.document)
                         : null,
                   ).paddedSymmetrically(horizontal: 4),
-                  Tooltip(
-                    message: S.of(context)!.downloadDocumentTooltip,
-                    child: DocumentDownloadButton(
-                      document: state.document,
-                      enabled: isConnected,
-                      metaData: _metaData,
-                    ),
+                  DocumentDownloadButton(
+                    document: state.document,
+                    enabled: isConnected,
+                    metaData: _metaData,
                   ),
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,
@@ -249,14 +279,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     icon: const Icon(Icons.open_in_new),
                     onPressed: isConnected ? _onOpenFileInSystemViewer : null,
                   ).paddedOnly(right: 4.0),
-                  IconButton(
-                    tooltip: S.of(context)!.shareTooltip,
-                    icon: const Icon(Icons.share),
-                    onPressed: isConnected
-                        ? () =>
-                            context.read<DocumentDetailsCubit>().shareDocument()
-                        : null,
-                  ),
+                  DocumentShareButton(document: state.document),
                 ],
               );
             },

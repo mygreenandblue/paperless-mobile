@@ -516,15 +516,15 @@
   "@password": {},
   "passwordMustNotBeEmpty": "Le mot de passe ne doit pas être vide.",
   "@passwordMustNotBeEmpty": {},
-  "connectionTimedOut": "La connection a expiré.",
+  "connectionTimedOut": "La connexion a expiré.",
   "@connectionTimedOut": {},
-  "loginPageReachabilityMissingClientCertificateText": "Un certificat client était attendu mais n'a pas été envoyé. Veuillez fournir un certificat.",
+  "loginPageReachabilityMissingClientCertificateText": "Un certificat client était attendu, mais n'a pas été envoyé. Veuillez fournir un certificat.",
   "@loginPageReachabilityMissingClientCertificateText": {},
-  "couldNotEstablishConnectionToTheServer": "Impossible d'établir la connection jusqu'au serveur.",
+  "couldNotEstablishConnectionToTheServer": "Impossible d'établir la connexion jusqu'au serveur.",
   "@couldNotEstablishConnectionToTheServer": {},
-  "connectionSuccessfulylEstablished": "Connection établie avec succès.",
+  "connectionSuccessfulylEstablished": "Connexion établie avec succès.",
   "@connectionSuccessfulylEstablished": {},
-  "hostCouldNotBeResolved": "L'hôte ne peut pas être résolu. Veuillez vérifier l'addresse du serveur et votre connection internet. ",
+  "hostCouldNotBeResolved": "L'hôte ne peut pas être résolu. Veuillez vérifier l'adresse du serveur et votre connexion internet. ",
   "@hostCouldNotBeResolved": {},
   "serverAddress": "Adresse du Serveur",
   "@serverAddress": {},
@@ -532,7 +532,7 @@
   "@invalidAddress": {},
   "serverAddressMustIncludeAScheme": "L'adresse du serveur doit respecter le schéma.",
   "@serverAddressMustIncludeAScheme": {},
-  "serverAddressMustNotBeEmpty": "L'addresse du serveur ne doit pas être vide.",
+  "serverAddressMustNotBeEmpty": "L'adresse du serveur ne doit pas être vide.",
   "@serverAddressMustNotBeEmpty": {},
   "signIn": "Se connecter",
   "@signIn": {},
@@ -574,7 +574,7 @@
   "@documentMatchesThisRegularExpression": {},
   "regularExpression": "Expression Régulière",
   "@regularExpression": {},
-  "anInternetConnectionCouldNotBeEstablished": "Impossible d'établir une connection internet.",
+  "anInternetConnectionCouldNotBeEstablished": "Impossible d'établir une connexion internet.",
   "@anInternetConnectionCouldNotBeEstablished": {},
   "done": "Fait",
   "@done": {},
@@ -622,7 +622,7 @@
   "@languageAndVisualAppearance": {},
   "applicationSettings": "Application",
   "@applicationSettings": {},
-  "colorSchemeHint": "Choisissez entre une palette de couleurs inspirée par le vert Paperless traditionne, ou utilisez la palette de couleur dynamique basée sur le thème système.",
+  "colorSchemeHint": "Choisissez entre une palette de couleurs inspirée par le vert Paperless traditionnel, ou utilisez la palette de couleur dynamique basée sur le thème système.",
   "@colorSchemeHint": {},
   "colorSchemeNotSupportedWarning": "Le thème dynamique n'est supporté que sur les appareils sous Android 12 ou plus. Sélectionner l'option 'Dynamique' pourrait ne pas avoir d'effet en fonction de l'implémentation de votre système d'exploitation.",
   "@colorSchemeNotSupportedWarning": {},
@@ -673,9 +673,25 @@
   "list": "Liste",
   "@list": {},
   "remove": "Retirer",
-  "removeQueryFromSearchHistory": "Retirer la requête de l'historique de recherche ?",
+  "removeQueryFromSearchHistory": "Retirer la requête de l'historique de recherche ?",
   "dynamicColorScheme": "Dynamique",
   "@dynamicColorScheme": {},
   "classicColorScheme": "Classique",
-  "@classicColorScheme": {}
+  "@classicColorScheme": {},
+  "notificationDownloadComplete": "Download complete",
+  "@notificationDownloadComplete": {
+    "description": "Notification title when a download has been completed."
+  },
+  "notificationDownloadingDocument": "Downloading document",
+  "@notificationDownloadingDocument": {
+    "description": "Notification title shown when a document download is pending"
+  },
+  "archiveSerialNumberUpdated": "Archive Serial Number updated.",
+  "@archiveSerialNumberUpdated": {
+    "description": "Message shown when the ASN has been updated."
+  },
+  "donateCoffee": "Buy me a coffee",
+  "@donateCoffee": {
+    "description": "Label displayed in the app drawer"
+  }
 }

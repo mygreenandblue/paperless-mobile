@@ -217,7 +217,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     if (document.archiveSerialNumber == null) {
       final int asn = await _documentsApi.findNextAsn();
       final updatedDocument = await _documentsApi
-          .update(document.copyWith(archiveSerialNumber: asn));
+          .update(document.copyWith(archiveSerialNumber: () => asn));
 
       replace(updatedDocument);
     }

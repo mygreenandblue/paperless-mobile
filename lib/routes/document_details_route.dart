@@ -18,6 +18,7 @@ class DocumentDetailsRoute extends StatelessWidget {
       create: (context) => DocumentDetailsCubit(
         context.read(),
         context.read(),
+        context.read(),
         initialDocument: args.document,
       ),
       child: LabelRepositoriesProvider(

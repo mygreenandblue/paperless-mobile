@@ -38,6 +38,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   static const fkDocumentType = "documentType";
   static const fkCreatedDate = "createdAtDate";
   static const fkStoragePath = 'storagePath';
+  static const fkContent = 'content';
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   bool _isSubmitLoading = false;
@@ -55,94 +56,131 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
-        return Scaffold(
-            resizeToAvoidBottomInset: false,
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => _onSubmit(state.document),
-              icon: const Icon(Icons.save),
-              label: Text(S.of(context)!.saveChanges),
-            ),
-            appBar: AppBar(
-              title: Text(S.of(context)!.editDocument),
-              bottom: _isSubmitLoading
-                  ? const PreferredSize(
-                      preferredSize: Size.fromHeight(4),
-                      child: LinearProgressIndicator(),
-                    )
-                  : null,
-            ),
-            extendBody: true,
-            body: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 8,
-                left: 8,
-                right: 8,
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () => _onSubmit(state.document),
+                icon: const Icon(Icons.save),
+                label: Text(S.of(context)!.saveChanges),
               ),
-              child: FormBuilder(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    _buildTitleFormField(state.document.title).padded(),
-                    _buildCreatedAtFormField(state.document.created).padded(),
-                    _buildCorrespondentFormField(
-                      state.document.correspondent,
-                      state.correspondents,
-                    ).padded(),
-                    _buildDocumentTypeFormField(
-                      state.document.documentType,
-                      state.documentTypes,
-                    ).padded(),
-                    _buildStoragePathFormField(
-                      state.document.storagePath,
-                      state.storagePaths,
-                    ).padded(),
-                    TagFormField(
-                      initialValue:
-                          IdsTagsQuery.included(state.document.tags.toList()),
-                      notAssignedSelectable: false,
-                      anyAssignedSelectable: false,
-                      excludeAllowed: false,
-                      name: fkTags,
-                      selectableOptions: state.tags,
-                      suggestions: _filteredSuggestions.tags
-                              .toSet()
-                              .difference(state.document.tags.toSet())
-                              .isNotEmpty
-                          ? _buildSuggestionsSkeleton<int>(
-                              suggestions: _filteredSuggestions.tags,
-                              itemBuilder: (context, itemData) {
-                                final tag = state.tags[itemData]!;
-                                return ActionChip(
-                                  label: Text(
-                                    tag.name,
-                                    style: TextStyle(color: tag.textColor),
-                                  ),
-                                  backgroundColor: tag.color,
-                                  onPressed: () {
-                                    final currentTags = _formKey.currentState
-                                        ?.fields[fkTags]?.value as TagsQuery;
-                                    if (currentTags is IdsTagsQuery) {
-                                      _formKey.currentState?.fields[fkTags]
-                                          ?.didChange((IdsTagsQuery.fromIds(
-                                              {...currentTags.ids, itemData})));
-                                    } else {
-                                      _formKey.currentState?.fields[fkTags]
-                                          ?.didChange((IdsTagsQuery.fromIds(
-                                              {itemData})));
-                                    }
-                                  },
-                                );
-                              },
-                            )
-                          : null,
-                    ).padded(),
-                    const SizedBox(
-                        height: 64), // Prevent tags from being hidden by fab
+              appBar: AppBar(
+                title: Text(S.of(context)!.editDocument),
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      text: S.of(context)!.overview,
+                    ),
+                    Tab(
+                      text: S.of(context)!.content,
+                    )
                   ],
                 ),
               ),
-            ));
+              extendBody: true,
+              body: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  top: 8,
+                  left: 8,
+                  right: 8,
+                ),
+                child: FormBuilder(
+                  key: _formKey,
+                  child: TabBarView(
+                    children: [
+                      ListView(
+                        children: [
+                          _buildTitleFormField(state.document.title).padded(),
+                          _buildCreatedAtFormField(state.document.created)
+                              .padded(),
+                          _buildCorrespondentFormField(
+                            state.document.correspondent,
+                            state.correspondents,
+                          ).padded(),
+                          _buildDocumentTypeFormField(
+                            state.document.documentType,
+                            state.documentTypes,
+                          ).padded(),
+                          _buildStoragePathFormField(
+                            state.document.storagePath,
+                            state.storagePaths,
+                          ).padded(),
+                          TagFormField(
+                            initialValue: IdsTagsQuery.included(
+                                state.document.tags.toList()),
+                            notAssignedSelectable: false,
+                            anyAssignedSelectable: false,
+                            excludeAllowed: false,
+                            name: fkTags,
+                            selectableOptions: state.tags,
+                            suggestions: _filteredSuggestions.tags
+                                    .toSet()
+                                    .difference(state.document.tags.toSet())
+                                    .isNotEmpty
+                                ? _buildSuggestionsSkeleton<int>(
+                                    suggestions: _filteredSuggestions.tags,
+                                    itemBuilder: (context, itemData) {
+                                      final tag = state.tags[itemData]!;
+                                      return ActionChip(
+                                        label: Text(
+                                          tag.name,
+                                          style:
+                                              TextStyle(color: tag.textColor),
+                                        ),
+                                        backgroundColor: tag.color,
+                                        onPressed: () {
+                                          final currentTags = _formKey
+                                              .currentState
+                                              ?.fields[fkTags]
+                                              ?.value as TagsQuery;
+                                          if (currentTags is IdsTagsQuery) {
+                                            _formKey
+                                                .currentState?.fields[fkTags]
+                                                ?.didChange(
+                                                    (IdsTagsQuery.fromIds({
+                                              ...currentTags.ids,
+                                              itemData
+                                            })));
+                                          } else {
+                                            _formKey
+                                                .currentState?.fields[fkTags]
+                                                ?.didChange(
+                                                    (IdsTagsQuery.fromIds(
+                                                        {itemData})));
+                                          }
+                                        },
+                                      );
+                                    },
+                                  )
+                                : null,
+                          ).padded(),
+                          // Prevent tags from being hidden by fab
+                          const SizedBox(height: 64),
+                        ],
+                      ),
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            FormBuilderTextField(
+                              name: fkContent,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              initialValue: state.document.content,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                            ),
+                            const SizedBox(height: 84),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+        );
       },
     );
   }
@@ -238,13 +276,13 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
       var mergedDocument = document.copyWith(
-        title: values[fkTitle],
-        created: values[fkCreatedDate],
-        documentType: () => (values[fkDocumentType] as IdQueryParameter).id,
-        correspondent: () => (values[fkCorrespondent] as IdQueryParameter).id,
-        storagePath: () => (values[fkStoragePath] as IdQueryParameter).id,
-        tags: (values[fkTags] as IdsTagsQuery).includedIds,
-      );
+          title: values[fkTitle],
+          created: values[fkCreatedDate],
+          documentType: () => (values[fkDocumentType] as IdQueryParameter).id,
+          correspondent: () => (values[fkCorrespondent] as IdQueryParameter).id,
+          storagePath: () => (values[fkStoragePath] as IdQueryParameter).id,
+          tags: (values[fkTags] as IdsTagsQuery).includedIds,
+          content: values[fkContent]);
       setState(() {
         _isSubmitLoading = true;
       });

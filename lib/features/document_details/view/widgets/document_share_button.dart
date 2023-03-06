@@ -2,79 +2,69 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
-class DocumentDownloadButton extends StatefulWidget {
+class DocumentShareButton extends StatefulWidget {
   final DocumentModel? document;
   final bool enabled;
-  final Future<DocumentMetaData> metaData;
-  const DocumentDownloadButton({
+  const DocumentShareButton({
     super.key,
     required this.document,
     this.enabled = true,
-    required this.metaData,
   });
 
   @override
-  State<DocumentDownloadButton> createState() => _DocumentDownloadButtonState();
+  State<DocumentShareButton> createState() => _DocumentShareButtonState();
 }
 
-class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
+class _DocumentShareButtonState extends State<DocumentShareButton> {
   bool _isDownloadPending = false;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: S.of(context)!.downloadDocumentTooltip,
+      tooltip: S.of(context)!.shareTooltip,
       icon: _isDownloadPending
           ? const SizedBox(
-              child: CircularProgressIndicator(),
               height: 16,
               width: 16,
+              child: CircularProgressIndicator(),
             )
-          : const Icon(Icons.download),
+          : const Icon(Icons.share),
       onPressed: widget.document != null && widget.enabled
-          ? () => _onDownload(widget.document!)
+          ? () => _onShare(widget.document!)
           : null,
     ).paddedOnly(right: 4);
   }
 
-  Future<void> _onDownload(DocumentModel document) async {
+  Future<void> _onShare(DocumentModel document) async {
     try {
-      final downloadOriginal = await showDialog<bool>(
+      final shareOriginal = await showDialog<bool>(
         context: context,
         builder: (context) => const SelectFileTypeDialog(),
       );
-      if (downloadOriginal == null) {
+      if (shareOriginal == null) {
         // Download was cancelled
         return;
       }
-      if (Platform.isAndroid && androidInfo!.version.sdkInt! <= 29) {
+      if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
         final isGranted = await askForPermission(Permission.storage);
         if (!isGranted) {
           return;
-          //TODO: Tell user to grant permissions
         }
       }
       setState(() => _isDownloadPending = true);
-      await context.read<DocumentDetailsCubit>().downloadDocument(
-            downloadOriginal: downloadOriginal,
-            locale: context
-                .read<ApplicationSettingsCubit>()
-                .state
-                .preferredLocaleSubtag,
-          );
-      // showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
+      await context
+          .read<DocumentDetailsCubit>()
+          .shareDocument(shareOriginal: shareOriginal);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {
