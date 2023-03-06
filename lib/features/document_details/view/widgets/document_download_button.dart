@@ -2,12 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -61,10 +59,11 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
         // Download was cancelled
         return;
       }
-      if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
+      if (Platform.isAndroid && androidInfo!.version.sdkInt! <= 29) {
         final isGranted = await askForPermission(Permission.storage);
         if (!isGranted) {
           return;
+          //TODO: Tell user to grant permissions
         }
       }
       setState(() => _isDownloadPending = true);

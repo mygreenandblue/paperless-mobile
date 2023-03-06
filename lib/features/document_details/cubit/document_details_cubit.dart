@@ -78,22 +78,27 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   Future<ResultType> openDocumentInSystemViewer() async {
     final cacheDir = await FileService.temporaryDirectory;
-
+    await FileService.clearDirectoryContent(PaperlessDirectoryType.temporary);
     if (state.metaData == null) {
       await loadMetaData();
     }
+    final desc = FileDescription.fromPath(
+        state.metaData!.mediaFilename.replaceAll("/", " "));
 
-    await _api.downloadToFile(
-      state.document,
-      '${cacheDir.path}/${state.metaData!.mediaFilename}',
-    );
+    final fileName = "${desc.filename}.pdf";
+    final file = File("${cacheDir.path}/$fileName");
 
+    if (!file.existsSync()) {
+      file.createSync();
+      await _api.downloadToFile(
+        state.document,
+        file.path,
+      );
+    }
     return OpenFilex.open(
-      '${cacheDir.path}/${state.metaData!.mediaFilename}',
+      file.path,
       type: "application/pdf",
-    ).then(
-      (value) => value.type,
-    );
+    ).then((value) => value.type);
   }
 
   void replace(DocumentModel document) {
@@ -115,6 +120,18 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       state.metaData!.mediaFilename
           .replaceAll("/", " "), // Flatten directory structure
     );
+    if (!File(filePath).existsSync()) {
+      File(filePath).createSync();
+    } else {
+      return _notificationService.notifyFileDownload(
+        document: state.document,
+        filename: "${desc.filename}.${desc.extension}",
+        filePath: filePath,
+        finished: true,
+        locale: locale,
+      );
+    }
+
     await _notificationService.notifyFileDownload(
       document: state.document,
       filename: "${desc.filename}.${desc.extension}",
@@ -122,6 +139,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       finished: false,
       locale: locale,
     );
+
     await _api.downloadToFile(
       state.document,
       filePath,
