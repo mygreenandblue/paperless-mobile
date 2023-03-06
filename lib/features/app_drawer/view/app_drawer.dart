@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -43,6 +44,21 @@ class AppDrawer extends StatelessWidget {
               onTap: () {
                 launchUrlString(
                     'https://github.com/astubenbord/paperless-mobile/issues/new');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 3),
+                child: SvgPicture.asset(
+                  'assets/images/bmc-logo.svg',
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+              title: Text(S.of(context)!.donateCoffee),
+              onTap: () {
+                launchUrlString("https://www.buymeacoffee.com/astubenbord");
               },
             ),
             ListTile(

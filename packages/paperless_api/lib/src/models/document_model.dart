@@ -76,7 +76,7 @@ class DocumentModel extends Equatable {
     DateTime? created,
     DateTime? modified,
     DateTime? added,
-    int? archiveSerialNumber,
+    int? Function()? archiveSerialNumber,
     String? originalFileName,
     String? archivedFileName,
   }) {
@@ -84,17 +84,18 @@ class DocumentModel extends Equatable {
       id: id,
       title: title ?? this.title,
       content: content ?? this.content,
-      documentType:
-          documentType != null ? documentType.call() : this.documentType,
+      documentType: documentType != null ? documentType() : this.documentType,
       correspondent:
-          correspondent != null ? correspondent.call() : this.correspondent,
-      storagePath: storagePath != null ? storagePath.call() : this.storagePath,
+          correspondent != null ? correspondent() : this.correspondent,
+      storagePath: storagePath != null ? storagePath() : this.storagePath,
       tags: tags ?? this.tags,
       created: created ?? this.created,
       modified: modified ?? this.modified,
       added: added ?? this.added,
       originalFileName: originalFileName ?? this.originalFileName,
-      archiveSerialNumber: archiveSerialNumber ?? this.archiveSerialNumber,
+      archiveSerialNumber: archiveSerialNumber != null
+          ? archiveSerialNumber()
+          : this.archiveSerialNumber,
       archivedFileName: archivedFileName ?? this.archivedFileName,
     );
   }

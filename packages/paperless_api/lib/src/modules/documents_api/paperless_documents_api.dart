@@ -24,6 +24,12 @@ abstract class PaperlessDocumentsApi {
   Future<Uint8List> getPreview(int docId);
   String getThumbnailUrl(int docId);
   Future<Uint8List> download(DocumentModel document, {bool original});
+  Future<void> downloadToFile(
+    DocumentModel document,
+    String localFilePath, {
+    bool original = false,
+    void Function(double)? onProgressChanged,
+  });
   Future<FieldSuggestions> findSuggestions(DocumentModel document);
 
   Future<List<String>> autocomplete(String query, [int limit = 10]);

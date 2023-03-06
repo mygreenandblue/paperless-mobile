@@ -677,5 +677,21 @@
   "dynamicColorScheme": "Dynamic",
   "@dynamicColorScheme": {},
   "classicColorScheme": "Classic",
-  "@classicColorScheme": {}
+  "@classicColorScheme": {},
+  "notificationDownloadComplete": "Download complete",
+  "@notificationDownloadComplete": {
+    "description": "Notification title when a download has been completed."
+  },
+  "notificationDownloadingDocument": "Downloading document",
+  "@notificationDownloadingDocument": {
+    "description": "Notification title shown when a document download is pending"
+  },
+  "archiveSerialNumberUpdated": "Archive Serial Number updated.",
+  "@archiveSerialNumberUpdated": {
+    "description": "Message shown when the ASN has been updated."
+  },
+  "donateCoffee": "Buy me a coffee",
+  "@donateCoffee": {
+    "description": "Label displayed in the app drawer"
+  }
 }

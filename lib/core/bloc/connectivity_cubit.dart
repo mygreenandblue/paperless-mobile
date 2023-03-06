@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 
@@ -43,6 +44,13 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
     _sub?.cancel();
     return super.close();
   }
+}
+
+extension ConnectivityFromContext on BuildContext {
+  bool get watchInternetConnection =>
+      watch<ConnectivityCubit>().state.isConnected;
+  bool get readInternetConnection =>
+      read<ConnectivityCubit>().state.isConnected;
 }
 
 enum ConnectivityState {
