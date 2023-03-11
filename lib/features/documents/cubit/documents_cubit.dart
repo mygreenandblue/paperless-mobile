@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -24,8 +25,25 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   DocumentsCubit(this.api, this.notifier) : super(const DocumentsState()) {
     notifier.subscribe(
       this,
-      onUpdated: replace,
-      onDeleted: remove,
+      onUpdated: (document) {
+        replace(document);
+        emit(
+          state.copyWith(
+            selection: state.selection
+                .map((e) => e.id == document.id ? document : e)
+                .toList(),
+          ),
+        );
+      },
+      onDeleted: (document) {
+        remove(document);
+        emit(
+          state.copyWith(
+            selection:
+                state.selection.where((e) => e.id != document.id).toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -46,12 +64,35 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     Iterable<int> removeTags = const [],
   }) async {
     debugPrint("[DocumentsCubit] bulkEditTags");
-    await api.bulkAction(BulkModifyTagsAction(
+    final edited = await api.bulkAction(BulkModifyTagsAction(
       documents.map((doc) => doc.id),
       addTags: addTags,
       removeTags: removeTags,
     ));
+
     await reload();
+    for (final id in edited) {
+      final doc =
+          state.documents.firstWhereOrNull((element) => element.id == id);
+      if (doc != null) {
+        notifier.notifyUpdated(doc);
+      }
+    }
+  }
+
+  Future<void> bulkAction(BulkAction action) async {
+    debugPrint("[DocumentsCubit] bulkEditLabel");
+
+    final edited = await api.bulkAction(action);
+    await reload();
+
+    for (final id in edited) {
+      final doc =
+          state.documents.firstWhereOrNull((element) => element.id == id);
+      if (doc != null) {
+        notifier.notifyUpdated(doc);
+      }
+    }
   }
 
   void toggleDocumentSelection(DocumentModel model) {

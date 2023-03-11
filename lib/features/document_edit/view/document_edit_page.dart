@@ -196,7 +196,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           formBuilderState: _formKey.currentState,
           labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
             create: (context) => context.read<LabelRepository<StoragePath>>(),
-            child: AddStoragePathPage(initalValue: initialValue),
+            child: AddStoragePathPage(initalName: initialValue),
           ),
           textFieldLabel: S.of(context)!.storagePath,
           labelOptions: options,

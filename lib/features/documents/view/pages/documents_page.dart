@@ -7,7 +7,6 @@ import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_he
 import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
@@ -167,7 +166,8 @@ class _DocumentsPageState extends State<DocumentsPage>
                               if (state.selection.isNotEmpty) {
                                 // Show selection app bar when selection mode is active
                                 return DocumentSelectionSliverAppBar(
-                                    state: state);
+                                  state: state,
+                                );
                               }
                               return const SliverSearchBar(floating: true);
                             },

@@ -80,7 +80,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
         slivers: [
           if (widget.header != null) widget.header!,
           ..._buildFormFieldList(),
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: SizedBox(
               height: 32,
             ),

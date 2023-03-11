@@ -9,8 +9,8 @@ import 'package:paperless_mobile/features/labels/storage_path/view/widgets/stora
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddStoragePathPage extends StatelessWidget {
-  final String? initalValue;
-  const AddStoragePathPage({Key? key, this.initalValue}) : super(key: key);
+  final String? initalName;
+  const AddStoragePathPage({Key? key, this.initalName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class AddStoragePathPage extends StatelessWidget {
       child: AddLabelPage<StoragePath>(
         pageTitle: Text(S.of(context)!.addStoragePath),
         fromJsonT: StoragePath.fromJson,
-        initialName: initalValue,
+        initialName: initalName,
         additionalFields: const [
           StoragePathAutofillFormBuilderField(name: StoragePath.pathKey),
           SizedBox(height: 120.0),

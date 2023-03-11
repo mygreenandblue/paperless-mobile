@@ -23,12 +23,12 @@ class SliverSearchBar extends StatelessWidget {
       floating: floating,
       pinned: pinned,
       delegate: CustomizableSliverPersistentHeaderDelegate(
-        minExtent: 56 + 8,
-        maxExtent: 56 + 8,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        minExtent: kToolbarHeight + 8,
+        maxExtent: kToolbarHeight + 8,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SearchBar(
-            height: 56,
+            height: kToolbarHeight,
             supportingText: S.of(context)!.searchDocuments,
             onTap: () => showDocumentSearchPage(context),
             leadingIcon: IconButton(

@@ -48,3 +48,34 @@ class BulkModifyTagsAction extends BulkAction {
     };
   }
 }
+
+class BulkModifyLabelAction extends BulkAction {
+  final String _labelName;
+  final int? labelId;
+
+  BulkModifyLabelAction.correspondent(
+    super.documents, {
+    required this.labelId,
+  }) : _labelName = 'correspondent';
+
+  BulkModifyLabelAction.documentType(
+    super.documents, {
+    required this.labelId,
+  }) : _labelName = 'document_type';
+
+  BulkModifyLabelAction.storagePath(
+    super.documents, {
+    required this.labelId,
+  }) : _labelName = 'storage_path';
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'documents': documentIds.toList(),
+      'method': 'set_$_labelName',
+      'parameters': {
+        _labelName: labelId,
+      }
+    };
+  }
+}
