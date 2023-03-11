@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_mobile/features/login/model/basic_auth_model.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 
 part 'authentication_information.g.dart';
@@ -8,11 +9,13 @@ class AuthenticationInformation {
   final String? token;
   final String serverUrl;
   final ClientCertificate? clientCertificate;
+  final BasicAuthModel? basicAuth;
 
   AuthenticationInformation({
     this.token,
     required this.serverUrl,
     this.clientCertificate,
+    this.basicAuth,
   });
 
   bool get isValid {
@@ -22,14 +25,16 @@ class AuthenticationInformation {
   AuthenticationInformation copyWith({
     String? token,
     String? serverUrl,
-    ClientCertificate? clientCertificate,
-    bool removeClientCertificate = false,
+    ClientCertificate? Function()? clientCertificate,
+    BasicAuthModel? Function()? basicAuth,
   }) {
     return AuthenticationInformation(
       token: token ?? this.token,
       serverUrl: serverUrl ?? this.serverUrl,
-      clientCertificate: clientCertificate ??
-          (removeClientCertificate ? null : this.clientCertificate),
+      clientCertificate: clientCertificate != null
+          ? clientCertificate()
+          : this.clientCertificate,
+      basicAuth: basicAuth != null ? basicAuth() : this.basicAuth,
     );
   }
 

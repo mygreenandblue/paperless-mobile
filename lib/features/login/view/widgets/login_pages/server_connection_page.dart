@@ -4,6 +4,7 @@ import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
+import 'package:paperless_mobile/features/login/view/widgets/form_fields/basic_auth_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -53,6 +54,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
             ClientCertificateFormField(
               onChanged: (_) => _updateReachability(),
             ).padded(),
+            const BasicAuthFormField().padded(),
             _buildStatusIndicator(),
           ],
         ).padded(),
@@ -88,9 +90,11 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
           address ??
               widget.formBuilderKey.currentState!
                   .getRawValue(ServerAddressFormField.fkServerAddress),
-          widget.formBuilderKey.currentState?.getRawValue(
+          clientCertificate: widget.formBuilderKey.currentState?.getRawValue(
             ClientCertificateFormField.fkClientCertificate,
           ),
+          basicAuth: widget.formBuilderKey.currentState!
+              .getRawValue(BasicAuthFormField.fkBasicAuth),
         );
     setState(() {
       _isCheckingConnection = false;

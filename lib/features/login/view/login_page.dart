@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/login/view/widgets/form_fields/basic_auth_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
@@ -64,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               serverUrl: form[ServerAddressFormField.fkServerAddress],
               clientCertificate:
                   form[ClientCertificateFormField.fkClientCertificate],
+              basicAuth: form[BasicAuthFormField.fkBasicAuth],
             );
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);

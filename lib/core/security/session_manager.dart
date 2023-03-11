@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
+import 'package:paperless_mobile/features/login/model/basic_auth_model.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
@@ -45,6 +46,7 @@ class SessionManager {
     String? baseUrl,
     String? authToken,
     ClientCertificate? clientCertificate,
+    BasicAuthModel? basicAuth,
     PaperlessServerInformationModel? serverInformation,
   }) {
     if (clientCertificate != null) {
@@ -61,6 +63,7 @@ class SessionManager {
           clientCertificate.bytes,
           password: clientCertificate.passphrase,
         );
+
       final adapter = IOHttpClientAdapter()
         ..onHttpClientCreate = (client) => HttpClient(context: context)
           ..badCertificateCallback =
@@ -69,14 +72,27 @@ class SessionManager {
       client.httpClientAdapter = adapter;
     }
 
-    if (baseUrl != null) {
-      client.options.baseUrl = baseUrl;
-    }
-
-    if (authToken != null) {
+    if (basicAuth != null && authToken != null) {
+      final basicAuthEncoded = base64
+          .encode(utf8.encode('${basicAuth.username}:${basicAuth.password}'));
+      client.options.headers.addAll({
+        HttpHeaders.authorizationHeader:
+            'Basic $basicAuthEncoded,Token $authToken',
+      });
+    } else if (basicAuth != null) {
+      final basicAuthEncoded = base64
+          .encode(utf8.encode('${basicAuth.username}:${basicAuth.password}'));
+      client.options.headers.addAll({
+        HttpHeaders.authorizationHeader: 'Basic $basicAuthEncoded',
+      });
+    } else if (authToken != null) {
       client.options.headers.addAll({
         HttpHeaders.authorizationHeader: 'Token $authToken',
       });
+    }
+
+    if (baseUrl != null) {
+      client.options.baseUrl = baseUrl;
     }
 
     if (serverInformation != null) {

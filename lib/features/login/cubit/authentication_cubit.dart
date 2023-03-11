@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
+import 'package:paperless_mobile/features/login/model/basic_auth_model.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/user_credentials.model.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
@@ -26,21 +27,26 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
     required UserCredentials credentials,
     required String serverUrl,
     ClientCertificate? clientCertificate,
+    BasicAuthModel? basicAuth,
   }) async {
     assert(credentials.username != null && credentials.password != null);
 
     _dioWrapper.updateSettings(
       baseUrl: serverUrl,
       clientCertificate: clientCertificate,
+      basicAuth: basicAuth,
     );
+    
     final token = await _authApi.login(
       username: credentials.username!,
       password: credentials.password!,
     );
+
     _dioWrapper.updateSettings(
       baseUrl: serverUrl,
       clientCertificate: clientCertificate,
       authToken: token,
+      basicAuth: basicAuth,
     );
 
     emit(
@@ -50,6 +56,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
           serverUrl: serverUrl,
           clientCertificate: clientCertificate,
           token: token,
+          basicAuth: basicAuth,
         ),
       ),
     );
@@ -76,6 +83,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
             clientCertificate: state.authentication!.clientCertificate,
             authToken: state.authentication!.token,
             baseUrl: state.authentication!.serverUrl,
+            basicAuth: state.authentication!.basicAuth,
           );
           return emit(
             AuthenticationState(
@@ -102,6 +110,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
           clientCertificate: state.authentication!.clientCertificate,
           authToken: state.authentication!.token,
           baseUrl: state.authentication!.serverUrl,
+          basicAuth: state.authentication!.basicAuth,
         );
         final authState = AuthenticationState(
           authentication: state.authentication!,

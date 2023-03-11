@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:paperless_mobile/core/global/os_error_codes.dart';
 import 'package:paperless_mobile/core/interceptor/server_reachability_error_interceptor.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
+import 'package:paperless_mobile/features/login/model/basic_auth_model.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 
@@ -13,9 +14,10 @@ abstract class ConnectivityStatusService {
   Future<bool> isServerReachable(String serverAddress);
   Stream<bool> connectivityChanges();
   Future<ReachabilityStatus> isPaperlessServerReachable(
-    String serverAddress, [
+    String serverAddress, {
     ClientCertificate? clientCertificate,
-  ]);
+    BasicAuthModel? basicAuth,
+  });
 }
 
 class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
@@ -65,16 +67,20 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
 
   @override
   Future<ReachabilityStatus> isPaperlessServerReachable(
-    String serverAddress, [
+    String serverAddress, {
     ClientCertificate? clientCertificate,
-  ]) async {
+    BasicAuthModel? basicAuth,
+  }) async {
     if (!RegExp(r"^https?://.*").hasMatch(serverAddress)) {
       return ReachabilityStatus.unknown;
     }
     try {
       SessionManager manager =
           SessionManager([ServerReachabilityErrorInterceptor()])
-            ..updateSettings(clientCertificate: clientCertificate)
+            ..updateSettings(
+              clientCertificate: clientCertificate,
+              basicAuth: basicAuth,
+            )
             ..client.options.connectTimeout = const Duration(seconds: 5)
             ..client.options.receiveTimeout = const Duration(seconds: 5);
 

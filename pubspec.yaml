@@ -91,6 +91,7 @@ dependencies:
   dynamic_color: ^1.5.4
   flutter_html: ^3.0.0-alpha.6
   in_app_review: ^2.0.6
+  animations: ^2.0.7
 
 dev_dependencies:
   integration_test:
