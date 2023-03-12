@@ -58,43 +58,6 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     await reload();
   }
 
-  Future<void> bulkEditTags(
-    Iterable<DocumentModel> documents, {
-    Iterable<int> addTags = const [],
-    Iterable<int> removeTags = const [],
-  }) async {
-    debugPrint("[DocumentsCubit] bulkEditTags");
-    final edited = await api.bulkAction(BulkModifyTagsAction(
-      documents.map((doc) => doc.id),
-      addTags: addTags,
-      removeTags: removeTags,
-    ));
-
-    await reload();
-    for (final id in edited) {
-      final doc =
-          state.documents.firstWhereOrNull((element) => element.id == id);
-      if (doc != null) {
-        notifier.notifyUpdated(doc);
-      }
-    }
-  }
-
-  Future<void> bulkAction(BulkAction action) async {
-    debugPrint("[DocumentsCubit] bulkEditLabel");
-
-    final edited = await api.bulkAction(action);
-    await reload();
-
-    for (final id in edited) {
-      final doc =
-          state.documents.firstWhereOrNull((element) => element.id == id);
-      if (doc != null) {
-        notifier.notifyUpdated(doc);
-      }
-    }
-  }
-
   void toggleDocumentSelection(DocumentModel model) {
     debugPrint("[DocumentsCubit] toggleSelection");
     if (state.selectedIds.contains(model.id)) {

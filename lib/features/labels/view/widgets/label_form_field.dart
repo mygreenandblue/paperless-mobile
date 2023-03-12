@@ -137,7 +137,7 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       decoration: InputDecoration(
         prefixIcon: widget.prefixIcon,
         label: Text(widget.textFieldLabel),
-        hintText: _getLocalizedHint(context),
+        hintText: S.of(context)!.startTyping,
         suffixIcon: _buildSuffixIcon(context),
       ),
       selectionToTextTransformer: (suggestion) {
@@ -191,15 +191,5 @@ class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
       const IdQueryParameter.unset(),
     );
     _textEditingController.clear();
-  }
-
-  String _getLocalizedHint(BuildContext context) {
-    if (T == Correspondent) {
-      return S.of(context)!.startTyping;
-    } else if (T == DocumentType) {
-      return S.of(context)!.startTyping;
-    } else {
-      return S.of(context)!.filterTags;
-    }
   }
 }
