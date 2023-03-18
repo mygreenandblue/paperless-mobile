@@ -44,6 +44,7 @@ class DocumentDetailedItem extends DocumentItem {
         ? min(600.0, availableHeight)
         : min(500.0, availableHeight);
     return Card(
+      color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(
         enableFeedback: true,
         borderRadius: BorderRadius.circular(12),

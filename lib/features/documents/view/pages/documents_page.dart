@@ -114,31 +114,38 @@ class _DocumentsPageState extends State<DocumentsPage>
         },
         builder: (context, connectivityState) {
           return SafeArea(
+            top: context.read<DocumentsCubit>().state.selection.isEmpty,
             child: Scaffold(
               drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
                 builder: (context, state) {
                   final appliedFiltersCount = state.filter.appliedFiltersCount;
-                  return b.Badge(
-                    position: b.BadgePosition.topEnd(top: -12, end: -6),
-                    showBadge: appliedFiltersCount > 0,
-                    badgeContent: Text(
-                      '$appliedFiltersCount',
-                      style: const TextStyle(
-                        color: Colors.white,
+                  final show = state.selection.isEmpty;
+                  return AnimatedScale(
+                    scale: show ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeIn,
+                    child: b.Badge(
+                      position: b.BadgePosition.topEnd(top: -12, end: -6),
+                      showBadge: appliedFiltersCount > 0,
+                      badgeContent: Text(
+                        '$appliedFiltersCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
+                      animationType: b.BadgeAnimationType.fade,
+                      badgeColor: Colors.red,
+                      child: _currentTab == 0
+                          ? FloatingActionButton(
+                              child: const Icon(Icons.filter_alt_outlined),
+                              onPressed: _openDocumentFilter,
+                            )
+                          : FloatingActionButton(
+                              child: const Icon(Icons.add),
+                              onPressed: () => _onCreateSavedView(state.filter),
+                            ),
                     ),
-                    animationType: b.BadgeAnimationType.fade,
-                    badgeColor: Colors.red,
-                    child: _currentTab == 0
-                        ? FloatingActionButton(
-                            child: const Icon(Icons.filter_alt_outlined),
-                            onPressed: _openDocumentFilter,
-                          )
-                        : FloatingActionButton(
-                            child: const Icon(Icons.add),
-                            onPressed: () => _onCreateSavedView(state.filter),
-                          ),
                   );
                 },
               ),
@@ -296,7 +303,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             _currentTab != 0 ||
             currState.isLoading ||
             currState.isLastPageLoaded) {
-          return true;
+          return false;
         }
 
         final offset = notification.metrics.pixels;
@@ -311,6 +318,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                   stackTrace,
                 ),
               );
+          return true;
         }
         return false;
       },
@@ -361,44 +369,23 @@ class _DocumentsPageState extends State<DocumentsPage>
 
   Widget _buildViewActions() {
     return SliverToBoxAdapter(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SortDocumentsButton(),
-          BlocBuilder<DocumentsCubit, DocumentsState>(
-            builder: (context, state) {
-              return ViewTypeSelectionWidget(
+      child: BlocBuilder<DocumentsCubit, DocumentsState>(
+        builder: (context, state) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SortDocumentsButton(
+                enabled: state.selection.isEmpty,
+              ),
+              ViewTypeSelectionWidget(
                 viewType: state.viewType,
                 onChanged: context.read<DocumentsCubit>().setViewType,
-              );
-            },
-          )
-        ],
+              ),
+            ],
+          );
+        },
       ).paddedSymmetrically(horizontal: 8, vertical: 4),
     );
-  }
-
-  void _onDelete(DocumentsState documentsState) async {
-    final shouldDelete = await showDialog<bool>(
-          context: context,
-          builder: (context) =>
-              BulkDeleteConfirmationDialog(state: documentsState),
-        ) ??
-        false;
-    if (shouldDelete) {
-      try {
-        await context
-            .read<DocumentsCubit>()
-            .bulkDelete(documentsState.selection);
-        showSnackBar(
-          context,
-          S.of(context)!.documentsSuccessfullyDeleted,
-        );
-        context.read<DocumentsCubit>().resetSelection();
-      } on PaperlessServerException catch (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
-      }
-    }
   }
 
   void _onCreateSavedView(DocumentFilter filter) async {

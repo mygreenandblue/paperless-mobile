@@ -29,6 +29,10 @@ class ViewTypeSelectionWidget extends StatelessWidget {
     }
 
     return PopupMenuButton<ViewType>(
+      constraints: const BoxConstraints(
+        minWidth: 4 * 56.0,
+        maxWidth: 5 * 56.0,
+      ), // Ensures text is not split into two lines
       position: PopupMenuPosition.under,
       initialValue: viewType,
       icon: Icon(icon),
@@ -70,7 +74,10 @@ class ViewTypeSelectionWidget extends StatelessWidget {
       child: ListTile(
         selected: selected,
         trailing: selected ? const Icon(Icons.done) : null,
-        title: Text(label),
+        title: Text(
+          label,
+          maxLines: 1,
+        ),
         iconColor: Theme.of(context).colorScheme.onSurface,
         textColor: Theme.of(context).colorScheme.onSurface,
         leading: Icon(icon),

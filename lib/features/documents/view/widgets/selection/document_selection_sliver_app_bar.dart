@@ -19,7 +19,11 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      stretch: false,
       pinned: true,
+      floating: true,
+      snap: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
       title: Text(
         S.of(context)!.countSelected(state.selection.length),
       ),

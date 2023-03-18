@@ -8,8 +8,10 @@ import 'package:paperless_mobile/features/documents/view/widgets/search/sort_fie
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 
 class SortDocumentsButton extends StatelessWidget {
+  final bool enabled;
   const SortDocumentsButton({
     super.key,
+    this.enabled = true,
   });
 
   @override
@@ -24,47 +26,50 @@ class SortDocumentsButton extends StatelessWidget {
               ? Icons.arrow_upward
               : Icons.arrow_downward),
           label: Text(translateSortField(context, state.filter.sortField)),
-          onPressed: () {
-            showModalBottomSheet(
-              elevation: 2,
-              context: context,
-              isScrollControlled: true,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-              ),
-              builder: (_) => BlocProvider<DocumentsCubit>.value(
-                value: context.read<DocumentsCubit>(),
-                child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                      create: (context) => LabelCubit<DocumentType>(
-                        context.read<LabelRepository<DocumentType>>(),
+          onPressed: enabled
+              ? () {
+                  showModalBottomSheet(
+                    elevation: 2,
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
                       ),
                     ),
-                    BlocProvider(
-                      create: (context) => LabelCubit<Correspondent>(
-                        context.read<LabelRepository<Correspondent>>(),
-                      ),
-                    ),
-                  ],
-                  child: SortFieldSelectionBottomSheet(
-                    initialSortField: state.filter.sortField,
-                    initialSortOrder: state.filter.sortOrder,
-                    onSubmit: (field, order) =>
-                        context.read<DocumentsCubit>().updateCurrentFilter(
-                              (filter) => filter.copyWith(
-                                sortField: field,
-                                sortOrder: order,
-                              ),
+                    builder: (_) => BlocProvider<DocumentsCubit>.value(
+                      value: context.read<DocumentsCubit>(),
+                      child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (context) => LabelCubit<DocumentType>(
+                              context.read<LabelRepository<DocumentType>>(),
                             ),
-                  ),
-                ),
-              ),
-            );
-          },
+                          ),
+                          BlocProvider(
+                            create: (context) => LabelCubit<Correspondent>(
+                              context.read<LabelRepository<Correspondent>>(),
+                            ),
+                          ),
+                        ],
+                        child: SortFieldSelectionBottomSheet(
+                          initialSortField: state.filter.sortField,
+                          initialSortOrder: state.filter.sortOrder,
+                          onSubmit: (field, order) => context
+                              .read<DocumentsCubit>()
+                              .updateCurrentFilter(
+                                (filter) => filter.copyWith(
+                                  sortField: field,
+                                  sortOrder: order,
+                                ),
+                              ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              : null,
         );
       },
     );

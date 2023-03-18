@@ -30,106 +30,108 @@ class DocumentListItem extends DocumentItem {
   @override
   Widget build(BuildContext context) {
     return DocumentTypeBlocProvider(
-      child: ListTile(
-        dense: true,
-        selected: isSelected,
-        onTap: () => _onTap(),
-        selectedTileColor: Theme.of(context).colorScheme.inversePrimary,
-        onLongPress: () => onSelected?.call(document),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Row(
-              children: [
-                AbsorbPointer(
-                  absorbing: isSelectionActive,
-                  child: CorrespondentWidget(
-                    isClickable: isLabelClickable,
-                    correspondentId: document.correspondent,
-                    onSelected: onCorrespondentSelected,
+      child: Material(
+        child: ListTile(
+          dense: true,
+          selected: isSelected,
+          onTap: () => _onTap(),
+          selectedTileColor: Theme.of(context).colorScheme.inversePrimary,
+          onLongPress: () => onSelected?.call(document),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                children: [
+                  AbsorbPointer(
+                    absorbing: isSelectionActive,
+                    child: CorrespondentWidget(
+                      isClickable: isLabelClickable,
+                      correspondentId: document.correspondent,
+                      onSelected: onCorrespondentSelected,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Text(
-              document.title,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            AbsorbPointer(
-              absorbing: isSelectionActive,
-              child: TagsWidget(
-                isClickable: isLabelClickable,
-                tagIds: document.tags,
-                isMultiLine: false,
-                onTagSelected: (id) => onTagSelected?.call(id),
+                ],
               ),
-            )
-          ],
-        ),
-        subtitle: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child:
-                BlocBuilder<LabelCubit<DocumentType>, LabelState<DocumentType>>(
-              builder: (context, docTypes) {
-                return RichText(
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    text: DateFormat.yMMMd().format(document.created),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.apply(color: Colors.grey),
-                    children: document.documentType != null
-                        ? [
-                            const TextSpan(text: '\u30FB'),
-                            TextSpan(
-                              text:
-                                  docTypes.labels[document.documentType]?.name,
-                            ),
-                          ]
-                        : null,
-                  ),
-                );
-              },
-            )
-            // Row(
-            //   children: [
-            //     Text(
-            //       DateFormat.yMMMd().format(document.created),
-            //       style: Theme.of(context)
-            //           .textTheme
-            //           .bodySmall
-            //           ?.apply(color: Colors.grey),
-            //     ),
-            //     if (document.documentType != null) ...[
-            //       Text("\u30FB"),
-            //       DocumentTypeWidget(
-            //         documentTypeId: document.documentType,
-            //         textStyle: Theme.of(context).textTheme.bodySmall?.apply(
-            //               color: Colors.grey,
-            //               overflow: TextOverflow.ellipsis,
-            //             ),
-            //       ),
-            //     ],
-            //   ],
-            // ),
-            ),
-        isThreeLine: document.tags.isNotEmpty,
-        leading: AspectRatio(
-          aspectRatio: _a4AspectRatio,
-          child: GestureDetector(
-            child: DocumentPreview(
-              document: document,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-              enableHero: enableHeroAnimation,
+              Text(
+                document.title,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              AbsorbPointer(
+                absorbing: isSelectionActive,
+                child: TagsWidget(
+                  isClickable: isLabelClickable,
+                  tagIds: document.tags,
+                  isMultiLine: false,
+                  onTagSelected: (id) => onTagSelected?.call(id),
+                ),
+              )
+            ],
+          ),
+          subtitle: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: BlocBuilder<LabelCubit<DocumentType>,
+                  LabelState<DocumentType>>(
+                builder: (context, docTypes) {
+                  return RichText(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      text: DateFormat.yMMMd().format(document.created),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelSmall
+                          ?.apply(color: Colors.grey),
+                      children: document.documentType != null
+                          ? [
+                              const TextSpan(text: '\u30FB'),
+                              TextSpan(
+                                text: docTypes
+                                    .labels[document.documentType]?.name,
+                              ),
+                            ]
+                          : null,
+                    ),
+                  );
+                },
+              )
+              // Row(
+              //   children: [
+              //     Text(
+              //       DateFormat.yMMMd().format(document.created),
+              //       style: Theme.of(context)
+              //           .textTheme
+              //           .bodySmall
+              //           ?.apply(color: Colors.grey),
+              //     ),
+              //     if (document.documentType != null) ...[
+              //       Text("\u30FB"),
+              //       DocumentTypeWidget(
+              //         documentTypeId: document.documentType,
+              //         textStyle: Theme.of(context).textTheme.bodySmall?.apply(
+              //               color: Colors.grey,
+              //               overflow: TextOverflow.ellipsis,
+              //             ),
+              //       ),
+              //     ],
+              //   ],
+              // ),
+              ),
+          isThreeLine: document.tags.isNotEmpty,
+          leading: AspectRatio(
+            aspectRatio: _a4AspectRatio,
+            child: GestureDetector(
+              child: DocumentPreview(
+                document: document,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                enableHero: enableHeroAnimation,
+              ),
             ),
           ),
+          contentPadding: const EdgeInsets.all(8.0),
         ),
-        contentPadding: const EdgeInsets.all(8.0),
       ),
     );
   }

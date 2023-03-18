@@ -23,8 +23,8 @@ class SliverSearchBar extends StatelessWidget {
       floating: floating,
       pinned: pinned,
       delegate: CustomizableSliverPersistentHeaderDelegate(
-        minExtent: kToolbarHeight + 8,
-        maxExtent: kToolbarHeight + 8,
+        minExtent: kToolbarHeight,
+        maxExtent: kToolbarHeight,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SearchBar(
