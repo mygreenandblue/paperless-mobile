@@ -4,11 +4,7 @@ part of 'inbox_cubit.dart';
 class InboxState extends DocumentPagingState {
   final Iterable<int> inboxTags;
 
-  final Map<int, Tag> availableTags;
-
-  final Map<int, DocumentType> availableDocumentTypes;
-
-  final Map<int, Correspondent> availableCorrespondents;
+  final LabelRepositoryState labels;
 
   final int itemsInInboxCount;
 
@@ -22,10 +18,8 @@ class InboxState extends DocumentPagingState {
     super.filter = const DocumentFilter(),
     this.inboxTags = const [],
     this.isHintAcknowledged = false,
-    this.availableTags = const {},
-    this.availableDocumentTypes = const {},
-    this.availableCorrespondents = const {},
     this.itemsInInboxCount = 0,
+    this.labels = const LabelRepositoryState(),
   });
 
   @override
@@ -37,10 +31,8 @@ class InboxState extends DocumentPagingState {
         inboxTags,
         documents,
         isHintAcknowledged,
-        availableTags,
-        availableDocumentTypes,
-        availableCorrespondents,
         itemsInInboxCount,
+        labels,
       ];
 
   InboxState copyWith({
@@ -50,9 +42,7 @@ class InboxState extends DocumentPagingState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     bool? isHintAcknowledged,
-    Map<int, Tag>? availableTags,
-    Map<int, Correspondent>? availableCorrespondents,
-    Map<int, DocumentType>? availableDocumentTypes,
+    LabelRepositoryState? labels,
     Map<int, FieldSuggestions>? suggestions,
     int? itemsInInboxCount,
   }) {
@@ -62,11 +52,7 @@ class InboxState extends DocumentPagingState {
       value: value ?? super.value,
       inboxTags: inboxTags ?? this.inboxTags,
       isHintAcknowledged: isHintAcknowledged ?? this.isHintAcknowledged,
-      availableCorrespondents:
-          availableCorrespondents ?? this.availableCorrespondents,
-      availableDocumentTypes:
-          availableDocumentTypes ?? this.availableDocumentTypes,
-      availableTags: availableTags ?? this.availableTags,
+      labels: labels ?? this.labels,
       filter: filter ?? super.filter,
       itemsInInboxCount: itemsInInboxCount ?? this.itemsInInboxCount,
     );

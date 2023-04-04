@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -19,10 +20,18 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   final PaperlessDocumentsApi api;
 
+  final LabelRepository _labelRepository;
+
   @override
   final DocumentChangedNotifier notifier;
 
-  DocumentsCubit(this.api, this.notifier) : super(const DocumentsState()) {
+  DocumentsCubit(this.api, this.notifier, this._labelRepository)
+      : super(DocumentsState(
+          correspondents: _labelRepository.state.correspondents,
+          documentTypes: _labelRepository.state.documentTypes,
+          storagePaths: _labelRepository.state.storagePaths,
+          tags: _labelRepository.state.tags,
+        )) {
     notifier.subscribe(
       this,
       onUpdated: (document) {
@@ -44,6 +53,17 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
           ),
         );
       },
+    );
+    _labelRepository.subscribe(
+      this,
+      onStateChanged: (labels) => emit(
+        state.copyWith(
+          correspondents: labels.correspondents,
+          documentTypes: labels.documentTypes,
+          storagePaths: labels.storagePaths,
+          tags: labels.tags,
+        ),
+      ),
     );
   }
 
@@ -101,6 +121,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   Future<void> close() {
     notifier.unsubscribe(this);
+    _labelRepository.unsubscribe(this);
     return super.close();
   }
 

@@ -21,17 +21,12 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.da
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/impl/correspondent_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/document_type_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/impl/saved_view_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/storage_path_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/tag_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
@@ -105,10 +100,7 @@ void main() async {
   await connectivityCubit.initialize();
 
   // Create repositories
-  final tagRepository = TagRepositoryImpl(labelsApi);
-  final correspondentRepository = CorrespondentRepositoryImpl(labelsApi);
-  final documentTypeRepository = DocumentTypeRepositoryImpl(labelsApi);
-  final storagePathRepository = StoragePathRepositoryImpl(labelsApi);
+  final labelRepository = LabelRepository(labelsApi);
   final savedViewRepository = SavedViewRepositoryImpl(savedViewsApi);
 
   //Create cubits/blocs
@@ -163,17 +155,8 @@ void main() async {
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<LabelRepository<Tag>>.value(
-            value: tagRepository,
-          ),
-          RepositoryProvider<LabelRepository<Correspondent>>.value(
-            value: correspondentRepository,
-          ),
-          RepositoryProvider<LabelRepository<DocumentType>>.value(
-            value: documentTypeRepository,
-          ),
-          RepositoryProvider<LabelRepository<StoragePath>>.value(
-            value: storagePathRepository,
+          RepositoryProvider<LabelRepository>.value(
+            value: labelRepository,
           ),
           RepositoryProvider<SavedViewRepository>.value(
             value: savedViewRepository,

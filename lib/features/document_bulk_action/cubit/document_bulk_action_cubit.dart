@@ -6,45 +6,28 @@ import 'package:equatable/equatable.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'document_bulk_action_state.dart';
+part 'document_bulk_action_cubit.freezed.dart';
 
 class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
   final PaperlessDocumentsApi _documentsApi;
-  final LabelRepository<Correspondent> _correspondentRepository;
-  final LabelRepository<DocumentType> _documentTypeRepository;
-  final LabelRepository<Tag> _tagRepository;
-  final LabelRepository<StoragePath> _storagePathRepository;
+  final LabelRepository _labelRepository;
   final DocumentChangedNotifier _notifier;
-
-  final List<StreamSubscription> _subscriptions = [];
 
   DocumentBulkActionCubit(
     this._documentsApi,
-    this._correspondentRepository,
-    this._documentTypeRepository,
-    this._tagRepository,
-    this._storagePathRepository,
+    this._labelRepository,
     this._notifier, {
     required List<DocumentModel> selection,
   }) : super(
           DocumentBulkActionState(
             selection: selection,
-            correspondentOptions:
-                (_correspondentRepository.current?.hasLoaded ?? false)
-                    ? _correspondentRepository.current!.values!
-                    : {},
-            tagOptions: (_tagRepository.current?.hasLoaded ?? false)
-                ? _tagRepository.current!.values!
-                : {},
-            documentTypeOptions:
-                (_documentTypeRepository.current?.hasLoaded ?? false)
-                    ? _documentTypeRepository.current!.values!
-                    : {},
-            storagePathOptions:
-                (_storagePathRepository.current?.hasLoaded ?? false)
-                    ? _storagePathRepository.current!.values!
-                    : {},
+            correspondents: _labelRepository.state.correspondents,
+            documentTypes: _labelRepository.state.documentTypes,
+            storagePaths: _labelRepository.state.storagePaths,
+            tags: _labelRepository.state.tags,
           ),
         ) {
     _notifier.subscribe(
@@ -60,35 +43,18 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
         );
       },
     );
-    _subscriptions.add(
-      _tagRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(tagOptions: event!.values));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _correspondentRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(
-            correspondentOptions: event!.values,
-          ));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _documentTypeRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(documentTypeOptions: event!.values));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _storagePathRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(storagePathOptions: event!.values));
-        }
-      }),
+    _labelRepository.subscribe(
+      this,
+      onChanged: (labels) {
+        emit(
+          state.copyWith(
+            correspondents: labels.correspondents,
+            documentTypes: labels.documentTypes,
+            storagePaths: labels.storagePaths,
+            tags: labels.tags,
+          ),
+        );
+      },
     );
   }
 
@@ -177,9 +143,7 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
   @override
   Future<void> close() {
     _notifier.unsubscribe(this);
-    for (final sub in _subscriptions) {
-      sub.cancel();
-    }
+    _labelRepository.unsubscribe(this);
     return super.close();
   }
 }

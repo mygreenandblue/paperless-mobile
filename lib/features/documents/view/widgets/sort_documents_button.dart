@@ -43,14 +43,7 @@ class SortDocumentsButton extends StatelessWidget {
                       child: MultiBlocProvider(
                         providers: [
                           BlocProvider(
-                            create: (context) => LabelCubit<DocumentType>(
-                              context.read<LabelRepository<DocumentType>>(),
-                            ),
-                          ),
-                          BlocProvider(
-                            create: (context) => LabelCubit<Correspondent>(
-                              context.read<LabelRepository<Correspondent>>(),
-                            ),
+                            create: (context) => LabelCubit(context.read()),
                           ),
                         ],
                         child: SortFieldSelectionBottomSheet(

@@ -65,10 +65,7 @@ class VerifyIdentityPage extends StatelessWidget {
 
   void _logout(BuildContext context) {
     context.read<AuthenticationCubit>().logout();
-    context.read<LabelRepository<Tag>>().clear();
-    context.read<LabelRepository<Correspondent>>().clear();
-    context.read<LabelRepository<DocumentType>>().clear();
-    context.read<LabelRepository<StoragePath>>().clear();
+    context.read<LabelRepository>().clear();
     context.read<SavedViewRepository>().clear();
     HydratedBloc.storage.clear();
   }

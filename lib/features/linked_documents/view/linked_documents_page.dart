@@ -61,6 +61,10 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
                         ),
                       );
                     },
+                    correspondents: state.correspondents,
+                    documentTypes: state.documentTypes,
+                    storagePaths: state.storagePaths,
+                    tags: state.tags,
                   ),
                 ],
               );

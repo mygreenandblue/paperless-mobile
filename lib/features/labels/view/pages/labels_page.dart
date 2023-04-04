@@ -6,7 +6,6 @@ import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_he
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
@@ -17,6 +16,7 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_typ
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit_mixin.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -141,12 +141,12 @@ class _LabelsPageState extends State<LabelsPage>
                     notificationPredicate: (notification) =>
                         connectedState.isConnected,
                     onRefresh: () => [
-                      context.read<LabelCubit<Correspondent>>(),
-                      context.read<LabelCubit<DocumentType>>(),
-                      context.read<LabelCubit<Tag>>(),
-                      context.read<LabelCubit<StoragePath>>(),
+                      context.read<LabelCubit>().reloadCorrespondents,
+                      context.read<LabelCubit>().reloadDocumentTypes,
+                      context.read<LabelCubit>().reloadTags,
+                      context.read<LabelCubit>().reloadStoragePaths,
                     ][_currentIndex]
-                        .reload(),
+                        .call(),
                     child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -157,6 +157,10 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<Correspondent>(
+                                  labels: context
+                                      .watch<LabelCubit>()
+                                      .state
+                                      .correspondents,
                                   filterBuilder: (label) => DocumentFilter(
                                     correspondent:
                                         IdQueryParameter.fromId(label.id),
@@ -180,6 +184,10 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<DocumentType>(
+                                  labels: context
+                                      .watch<LabelCubit>()
+                                      .state
+                                      .documentTypes,
                                   filterBuilder: (label) => DocumentFilter(
                                     documentType:
                                         IdQueryParameter.fromId(label.id),
@@ -203,6 +211,8 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<Tag>(
+                                  labels:
+                                      context.watch<LabelCubit>().state.tags,
                                   filterBuilder: (label) => DocumentFilter(
                                     tags: IdsTagsQuery.fromIds([label.id!]),
                                     pageSize: label.documentCount ?? 0,
@@ -234,6 +244,10 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<StoragePath>(
+                                  labels: context
+                                      .watch<LabelCubit>()
+                                      .state
+                                      .storagePaths,
                                   onEdit: _openEditStoragePathPage,
                                   filterBuilder: (label) => DocumentFilter(
                                     storagePath:
@@ -267,8 +281,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<Correspondent>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: EditCorrespondentPage(correspondent: correspondent),
         ),
       ),
@@ -279,8 +293,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<DocumentType>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: EditDocumentTypePage(documentType: docType),
         ),
       ),
@@ -291,8 +305,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<Tag>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: EditTagPage(tag: tag),
         ),
       ),
@@ -303,8 +317,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<StoragePath>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: EditStoragePathPage(
             storagePath: path,
           ),
@@ -317,8 +331,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<Correspondent>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: const AddCorrespondentPage(),
         ),
       ),
@@ -329,8 +343,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<DocumentType>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: const AddDocumentTypePage(),
         ),
       ),
@@ -341,8 +355,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<Tag>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: const AddTagPage(),
         ),
       ),
@@ -353,8 +367,8 @@ class _LabelsPageState extends State<LabelsPage>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<StoragePath>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: const AddStoragePathPage(),
         ),
       ),

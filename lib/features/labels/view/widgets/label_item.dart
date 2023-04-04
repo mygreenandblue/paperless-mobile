@@ -51,6 +51,7 @@ class LabelItem<T extends Label> extends StatelessWidget {
                       filter,
                       context.read(),
                       context.read(),
+                      context.read(),
                     ),
                     child: const LinkedDocumentsPage(),
                   ),

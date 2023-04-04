@@ -32,60 +32,98 @@ class _InboxItemState extends State<InboxItem> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () async {
-        Navigator.pushNamed(
-          context,
-          DocumentDetailsRoute.routeName,
-          arguments: DocumentDetailsRouteArguments(
-            document: widget.document,
-            isLabelClickable: false,
+    return BlocBuilder<InboxCubit, InboxState>(
+      builder: (context, state) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () async {
+            Navigator.pushNamed(
+              context,
+              DocumentDetailsRoute.routeName,
+              arguments: DocumentDetailsRouteArguments(
+                document: widget.document,
+                isLabelClickable: false,
+              ),
+            );
+          },
+          child: SizedBox(
+            height: 200,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Row(
+                    children: [
+                      AspectRatio(
+                        aspectRatio: InboxItem.a4AspectRatio,
+                        child: DocumentPreview(
+                          document: widget.document,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                          enableHero: false,
+                        ),
+                      ).padded(),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTitle().paddedOnly(left: 8, right: 8, top: 8),
+                            const Spacer(),
+                            _buildTextWithLeadingIcon(
+                              Icon(
+                                Icons.person_outline,
+                                size: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.fontSize,
+                              ),
+                              LabelText<Correspondent>(
+                                label: state.labels.correspondents[
+                                    widget.document.correspondent],
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                placeholder: "-",
+                              ),
+                            ).paddedSymmetrically(horizontal: 8),
+                            _buildTextWithLeadingIcon(
+                              Icon(
+                                Icons.description_outlined,
+                                size: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.fontSize,
+                              ),
+                              LabelText<DocumentType>(
+                                label: state.labels.documentTypes[
+                                    widget.document.documentType],
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                placeholder: "-",
+                              ),
+                            ).paddedSymmetrically(horizontal: 8),
+                            const Spacer(),
+                            TagsWidget(
+                              tags: widget.document.tags
+                                  .map((e) => state.labels.tags[e]!)
+                                  .toList(),
+                              isMultiLine: false,
+                              isClickable: false,
+                              showShortNames: true,
+                              dense: true,
+                            ).paddedOnly(left: 8, bottom: 8),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 56,
+                  child: _buildActions(context),
+                ),
+              ],
+            ).paddedOnly(left: 8, top: 8, bottom: 8),
           ),
         );
       },
-      child: SizedBox(
-        height: 200,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Row(
-                children: [
-                  AspectRatio(
-                    aspectRatio: InboxItem.a4AspectRatio,
-                    child: DocumentPreview(
-                      document: widget.document,
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
-                      enableHero: false,
-                    ),
-                  ).padded(),
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildTitle().paddedOnly(left: 8, right: 8, top: 8),
-                        const Spacer(),
-                        _buildCorrespondent(context)
-                            .paddedSymmetrically(horizontal: 8),
-                        _buildDocumentType(context)
-                            .paddedSymmetrically(horizontal: 8),
-                        const Spacer(),
-                        _buildTags().paddedOnly(left: 8, bottom: 8),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 56,
-              child: _buildActions(context),
-            ),
-          ],
-        ).paddedOnly(left: 8, top: 8, bottom: 8),
-      ),
     );
   }
 
@@ -207,44 +245,6 @@ class _InboxItemState extends State<InboxItem> {
                     );
               }
             : null,
-      ),
-    );
-  }
-
-  TagsWidget _buildTags() {
-    return TagsWidget(
-      tagIds: widget.document.tags,
-      isMultiLine: false,
-      isClickable: false,
-      showShortNames: true,
-      dense: true,
-    );
-  }
-
-  Row _buildDocumentType(BuildContext context) {
-    return _buildTextWithLeadingIcon(
-      Icon(
-        Icons.description_outlined,
-        size: Theme.of(context).textTheme.bodyMedium?.fontSize,
-      ),
-      LabelText<DocumentType>(
-        id: widget.document.documentType,
-        style: Theme.of(context).textTheme.bodyMedium,
-        placeholder: "-",
-      ),
-    );
-  }
-
-  Row _buildCorrespondent(BuildContext context) {
-    return _buildTextWithLeadingIcon(
-      Icon(
-        Icons.person_outline,
-        size: Theme.of(context).textTheme.bodyMedium?.fontSize,
-      ),
-      LabelText<Correspondent>(
-        id: widget.document.correspondent,
-        style: Theme.of(context).textTheme.bodyMedium,
-        placeholder: "-",
       ),
     );
   }

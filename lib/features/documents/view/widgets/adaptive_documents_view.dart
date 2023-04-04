@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_grid_loading_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
@@ -25,7 +24,13 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
 
-  bool get showLoadingPlaceholder => (!hasLoaded && isLoading);
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
+
+  bool get showLoadingPlaceholder => !hasLoaded && isLoading;
+
   const AdaptiveDocumentsView({
     super.key,
     this.selectedDocumentIds = const [],
@@ -42,6 +47,10 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.isLoading,
     required this.hasLoaded,
     this.enableHeroAnimation = true,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
   });
 
   AdaptiveDocumentsView.fromPagedState(
@@ -58,6 +67,10 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.hasInternetConnection,
     this.viewType = ViewType.list,
     this.selectedDocumentIds = const [],
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
   })  : documents = state.documents,
         isLoading = state.isLoading,
         hasLoaded = state.hasLoaded;
@@ -80,6 +93,10 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.enableHeroAnimation,
     required super.isLoading,
     required super.hasLoaded,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.tags,
+    required super.storagePaths,
   });
 
   @override
@@ -96,27 +113,29 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
 
   Widget _buildListView() {
     if (showLoadingPlaceholder) {
-      return DocumentsListLoadingWidget.sliver();
+      return const DocumentsListLoadingWidget.sliver();
     }
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         childCount: documents.length,
         (context, index) {
           final document = documents.elementAt(index);
-          return LabelRepositoriesProvider(
-            child: DocumentListItem(
-              isLabelClickable: isLabelClickable,
-              document: document,
-              onTap: onTap,
-              isSelected: selectedDocumentIds.contains(document.id),
-              onSelected: onSelected,
-              isSelectionActive: selectedDocumentIds.isNotEmpty,
-              onTagSelected: onTagSelected,
-              onCorrespondentSelected: onCorrespondentSelected,
-              onDocumentTypeSelected: onDocumentTypeSelected,
-              onStoragePathSelected: onStoragePathSelected,
-              enableHeroAnimation: enableHeroAnimation,
-            ),
+          return DocumentListItem(
+            isLabelClickable: isLabelClickable,
+            document: document,
+            onTap: onTap,
+            isSelected: selectedDocumentIds.contains(document.id),
+            onSelected: onSelected,
+            isSelectionActive: selectedDocumentIds.isNotEmpty,
+            onTagSelected: onTagSelected,
+            onCorrespondentSelected: onCorrespondentSelected,
+            onDocumentTypeSelected: onDocumentTypeSelected,
+            onStoragePathSelected: onStoragePathSelected,
+            enableHeroAnimation: enableHeroAnimation,
+            correspondents: correspondents,
+            documentTypes: documentTypes,
+            storagePaths: storagePaths,
+            tags: tags,
           );
         },
       ),
@@ -133,21 +152,23 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
         childCount: documents.length,
         (context, index) {
           final document = documents.elementAt(index);
-          return LabelRepositoriesProvider(
-            child: DocumentDetailedItem(
-              isLabelClickable: isLabelClickable,
-              document: document,
-              onTap: onTap,
-              isSelected: selectedDocumentIds.contains(document.id),
-              onSelected: onSelected,
-              isSelectionActive: selectedDocumentIds.isNotEmpty,
-              onTagSelected: onTagSelected,
-              onCorrespondentSelected: onCorrespondentSelected,
-              onDocumentTypeSelected: onDocumentTypeSelected,
-              onStoragePathSelected: onStoragePathSelected,
-              enableHeroAnimation: enableHeroAnimation,
-              highlights: document.searchHit?.highlights,
-            ),
+          return DocumentDetailedItem(
+            isLabelClickable: isLabelClickable,
+            document: document,
+            onTap: onTap,
+            isSelected: selectedDocumentIds.contains(document.id),
+            onSelected: onSelected,
+            isSelectionActive: selectedDocumentIds.isNotEmpty,
+            onTagSelected: onTagSelected,
+            onCorrespondentSelected: onCorrespondentSelected,
+            onDocumentTypeSelected: onDocumentTypeSelected,
+            onStoragePathSelected: onStoragePathSelected,
+            enableHeroAnimation: enableHeroAnimation,
+            highlights: document.searchHit?.highlights,
+            correspondents: correspondents,
+            documentTypes: documentTypes,
+            storagePaths: storagePaths,
+            tags: tags,
           );
         },
       ),
@@ -180,6 +201,10 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
+          correspondents: correspondents,
+          documentTypes: documentTypes,
+          storagePaths: storagePaths,
+          tags: tags,
         );
       },
     );
@@ -205,6 +230,10 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.selectedDocumentIds,
     super.viewType,
     super.enableHeroAnimation = true,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.tags,
+    required super.storagePaths,
   });
 
   @override
@@ -231,20 +260,22 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
       itemCount: documents.length,
       itemBuilder: (context, index) {
         final document = documents.elementAt(index);
-        return LabelRepositoriesProvider(
-          child: DocumentListItem(
-            isLabelClickable: isLabelClickable,
-            document: document,
-            onTap: onTap,
-            isSelected: selectedDocumentIds.contains(document.id),
-            onSelected: onSelected,
-            isSelectionActive: selectedDocumentIds.isNotEmpty,
-            onTagSelected: onTagSelected,
-            onCorrespondentSelected: onCorrespondentSelected,
-            onDocumentTypeSelected: onDocumentTypeSelected,
-            onStoragePathSelected: onStoragePathSelected,
-            enableHeroAnimation: enableHeroAnimation,
-          ),
+        return DocumentListItem(
+          isLabelClickable: isLabelClickable,
+          document: document,
+          onTap: onTap,
+          isSelected: selectedDocumentIds.contains(document.id),
+          onSelected: onSelected,
+          isSelectionActive: selectedDocumentIds.isNotEmpty,
+          onTagSelected: onTagSelected,
+          onCorrespondentSelected: onCorrespondentSelected,
+          onDocumentTypeSelected: onDocumentTypeSelected,
+          onStoragePathSelected: onStoragePathSelected,
+          enableHeroAnimation: enableHeroAnimation,
+          correspondents: correspondents,
+          documentTypes: documentTypes,
+          storagePaths: storagePaths,
+          tags: tags,
         );
       },
     );
@@ -252,7 +283,7 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
 
   Widget _buildFullView() {
     if (showLoadingPlaceholder) {
-      return DocumentsListLoadingWidget();
+      return const DocumentsListLoadingWidget();
     }
 
     return ListView.builder(
@@ -263,20 +294,22 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
       itemCount: documents.length,
       itemBuilder: (context, index) {
         final document = documents.elementAt(index);
-        return LabelRepositoriesProvider(
-          child: DocumentDetailedItem(
-            isLabelClickable: isLabelClickable,
-            document: document,
-            onTap: onTap,
-            isSelected: selectedDocumentIds.contains(document.id),
-            onSelected: onSelected,
-            isSelectionActive: selectedDocumentIds.isNotEmpty,
-            onTagSelected: onTagSelected,
-            onCorrespondentSelected: onCorrespondentSelected,
-            onDocumentTypeSelected: onDocumentTypeSelected,
-            onStoragePathSelected: onStoragePathSelected,
-            enableHeroAnimation: enableHeroAnimation,
-          ),
+        return DocumentDetailedItem(
+          isLabelClickable: isLabelClickable,
+          document: document,
+          onTap: onTap,
+          isSelected: selectedDocumentIds.contains(document.id),
+          onSelected: onSelected,
+          isSelectionActive: selectedDocumentIds.isNotEmpty,
+          onTagSelected: onTagSelected,
+          onCorrespondentSelected: onCorrespondentSelected,
+          onDocumentTypeSelected: onDocumentTypeSelected,
+          onStoragePathSelected: onStoragePathSelected,
+          enableHeroAnimation: enableHeroAnimation,
+          correspondents: correspondents,
+          documentTypes: documentTypes,
+          storagePaths: storagePaths,
+          tags: tags,
         );
       },
     );
@@ -284,7 +317,7 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
 
   Widget _buildGridView() {
     if (showLoadingPlaceholder) {
-      return DocumentGridLoadingWidget();
+      return const DocumentGridLoadingWidget();
     }
     return GridView.builder(
       padding: EdgeInsets.zero,
@@ -311,6 +344,10 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
+          correspondents: correspondents,
+          documentTypes: documentTypes,
+          storagePaths: storagePaths,
+          tags: tags,
         );
       },
     );

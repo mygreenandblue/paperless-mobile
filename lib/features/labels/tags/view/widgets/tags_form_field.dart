@@ -6,7 +6,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/tag_repository_state.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
@@ -21,6 +20,8 @@ class TagFormField extends StatefulWidget {
   final bool excludeAllowed;
   final Map<int, Tag> selectableOptions;
   final Widget? suggestions;
+  final String? labelText;
+  final String? hintText;
 
   const TagFormField({
     super.key,
@@ -32,6 +33,8 @@ class TagFormField extends StatefulWidget {
     this.excludeAllowed = true,
     required this.selectableOptions,
     this.suggestions,
+    this.labelText,
+    this.hintText,
   });
 
   @override
@@ -94,8 +97,8 @@ class _TagFormFieldState extends State<TagFormField> {
                     Icons.label_outline,
                   ),
                   suffixIcon: _buildSuffixIcon(context, field),
-                  labelText: S.of(context)!.tags,
-                  hintText: S.of(context)!.filterTags,
+                  labelText: widget.labelText ?? S.of(context)!.tags,
+                  hintText: widget.hintText ?? S.of(context)!.filterTags,
                 ),
                 controller: _textEditingController,
               ),
@@ -240,8 +243,8 @@ class _TagFormFieldState extends State<TagFormField> {
   void _onAddTag(BuildContext context, FormFieldState<TagsQuery> field) async {
     final Tag? tag = await Navigator.of(context).push<Tag>(
       MaterialPageRoute(
-        builder: (_) => RepositoryProvider(
-          create: (context) => context.read<LabelRepository<Tag>>(),
+        builder: (_) => RepositoryProvider.value(
+          value: context.read<LabelRepository>(),
           child: AddTagPage(initialValue: _textEditingController.text),
         ),
       ),

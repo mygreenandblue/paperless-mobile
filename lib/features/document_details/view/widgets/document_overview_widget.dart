@@ -11,6 +11,10 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentOverviewWidget extends StatelessWidget {
   final DocumentModel document;
+  final Map<int, Correspondent> availableCorrespondents;
+  final Map<int, DocumentType> availableDocumentTypes;
+  final Map<int, Tag> availableTags;
+  final Map<int, StoragePath> availableStoragePaths;
   final String? queryString;
   final double itemSpacing;
   const DocumentOverviewWidget({
@@ -18,6 +22,10 @@ class DocumentOverviewWidget extends StatelessWidget {
     required this.document,
     this.queryString,
     required this.itemSpacing,
+    required this.availableCorrespondents,
+    required this.availableDocumentTypes,
+    required this.availableTags,
+    required this.availableStoragePaths,
   });
 
   @override
@@ -47,7 +55,7 @@ class DocumentOverviewWidget extends StatelessWidget {
             label: S.of(context)!.documentType,
             content: LabelText<DocumentType>(
               style: Theme.of(context).textTheme.bodyLarge,
-              id: document.documentType,
+              label: availableDocumentTypes[document.documentType],
             ),
           ).paddedOnly(bottom: itemSpacing),
         ),
@@ -57,7 +65,7 @@ class DocumentOverviewWidget extends StatelessWidget {
             label: S.of(context)!.correspondent,
             content: LabelText<Correspondent>(
               style: Theme.of(context).textTheme.bodyLarge,
-              id: document.correspondent,
+              label: availableCorrespondents[document.correspondent],
             ),
           ).paddedOnly(bottom: itemSpacing),
         ),
@@ -65,8 +73,8 @@ class DocumentOverviewWidget extends StatelessWidget {
           visible: document.storagePath != null,
           child: DetailsItem(
             label: S.of(context)!.storagePath,
-            content: StoragePathWidget(
-              pathId: document.storagePath,
+            content: LabelText<StoragePath>(
+              label: availableStoragePaths[document.storagePath],
             ),
           ).paddedOnly(bottom: itemSpacing),
         ),
@@ -78,7 +86,7 @@ class DocumentOverviewWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8.0),
               child: TagsWidget(
                 isClickable: false,
-                tagIds: document.tags,
+                tags: document.tags.map((e) => availableTags[e]!).toList(),
               ),
             ),
           ).paddedOnly(bottom: itemSpacing),

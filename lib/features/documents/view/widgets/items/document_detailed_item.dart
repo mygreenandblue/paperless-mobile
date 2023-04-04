@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
@@ -26,6 +28,10 @@ class DocumentDetailedItem extends DocumentItem {
     super.onStoragePathSelected,
     super.onTagSelected,
     super.onTap,
+    required super.tags,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.storagePaths,
   });
 
   @override
@@ -113,7 +119,7 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  correspondentId: document.correspondent,
+                  correspondent: context.read<DocumentsCubit>().correspondent,
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),

@@ -31,9 +31,7 @@ import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -56,8 +54,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initializeData(context);
     _inboxCubit = InboxCubit(
-      context.read(),
-      context.read(),
       context.read(),
       context.read(),
       context.read(),
@@ -260,17 +256,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => LabelCubit<Correspondent>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<DocumentType>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<Tag>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<StoragePath>(context.read()),
-          ),
+            create: (context) => LabelCubit(context.read()),
+          )
         ],
         child: const LabelsPage(),
       ),
@@ -345,15 +332,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _initializeData(BuildContext context) {
-    try {
-      context.read<LabelRepository<Tag>>().findAll();
-      context.read<LabelRepository<Correspondent>>().findAll();
-      context.read<LabelRepository<DocumentType>>().findAll();
-      context.read<LabelRepository<StoragePath>>().findAll();
-      context.read<SavedViewRepository>().findAll();
-      context.read<PaperlessServerInformationCubit>().updateInformtion();
-    } on PaperlessServerException catch (error, stackTrace) {
+    Future.wait([
+      context.read<LabelRepository>().initialize(),
+      context.read<SavedViewRepository>().findAll(),
+      context.read<PaperlessServerInformationCubit>().updateInformtion(),
+    ]).onError<PaperlessServerException>((error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
-    }
+      throw error;
+    });
   }
 }

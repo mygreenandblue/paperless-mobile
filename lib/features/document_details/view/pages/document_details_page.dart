@@ -186,6 +186,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           document: state.document,
                           itemSpacing: _itemSpacing,
                           queryString: widget.titleAndContentQueryString,
+                          
                         ),
                         DocumentContentWidget(
                           isFullContentLoaded: state.isFullContentLoaded,

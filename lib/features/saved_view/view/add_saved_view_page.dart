@@ -62,7 +62,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 ],
               ),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Review filter",
               style: Theme.of(context).textTheme.bodyLarge,
@@ -76,42 +76,6 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Padding _buildOld(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          FormBuilder(
-            key: _savedViewFormKey,
-            child: Expanded(
-              child: ListView(
-                children: [
-                  FormBuilderTextField(
-                    name: fkName,
-                    validator: FormBuilderValidators.required(),
-                    decoration: InputDecoration(
-                      label: Text(S.of(context)!.name),
-                    ),
-                  ),
-                  FormBuilderCheckbox(
-                    name: fkShowOnDashboard,
-                    initialValue: false,
-                    title: Text(S.of(context)!.showOnDashboard),
-                  ),
-                  FormBuilderCheckbox(
-                    name: fkShowInSidebar,
-                    initialValue: false,
-                    title: Text(S.of(context)!.showInSidebar),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

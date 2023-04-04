@@ -1,66 +1,41 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart';
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 
 part 'document_edit_state.dart';
+part 'document_edit_cubit.freezed.dart';
 
 class DocumentEditCubit extends Cubit<DocumentEditState> {
   final DocumentModel _initialDocument;
   final PaperlessDocumentsApi _docsApi;
 
   final DocumentChangedNotifier _notifier;
-  final LabelRepository<Correspondent> _correspondentRepository;
-  final LabelRepository<DocumentType> _documentTypeRepository;
-  final LabelRepository<StoragePath> _storagePathRepository;
-  final LabelRepository<Tag> _tagRepository;
+  final LabelRepository _labelRepository;
   final List<StreamSubscription> _subscriptions = [];
 
   DocumentEditCubit(
-    DocumentModel document, {
-    required PaperlessDocumentsApi documentsApi,
-    required LabelRepository<Correspondent> correspondentRepository,
-    required LabelRepository<DocumentType> documentTypeRepository,
-    required LabelRepository<StoragePath> storagePathRepository,
-    required LabelRepository<Tag> tagRepository,
-    required DocumentChangedNotifier notifier,
+    this._labelRepository,
+    this._docsApi,
+    this._notifier, {
+    required DocumentModel document,
   })  : _initialDocument = document,
-        _docsApi = documentsApi,
-        _correspondentRepository = correspondentRepository,
-        _documentTypeRepository = documentTypeRepository,
-        _storagePathRepository = storagePathRepository,
-        _tagRepository = tagRepository,
-        _notifier = notifier,
         super(
           DocumentEditState(
             document: document,
-            correspondents: correspondentRepository.current?.values ?? {},
-            documentTypes: documentTypeRepository.current?.values ?? {},
-            storagePaths: storagePathRepository.current?.values ?? {},
-            tags: tagRepository.current?.values ?? {},
+            correspondents: _labelRepository.state.correspondents,
+            documentTypes: _labelRepository.state.documentTypes,
+            storagePaths: _labelRepository.state.storagePaths,
+            tags: _labelRepository.state.tags,
           ),
         ) {
     _notifier.subscribe(this, onUpdated: replace);
-    _subscriptions.add(
-      _correspondentRepository.values
-          .listen((v) => emit(state.copyWith(correspondents: v?.values))),
-    );
-    _subscriptions.add(
-      _documentTypeRepository.values
-          .listen((v) => emit(state.copyWith(documentTypes: v?.values))),
-    );
-    _subscriptions.add(
-      _storagePathRepository.values
-          .listen((v) => emit(state.copyWith(storagePaths: v?.values))),
-    );
-    _subscriptions.add(
-      _tagRepository.values.listen(
-        (v) => emit(state.copyWith(tags: v?.values)),
-      ),
+    _labelRepository.subscribe(
+      this,
+      onStateChanged: (labels) => emit(state.copyWith()),
     );
   }
 
@@ -70,20 +45,20 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
 
     // Reload changed labels (documentCount property changes with removal/add)
     if (document.documentType != _initialDocument.documentType) {
-      _documentTypeRepository
-          .find((document.documentType ?? _initialDocument.documentType)!);
+      _labelRepository.findDocumentType(
+          (document.documentType ?? _initialDocument.documentType)!);
     }
     if (document.correspondent != _initialDocument.correspondent) {
-      _correspondentRepository
-          .find((document.correspondent ?? _initialDocument.correspondent)!);
+      _labelRepository.findCorrespondent(
+          (document.correspondent ?? _initialDocument.correspondent)!);
     }
     if (document.storagePath != _initialDocument.storagePath) {
-      _storagePathRepository
-          .find((document.storagePath ?? _initialDocument.storagePath)!);
+      _labelRepository.findStoragePath(
+          (document.storagePath ?? _initialDocument.storagePath)!);
     }
     if (!const DeepCollectionEquality.unordered()
         .equals(document.tags, _initialDocument.tags)) {
-      _tagRepository.findAll(document.tags);
+      _labelRepository.findAllTags(document.tags);
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 
@@ -13,9 +14,7 @@ part 'inbox_state.dart';
 
 class InboxCubit extends HydratedCubit<InboxState>
     with DocumentPagingBlocMixin {
-  final LabelRepository<Tag> _tagsRepository;
-  final LabelRepository<Correspondent> _correspondentRepository;
-  final LabelRepository<DocumentType> _documentTypeRepository;
+  final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
 
@@ -24,27 +23,15 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   final PaperlessServerStatsApi _statsApi;
 
-  final List<StreamSubscription> _subscriptions = [];
-
   @override
   PaperlessDocumentsApi get api => _documentsApi;
 
   InboxCubit(
-    this._tagsRepository,
     this._documentsApi,
-    this._correspondentRepository,
-    this._documentTypeRepository,
     this._statsApi,
+    this._labelRepository,
     this.notifier,
-  ) : super(
-          InboxState(
-            availableCorrespondents:
-                _correspondentRepository.current?.values ?? {},
-            availableDocumentTypes:
-                _documentTypeRepository.current?.values ?? {},
-            availableTags: _tagsRepository.current?.values ?? {},
-          ),
-        ) {
+  ) : super(InboxState(labels: _labelRepository.state)) {
     notifier.subscribe(
       this,
       onDeleted: remove,
@@ -60,28 +47,11 @@ class InboxCubit extends HydratedCubit<InboxState>
         }
       },
     );
-    _subscriptions.add(
-      _tagsRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(availableTags: event!.values));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _correspondentRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(
-            availableCorrespondents: event!.values,
-          ));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _documentTypeRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(availableDocumentTypes: event!.values));
-        }
-      }),
+    _labelRepository.subscribe(
+      this,
+      onChanged: (labels) {
+        emit(state.copyWith(labels: labels));
+      },
     );
 
     refreshItemsInInboxCount(false);
@@ -105,7 +75,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> loadInbox() async {
-    final inboxTags = await _tagsRepository.findAll().then(
+    final inboxTags = await _labelRepository.findAllTags().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );
 
@@ -133,7 +103,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   ///
   Future<void> reloadInbox() async {
     emit(state.copyWith(hasLoaded: false, isLoading: true));
-    final inboxTags = await _tagsRepository.findAll().then(
+    final inboxTags = await _labelRepository.findAllTags().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );
 
@@ -239,9 +209,7 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   @override
   Future<void> close() {
-    for (var sub in _subscriptions) {
-      sub.cancel();
-    }
+    _labelRepository.unsubscribe(this);
     return super.close();
   }
 }

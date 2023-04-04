@@ -1,29 +1,33 @@
 part of 'saved_view_cubit.dart';
 
-class SavedViewState extends Equatable {
-  final bool hasLoaded;
-  final Map<int, SavedView> value;
+@freezed
+class SavedViewState with _$SavedViewState {
+  const factory SavedViewState.initial({
+    required Map<int, Correspondent> correspondents,
+    required Map<int, DocumentType> documentTypes,
+    required Map<int, Tag> tags,
+    required Map<int, StoragePath> storagePaths,
+  }) = _SavedViewIntialState;
 
-  const SavedViewState({
-    this.value = const {},
-    this.hasLoaded = false,
-  });
+  const factory SavedViewState.loading({
+    required Map<int, Correspondent> correspondents,
+    required Map<int, DocumentType> documentTypes,
+    required Map<int, Tag> tags,
+    required Map<int, StoragePath> storagePaths,
+  }) = _SavedViewLoadingState;
 
-  @override
-  List<Object?> get props => [
-        hasLoaded,
-        value,
-      ];
+  const factory SavedViewState.loaded({
+    required Map<int, SavedView> savedViews,
+    required Map<int, Correspondent> correspondents,
+    required Map<int, DocumentType> documentTypes,
+    required Map<int, Tag> tags,
+    required Map<int, StoragePath> storagePaths,
+  }) = _SavedViewLoadedState;
 
-  SavedViewState copyWith({
-    Map<int, SavedView>? value,
-    int? selectedSavedViewId,
-    bool overwriteSelectedSavedViewId = false,
-    bool? hasLoaded,
-  }) {
-    return SavedViewState(
-      value: value ?? this.value,
-      hasLoaded: hasLoaded ?? this.hasLoaded,
-    );
-  }
+  const factory SavedViewState.error({
+    required Map<int, Correspondent> correspondents,
+    required Map<int, DocumentType> documentTypes,
+    required Map<int, Tag> tags,
+    required Map<int, StoragePath> storagePaths,
+  }) = _SavedViewErrorState;
 }

@@ -1,34 +1,44 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-
+import 'package:paperless_mobile/features/labels/cubit/label_cubit_mixin.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 part 'edit_label_state.dart';
+part 'edit_label_cubit.freezed.dart';
 
-class EditLabelCubit<T extends Label> extends Cubit<EditLabelState<T>> {
-  final LabelRepository<T> _repository;
+class EditLabelCubit extends Cubit<EditLabelState> with LabelCubitMixin {
+  @override
+  final LabelRepository labelRepository;
 
-  StreamSubscription? _subscription;
-
-  EditLabelCubit(LabelRepository<T> repository)
-      : _repository = repository,
-        super(EditLabelState<T>(labels: repository.current?.values ?? {})) {
-    _subscription = repository.values.listen(
-      (event) => emit(EditLabelState(labels: event?.values ?? {})),
+  EditLabelCubit(this.labelRepository) : super(const EditLabelState()) {
+    labelRepository.subscribe(
+      this,
+      onChanged: (labels) => state.copyWith(
+        correspondents: labels.correspondents,
+        documentTypes: labels.documentTypes,
+        tags: labels.tags,
+        storagePaths: labels.storagePaths,
+      ),
     );
   }
 
-  Future<T> create(T label) => _repository.create(label);
-
-  Future<T> update(T label) => _repository.update(label);
-
-  Future<void> delete(T label) => _repository.delete(label);
-
   @override
   Future<void> close() {
-    _subscription?.cancel();
+    labelRepository.unsubscribe(this);
     return super.close();
   }
+
+  @override
+  Map<int, Correspondent> get correspondents => state.correspondents;
+
+  @override
+  Map<int, DocumentType> get documentTypes => state.documentTypes;
+
+  @override
+  Map<int, StoragePath> get storagePaths => state.storagePaths;
+
+  @override
+  Map<int, Tag> get tags => state.tags;
 }

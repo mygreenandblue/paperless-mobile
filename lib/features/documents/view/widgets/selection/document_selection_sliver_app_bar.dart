@@ -71,7 +71,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                   .paddedOnly(left: 4, right: 4),
               _buildBulkEditStoragePathChip(context)
                   .paddedOnly(left: 4, right: 4),
-              // _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
+              _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
             ],
           ),
         ),
@@ -103,17 +103,13 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 context.read(),
                 context.read(),
                 context.read(),
-                context.read(),
-                context.read(),
-                context.read(),
                 selection: state.selection,
               ),
               child: Builder(builder: (context) {
                 return BulkEditLabelBottomSheet<Correspondent>(
                   initialValue: initialValue,
                   title: "Bulk edit correspondent",
-                  availableOptionsSelector: (state) =>
-                      state.correspondentOptions,
+                  availableOptionsSelector: (state) => state.correspondents,
                   formFieldLabel: S.of(context)!.correspondent,
                   formFieldPrefixIcon: const Icon(Icons.person_outline),
                   onSubmit: (selectedId) async {
@@ -155,17 +151,13 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 context.read(),
                 context.read(),
                 context.read(),
-                context.read(),
-                context.read(),
-                context.read(),
                 selection: state.selection,
               ),
               child: Builder(builder: (context) {
                 return BulkEditLabelBottomSheet<DocumentType>(
                   initialValue: initialValue,
                   title: "Bulk edit document type",
-                  availableOptionsSelector: (state) =>
-                      state.documentTypeOptions,
+                  availableOptionsSelector: (state) => state.documentTypes,
                   formFieldLabel: S.of(context)!.documentType,
                   formFieldPrefixIcon: const Icon(Icons.person_outline),
                   onSubmit: (selectedId) async {
@@ -207,16 +199,13 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 context.read(),
                 context.read(),
                 context.read(),
-                context.read(),
-                context.read(),
-                context.read(),
                 selection: state.selection,
               ),
               child: Builder(builder: (context) {
                 return BulkEditLabelBottomSheet<StoragePath>(
                   initialValue: initialValue,
                   title: "Bulk edit storage path",
-                  availableOptionsSelector: (state) => state.storagePathOptions,
+                  availableOptionsSelector: (state) => state.storagePaths,
                   formFieldLabel: S.of(context)!.storagePath,
                   formFieldPrefixIcon: const Icon(Icons.folder_open_outlined),
                   onSubmit: (selectedId) async {
@@ -246,14 +235,11 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
               topRight: Radius.circular(16),
             ),
           ),
-          isScrollControlled: false,
+          isScrollControlled: true,
           context: context,
           builder: (_) {
             return BlocProvider(
               create: (context) => DocumentBulkActionCubit(
-                context.read(),
-                context.read(),
-                context.read(),
                 context.read(),
                 context.read(),
                 context.read(),

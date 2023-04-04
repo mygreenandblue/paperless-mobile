@@ -82,10 +82,7 @@ class AccountSettingsDialog extends StatelessWidget {
     try {
       await context.read<AuthenticationCubit>().logout();
       await context.read<ApplicationSettingsCubit>().clear();
-      await context.read<LabelRepository<Tag>>().clear();
-      await context.read<LabelRepository<Correspondent>>().clear();
-      await context.read<LabelRepository<DocumentType>>().clear();
-      await context.read<LabelRepository<StoragePath>>().clear();
+      await context.read<LabelRepository>().clear();
       await context.read<SavedViewRepository>().clear();
       await HydratedBloc.storage.clear();
     } on PaperlessServerException catch (error, stackTrace) {

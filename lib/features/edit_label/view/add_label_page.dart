@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/indexed_repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -12,6 +11,7 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
   final Widget pageTitle;
   final T Function(Map<String, dynamic> json) fromJsonT;
   final List<Widget> additionalFields;
+  final Future<T> Function(BuildContext context, T label) onSubmit;
 
   const AddLabelPage({
     super.key,
@@ -19,19 +19,21 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
     required this.pageTitle,
     required this.fromJsonT,
     this.additionalFields = const [],
+    required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EditLabelCubit(
-        context.read<LabelRepository<T>>(),
+        context.read<LabelRepository>(),
       ),
       child: AddLabelFormWidget(
         pageTitle: pageTitle,
         label: initialName != null ? fromJsonT({'name': initialName}) : null,
         additionalFields: additionalFields,
         fromJsonT: fromJsonT,
+        onSubmit: onSubmit,
       ),
     );
   }
@@ -41,6 +43,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
   final T? label;
   final T Function(Map<String, dynamic> json) fromJsonT;
   final List<Widget> additionalFields;
+  final Future<T> Function(BuildContext context, T label) onSubmit;
 
   final Widget pageTitle;
   const AddLabelFormWidget({
@@ -49,6 +52,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
     required this.fromJsonT,
     required this.additionalFields,
     required this.pageTitle,
+    required this.onSubmit,
   });
 
   @override
@@ -63,7 +67,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
         submitButtonConfig: SubmitButtonConfig<T>(
           icon: const Icon(Icons.add),
           label: Text(S.of(context)!.create),
-          onSubmit: context.read<EditLabelCubit<T>>().create,
+          onSubmit: (label) => onSubmit(context, label),
         ),
         additionalFields: additionalFields,
       ),
