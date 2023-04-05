@@ -157,10 +157,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         MaterialPageRoute(
           builder: (context) => BlocProvider.value(
             value: DocumentUploadCubit(
-              documentApi: context.read(),
-              tagRepository: context.read(),
-              correspondentRepository: context.read(),
-              documentTypeRepository: context.read(),
+              context.read(),
+              context.read(),
             ),
             child: DocumentUploadPreparationPage(
               fileBytes: bytes,
@@ -239,10 +237,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             create: (context) => DocumentsCubit(
               context.read(),
               context.read(),
+              context.read(),
             ),
           ),
           BlocProvider(
             create: (context) => SavedViewCubit(
+              context.read(),
               context.read(),
             ),
           ),

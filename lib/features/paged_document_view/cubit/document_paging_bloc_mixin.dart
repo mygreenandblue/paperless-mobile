@@ -172,7 +172,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
 
   @override
   Future<void> close() {
-    notifier.unsubscribe(this);
+    notifier.removeListener(this);
     return super.close();
   }
 }

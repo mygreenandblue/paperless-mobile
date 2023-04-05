@@ -23,7 +23,7 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
     this.notifier, {
     required this.savedView,
   }) : super(const SavedViewDetailsState()) {
-    notifier.subscribe(
+    notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: replace,

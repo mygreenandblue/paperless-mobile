@@ -27,7 +27,7 @@ class LinkedDocumentsCubit extends HydratedCubit<LinkedDocumentsState>
     this._labelRepository,
   ) : super(const LinkedDocumentsState()) {
     updateFilter(filter: filter);
-    _labelRepository.subscribe(
+    _labelRepository.addListener(
       this,
       onChanged: (labels) {
         emit(state.copyWith(
@@ -38,7 +38,7 @@ class LinkedDocumentsCubit extends HydratedCubit<LinkedDocumentsState>
         ));
       },
     );
-    notifier.subscribe(
+    notifier.addListener(
       this,
       onUpdated: replace,
       onDeleted: remove,

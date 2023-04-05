@@ -12,7 +12,7 @@ class LabelCubit extends Cubit<LabelState> with LabelCubitMixin<LabelState> {
   final LabelRepository labelRepository;
 
   LabelCubit(this.labelRepository) : super(const LabelState()) {
-    labelRepository.subscribe(
+    labelRepository.addListener(
       this,
       onChanged: (labels) {
         emit(state.copyWith(
@@ -27,7 +27,7 @@ class LabelCubit extends Cubit<LabelState> with LabelCubitMixin<LabelState> {
 
   @override
   Future<void> close() {
-    labelRepository.unsubscribe(this);
+    labelRepository.removeListener(this);
     return super.close();
   }
 

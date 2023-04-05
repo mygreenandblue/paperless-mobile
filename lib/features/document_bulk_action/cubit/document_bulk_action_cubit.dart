@@ -30,7 +30,7 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
             tags: _labelRepository.state.tags,
           ),
         ) {
-    _notifier.subscribe(
+    _notifier.addListener(
       this,
       onDeleted: (document) {
         // Remove items from internal selection after the document was deleted.
@@ -43,7 +43,7 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
         );
       },
     );
-    _labelRepository.subscribe(
+    _labelRepository.addListener(
       this,
       onChanged: (labels) {
         emit(
@@ -142,8 +142,8 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
 
   @override
   Future<void> close() {
-    _notifier.unsubscribe(this);
-    _labelRepository.unsubscribe(this);
+    _notifier.removeListener(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 }

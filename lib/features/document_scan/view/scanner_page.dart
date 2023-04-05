@@ -12,7 +12,6 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -198,20 +197,14 @@ class _ScannerPageState extends State<ScannerPage>
     );
     final uploadResult = await Navigator.of(context).push<DocumentUploadResult>(
       MaterialPageRoute(
-        builder: (_) => LabelRepositoriesProvider(
-          child: BlocProvider(
-            create: (context) => DocumentUploadCubit(
-              documentApi: context.read<PaperlessDocumentsApi>(),
-              correspondentRepository:
-                  context.read<LabelRepository<Correspondent>>(),
-              documentTypeRepository:
-                  context.read<LabelRepository<DocumentType>>(),
-              tagRepository: context.read<LabelRepository<Tag>>(),
-            ),
-            child: DocumentUploadPreparationPage(
-              fileBytes: file.bytes,
-              fileExtension: file.extension,
-            ),
+        builder: (_) => BlocProvider(
+          create: (context) => DocumentUploadCubit(
+            context.read(),
+            context.read(),
+          ),
+          child: DocumentUploadPreparationPage(
+            fileBytes: file.bytes,
+            fileExtension: file.extension,
           ),
         ),
       ),
@@ -316,22 +309,16 @@ class _ScannerPageState extends State<ScannerPage>
       }
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => LabelRepositoriesProvider(
-            child: BlocProvider(
-              create: (context) => DocumentUploadCubit(
-                documentApi: context.read<PaperlessDocumentsApi>(),
-                correspondentRepository:
-                    context.read<LabelRepository<Correspondent>>(),
-                documentTypeRepository:
-                    context.read<LabelRepository<DocumentType>>(),
-                tagRepository: context.read<LabelRepository<Tag>>(),
-              ),
-              child: DocumentUploadPreparationPage(
-                fileBytes: file.readAsBytesSync(),
-                filename: fileDescription.filename,
-                title: fileDescription.filename,
-                fileExtension: fileDescription.extension,
-              ),
+          builder: (_) => BlocProvider(
+            create: (context) => DocumentUploadCubit(
+              context.read(),
+              context.read(),
+            ),
+            child: DocumentUploadPreparationPage(
+              fileBytes: file.readAsBytesSync(),
+              filename: fileDescription.filename,
+              title: fileDescription.filename,
+              fileExtension: fileDescription.extension,
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
@@ -15,12 +16,22 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
     with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
+
+  final LabelRepository _labelRepository;
   @override
   final DocumentChangedNotifier notifier;
 
-  DocumentSearchCubit(this.api, this.notifier)
+  DocumentSearchCubit(this.api, this.notifier, this._labelRepository)
       : super(const DocumentSearchState()) {
-    notifier.subscribe(
+    _labelRepository.addListener(this, onChanged: (labels) {
+      emit(state.copyWith(
+        correspondents: labels.correspondents,
+        documentTypes: labels.documentTypes,
+        tags: labels.tags,
+        storagePaths: labels.storagePaths,
+      ));
+    });
+    notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: replace,
@@ -89,7 +100,7 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
 
   @override
   Future<void> close() {
-    notifier.unsubscribe(this);
+    notifier.removeListener(this);
     return super.close();
   }
 

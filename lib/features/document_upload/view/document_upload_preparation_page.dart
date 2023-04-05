@@ -192,9 +192,8 @@ class _DocumentUploadPreparationPageState
                   notAssignedSelectable: false,
                   formBuilderState: _formKey.currentState,
                   labelCreationWidgetBuilder: (initialName) =>
-                      RepositoryProvider(
-                    create: (context) =>
-                        context.read<LabelRepository<Correspondent>>(),
+                      RepositoryProvider.value(
+                    value: context.read<LabelRepository>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
                   textFieldLabel: S.of(context)!.correspondent + " *",
@@ -207,9 +206,8 @@ class _DocumentUploadPreparationPageState
                   notAssignedSelectable: false,
                   formBuilderState: _formKey.currentState,
                   labelCreationWidgetBuilder: (initialName) =>
-                      RepositoryProvider(
-                    create: (context) =>
-                        context.read<LabelRepository<DocumentType>>(),
+                      RepositoryProvider.value(
+                    value: context.read<LabelRepository>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
                   textFieldLabel: S.of(context)!.documentType + " *",
@@ -229,7 +227,7 @@ class _DocumentUploadPreparationPageState
                   "* " + S.of(context)!.uploadInferValuesHint,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                SizedBox(height: 300),
+                const SizedBox(height: 300),
               ].padded(),
             ),
           );

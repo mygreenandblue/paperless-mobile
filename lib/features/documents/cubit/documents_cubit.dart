@@ -1,19 +1,17 @@
 import 'dart:async';
-import 'dart:developer';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
-part 'documents_state.dart';
 part 'documents_cubit.g.dart';
+part 'documents_state.dart';
 
 class DocumentsCubit extends HydratedCubit<DocumentsState>
     with DocumentPagingBlocMixin {
@@ -32,7 +30,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
           storagePaths: _labelRepository.state.storagePaths,
           tags: _labelRepository.state.tags,
         )) {
-    notifier.subscribe(
+    notifier.addListener(
       this,
       onUpdated: (document) {
         replace(document);
@@ -54,9 +52,9 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
         );
       },
     );
-    _labelRepository.subscribe(
+    _labelRepository.addListener(
       this,
-      onStateChanged: (labels) => emit(
+      onChanged: (labels) => emit(
         state.copyWith(
           correspondents: labels.correspondents,
           documentTypes: labels.documentTypes,
@@ -120,8 +118,8 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
 
   @override
   Future<void> close() {
-    notifier.unsubscribe(this);
-    _labelRepository.unsubscribe(this);
+    notifier.removeListener(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 

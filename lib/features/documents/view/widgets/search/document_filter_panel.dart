@@ -13,11 +13,20 @@ class DocumentFilterPanel extends StatefulWidget {
   final DocumentFilter initialFilter;
   final ScrollController scrollController;
   final DraggableScrollableController draggableSheetController;
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
+
   const DocumentFilterPanel({
     Key? key,
     required this.initialFilter,
     required this.scrollController,
     required this.draggableSheetController,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
   }) : super(key: key);
 
   @override
@@ -38,10 +47,8 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
 
   void animateTitleByDrag() {
     setState(
-      () {
-        _heightAnimationValue = dp(
-            ((max(0.9, widget.draggableSheetController.size) - 0.9) / 0.1), 5);
-      },
+      () => _heightAnimationValue =
+          dp(((max(0.9, widget.draggableSheetController.size) - 0.9) / 0.1), 5),
     );
   }
 
@@ -96,6 +103,10 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
           scrollController: widget.scrollController,
           initialFilter: widget.initialFilter,
           header: _buildPanelHeader(),
+          correspondents: widget.correspondents,
+          documentTypes: widget.documentTypes,
+          storagePaths: widget.storagePaths,
+          tags: widget.tags,
         ),
       ),
     );

@@ -8,7 +8,9 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
   final PaperlessLabelsApi _api;
   final Map<Object, StreamSubscription> _subscribers = {};
 
-  void subscribe(
+  LabelRepository(this._api) : super(const LabelRepositoryState());
+
+  void addListener(
     Object source, {
     required void Function(LabelRepositoryState) onChanged,
   }) {
@@ -18,12 +20,19 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     });
   }
 
-  void unsubscribe(Object source) async {
+  void removeListener(Object source) async {
     await _subscribers[source]?.cancel();
     _subscribers.remove(source);
   }
 
-  LabelRepository(this._api) : super(const LabelRepositoryState());
+  Future<void> initialize() {
+    return Future.wait([
+      findAllCorrespondents(),
+      findAllDocumentTypes(),
+      findAllStoragePaths(),
+      findAllTags(),
+    ]);
+  }
 
   Future<Tag> createTag(Tag object) async {
     final created = await _api.saveTag(object);

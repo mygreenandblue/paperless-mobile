@@ -8,7 +8,18 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddSavedViewPage extends StatefulWidget {
   final DocumentFilter currentFilter;
-  const AddSavedViewPage({super.key, required this.currentFilter});
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
+  const AddSavedViewPage({
+    super.key,
+    required this.currentFilter,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
+  });
 
   @override
   State<AddSavedViewPage> createState() => _AddSavedViewPageState();
@@ -72,6 +83,10 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 formKey: _filterFormKey,
                 initialFilter: widget.currentFilter,
+                correspondents: widget.correspondents,
+                documentTypes: widget.documentTypes,
+                storagePaths: widget.storagePaths,
+                tags: widget.tags,
               ),
             ),
           ],

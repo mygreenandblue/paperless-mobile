@@ -32,10 +32,10 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
             tags: _labelRepository.state.tags,
           ),
         ) {
-    _notifier.subscribe(this, onUpdated: replace);
-    _labelRepository.subscribe(
+    _notifier.addListener(this, onUpdated: replace);
+    _labelRepository.addListener(
       this,
-      onStateChanged: (labels) => emit(state.copyWith()),
+      onChanged: (labels) => emit(state.copyWith()),
     );
   }
 
@@ -71,7 +71,7 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     for (final sub in _subscriptions) {
       sub.cancel();
     }
-    _notifier.unsubscribe(this);
+    _notifier.removeListener(this);
     return super.close();
   }
 }

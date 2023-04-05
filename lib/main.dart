@@ -21,7 +21,6 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.da
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/impl/saved_view_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
@@ -101,7 +100,7 @@ void main() async {
 
   // Create repositories
   final labelRepository = LabelRepository(labelsApi);
-  final savedViewRepository = SavedViewRepositoryImpl(savedViewsApi);
+  final savedViewRepository = SavedViewRepository(savedViewsApi);
 
   //Create cubits/blocs
   final authCubit = AuthenticationCubit(

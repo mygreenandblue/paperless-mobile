@@ -21,7 +21,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class DocumentEditPage extends StatefulWidget {
-  final FieldSuggestions suggestions;
+  final FieldSuggestions? suggestions;
   const DocumentEditPage({
     Key? key,
     required this.suggestions,
@@ -43,13 +43,13 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   bool _isSubmitLoading = false;
 
-  late final FieldSuggestions _filteredSuggestions;
+  late final FieldSuggestions? _filteredSuggestions;
 
   @override
   void initState() {
     super.initState();
     _filteredSuggestions = widget.suggestions
-        .documentDifference(context.read<DocumentEditCubit>().state.document);
+        ?.documentDifference(context.read<DocumentEditCubit>().state.document);
   }
 
   @override
@@ -115,12 +115,14 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             excludeAllowed: false,
                             name: fkTags,
                             selectableOptions: state.tags,
-                            suggestions: _filteredSuggestions.tags
-                                    .toSet()
+                            suggestions: (_filteredSuggestions?.tags.toSet() ??
+                                        {})
                                     .difference(state.document.tags.toSet())
                                     .isNotEmpty
                                 ? _buildSuggestionsSkeleton<int>(
-                                    suggestions: _filteredSuggestions.tags,
+                                    suggestions:
+                                        (_filteredSuggestions?.tags.toSet() ??
+                                            {}),
                                     itemBuilder: (context, itemData) {
                                       final tag = state.tags[itemData]!;
                                       return ActionChip(
@@ -216,8 +218,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
         LabelFormField<Correspondent>(
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
-          labelCreationWidgetBuilder: (initialValue) => RepositoryProvider(
-            create: (context) => context.read<LabelRepository<Correspondent>>(),
+          labelCreationWidgetBuilder: (initialValue) =>
+              RepositoryProvider.value(
+            value: context.read<LabelRepository>(),
             child: AddCorrespondentPage(initialName: initialValue),
           ),
           textFieldLabel: S.of(context)!.correspondent,
@@ -226,9 +229,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkCorrespondent,
           prefixIcon: const Icon(Icons.person_outlined),
         ),
-        if (_filteredSuggestions.hasSuggestedCorrespondents)
+        if (_filteredSuggestions?.hasSuggestedCorrespondents ?? false)
           _buildSuggestionsSkeleton<int>(
-            suggestions: _filteredSuggestions.correspondents,
+            suggestions: _filteredSuggestions!.correspondents,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(options[itemData]!.name),
               onPressed: () => _formKey.currentState?.fields[fkCorrespondent]
@@ -248,8 +251,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
         LabelFormField<DocumentType>(
           notAssignedSelectable: false,
           formBuilderState: _formKey.currentState,
-          labelCreationWidgetBuilder: (currentInput) => RepositoryProvider(
-            create: (context) => context.read<LabelRepository<DocumentType>>(),
+          labelCreationWidgetBuilder: (currentInput) =>
+              RepositoryProvider.value(
+            value: context.read<LabelRepository>(),
             child: AddDocumentTypePage(
               initialName: currentInput,
             ),
@@ -260,9 +264,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           name: fkDocumentType,
           prefixIcon: const Icon(Icons.description_outlined),
         ),
-        if (_filteredSuggestions.hasSuggestedDocumentTypes)
+        if (_filteredSuggestions?.hasSuggestedDocumentTypes ?? false)
           _buildSuggestionsSkeleton<int>(
-            suggestions: _filteredSuggestions.documentTypes,
+            suggestions: _filteredSuggestions!.documentTypes,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(options[itemData]!.name),
               onPressed: () => _formKey.currentState?.fields[fkDocumentType]
@@ -327,9 +331,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           format: DateFormat.yMMMMd(),
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
-        if (_filteredSuggestions.hasSuggestedDates)
+        if (_filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(
-            suggestions: _filteredSuggestions.dates,
+            suggestions: _filteredSuggestions!.dates,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(DateFormat.yMMMd().format(itemData)),
               onPressed: () => _formKey.currentState?.fields[fkCreatedDate]

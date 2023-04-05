@@ -78,6 +78,10 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
                   ),
                 );
               },
+              correspondents: state.correspondents,
+              documentTypes: state.documentTypes,
+              tags: state.tags,
+              storagePaths: state.storagePaths,
             );
           },
         );

@@ -178,6 +178,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     create: (context) => SimilarDocumentsCubit(
                       context.read(),
                       context.read(),
+                      context.read(),
                       documentId: state.document.id,
                     ),
                     child: TabBarView(
@@ -186,7 +187,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           document: state.document,
                           itemSpacing: _itemSpacing,
                           queryString: widget.titleAndContentQueryString,
-                          
+                          availableCorrespondents: state.correspondents,
+                          availableDocumentTypes: state.documentTypes,
+                          availableTags: state.tags,
+                          availableStoragePaths: state.storagePaths,
                         ),
                         DocumentContentWidget(
                           isFullContentLoaded: state.isFullContentLoaded,
@@ -215,7 +219,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
         final _filteredSuggestions =
-            state.suggestions.documentDifference(state.document);
+            state.suggestions?.documentDifference(state.document);
         return BlocBuilder<ConnectivityCubit, ConnectivityState>(
           builder: (context, connectivityState) {
             if (!connectivityState.isConnected) {
@@ -223,7 +227,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             }
             return b.Badge(
               position: b.BadgePosition.topEnd(top: -12, end: -6),
-              showBadge: _filteredSuggestions.hasSuggestions,
+              showBadge: _filteredSuggestions?.hasSuggestions ?? false,
               child: Tooltip(
                 message: S.of(context)!.editDocumentTooltip,
                 preferBelow: false,
@@ -234,7 +238,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 ),
               ),
               badgeContent: Text(
-                '${_filteredSuggestions.suggestionsCount}',
+                '${_filteredSuggestions?.suggestionsCount ?? 0}',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -300,13 +304,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             providers: [
               BlocProvider.value(
                 value: DocumentEditCubit(
-                  document,
-                  documentsApi: context.read(),
-                  correspondentRepository: context.read(),
-                  documentTypeRepository: context.read(),
-                  storagePathRepository: context.read(),
-                  tagRepository: context.read(),
-                  notifier: context.read(),
+                  context.read(),
+                  context.read(),
+                  context.read(),
+                  document: document,
                 ),
               ),
               BlocProvider<DocumentDetailsCubit>.value(

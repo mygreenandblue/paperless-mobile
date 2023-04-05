@@ -21,6 +21,7 @@ Future<void> showDocumentSearchPage(BuildContext context) {
         create: (context) => DocumentSearchCubit(
           context.read(),
           context.read(),
+          context.read(),
         ),
         child: const DocumentSearchPage(),
       ),
@@ -229,6 +230,10 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
                 ),
               );
             },
+            correspondents: state.correspondents,
+            documentTypes: state.documentTypes,
+            tags: state.tags,
+            storagePaths: state.storagePaths,
           )
       ],
     );

@@ -21,7 +21,7 @@ class SavedViewCubit extends Cubit<SavedViewState> {
           storagePaths: _labelRepository.state.storagePaths,
           tags: _labelRepository.state.tags,
         )) {
-    _labelRepository.subscribe(
+    _labelRepository.addListener(
       this,
       onChanged: (labels) {
         emit(
@@ -76,7 +76,7 @@ class SavedViewCubit extends Cubit<SavedViewState> {
   @override
   Future<void> close() {
     _savedViewRepository.unsubscribe(this);
-    _labelRepository.unsubscribe(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 }

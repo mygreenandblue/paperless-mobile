@@ -12,11 +12,9 @@ import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/document_selection_sliver_app_bar.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
-import 'package:paperless_mobile/features/labels/cubit/providers/labels_bloc_provider.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
@@ -358,6 +356,10 @@ class _DocumentsPageState extends State<DocumentsPage>
                   isLabelClickable: true,
                   isLoading: state.isLoading,
                   selectedDocumentIds: state.selectedIds,
+                  correspondents: state.correspondents,
+                  documentTypes: state.documentTypes,
+                  tags: state.tags,
+                  storagePaths: state.storagePaths,
                 );
               },
             ),
@@ -391,10 +393,16 @@ class _DocumentsPageState extends State<DocumentsPage>
   void _onCreateSavedView(DocumentFilter filter) async {
     final newView = await Navigator.of(context).push<SavedView?>(
       MaterialPageRoute(
-        builder: (context) => LabelsBlocProvider(
-          child: AddSavedViewPage(
-            currentFilter: filter,
-          ),
+        builder: (context) => BlocBuilder<SavedViewCubit, SavedViewState>(
+          builder: (context, state) {
+            return AddSavedViewPage(
+              currentFilter: filter,
+              correspondents: state.correspondents,
+              documentTypes: state.documentTypes,
+              storagePaths: state.storagePaths,
+              tags: state.tags,
+            );
+          },
         ),
       ),
     );
@@ -428,12 +436,19 @@ class _DocumentsPageState extends State<DocumentsPage>
           snapSizes: const [0.9, 1],
           initialChildSize: .9,
           maxChildSize: 1,
-          builder: (context, controller) => LabelsBlocProvider(
-            child: DocumentFilterPanel(
-              initialFilter: context.read<DocumentsCubit>().state.filter,
-              scrollController: controller,
-              draggableSheetController: draggableSheetController,
-            ),
+          builder: (context, controller) =>
+              BlocBuilder<DocumentsCubit, DocumentsState>(
+            builder: (context, state) {
+              return DocumentFilterPanel(
+                initialFilter: context.read<DocumentsCubit>().state.filter,
+                scrollController: controller,
+                draggableSheetController: draggableSheetController,
+                correspondents: state.correspondents,
+                documentTypes: state.documentTypes,
+                storagePaths: state.storagePaths,
+                tags: state.tags,
+              );
+            },
           ),
         ),
       ),

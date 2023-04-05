@@ -31,8 +31,8 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }) : super(DocumentDetailsState(
           document: initialDocument,
         )) {
-    _notifier.subscribe(this, onUpdated: replace);
-    _labelRepository.subscribe(
+    _notifier.addListener(this, onUpdated: replace);
+    _labelRepository.addListener(
       this,
       onChanged: (labels) => emit(
         state.copyWith(
@@ -210,7 +210,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     for (final element in _subscriptions) {
       await element.cancel();
     }
-    _notifier.unsubscribe(this);
+    _notifier.removeListener(this);
     await super.close();
   }
 }

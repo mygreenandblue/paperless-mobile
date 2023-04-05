@@ -13,7 +13,7 @@ class EditLabelCubit extends Cubit<EditLabelState> with LabelCubitMixin {
   final LabelRepository labelRepository;
 
   EditLabelCubit(this.labelRepository) : super(const EditLabelState()) {
-    labelRepository.subscribe(
+    labelRepository.addListener(
       this,
       onChanged: (labels) => state.copyWith(
         correspondents: labels.correspondents,
@@ -26,7 +26,7 @@ class EditLabelCubit extends Cubit<EditLabelState> with LabelCubitMixin {
 
   @override
   Future<void> close() {
-    labelRepository.unsubscribe(this);
+    labelRepository.removeListener(this);
     return super.close();
   }
 

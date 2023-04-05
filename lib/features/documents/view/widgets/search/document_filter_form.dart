@@ -49,6 +49,11 @@ class DocumentFilterForm extends StatefulWidget {
   final DocumentFilter initialFilter;
   final ScrollController? scrollController;
   final EdgeInsets padding;
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
+
   const DocumentFilterForm({
     super.key,
     this.header,
@@ -56,6 +61,10 @@ class DocumentFilterForm extends StatefulWidget {
     required this.initialFilter,
     this.scrollController,
     this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
   });
 
   @override
@@ -145,47 +154,35 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
   }
 
   Widget _buildDocumentTypeFormField() {
-    return BlocBuilder<LabelCubit<DocumentType>, LabelState<DocumentType>>(
-      builder: (context, state) {
-        return LabelFormField<DocumentType>(
-          formBuilderState: widget.formKey.currentState,
-          name: DocumentFilterForm.fkDocumentType,
-          labelOptions: state.labels,
-          textFieldLabel: S.of(context)!.documentType,
-          initialValue: widget.initialFilter.documentType,
-          prefixIcon: const Icon(Icons.description_outlined),
-        );
-      },
+    return LabelFormField<DocumentType>(
+      formBuilderState: widget.formKey.currentState,
+      name: DocumentFilterForm.fkDocumentType,
+      labelOptions: widget.documentTypes,
+      textFieldLabel: S.of(context)!.documentType,
+      initialValue: widget.initialFilter.documentType,
+      prefixIcon: const Icon(Icons.description_outlined),
     );
   }
 
   Widget _buildCorrespondentFormField() {
-    return BlocBuilder<LabelCubit<Correspondent>, LabelState<Correspondent>>(
-      builder: (context, state) {
-        return LabelFormField<Correspondent>(
-          formBuilderState: widget.formKey.currentState,
-          name: DocumentFilterForm.fkCorrespondent,
-          labelOptions: state.labels,
-          textFieldLabel: S.of(context)!.correspondent,
-          initialValue: widget.initialFilter.correspondent,
-          prefixIcon: const Icon(Icons.person_outline),
-        );
-      },
+    return LabelFormField<Correspondent>(
+      formBuilderState: widget.formKey.currentState,
+      name: DocumentFilterForm.fkCorrespondent,
+      labelOptions: widget.correspondents,
+      textFieldLabel: S.of(context)!.correspondent,
+      initialValue: widget.initialFilter.correspondent,
+      prefixIcon: const Icon(Icons.person_outline),
     );
   }
 
   Widget _buildStoragePathFormField() {
-    return BlocBuilder<LabelCubit<StoragePath>, LabelState<StoragePath>>(
-      builder: (context, state) {
-        return LabelFormField<StoragePath>(
-          formBuilderState: widget.formKey.currentState,
-          name: DocumentFilterForm.fkStoragePath,
-          labelOptions: state.labels,
-          textFieldLabel: S.of(context)!.storagePath,
-          initialValue: widget.initialFilter.storagePath,
-          prefixIcon: const Icon(Icons.folder_outlined),
-        );
-      },
+    return LabelFormField<StoragePath>(
+      formBuilderState: widget.formKey.currentState,
+      name: DocumentFilterForm.fkStoragePath,
+      labelOptions: widget.storagePaths,
+      textFieldLabel: S.of(context)!.storagePath,
+      initialValue: widget.initialFilter.storagePath,
+      prefixIcon: const Icon(Icons.folder_outlined),
     );
   }
 
@@ -197,16 +194,12 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  BlocBuilder<LabelCubit<Tag>, LabelState<Tag>> _buildTagsFormField() {
-    return BlocBuilder<LabelCubit<Tag>, LabelState<Tag>>(
-      builder: (context, state) {
-        return TagFormField(
-          name: DocumentModel.tagsKey,
-          initialValue: widget.initialFilter.tags,
-          allowCreation: false,
-          selectableOptions: state.labels,
-        );
-      },
+  Widget _buildTagsFormField() {
+    return TagFormField(
+      name: DocumentModel.tagsKey,
+      initialValue: widget.initialFilter.tags,
+      allowCreation: false,
+      selectableOptions: widget.tags,
     );
   }
 }

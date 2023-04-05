@@ -119,7 +119,7 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  correspondent: context.read<DocumentsCubit>().correspondent,
+                  correspondent: correspondents[document.correspondent],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
@@ -134,13 +134,13 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  documentTypeId: document.documentType,
+                  documentType: documentTypes[document.documentType],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
             TagsWidget(
               isMultiLine: false,
-              tagIds: document.tags,
+              tags: document.tags.map((e) => tags[e]!).toList(),
             ).padded(),
             if (highlights != null)
               Html(

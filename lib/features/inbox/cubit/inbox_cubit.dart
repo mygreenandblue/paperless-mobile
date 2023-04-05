@@ -32,7 +32,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     this._labelRepository,
     this.notifier,
   ) : super(InboxState(labels: _labelRepository.state)) {
-    notifier.subscribe(
+    notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: (document) {
@@ -47,7 +47,7 @@ class InboxCubit extends HydratedCubit<InboxState>
         }
       },
     );
-    _labelRepository.subscribe(
+    _labelRepository.addListener(
       this,
       onChanged: (labels) {
         emit(state.copyWith(labels: labels));
@@ -209,7 +209,7 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   @override
   Future<void> close() {
-    _labelRepository.unsubscribe(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 }
