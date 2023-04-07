@@ -62,6 +62,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
         title: pageTitle,
       ),
       body: LabelForm<T>(
+        autofocusNameField: true,
         initialValue: label,
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(

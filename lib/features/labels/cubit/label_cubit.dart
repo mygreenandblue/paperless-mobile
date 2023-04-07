@@ -30,16 +30,4 @@ class LabelCubit extends Cubit<LabelState> with LabelCubitMixin<LabelState> {
     labelRepository.removeListener(this);
     return super.close();
   }
-
-  @override
-  Map<int, Correspondent> get correspondents => state.correspondents;
-
-  @override
-  Map<int, DocumentType> get documentTypes => state.documentTypes;
-
-  @override
-  Map<int, StoragePath> get storagePaths => state.storagePaths;
-
-  @override
-  Map<int, Tag> get tags => state.tags;
 }

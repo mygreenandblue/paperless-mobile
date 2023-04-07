@@ -1,15 +1,19 @@
 part of 'documents_cubit.dart';
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 class DocumentsState extends DocumentPagingState {
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final List<DocumentModel> selection;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, Correspondent> correspondents;
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, DocumentType> documentTypes;
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, Tag> tags;
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, StoragePath> storagePaths;
 
-  @JsonKey()
   final ViewType viewType;
 
   const DocumentsState({
@@ -53,15 +57,14 @@ class DocumentsState extends DocumentPagingState {
     );
   }
 
-  factory DocumentsState.fromJson(Map<String, dynamic> json) =>
-      _$DocumentsStateFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DocumentsStateToJson(this);
-
   @override
   List<Object?> get props => [
         selection,
         viewType,
+        correspondents,
+        documentTypes,
+        tags,
+        storagePaths,
         ...super.props,
       ];
 
@@ -79,4 +82,9 @@ class DocumentsState extends DocumentPagingState {
       value: value,
     );
   }
+
+  factory DocumentsState.fromJson(Map<String, dynamic> json) =>
+      _$DocumentsStateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DocumentsStateToJson(this);
 }

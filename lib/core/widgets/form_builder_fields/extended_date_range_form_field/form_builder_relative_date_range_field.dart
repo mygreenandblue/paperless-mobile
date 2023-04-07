@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -56,7 +56,9 @@ class _FormBuilderRelativeDateRangePickerState
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                   ],
-                  validator: FormBuilderValidators.numeric(),
+                  // validator: (value) { //TODO: Check if this is required
+                  // do numeric validation
+                  // },
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     final parsed = int.tryParse(value);

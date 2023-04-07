@@ -15,12 +15,14 @@ class SavedViewCubit extends Cubit<SavedViewState> {
   final LabelRepository _labelRepository;
 
   SavedViewCubit(this._savedViewRepository, this._labelRepository)
-      : super(SavedViewState.initial(
-          correspondents: _labelRepository.state.correspondents,
-          documentTypes: _labelRepository.state.documentTypes,
-          storagePaths: _labelRepository.state.storagePaths,
-          tags: _labelRepository.state.tags,
-        )) {
+      : super(
+          SavedViewState.initial(
+            correspondents: _labelRepository.state.correspondents,
+            documentTypes: _labelRepository.state.documentTypes,
+            storagePaths: _labelRepository.state.storagePaths,
+            tags: _labelRepository.state.tags,
+          ),
+        ) {
     _labelRepository.addListener(
       this,
       onChanged: (labels) {

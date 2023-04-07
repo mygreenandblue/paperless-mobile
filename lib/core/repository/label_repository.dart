@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
@@ -14,8 +15,8 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     Object source, {
     required void Function(LabelRepositoryState) onChanged,
   }) {
+    onChanged(state);
     _subscribers.putIfAbsent(source, () {
-      onChanged(state);
       return stream.listen((event) => onChanged(event));
     });
   }
@@ -26,6 +27,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
   }
 
   Future<void> initialize() {
+    debugPrint("Initializing labels...");
     return Future.wait([
       findAllCorrespondents(),
       findAllDocumentTypes(),

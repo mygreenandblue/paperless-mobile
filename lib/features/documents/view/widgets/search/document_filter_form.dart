@@ -155,10 +155,9 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   Widget _buildDocumentTypeFormField() {
     return LabelFormField<DocumentType>(
-      formBuilderState: widget.formKey.currentState,
       name: DocumentFilterForm.fkDocumentType,
-      labelOptions: widget.documentTypes,
-      textFieldLabel: S.of(context)!.documentType,
+      options: widget.documentTypes,
+      labelText: S.of(context)!.documentType,
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
     );
@@ -166,10 +165,9 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   Widget _buildCorrespondentFormField() {
     return LabelFormField<Correspondent>(
-      formBuilderState: widget.formKey.currentState,
       name: DocumentFilterForm.fkCorrespondent,
-      labelOptions: widget.correspondents,
-      textFieldLabel: S.of(context)!.correspondent,
+      options: widget.correspondents,
+      labelText: S.of(context)!.correspondent,
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
     );
@@ -177,10 +175,9 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   Widget _buildStoragePathFormField() {
     return LabelFormField<StoragePath>(
-      formBuilderState: widget.formKey.currentState,
       name: DocumentFilterForm.fkStoragePath,
-      labelOptions: widget.storagePaths,
-      textFieldLabel: S.of(context)!.storagePath,
+      options: widget.storagePaths,
+      labelText: S.of(context)!.storagePath,
       initialValue: widget.initialFilter.storagePath,
       prefixIcon: const Icon(Icons.folder_outlined),
     );

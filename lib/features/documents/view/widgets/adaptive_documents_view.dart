@@ -145,7 +145,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
   Widget _buildFullView(BuildContext context) {
     if (showLoadingPlaceholder) {
       //TODO: Build detailed loading animation
-      return DocumentsListLoadingWidget.sliver();
+      return const DocumentsListLoadingWidget.sliver();
     }
     return SliverList(
       delegate: SliverChildBuilderDelegate(

@@ -22,7 +22,7 @@ class EditTagPage extends StatelessWidget {
         label: tag,
         fromJsonT: Tag.fromJson,
         onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addTag(label),
+            context.read<EditLabelCubit>().replaceTag(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeTag(label),
         additionalFields: [

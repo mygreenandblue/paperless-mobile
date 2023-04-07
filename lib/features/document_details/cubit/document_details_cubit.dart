@@ -21,7 +21,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   final DocumentChangedNotifier _notifier;
   final LocalNotificationService _notificationService;
   final LabelRepository _labelRepository;
-  final List<StreamSubscription> _subscriptions = [];
+
   DocumentDetailsCubit(
     this._api,
     this._labelRepository,
@@ -207,9 +207,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   @override
   Future<void> close() async {
-    for (final element in _subscriptions) {
-      await element.cancel();
-    }
+    _labelRepository.removeListener(this);
     _notifier.removeListener(this);
     await super.close();
   }

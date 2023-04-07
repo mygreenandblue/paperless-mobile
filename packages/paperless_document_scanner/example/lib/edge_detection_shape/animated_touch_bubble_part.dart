@@ -58,7 +58,8 @@ class _AnimatedTouchBubblePartState extends State<AnimatedTouchBubblePart>
                 width: widget.dragging ? 0 : widget.size / 2,
                 height: widget.dragging ? 0 : widget.size / 2,
                 decoration: BoxDecoration(
-                    color: Theme.of(context).accentColor.withOpacity(0.5),
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.5),
                     borderRadius: widget.dragging
                         ? BorderRadius.circular(widget.size)
                         : BorderRadius.circular(widget.size / 4)))),

@@ -199,14 +199,16 @@ class _InboxPageState extends State<InboxPage>
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(S.of(context)!.cancel),
+                child: Text(
+                  S.of(context)!.cancel,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  S.of(context)!.ok,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
+                child: Text(S.of(context)!.ok),
               ),
             ],
           ),

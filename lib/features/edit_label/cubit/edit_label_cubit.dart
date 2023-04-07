@@ -8,7 +8,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'edit_label_state.dart';
 part 'edit_label_cubit.freezed.dart';
 
-class EditLabelCubit extends Cubit<EditLabelState> with LabelCubitMixin {
+class EditLabelCubit extends Cubit<EditLabelState>
+    with LabelCubitMixin<EditLabelState> {
   @override
   final LabelRepository labelRepository;
 
@@ -29,16 +30,4 @@ class EditLabelCubit extends Cubit<EditLabelState> with LabelCubitMixin {
     labelRepository.removeListener(this);
     return super.close();
   }
-
-  @override
-  Map<int, Correspondent> get correspondents => state.correspondents;
-
-  @override
-  Map<int, DocumentType> get documentTypes => state.documentTypes;
-
-  @override
-  Map<int, StoragePath> get storagePaths => state.storagePaths;
-
-  @override
-  Map<int, Tag> get tags => state.tags;
 }

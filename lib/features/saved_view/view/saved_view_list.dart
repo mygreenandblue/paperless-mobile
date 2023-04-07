@@ -23,8 +23,13 @@ class SavedViewList extends StatelessWidget {
                   Center(
                 child: Text("Saved views loading..."),
               ),
-              loaded: (savedViews, correspondents, documentTypes, tags,
-                  storagePaths) {
+              loaded: (
+                savedViews,
+                correspondents,
+                documentTypes,
+                tags,
+                storagePaths,
+              ) {
                 if (savedViews.isEmpty) {
                   return SliverToBoxAdapter(
                     child: HintCard(
@@ -47,11 +52,12 @@ class SavedViewList extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => MultiBlocProvider(
+                              builder: (ctxt) => MultiBlocProvider(
                                 providers: [
                                   BlocProvider(
                                     create: (context) => SavedViewDetailsCubit(
-                                      context.read(),
+                                      ctxt.read(),
+                                      ctxt.read(),
                                       context.read(),
                                       savedView: view,
                                     ),
@@ -71,7 +77,12 @@ class SavedViewList extends StatelessWidget {
                   ),
                 );
               },
-              error: (correspondents, documentTypes, tags, storagePaths) =>
+              error: (
+                correspondents,
+                documentTypes,
+                tags,
+                storagePaths,
+              ) =>
                   Center(
                 child: Text(
                   "An error occurred while trying to load the saved views.",

@@ -16,7 +16,7 @@ dependencies:
   equatable: ^2.0.5
   http: ^0.13.5
   json_annotation: ^4.7.0
-  intl: ^0.17.0
+  intl: any #^0.18.0
   dio: ^5.0.0
   collection: ^1.17.0
   jiffy: ^5.0.0

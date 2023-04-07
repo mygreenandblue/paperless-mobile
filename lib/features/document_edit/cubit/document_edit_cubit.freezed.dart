@@ -150,10 +150,10 @@ class __$$_DocumentEditStateCopyWithImpl<$Res>
 class _$_DocumentEditState implements _DocumentEditState {
   const _$_DocumentEditState(
       {required this.document,
-      required final Map<int, Correspondent> correspondents,
-      required final Map<int, DocumentType> documentTypes,
-      required final Map<int, StoragePath> storagePaths,
-      required final Map<int, Tag> tags})
+      final Map<int, Correspondent> correspondents = const {},
+      final Map<int, DocumentType> documentTypes = const {},
+      final Map<int, StoragePath> storagePaths = const {},
+      final Map<int, Tag> tags = const {}})
       : _correspondents = correspondents,
         _documentTypes = documentTypes,
         _storagePaths = storagePaths,
@@ -163,6 +163,7 @@ class _$_DocumentEditState implements _DocumentEditState {
   final DocumentModel document;
   final Map<int, Correspondent> _correspondents;
   @override
+  @JsonKey()
   Map<int, Correspondent> get correspondents {
     if (_correspondents is EqualUnmodifiableMapView) return _correspondents;
     // ignore: implicit_dynamic_type
@@ -171,6 +172,7 @@ class _$_DocumentEditState implements _DocumentEditState {
 
   final Map<int, DocumentType> _documentTypes;
   @override
+  @JsonKey()
   Map<int, DocumentType> get documentTypes {
     if (_documentTypes is EqualUnmodifiableMapView) return _documentTypes;
     // ignore: implicit_dynamic_type
@@ -179,6 +181,7 @@ class _$_DocumentEditState implements _DocumentEditState {
 
   final Map<int, StoragePath> _storagePaths;
   @override
+  @JsonKey()
   Map<int, StoragePath> get storagePaths {
     if (_storagePaths is EqualUnmodifiableMapView) return _storagePaths;
     // ignore: implicit_dynamic_type
@@ -187,6 +190,7 @@ class _$_DocumentEditState implements _DocumentEditState {
 
   final Map<int, Tag> _tags;
   @override
+  @JsonKey()
   Map<int, Tag> get tags {
     if (_tags is EqualUnmodifiableMapView) return _tags;
     // ignore: implicit_dynamic_type
@@ -234,10 +238,10 @@ class _$_DocumentEditState implements _DocumentEditState {
 abstract class _DocumentEditState implements DocumentEditState {
   const factory _DocumentEditState(
       {required final DocumentModel document,
-      required final Map<int, Correspondent> correspondents,
-      required final Map<int, DocumentType> documentTypes,
-      required final Map<int, StoragePath> storagePaths,
-      required final Map<int, Tag> tags}) = _$_DocumentEditState;
+      final Map<int, Correspondent> correspondents,
+      final Map<int, DocumentType> documentTypes,
+      final Map<int, StoragePath> storagePaths,
+      final Map<int, Tag> tags}) = _$_DocumentEditState;
 
   @override
   DocumentModel get document;

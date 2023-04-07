@@ -19,7 +19,7 @@ class EditDocumentTypePage extends StatelessWidget {
         label: documentType,
         fromJsonT: DocumentType.fromJson,
         onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addDocumentType(label),
+            context.read<EditLabelCubit>().replaceDocumentType(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeDocumentType(label),
       ),

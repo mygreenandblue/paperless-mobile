@@ -1,195 +1,164 @@
+import 'dart:developer';
+
+import 'package:animations/animations.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_type_ahead.dart';
+import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/labels/view/widgets/fullscreen_label_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 ///
 /// Form field allowing to select labels (i.e. correspondent, documentType)
-/// [T] is the label type (e.g. [DocumentType], [Correspondent], ...), [R] is the return type (e.g. [CorrespondentQuery], ...).
+/// [T] is the label type (e.g. [DocumentType], [Correspondent], ...)
 ///
-class LabelFormField<T extends Label> extends StatefulWidget {
+class LabelFormField<T extends Label> extends StatelessWidget {
   final Widget prefixIcon;
-  final Map<int, T> labelOptions;
-  final FormBuilderState? formBuilderState;
+  final Map<int, T> options;
   final IdQueryParameter? initialValue;
   final String name;
-  final String textFieldLabel;
+  final String labelText;
   final FormFieldValidator? validator;
-  final Widget Function(String initialName)? labelCreationWidgetBuilder;
-  final bool notAssignedSelectable;
+  final Widget Function(String? initialName)? addLabelPageBuilder;
   final void Function(IdQueryParameter?)? onChanged;
+  final bool showNotAssignedOption;
+  final bool showAnyAssignedOption;
+  final List<T> suggestions;
+  final String? addLabelText;
 
   const LabelFormField({
     Key? key,
     required this.name,
-    required this.labelOptions,
-    this.validator,
-    this.initialValue,
-    required this.textFieldLabel,
-    this.labelCreationWidgetBuilder,
-    required this.formBuilderState,
+    required this.options,
+    required this.labelText,
     required this.prefixIcon,
-    this.notAssignedSelectable = true,
+    this.initialValue,
+    this.validator,
+    this.addLabelPageBuilder,
     this.onChanged,
+    this.showNotAssignedOption = true,
+    this.showAnyAssignedOption = true,
+    this.suggestions = const [],
+    this.addLabelText,
   }) : super(key: key);
 
-  @override
-  State<LabelFormField<T>> createState() => _LabelFormFieldState<T>();
-}
-
-class _LabelFormFieldState<T extends Label> extends State<LabelFormField<T>> {
-  bool _showCreationSuffixIcon = false;
-  late bool _showClearSuffixIcon;
-
-  late final TextEditingController _textEditingController;
-
-  @override
-  void initState() {
-    super.initState();
-    _showClearSuffixIcon =
-        widget.labelOptions.containsKey(widget.initialValue?.id);
-    _textEditingController = TextEditingController(
-      text: widget.labelOptions[widget.initialValue?.id]?.name ?? '',
-    )..addListener(() {
-        setState(() {
-          _showCreationSuffixIcon = widget.labelOptions.values
-              .where(
-                (item) => item.name.toLowerCase().startsWith(
-                      _textEditingController.text.toLowerCase(),
-                    ),
-              )
-              .isEmpty;
-        });
-        setState(() =>
-            _showClearSuffixIcon = _textEditingController.text.isNotEmpty);
-      });
+  String _buildText(BuildContext context, IdQueryParameter? value) {
+    if (value?.isSet ?? false) {
+      return options[value!.id]?.name ?? 'undefined';
+    } else if (value?.onlyNotAssigned ?? false) {
+      return S.of(context)!.notAssigned;
+    } else if (value?.onlyAssigned ?? false) {
+      return S.of(context)!.anyAssigned;
+    }
+    return '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = widget.labelOptions.values.fold<bool>(
-            false,
-            (previousValue, element) =>
-                previousValue || (element.documentCount ?? 0) > 0) ||
-        widget.labelCreationWidgetBuilder != null;
-    return FormBuilderTypeAhead<IdQueryParameter>(
+    final isEnabled = options.values.any((e) => (e.documentCount ?? 0) > 0) ||
+        addLabelPageBuilder != null;
+    return FormBuilderField<IdQueryParameter>(
+      name: name,
+      initialValue: initialValue,
+      onChanged: onChanged,
       enabled: isEnabled,
-      noItemsFoundBuilder: (context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(
-          S.of(context)!.noItemsFound,
-          textAlign: TextAlign.center,
-          style:
-              TextStyle(color: Theme.of(context).disabledColor, fontSize: 18.0),
-        ),
-      ),
-      loadingBuilder: (context) => Container(),
-      initialValue: widget.initialValue ?? const IdQueryParameter.unset(),
-      name: widget.name,
-      suggestionsBoxDecoration: SuggestionsBoxDecoration(
-        elevation: 4.0,
-        shadowColor: Theme.of(context).colorScheme.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      itemBuilder: (context, suggestion) => ListTile(
-        title: Text(
-          widget.labelOptions[suggestion.id]?.name ??
-              S.of(context)!.notAssigned,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        // tileColor: Theme.of(context).colorScheme.surfaceVariant,
-        dense: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-      suggestionsCallback: (pattern) {
-        final List<IdQueryParameter> suggestions = widget.labelOptions.entries
-            .where(
-              (entry) =>
-                  widget.labelOptions[entry.key]!.name
-                      .toLowerCase()
-                      .contains(pattern.toLowerCase()) ||
-                  pattern.isEmpty,
-            )
-            .where(
-              (entry) =>
-                  widget.labelCreationWidgetBuilder != null ||
-                  (entry.value.documentCount ?? 0) > 0,
-            )
-            .map((entry) => IdQueryParameter.fromId(entry.key))
-            .toList();
-        if (widget.notAssignedSelectable) {
-          suggestions.insert(0, const IdQueryParameter.notAssigned());
-        }
-        return suggestions;
-      },
-      onChanged: (value) {
-        setState(() => _showClearSuffixIcon = value?.isSet ?? false);
-        widget.onChanged?.call(value);
-      },
-      controller: _textEditingController,
-      decoration: InputDecoration(
-        prefixIcon: widget.prefixIcon,
-        label: Text(widget.textFieldLabel),
-        hintText: S.of(context)!.startTyping,
-        suffixIcon: _buildSuffixIcon(context),
-      ),
-      selectionToTextTransformer: (suggestion) {
-        if (suggestion == const IdQueryParameter.notAssigned()) {
-          return S.of(context)!.notAssigned;
-        }
-        return widget.labelOptions[suggestion.id]?.name ?? "";
-      },
-      direction: AxisDirection.up,
-      onSuggestionSelected: (suggestion) =>
-          widget.formBuilderState?.fields[widget.name]?.didChange(suggestion),
-    );
-  }
+      builder: (field) {
+        final controller = TextEditingController(
+          text: _buildText(context, field.value),
+        );
+        final displayedSuggestions =
+            suggestions.whereNot((e) => e.id == field.value?.id).toList();
 
-  Widget? _buildSuffixIcon(BuildContext context) {
-    if (_showCreationSuffixIcon && widget.labelCreationWidgetBuilder != null) {
-      return IconButton(
-        onPressed: () async {
-          FocusScope.of(context).unfocus();
-          final createdLabel = await showDialog<T>(
-            context: context,
-            builder: (context) => widget.labelCreationWidgetBuilder!(
-              _textEditingController.text,
+        return Column(
+          children: [
+            OpenContainer<IdQueryParameter>(
+              middleColor: Theme.of(context).colorScheme.background,
+              closedColor: Theme.of(context).colorScheme.background,
+              openColor: Theme.of(context).colorScheme.background,
+              closedShape: InputBorder.none,
+              openElevation: 0,
+              closedElevation: 0,
+              closedBuilder: (context, openForm) => Container(
+                margin: const EdgeInsets.only(top: 4),
+                child: TextField(
+                  controller: controller,
+                  onTap: openForm,
+                  readOnly: true,
+                  enabled: isEnabled,
+                  decoration: InputDecoration(
+                    prefixIcon: prefixIcon,
+                    labelText: labelText,
+                    suffixIcon: controller.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () =>
+                                field.didChange(const IdQueryParameter.unset()),
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              openBuilder: (context, closeForm) => FullscreenLabelForm<T>(
+                addNewLabelText: addLabelText,
+                leadingIcon: prefixIcon,
+                onCreateNewLabel: addLabelPageBuilder != null
+                    ? (initialName) {
+                        return Navigator.of(context).push<T>(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                addLabelPageBuilder!(initialName),
+                          ),
+                        );
+                      }
+                    : null,
+                options: options,
+                onSubmit: closeForm,
+                initialValue: field.value,
+                showAnyAssignedOption: showAnyAssignedOption,
+                showNotAssignedOption: showNotAssignedOption,
+              ),
+              onClosed: (data) {
+                if (data != null) {
+                  field.didChange(data);
+                }
+              },
             ),
-          );
-          if (createdLabel != null) {
-            // If new label has been created, set form field value and text of this form field and unfocus keyboard (we assume user is done).
-            widget.formBuilderState?.fields[widget.name]
-                ?.didChange(IdQueryParameter.fromId(createdLabel.id));
-            _textEditingController.text = createdLabel.name;
-          } else {
-            _reset();
-          }
-        },
-        icon: const Icon(
-          Icons.new_label,
-        ),
-      );
-    }
-    if (_showClearSuffixIcon) {
-      return IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: _reset,
-      );
-    }
-    return null;
-  }
-
-  void _reset() {
-    widget.formBuilderState?.fields[widget.name]?.didChange(
-      const IdQueryParameter.unset(),
+            if (displayedSuggestions.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    S.of(context)!.suggestions,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SizedBox(
+                    height: 48,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: displayedSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final suggestion =
+                            displayedSuggestions.elementAt(index);
+                        return ColoredChipWrapper(
+                          child: ActionChip(
+                            label: Text(suggestion.name),
+                            onPressed: () => field.didChange(
+                              IdQueryParameter.fromId(suggestion.id),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const SizedBox(width: 4.0),
+                    ),
+                  ),
+                ],
+              ).padded(),
+          ],
+        );
+      },
     );
-    _textEditingController.clear();
   }
 }

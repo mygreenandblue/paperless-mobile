@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
@@ -55,7 +55,12 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 children: [
                   FormBuilderTextField(
                     name: _AddSavedViewPageState.fkName,
-                    validator: FormBuilderValidators.required(),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return S.of(context)!.thisFieldIsRequired;
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                       label: Text(S.of(context)!.name),
                     ),

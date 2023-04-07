@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
-import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart';
+import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart'
+    as s;
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -27,7 +28,7 @@ class SliverSearchBar extends StatelessWidget {
         maxExtent: kToolbarHeight,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SearchBar(
+          child: s.SearchBar(
             height: kToolbarHeight,
             supportingText: S.of(context)!.searchDocuments,
             onTap: () => showDocumentSearchPage(context),

@@ -24,12 +24,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   final DocumentChangedNotifier notifier;
 
   DocumentsCubit(this.api, this.notifier, this._labelRepository)
-      : super(DocumentsState(
-          correspondents: _labelRepository.state.correspondents,
-          documentTypes: _labelRepository.state.documentTypes,
-          storagePaths: _labelRepository.state.storagePaths,
-          tags: _labelRepository.state.tags,
-        )) {
+      : super(const DocumentsState()) {
     notifier.addListener(
       this,
       onUpdated: (document) {

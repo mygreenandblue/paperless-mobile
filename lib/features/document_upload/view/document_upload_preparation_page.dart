@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -97,7 +97,12 @@ class _DocumentUploadPreparationPageState
                   name: DocumentModel.titleKey,
                   initialValue:
                       widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
-                  validator: FormBuilderValidators.required(),
+                  validator: (value) {
+                    if (value?.trim().isEmpty ?? true) {
+                      return S.of(context)!.thisFieldIsRequired;
+                    }
+                    return null;
+                  },
                   decoration: InputDecoration(
                     labelText: S.of(context)!.title,
                     suffixIcon: IconButton(
@@ -189,30 +194,32 @@ class _DocumentUploadPreparationPageState
                 ),
                 // Correspondent
                 LabelFormField<Correspondent>(
-                  notAssignedSelectable: false,
-                  formBuilderState: _formKey.currentState,
-                  labelCreationWidgetBuilder: (initialName) =>
+                  showAnyAssignedOption: false,
+                  showNotAssignedOption: false,
+                  addLabelPageBuilder: (initialName) =>
                       RepositoryProvider.value(
                     value: context.read<LabelRepository>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context)!.correspondent + " *",
+                  addLabelText: S.of(context)!.addCorrespondent,
+                  labelText: S.of(context)!.correspondent + " *",
                   name: DocumentModel.correspondentKey,
-                  labelOptions: state.correspondents,
+                  options: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
                 ),
                 // Document type
                 LabelFormField<DocumentType>(
-                  notAssignedSelectable: false,
-                  formBuilderState: _formKey.currentState,
-                  labelCreationWidgetBuilder: (initialName) =>
+                  showAnyAssignedOption: false,
+                  showNotAssignedOption: false,
+                  addLabelPageBuilder: (initialName) =>
                       RepositoryProvider.value(
                     value: context.read<LabelRepository>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context)!.documentType + " *",
+                  addLabelText: S.of(context)!.addDocumentType,
+                  labelText: S.of(context)!.documentType + " *",
                   name: DocumentModel.documentTypeKey,
-                  labelOptions: state.documentTypes,
+                  options: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
                 ),
                 TagFormField(

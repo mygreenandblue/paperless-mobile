@@ -1,14 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 
+///
+/// Mixin which adds functionality to manage labels to [Bloc]s.
+///
 mixin LabelCubitMixin<T> on BlocBase<T> {
   LabelRepository get labelRepository;
-
-  Map<int, Correspondent> get correspondents;
-  Map<int, DocumentType> get documentTypes;
-  Map<int, Tag> get tags;
-  Map<int, StoragePath> get storagePaths;
 
   Future<Correspondent> addCorrespondent(Correspondent item) async {
     assert(item.id == null);
@@ -28,7 +27,7 @@ mixin LabelCubitMixin<T> on BlocBase<T> {
 
   Future<void> removeCorrespondent(Correspondent item) async {
     assert(item.id != null);
-    if (correspondents.containsKey(item.id)) {
+    if (labelRepository.state.correspondents.containsKey(item.id)) {
       await labelRepository.deleteCorrespondent(item);
     }
   }
@@ -51,7 +50,7 @@ mixin LabelCubitMixin<T> on BlocBase<T> {
 
   Future<void> removeDocumentType(DocumentType item) async {
     assert(item.id != null);
-    if (documentTypes.containsKey(item.id)) {
+    if (labelRepository.state.documentTypes.containsKey(item.id)) {
       await labelRepository.deleteDocumentType(item);
     }
   }
@@ -74,7 +73,7 @@ mixin LabelCubitMixin<T> on BlocBase<T> {
 
   Future<void> removeStoragePath(StoragePath item) async {
     assert(item.id != null);
-    if (storagePaths.containsKey(item.id)) {
+    if (labelRepository.state.storagePaths.containsKey(item.id)) {
       await labelRepository.deleteStoragePath(item);
     }
   }
@@ -97,7 +96,7 @@ mixin LabelCubitMixin<T> on BlocBase<T> {
 
   Future<void> removeTag(Tag item) async {
     assert(item.id != null);
-    if (tags.containsKey(item.id)) {
+    if (labelRepository.state.tags.containsKey(item.id)) {
       await labelRepository.deleteTag(item);
     }
   }

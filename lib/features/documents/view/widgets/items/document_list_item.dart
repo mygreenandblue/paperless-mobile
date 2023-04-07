@@ -11,7 +11,7 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.d
 class DocumentListItem extends DocumentItem {
   static const _a4AspectRatio = 1 / 1.4142;
 
-  const DocumentListItem({
+  DocumentListItem({
     super.key,
     required super.document,
     required super.isSelected,
@@ -28,7 +28,9 @@ class DocumentListItem extends DocumentItem {
     required super.correspondents,
     required super.documentTypes,
     required super.storagePaths,
-  });
+  }) {
+    print(tags.keys.join(", "));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +66,14 @@ class DocumentListItem extends DocumentItem {
               absorbing: isSelectionActive,
               child: TagsWidget(
                 isClickable: isLabelClickable,
-                tags: document.tags.map((e) => tags[e]!).toList(),
+                tags: document.tags
+                    .where((e) => tags.containsKey(e))
+                    .map((e) => tags[e]!)
+                    .toList(),
                 isMultiLine: false,
                 onTagSelected: (id) => onTagSelected?.call(id),
               ),
-            )
+            ),
           ],
         ),
         subtitle: Padding(

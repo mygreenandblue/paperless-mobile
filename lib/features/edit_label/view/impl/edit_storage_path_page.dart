@@ -19,7 +19,7 @@ class EditStoragePathPage extends StatelessWidget {
         label: storagePath,
         fromJsonT: StoragePath.fromJson,
         onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addStoragePath(label),
+            context.read<EditLabelCubit>().replaceStoragePath(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeStoragePath(label),
         additionalFields: [

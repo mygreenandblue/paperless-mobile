@@ -64,6 +64,10 @@ class LinkedDocumentsState extends DocumentPagingState {
   @override
   List<Object?> get props => [
         viewType,
+        correspondents,
+        documentTypes,
+        tags,
+        storagePaths,
         ...super.props,
       ];
 

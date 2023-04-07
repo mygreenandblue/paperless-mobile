@@ -8,7 +8,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
@@ -223,7 +223,6 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                   GlobalMaterialLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
-                  FormBuilderLocalizations.delegate,
                 ],
                 routes: {
                   DocumentDetailsRoute.routeName: (context) =>

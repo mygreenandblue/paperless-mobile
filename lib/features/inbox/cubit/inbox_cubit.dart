@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -75,6 +76,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> loadInbox() async {
+    debugPrint("Initializing inbox...");
     final inboxTags = await _labelRepository.findAllTags().then(
           (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
         );

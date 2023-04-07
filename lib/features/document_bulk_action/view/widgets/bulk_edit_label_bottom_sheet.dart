@@ -61,9 +61,8 @@ class _BulkEditLabelBottomSheetState<T extends Label>
                       initialValue:
                           IdQueryParameter.fromId(widget.initialValue),
                       name: "labelFormField",
-                      labelOptions: widget.availableOptionsSelector(state),
-                      textFieldLabel: widget.formFieldLabel,
-                      formBuilderState: _formKey.currentState,
+                      options: widget.availableOptionsSelector(state),
+                      labelText: widget.formFieldLabel,
                       prefixIcon: widget.formFieldPrefixIcon,
                     ),
                   ),

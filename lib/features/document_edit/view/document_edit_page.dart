@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
@@ -56,6 +57,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
+        log("Updated state. correspondents have ${state.correspondents.length} items.");
         return DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -95,18 +97,116 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                           _buildTitleFormField(state.document.title).padded(),
                           _buildCreatedAtFormField(state.document.created)
                               .padded(),
-                          _buildCorrespondentFormField(
-                            state.document.correspondent,
-                            state.correspondents,
+                          // Correspondent form field
+                          Column(
+                            children: [
+                              LabelFormField<Correspondent>(
+                                showAnyAssignedOption: false,
+                                showNotAssignedOption: false,
+                                addLabelPageBuilder: (initialValue) =>
+                                    RepositoryProvider.value(
+                                  value: context.read<LabelRepository>(),
+                                  child: AddCorrespondentPage(
+                                    initialName: initialValue,
+                                  ),
+                                ),
+                                addLabelText: S.of(context)!.addCorrespondent,
+                                labelText: S.of(context)!.correspondent,
+                                options: context
+                                    .watch<DocumentEditCubit>()
+                                    .state
+                                    .correspondents,
+                                initialValue: IdQueryParameter.fromId(
+                                  state.document.correspondent,
+                                ),
+                                name: fkCorrespondent,
+                                prefixIcon: const Icon(Icons.person_outlined),
+                              ),
+                              if (_filteredSuggestions
+                                      ?.hasSuggestedCorrespondents ??
+                                  false)
+                                _buildSuggestionsSkeleton<int>(
+                                  suggestions:
+                                      _filteredSuggestions!.correspondents,
+                                  itemBuilder: (context, itemData) =>
+                                      ActionChip(
+                                    label: Text(
+                                        state.correspondents[itemData]!.name),
+                                    onPressed: () {
+                                      _formKey
+                                          .currentState?.fields[fkCorrespondent]
+                                          ?.didChange(
+                                        IdQueryParameter.fromId(itemData),
+                                      );
+                                    },
+                                  ),
+                                ),
+                            ],
                           ).padded(),
-                          _buildDocumentTypeFormField(
-                            state.document.documentType,
-                            state.documentTypes,
+                          // DocumentType form field
+                          Column(
+                            children: [
+                              LabelFormField<DocumentType>(
+                                showAnyAssignedOption: false,
+                                showNotAssignedOption: false,
+                                addLabelPageBuilder: (currentInput) =>
+                                    RepositoryProvider.value(
+                                  value: context.read<LabelRepository>(),
+                                  child: AddDocumentTypePage(
+                                    initialName: currentInput,
+                                  ),
+                                ),
+                                addLabelText: S.of(context)!.addDocumentType,
+                                labelText: S.of(context)!.documentType,
+                                initialValue: IdQueryParameter.fromId(
+                                    state.document.documentType),
+                                options: state.documentTypes,
+                                name: _DocumentEditPageState.fkDocumentType,
+                                prefixIcon:
+                                    const Icon(Icons.description_outlined),
+                              ),
+                              if (_filteredSuggestions
+                                      ?.hasSuggestedDocumentTypes ??
+                                  false)
+                                _buildSuggestionsSkeleton<int>(
+                                  suggestions:
+                                      _filteredSuggestions!.documentTypes,
+                                  itemBuilder: (context, itemData) =>
+                                      ActionChip(
+                                    label: Text(
+                                        state.documentTypes[itemData]!.name),
+                                    onPressed: () => _formKey
+                                        .currentState?.fields[fkDocumentType]
+                                        ?.didChange(
+                                      IdQueryParameter.fromId(itemData),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ).padded(),
-                          _buildStoragePathFormField(
-                            state.document.storagePath,
-                            state.storagePaths,
+                          // StoragePath form field
+                          Column(
+                            children: [
+                              LabelFormField<StoragePath>(
+                                showAnyAssignedOption: false,
+                                showNotAssignedOption: false,
+                                addLabelPageBuilder: (initialValue) =>
+                                    RepositoryProvider.value(
+                                  value: context.read<LabelRepository>(),
+                                  child: AddStoragePathPage(
+                                      initalName: initialValue),
+                                ),
+                                addLabelText: S.of(context)!.addStoragePath,
+                                labelText: S.of(context)!.storagePath,
+                                options: state.storagePaths,
+                                initialValue: IdQueryParameter.fromId(
+                                    state.document.storagePath),
+                                name: fkStoragePath,
+                                prefixIcon: const Icon(Icons.folder_outlined),
+                              ),
+                            ],
                           ).padded(),
+                          // Tag form field
                           TagFormField(
                             initialValue: IdsTagsQuery.included(
                                 state.document.tags.toList()),
@@ -187,96 +287,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     );
   }
 
-  Widget _buildStoragePathFormField(
-    int? initialId,
-    Map<int, StoragePath> options,
-  ) {
-    return Column(
-      children: [
-        LabelFormField<StoragePath>(
-          notAssignedSelectable: false,
-          formBuilderState: _formKey.currentState,
-          labelCreationWidgetBuilder: (initialValue) =>
-              RepositoryProvider.value(
-            value: context.read<LabelRepository>(),
-            child: AddStoragePathPage(initalName: initialValue),
-          ),
-          textFieldLabel: S.of(context)!.storagePath,
-          labelOptions: options,
-          initialValue: IdQueryParameter.fromId(initialId),
-          name: fkStoragePath,
-          prefixIcon: const Icon(Icons.folder_outlined),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCorrespondentFormField(
-      int? initialId, Map<int, Correspondent> options) {
-    return Column(
-      children: [
-        LabelFormField<Correspondent>(
-          notAssignedSelectable: false,
-          formBuilderState: _formKey.currentState,
-          labelCreationWidgetBuilder: (initialValue) =>
-              RepositoryProvider.value(
-            value: context.read<LabelRepository>(),
-            child: AddCorrespondentPage(initialName: initialValue),
-          ),
-          textFieldLabel: S.of(context)!.correspondent,
-          labelOptions: options,
-          initialValue: IdQueryParameter.fromId(initialId),
-          name: fkCorrespondent,
-          prefixIcon: const Icon(Icons.person_outlined),
-        ),
-        if (_filteredSuggestions?.hasSuggestedCorrespondents ?? false)
-          _buildSuggestionsSkeleton<int>(
-            suggestions: _filteredSuggestions!.correspondents,
-            itemBuilder: (context, itemData) => ActionChip(
-              label: Text(options[itemData]!.name),
-              onPressed: () => _formKey.currentState?.fields[fkCorrespondent]
-                  ?.didChange((IdQueryParameter.fromId(itemData))),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildDocumentTypeFormField(
-    int? initialId,
-    Map<int, DocumentType> options,
-  ) {
-    return Column(
-      children: [
-        LabelFormField<DocumentType>(
-          notAssignedSelectable: false,
-          formBuilderState: _formKey.currentState,
-          labelCreationWidgetBuilder: (currentInput) =>
-              RepositoryProvider.value(
-            value: context.read<LabelRepository>(),
-            child: AddDocumentTypePage(
-              initialName: currentInput,
-            ),
-          ),
-          textFieldLabel: S.of(context)!.documentType,
-          initialValue: IdQueryParameter.fromId(initialId),
-          labelOptions: options,
-          name: fkDocumentType,
-          prefixIcon: const Icon(Icons.description_outlined),
-        ),
-        if (_filteredSuggestions?.hasSuggestedDocumentTypes ?? false)
-          _buildSuggestionsSkeleton<int>(
-            suggestions: _filteredSuggestions!.documentTypes,
-            itemBuilder: (context, itemData) => ActionChip(
-              label: Text(options[itemData]!.name),
-              onPressed: () => _formKey.currentState?.fields[fkDocumentType]
-                  ?.didChange(IdQueryParameter.fromId(itemData)),
-            ),
-          ),
-      ],
-    );
-  }
-
   Future<void> _onSubmit(DocumentModel document) async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
@@ -308,7 +318,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Widget _buildTitleFormField(String? initialTitle) {
     return FormBuilderTextField(
       name: fkTitle,
-      validator: FormBuilderValidators.required(),
+      validator: (value) {
+        if (value?.trim().isEmpty ?? true) {
+          return S.of(context)!.thisFieldIsRequired;
+        }
+        return null;
+      },
       decoration: InputDecoration(
         label: Text(S.of(context)!.title),
       ),
@@ -374,3 +389,56 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     ).padded();
   }
 }
+
+// class SampleWidget extends StatefulWidget {
+//   const SampleWidget({super.key});
+
+//   @override
+//   State<SampleWidget> createState() => _SampleWidgetState();
+// }
+
+// class _SampleWidgetState extends State<SampleWidget> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<OptionsBloc, OptionsState>(
+//       builder: (context, state) {
+//         return OptionsFormField(
+//           options: state.options,
+//           onAddOption: (option) {
+//             // This will call the repository and will cause a new state containing the new option to be emitted.
+//             context.read<OptionsBloc>().addOption(option);
+//           },
+//         );
+//       },
+//     );
+//   }
+// }
+
+// class OptionsFormField extends StatefulWidget {
+//   final List<Option> options;
+//   final void Function(Option option) onAddOption;
+
+
+//   const OptionsFormField({
+//     super.key,
+//     required this.options,
+//     required this.onAddOption,
+//   });
+
+//   @override
+//   State<OptionsFormField> createState() => _OptionsFormFieldState();
+// }
+
+// class _OptionsFormFieldState extends State<OptionsFormField> {
+//   final TextEditingController _controller;
+//   @override
+//   Widget build(BuildContext context) {
+//     return TextFormField(
+//       onTap: () async {
+//         // User creates new option...
+//         final Option option = await showOptionCreationForm();
+//         widget.onAddOption(option);
+//       },
+//     );
+//   }
+// }

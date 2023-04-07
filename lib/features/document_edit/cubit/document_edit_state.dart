@@ -4,9 +4,9 @@ part of 'document_edit_cubit.dart';
 class DocumentEditState with _$DocumentEditState {
   const factory DocumentEditState({
     required DocumentModel document,
-    required Map<int, Correspondent> correspondents,
-    required Map<int, DocumentType> documentTypes,
-    required Map<int, StoragePath> storagePaths,
-    required Map<int, Tag> tags,
+    @Default({}) Map<int, Correspondent> correspondents,
+    @Default({}) Map<int, DocumentType> documentTypes,
+    @Default({}) Map<int, StoragePath> storagePaths,
+    @Default({}) Map<int, Tag> tags,
   }) = _DocumentEditState;
 }

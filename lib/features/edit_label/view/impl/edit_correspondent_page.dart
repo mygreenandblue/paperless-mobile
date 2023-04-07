@@ -11,17 +11,20 @@ class EditCorrespondentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      lazy: false,
       create: (context) => EditLabelCubit(
         context.read(),
       ),
-      child: EditLabelPage<Correspondent>(
-        label: correspondent,
-        fromJsonT: Correspondent.fromJson,
-        onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addCorrespondent(label),
-        onDelete: (context, label) =>
-            context.read<EditLabelCubit>().removeCorrespondent(label),
-      ),
+      child: Builder(builder: (context) {
+        return EditLabelPage<Correspondent>(
+          label: correspondent,
+          fromJsonT: Correspondent.fromJson,
+          onSubmit: (context, label) =>
+              context.read<EditLabelCubit>().replaceCorrespondent(label),
+          onDelete: (context, label) =>
+              context.read<EditLabelCubit>().removeCorrespondent(label),
+        );
+      }),
     );
   }
 }

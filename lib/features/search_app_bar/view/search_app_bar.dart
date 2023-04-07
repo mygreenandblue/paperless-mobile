@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
-import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart';
+import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart'
+    as s;
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
 
 typedef OpenSearchCallback = void Function(BuildContext context);
 
-class SearchAppBar extends StatefulWidget with PreferredSizeWidget {
+class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final OpenSearchCallback onOpenSearch;
   final Color? backgroundColor;
@@ -37,7 +38,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
       snap: true,
       automaticallyImplyLeading: false,
       backgroundColor: widget.backgroundColor,
-      title: SearchBar(
+      title: s.SearchBar(
         height: kToolbarHeight - 12,
         supportingText: widget.hintText,
         onTap: () => widget.onOpenSearch(context),

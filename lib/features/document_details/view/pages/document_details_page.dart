@@ -218,32 +218,21 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget _buildEditButton() {
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
-        final _filteredSuggestions =
-            state.suggestions?.documentDifference(state.document);
+        // final _filteredSuggestions =
+        //     state.suggestions?.documentDifference(state.document);
         return BlocBuilder<ConnectivityCubit, ConnectivityState>(
           builder: (context, connectivityState) {
             if (!connectivityState.isConnected) {
               return const SizedBox.shrink();
             }
-            return b.Badge(
-              position: b.BadgePosition.topEnd(top: -12, end: -6),
-              showBadge: _filteredSuggestions?.hasSuggestions ?? false,
-              child: Tooltip(
-                message: S.of(context)!.editDocumentTooltip,
-                preferBelow: false,
-                verticalOffset: 40,
-                child: FloatingActionButton(
-                  child: const Icon(Icons.edit),
-                  onPressed: () => _onEdit(state.document),
-                ),
+            return Tooltip(
+              message: S.of(context)!.editDocumentTooltip,
+              preferBelow: false,
+              verticalOffset: 40,
+              child: FloatingActionButton(
+                child: const Icon(Icons.edit),
+                onPressed: () => _onEdit(state.document),
               ),
-              badgeContent: Text(
-                '${_filteredSuggestions?.suggestionsCount ?? 0}',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              badgeColor: Colors.red,
             );
           },
         );

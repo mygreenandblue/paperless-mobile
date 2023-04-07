@@ -693,5 +693,9 @@
   "donateCoffee": "Spendiere mir einen Kaffee",
   "@donateCoffee": {
     "description": "Label displayed in the app drawer"
+  },
+  "thisFieldIsRequired": "This field is required!",
+  "@thisFieldIsRequired": {
+    "description": "Message shown below the form field when a required field has not been filled out."
   }
 }

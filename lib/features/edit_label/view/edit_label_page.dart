@@ -72,6 +72,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         ],
       ),
       body: LabelForm<T>(
+        autofocusNameField: false,
         initialValue: label,
         fromJsonT: fromJsonT,
         submitButtonConfig: SubmitButtonConfig<T>(

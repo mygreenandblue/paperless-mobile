@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/core/type/types.dart';
@@ -25,7 +25,7 @@ class SubmitButtonConfig<T extends Label> {
 class LabelForm<T extends Label> extends StatefulWidget {
   final T? initialValue;
 
-  final SubmitButtonConfig submitButtonConfig;
+  final SubmitButtonConfig<T> submitButtonConfig;
 
   /// FromJson method to parse the form field values into a label instance.
   final T Function(Map<String, dynamic> json) fromJsonT;
@@ -33,12 +33,15 @@ class LabelForm<T extends Label> extends StatefulWidget {
   /// List of additionally rendered form fields.
   final List<Widget> additionalFields;
 
+  final bool autofocusNameField;
+
   const LabelForm({
     Key? key,
     required this.initialValue,
     required this.fromJsonT,
     this.additionalFields = const [],
     required this.submitButtonConfig,
+    required this.autofocusNameField,
   }) : super(key: key);
 
   @override
@@ -74,12 +77,18 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         child: ListView(
           children: [
             FormBuilderTextField(
+              autofocus: widget.autofocusNameField,
               name: Label.nameKey,
               decoration: InputDecoration(
                 labelText: S.of(context)!.name,
                 errorText: _errors[Label.nameKey],
               ),
-              validator: FormBuilderValidators.required(),
+              validator: (value) {
+                if (value?.trim().isEmpty ?? true) {
+                  return S.of(context)!.thisFieldIsRequired;
+                }
+                return null;
+              },
               initialValue: widget.initialValue?.name,
               onChanged: (val) => setState(() => _errors = {}),
             ),
@@ -148,6 +157,8 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         Navigator.pop(context, createdLabel);
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
+      } on PaperlessValidationErrors catch (errors) {
+        setState(() => _errors = errors);
       }
     }
   }

@@ -23,14 +23,19 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
 
   DocumentSearchCubit(this.api, this.notifier, this._labelRepository)
       : super(const DocumentSearchState()) {
-    _labelRepository.addListener(this, onChanged: (labels) {
-      emit(state.copyWith(
-        correspondents: labels.correspondents,
-        documentTypes: labels.documentTypes,
-        tags: labels.tags,
-        storagePaths: labels.storagePaths,
-      ));
-    });
+    _labelRepository.addListener(
+      this,
+      onChanged: (labels) {
+        emit(
+          state.copyWith(
+            correspondents: labels.correspondents,
+            documentTypes: labels.documentTypes,
+            tags: labels.tags,
+            storagePaths: labels.storagePaths,
+          ),
+        );
+      },
+    );
     notifier.addListener(
       this,
       onDeleted: remove,
@@ -101,6 +106,7 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState>
   @override
   Future<void> close() {
     notifier.removeListener(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 

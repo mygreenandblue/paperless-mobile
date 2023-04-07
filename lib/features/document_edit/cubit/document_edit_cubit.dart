@@ -12,10 +12,8 @@ part 'document_edit_cubit.freezed.dart';
 class DocumentEditCubit extends Cubit<DocumentEditState> {
   final DocumentModel _initialDocument;
   final PaperlessDocumentsApi _docsApi;
-
-  final DocumentChangedNotifier _notifier;
   final LabelRepository _labelRepository;
-  final List<StreamSubscription> _subscriptions = [];
+  final DocumentChangedNotifier _notifier;
 
   DocumentEditCubit(
     this._labelRepository,
@@ -23,19 +21,16 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     this._notifier, {
     required DocumentModel document,
   })  : _initialDocument = document,
-        super(
-          DocumentEditState(
-            document: document,
-            correspondents: _labelRepository.state.correspondents,
-            documentTypes: _labelRepository.state.documentTypes,
-            storagePaths: _labelRepository.state.storagePaths,
-            tags: _labelRepository.state.tags,
-          ),
-        ) {
+        super(DocumentEditState(document: document)) {
     _notifier.addListener(this, onUpdated: replace);
     _labelRepository.addListener(
       this,
-      onChanged: (labels) => emit(state.copyWith()),
+      onChanged: (labels) => emit(state.copyWith(
+        correspondents: labels.correspondents,
+        documentTypes: labels.documentTypes,
+        storagePaths: labels.storagePaths,
+        tags: labels.tags,
+      )),
     );
   }
 
@@ -68,10 +63,8 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
 
   @override
   Future<void> close() {
-    for (final sub in _subscriptions) {
-      sub.cancel();
-    }
     _notifier.removeListener(this);
+    _labelRepository.removeListener(this);
     return super.close();
   }
 }
