@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 
-class BulkEditPage<int, T extends Label> extends StatefulWidget {
+class BulkEditPage<T extends Label> extends StatefulWidget {
   final bool enableMultipleChoice;
   final Map<int, T> availableOptions;
 

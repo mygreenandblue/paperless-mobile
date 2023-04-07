@@ -5,7 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
+import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
@@ -42,6 +42,8 @@ class DocumentDetailsPage extends StatefulWidget {
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   late Future<DocumentMetaData> _metaData;
   static const double _itemSpacing = 24;
+
+  final _pagingScrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -79,95 +81,100 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             bottomNavigationBar: _buildBottomAppBar(),
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverAppBar(
-                  title: Text(context
-                      .watch<DocumentDetailsCubit>()
-                      .state
-                      .document
-                      .title),
-                  leading: const BackButton(),
-                  pinned: true,
-                  forceElevated: innerBoxIsScrolled,
-                  collapsedHeight: kToolbarHeight,
-                  expandedHeight: 250.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Stack(
-                      alignment: Alignment.topCenter,
-                      children: [
-                        BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                          builder: (context, state) => Positioned.fill(
-                            child: DocumentPreview(
-                              document: state.document,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          top: 0,
-                          child: Container(
-                            height: 100,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.black.withOpacity(0.7),
-                                  Colors.black.withOpacity(0.2),
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
+                SliverOverlapAbsorber(
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  sliver: SliverAppBar(
+                    title: Text(context
+                        .watch<DocumentDetailsCubit>()
+                        .state
+                        .document
+                        .title),
+                    leading: const BackButton(),
+                    pinned: true,
+                    forceElevated: innerBoxIsScrolled,
+                    collapsedHeight: kToolbarHeight,
+                    expandedHeight: 250.0,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          BlocBuilder<DocumentDetailsCubit,
+                              DocumentDetailsState>(
+                            builder: (context, state) => Positioned.fill(
+                              child: DocumentPreview(
+                                document: state.document,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned.fill(
+                            top: 0,
+                            child: Container(
+                              height: 100,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.7),
+                                    Colors.black.withOpacity(0.2),
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  bottom: ColoredTabBar(
-                    tabBar: TabBar(
-                      isScrollable: true,
-                      tabs: [
-                        Tab(
-                          child: Text(
-                            S.of(context)!.overview,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                    bottom: ColoredTabBar(
+                      tabBar: TabBar(
+                        isScrollable: true,
+                        tabs: [
+                          Tab(
+                            child: Text(
+                              S.of(context)!.overview,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.content,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.content,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.metaData,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.metaData,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.similarDocuments,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.similarDocuments,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -181,29 +188,70 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       context.read(),
                       documentId: state.document.id,
                     ),
-                    child: TabBarView(
-                      children: [
-                        DocumentOverviewWidget(
-                          document: state.document,
-                          itemSpacing: _itemSpacing,
-                          queryString: widget.titleAndContentQueryString,
-                          availableCorrespondents: state.correspondents,
-                          availableDocumentTypes: state.documentTypes,
-                          availableTags: state.tags,
-                          availableStoragePaths: state.storagePaths,
-                        ),
-                        DocumentContentWidget(
-                          isFullContentLoaded: state.isFullContentLoaded,
-                          document: state.document,
-                          fullContent: state.fullContent,
-                          queryString: widget.titleAndContentQueryString,
-                        ),
-                        DocumentMetaDataWidget(
-                          document: state.document,
-                          itemSpacing: _itemSpacing,
-                        ),
-                        const SimilarDocumentsView(),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
+                      child: TabBarView(
+                        children: [
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentOverviewWidget(
+                                document: state.document,
+                                itemSpacing: _itemSpacing,
+                                queryString: widget.titleAndContentQueryString,
+                                availableCorrespondents: state.correspondents,
+                                availableDocumentTypes: state.documentTypes,
+                                availableTags: state.tags,
+                                availableStoragePaths: state.storagePaths,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentContentWidget(
+                                isFullContentLoaded: state.isFullContentLoaded,
+                                document: state.document,
+                                fullContent: state.fullContent,
+                                queryString: widget.titleAndContentQueryString,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentMetaDataWidget(
+                                document: state.document,
+                                itemSpacing: _itemSpacing,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            controller: _pagingScrollController,
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              SimilarDocumentsView(
+                                pagingScrollController: _pagingScrollController,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

@@ -20,11 +20,7 @@ class DocumentContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        vertical: 16,
-        horizontal: 16,
-      ),
+    return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
