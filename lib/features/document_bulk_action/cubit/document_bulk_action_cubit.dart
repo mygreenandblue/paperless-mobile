@@ -127,14 +127,10 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
     );
     final updatedDocuments = state.selection
         .where((element) => modifiedDocumentIds.contains(element.id))
-        .map(
-          (doc) => doc.copyWith(
-            tags: [
+        .map((doc) => doc.copyWith(tags: [
               ...doc.tags.toSet().difference(addTagIds.toSet()),
               ...addTagIds
-            ],
-          ),
-        );
+            ]));
     for (final doc in updatedDocuments) {
       _notifier.notifyUpdated(doc);
     }

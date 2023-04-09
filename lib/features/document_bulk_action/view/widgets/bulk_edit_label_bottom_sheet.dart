@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -10,14 +8,17 @@ import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bu
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
+typedef LabelOptionsSelector<T extends Label> = Map<int, T> Function(
+    DocumentBulkActionState state);
+
 class BulkEditLabelBottomSheet<T extends Label> extends StatefulWidget {
   final String title;
   final String formFieldLabel;
   final Widget formFieldPrefixIcon;
-  final Map<int, T> Function(DocumentBulkActionState state)
-      availableOptionsSelector;
+  final LabelOptionsSelector<T> availableOptionsSelector;
   final void Function(int? selectedId) onSubmit;
   final int? initialValue;
+  
   const BulkEditLabelBottomSheet({
     super.key,
     required this.title,

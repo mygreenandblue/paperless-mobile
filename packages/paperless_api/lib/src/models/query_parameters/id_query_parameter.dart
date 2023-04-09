@@ -57,3 +57,45 @@ class IdQueryParameter extends Equatable {
   factory IdQueryParameter.fromJson(Map<String, dynamic> json) =>
       _$IdQueryParameterFromJson(json);
 }
+// @freezed
+// class IdQueryParameter with _$IdQueryParameter {
+//   const IdQueryParameter._();
+//   const factory IdQueryParameter.unset() = _UnsetIdQueryParameter;
+//   const factory IdQueryParameter.notAssigned() = _NotAssignedIdQueryParameter;
+//   const factory IdQueryParameter.anyAssigned() = _AnyAssignedIdQueryParameter;
+//   const factory IdQueryParameter.id(int id) = _SetIdQueryParameter;
+
+//   Map<String, String> toQueryParameter(String field) {
+//     return when(
+//       unset: () => {},
+//       notAssigned: () => {
+//         '${field}__isnull': '1',
+//       },
+//       anyAssigned: () => {
+//         '${field}__isnull': '0',
+//       },
+//       id: (id) => {
+//         '${field}_id': '$id',
+//       },
+//     );
+//   }
+
+//   bool get onlyNotAssigned => this is _NotAssignedIdQueryParameter;
+
+//   bool get onlyAssigned => this is _AnyAssignedIdQueryParameter;
+
+//   bool get isSet => this is _SetIdQueryParameter;
+
+//   bool get isUnset => this is _UnsetIdQueryParameter;
+//   bool matches(int? id) {
+//     return when(
+//       unset: () => true,
+//       notAssigned: () => id == null,
+//       anyAssigned: () => id != null,
+//       id: (id_) => id == id_,
+//     );
+//   }
+
+//   factory IdQueryParameter.fromJson(Map<String, dynamic> json) =>
+//       _$IdQueryParameterFromJson(json);
+// }
