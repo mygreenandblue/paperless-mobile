@@ -15,6 +15,7 @@ import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubi
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
+import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_query_form_field.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -57,7 +58,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
-        log("Updated state. correspondents have ${state.correspondents.length} items.");
         return DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -207,57 +207,48 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             ],
                           ).padded(),
                           // Tag form field
-                          TagFormField(
-                            initialValue: IdsTagsQuery.included(
-                                state.document.tags.toList()),
-                            notAssignedSelectable: false,
-                            anyAssignedSelectable: false,
-                            excludeAllowed: false,
+                          TagQueryFormField(
+                            options: state.tags,
                             name: fkTags,
-                            selectableOptions: state.tags,
-                            suggestions: (_filteredSuggestions?.tags.toSet() ??
-                                        {})
-                                    .difference(state.document.tags.toSet())
-                                    .isNotEmpty
-                                ? _buildSuggestionsSkeleton<int>(
-                                    suggestions:
-                                        (_filteredSuggestions?.tags.toSet() ??
-                                            {}),
-                                    itemBuilder: (context, itemData) {
-                                      final tag = state.tags[itemData]!;
-                                      return ActionChip(
-                                        label: Text(
-                                          tag.name,
-                                          style:
-                                              TextStyle(color: tag.textColor),
-                                        ),
-                                        backgroundColor: tag.color,
-                                        onPressed: () {
-                                          final currentTags = _formKey
-                                              .currentState
-                                              ?.fields[fkTags]
-                                              ?.value as TagsQuery;
-                                          if (currentTags is IdsTagsQuery) {
-                                            _formKey
-                                                .currentState?.fields[fkTags]
-                                                ?.didChange(
-                                                    (IdsTagsQuery.fromIds({
-                                              ...currentTags.ids,
-                                              itemData
-                                            })));
-                                          } else {
-                                            _formKey
-                                                .currentState?.fields[fkTags]
-                                                ?.didChange(
-                                                    (IdsTagsQuery.fromIds(
-                                                        {itemData})));
-                                          }
-                                        },
-                                      );
-                                    },
-                                  )
-                                : null,
+                            allowOnlySelection: true,
+                            allowCreation: true,
+                            allowExclude: false,
+                            initialValue: IdsTagsQuery.included(
+                              state.document.tags,
+                            ),
                           ).padded(),
+                          if (_filteredSuggestions?.tags
+                                  .toSet()
+                                  .difference(state.document.tags.toSet())
+                                  .isNotEmpty ??
+                              false)
+                            _buildSuggestionsSkeleton<int>(
+                              suggestions:
+                                  (_filteredSuggestions?.tags.toSet() ?? {}),
+                              itemBuilder: (context, itemData) {
+                                final tag = state.tags[itemData]!;
+                                return ActionChip(
+                                  label: Text(
+                                    tag.name,
+                                    style: TextStyle(color: tag.textColor),
+                                  ),
+                                  backgroundColor: tag.color,
+                                  onPressed: () {
+                                    final currentTags = _formKey.currentState
+                                        ?.fields[fkTags]?.value as TagsQuery;
+                                    if (currentTags is IdsTagsQuery) {
+                                      _formKey.currentState?.fields[fkTags]
+                                          ?.didChange((IdsTagsQuery.fromIds(
+                                              {...currentTags.ids, itemData})));
+                                    } else {
+                                      _formKey.currentState?.fields[fkTags]
+                                          ?.didChange((IdsTagsQuery.fromIds(
+                                              {itemData})));
+                                    }
+                                  },
+                                );
+                              },
+                            ),
                           // Prevent tags from being hidden by fab
                           const SizedBox(height: 64),
                         ],

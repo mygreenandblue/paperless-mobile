@@ -1,65 +1,84 @@
 import 'dart:developer';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
+import 'package:paperless_mobile/features/labels/tags/view/widgets/fullscreen_tags_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class TagQueryFormField extends StatelessWidget {
   final String name;
   final Map<int, Tag> options;
   final TagsQuery? initialValue;
+  final bool allowOnlySelection;
+  final bool allowCreation;
+  final bool allowExclude;
 
   const TagQueryFormField({
     super.key,
     required this.options,
     this.initialValue,
     required this.name,
+    required this.allowOnlySelection,
+    required this.allowCreation,
+    required this.allowExclude,
   });
 
   @override
   Widget build(BuildContext context) {
-    log(initialValue.toString());
-
     return FormBuilderField<TagsQuery?>(
       initialValue: initialValue,
       builder: (field) {
+        final values = _generateOptions(context, field.value, field).toList();
         final isEmpty = (field.value is IdsTagsQuery &&
                 (field.value as IdsTagsQuery).ids.isEmpty) ||
             field.value == null;
-        final values = _generateOptions(context, field.value, field).toList();
-        return GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => Dialog.fullscreen(
-                child: Scaffold(
-                  appBar: AppBar(
-                    title: Text("Test"),
+        bool anyAssigned = field.value is AnyAssignedTagsQuery;
+        return OpenContainer<TagsQuery>(
+          middleColor: Theme.of(context).colorScheme.background,
+          closedColor: Theme.of(context).colorScheme.background,
+          openColor: Theme.of(context).colorScheme.background,
+          closedShape: InputBorder.none,
+          openElevation: 0,
+          closedElevation: 0,
+          closedBuilder: (context, openForm) => Container(
+              margin: const EdgeInsets.only(top: 6),
+              child: GestureDetector(
+                onTap: openForm,
+                child: InputDecorator(
+                  isEmpty: isEmpty,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(12),
+                    labelText:
+                        '${S.of(context)!.tags}${anyAssigned ? ' (${S.of(context)!.anyAssigned})' : ''}',
+                    prefixIcon: const Icon(Icons.label_outline),
+                  ),
+                  child: SizedBox(
+                    height: 32,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      separatorBuilder: (context, index) => SizedBox(width: 4),
+                      itemBuilder: (context, index) => values[index],
+                      itemCount: values.length,
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-          child: InputDecorator(
-            isEmpty: isEmpty,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(12),
-              labelText: S.of(context)!.tags,
-              prefixIcon: const Icon(Icons.label_outline),
-            ),
-            child: SizedBox(
-              height: 32,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (context, index) => SizedBox(width: 4),
-                itemBuilder: (context, index) => values[index],
-                itemCount: values.length,
-              ),
-            ),
+              )),
+          openBuilder: (context, closeForm) => FullscreenTagsForm(
+            options: options,
+            onSubmit: closeForm,
+            initialValue: field.value,
+            allowOnlySelection: allowOnlySelection,
+            allowCreation: allowCreation,
+            allowExclude: allowExclude,
           ),
+          onClosed: (data) {
+            if (data != null) {
+              field.didChange(data);
+            }
+          },
         );
       },
       name: name,
@@ -80,7 +99,9 @@ class TagQueryFormField extends StatelessWidget {
     } else if (query is OnlyNotAssignedTagsQuery) {
       yield _buildNotAssignedTagWidget(context, field);
     } else if (query is AnyAssignedTagsQuery) {
-      yield _buildAnyAssignedTagWidget(context, field);
+      for (final e in query.tagIds) {
+        yield _buildAnyAssignedTagWidget(context, e, field, query);
+      }
     }
   }
 
@@ -94,7 +115,9 @@ class TagQueryFormField extends StatelessWidget {
     final tag = options[e.id]!;
     return QueryTagChip(
       onDeleted: () => field.didChange(formValue.withIdsRemoved([e.id])),
-      onSelected: () => field.didChange(formValue.withIdQueryToggled(e.id)),
+      onSelected: allowExclude
+          ? () => field.didChange(formValue.withIdQueryToggled(e.id))
+          : null,
       exclude: e is ExcludeTagIdQuery,
       backgroundColor: tag.color,
       foregroundColor: tag.textColor,
@@ -116,13 +139,24 @@ class TagQueryFormField extends StatelessWidget {
   }
 
   Widget _buildAnyAssignedTagWidget(
-      BuildContext context, FormFieldState<TagsQuery?> field) {
+    BuildContext context,
+    int e,
+    FormFieldState<TagsQuery?> field,
+    AnyAssignedTagsQuery query,
+  ) {
     return QueryTagChip(
-      onDeleted: () => field.didChange(const IdsTagsQuery()),
+      onDeleted: () {
+        final updatedQuery = query.withRemoved([e]);
+        if (updatedQuery.tagIds.isEmpty) {
+          field.didChange(const IdsTagsQuery());
+        } else {
+          field.didChange(updatedQuery);
+        }
+      },
       exclude: false,
-      backgroundColor: Colors.grey,
-      foregroundColor: Colors.black,
-      labelText: S.of(context)!.anyAssigned,
+      backgroundColor: options[e]!.color,
+      foregroundColor: options[e]!.textColor,
+      labelText: options[e]!.name,
     );
   }
 }

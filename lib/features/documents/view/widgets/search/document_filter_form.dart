@@ -194,9 +194,12 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   Widget _buildTagsFormField() {
     return TagQueryFormField(
+      allowExclude: false,
       options: widget.tags,
       name: DocumentModel.tagsKey,
       initialValue: widget.initialFilter.tags,
+      allowOnlySelection: false,
+      allowCreation: false,
     );
     return TagFormField(
       name: DocumentModel.tagsKey,

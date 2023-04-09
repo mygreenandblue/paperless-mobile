@@ -81,7 +81,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
               openElevation: 0,
               closedElevation: 0,
               closedBuilder: (context, openForm) => Container(
-                margin: const EdgeInsets.only(top: 4),
+                margin: const EdgeInsets.only(top: 6),
                 child: TextField(
                   controller: controller,
                   onTap: openForm,

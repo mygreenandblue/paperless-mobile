@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'tags_query.dart';
@@ -21,6 +22,16 @@ class AnyAssignedTagsQuery extends TagsQuery {
 
   @override
   List<Object?> get props => [tagIds];
+
+  AnyAssignedTagsQuery withRemoved(Iterable<int> ids) {
+    return AnyAssignedTagsQuery(
+      tagIds: tagIds.toSet().difference(ids.toSet()).toList(),
+    );
+  }
+
+  AnyAssignedTagsQuery withAdded(Iterable<int> ids) {
+    return AnyAssignedTagsQuery(tagIds: [...tagIds, ...ids]);
+  }
 
   @override
   Map<String, dynamic> toJson() => _$AnyAssignedTagsQueryToJson(this);
