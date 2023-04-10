@@ -697,5 +697,11 @@
   "thisFieldIsRequired": "This field is required!",
   "@thisFieldIsRequired": {
     "description": "Message shown below the form field when a required field has not been filled out."
-  }
+  },
+  "confirm": "Confirm",
+  "confirmAction": "Confirm action",
+  "@confirmAction": {
+    "description": "Typically used as a title to confirm a previously selected action"
+  },
+  "areYouSureYouWantToContinue": "Are you sure you want to continue?"
 }

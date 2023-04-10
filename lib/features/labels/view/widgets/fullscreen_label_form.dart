@@ -39,7 +39,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
 
 class _FullscreenLabelFormState<T extends Label>
     extends State<FullscreenLabelForm<T>> {
-  late bool _showClearIcon = false;
+  bool _showClearIcon = false;
   final _textEditingController = TextEditingController();
   final _focusNode = FocusNode();
 

@@ -694,8 +694,14 @@
   "@donateCoffee": {
     "description": "Label displayed in the app drawer"
   },
-  "thisFieldIsRequired": "This field is required!",
+  "thisFieldIsRequired": "Dieses Feld ist erforderlich!",
   "@thisFieldIsRequired": {
     "description": "Message shown below the form field when a required field has not been filled out."
-  }
+  },
+  "confirm": "Bestätigen",
+  "confirmAction": "Aktion bestätigen",
+  "@confirmAction": {
+    "description": "Typically used as a title to confirm a previously selected action"
+  },
+  "areYouSureYouWantToContinue": "Bist Du sicher, dass Du fortfahren möchtest?"
 }
