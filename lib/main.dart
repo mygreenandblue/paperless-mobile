@@ -8,6 +8,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,6 +19,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/bloc_changes_observer.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -33,7 +35,10 @@ import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart'
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/user_app_settings.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -45,9 +50,34 @@ import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
+String get defaultPreferredLocaleSubtag {
+  String preferredLocale = Platform.localeName.split("_").first;
+  if (!S.supportedLocales
+      .any((locale) => locale.languageCode == preferredLocale)) {
+    preferredLocale = 'en';
+  }
+  return preferredLocale;
+}
+
+Future<void> _initHive() async {
+  await Hive.initFlutter();
+  registerHiveAdapters();
+  final globalSettingsBox =
+      await Hive.openBox<GlobalAppSettings>(HiveBoxes.globalSettings);
+  if (!globalSettingsBox.containsKey(HiveBoxSingleValueKey.value)) {
+    await globalSettingsBox.put(
+      HiveBoxSingleValueKey.value,
+      GlobalAppSettings(preferredLocaleSubtag: defaultPreferredLocaleSubtag),
+    );
+  }
+}
+
 void main() async {
-  Bloc.observer = BlocChangesObserver();
+  await _initHive();
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  final globalSettings = Hive.box<GlobalAppSettings>(HiveBoxes.globalSettings)
+      .get(HiveBoxSingleValueKey.value)!;
 
   await findSystemLocale();
   packageInfo = await PackageInfo.fromPlatform();
@@ -70,11 +100,10 @@ void main() async {
     storageDirectory: hiveDir,
   );
 
-  final appSettingsCubit = ApplicationSettingsCubit(localAuthService);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   final languageHeaderInterceptor = LanguageHeaderInterceptor(
-    appSettingsCubit.state.preferredLocaleSubtag,
+    globalSettings.preferredLocaleSubtag,
   );
   // Manages security context, required for self signed client certificates
   final sessionManager = SessionManager([
@@ -108,9 +137,11 @@ void main() async {
     authApi,
     sessionManager,
   );
-  await authCubit.restoreSessionState(
-    appSettingsCubit.state.isLocalAuthenticationEnabled,
-  );
+
+  if (globalSettings.currentLoggedInUser != null) {
+    await authCubit
+        .restoreSessionState();
+  }
 
   if (authCubit.state.isAuthenticated) {
     final auth = authCubit.state.authentication!;
@@ -125,8 +156,10 @@ void main() async {
   await localNotificationService.initialize();
 
   //Update language header in interceptor on language change.
-  appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
-      .preferredLocaleSubtag = event.preferredLocaleSubtag);
+  globalSettings.addListener(
+    () => languageHeaderInterceptor.preferredLocaleSubtag =
+        globalSettings.preferredLocaleSubtag,
+  );
 
   runApp(
     MultiProvider(
@@ -165,8 +198,6 @@ void main() async {
           providers: [
             BlocProvider<AuthenticationCubit>.value(value: authCubit),
             BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-            BlocProvider<ApplicationSettingsCubit>.value(
-                value: appSettingsCubit),
           ],
           child: const PaperlessMobileEntrypoint(),
         ),
@@ -196,7 +227,7 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
           ),
         ),
       ],
-      child: BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+      child: GlobalSettingsBuilder(
         builder: (context, settings) {
           return DynamicColorBuilder(
             builder: (lightDynamic, darkDynamic) {

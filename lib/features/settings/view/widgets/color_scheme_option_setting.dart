@@ -2,11 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/translation/color_scheme_option_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -15,7 +19,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+    return GlobalSettingsBuilder(
       builder: (context, settings) {
         return ListTile(
           title: Text(S.of(context)!.colors),
@@ -25,7 +29,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
               settings.preferredColorSchemeOption,
             ),
           ),
-          onTap: () => showDialog(
+          onTap: () => showDialog<ColorSchemeOption>(
             context: context,
             builder: (_) => RadioSettingsDialog<ColorSchemeOption>(
               titleText: S.of(context)!.colors,
@@ -50,17 +54,13 @@ class ColorSchemeOptionSetting extends StatelessWidget {
                       hintIcon: Icons.warning_amber,
                     )
                   : null,
-              initialValue: context
-                  .read<ApplicationSettingsCubit>()
-                  .state
-                  .preferredColorSchemeOption,
+              initialValue: settings.preferredColorSchemeOption,
             ),
           ).then(
             (value) {
               if (value != null) {
-                context
-                    .read<ApplicationSettingsCubit>()
-                    .setColorSchemeOption(value);
+                settings.preferredColorSchemeOption = value;
+                settings.save();
               }
             },
           ),

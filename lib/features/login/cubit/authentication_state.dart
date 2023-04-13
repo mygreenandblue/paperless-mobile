@@ -12,6 +12,7 @@ class AuthenticationState {
   );
 
   bool get isAuthenticated => authentication != null;
+
   AuthenticationState({
     required this.wasLoginStored,
     this.wasLocalAuthenticationSuccessful,
@@ -31,9 +32,4 @@ class AuthenticationState {
           this.wasLocalAuthenticationSuccessful,
     );
   }
-
-  factory AuthenticationState.fromJson(Map<String, dynamic> json) =>
-      _$AuthenticationStateFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AuthenticationStateToJson(this);
 }

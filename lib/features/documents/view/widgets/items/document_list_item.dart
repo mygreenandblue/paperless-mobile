@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 
 class DocumentListItem extends DocumentItem {
   static const _a4AspectRatio = 1 / 1.4142;
 
-  DocumentListItem({
+  const DocumentListItem({
     super.key,
     required super.document,
     required super.isSelected,
@@ -28,9 +25,7 @@ class DocumentListItem extends DocumentItem {
     required super.correspondents,
     required super.documentTypes,
     required super.storagePaths,
-  }) {
-    print(tags.keys.join(", "));
-  }
+  });
 
   @override
   Widget build(BuildContext context) {

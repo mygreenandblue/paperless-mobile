@@ -5,7 +5,10 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
+
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:provider/provider.dart';
@@ -22,42 +25,48 @@ class VerifyIdentityPage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.background,
           title: Text(S.of(context)!.verifyYourIdentity),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(S.of(context)!.useTheConfiguredBiometricFactorToAuthenticate)
-                .paddedSymmetrically(horizontal: 16),
-            const Icon(
-              Icons.fingerprint,
-              size: 96,
-            ),
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              runAlignment: WrapAlignment.spaceBetween,
-              runSpacing: 8,
-              spacing: 8,
+        body: UserSettingsBuilder(
+          builder: (context, settings) {
+            if (settings == null) {
+              return const SizedBox.shrink();
+            }
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
-                  onPressed: () => _logout(context),
-                  child: Text(
-                    S.of(context)!.disconnect,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                Text(S
+                        .of(context)!
+                        .useTheConfiguredBiometricFactorToAuthenticate)
+                    .paddedSymmetrically(horizontal: 16),
+                const Icon(
+                  Icons.fingerprint,
+                  size: 96,
+                ),
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  runAlignment: WrapAlignment.spaceBetween,
+                  runSpacing: 8,
+                  spacing: 8,
+                  children: [
+                    TextButton(
+                      onPressed: () => _logout(context),
+                      child: Text(
+                        S.of(context)!.disconnect,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () => context
-                      .read<AuthenticationCubit>()
-                      .restoreSessionState(context
-                          .read<ApplicationSettingsCubit>()
-                          .state
-                          .isLocalAuthenticationEnabled),
-                  child: Text(S.of(context)!.verifyIdentity),
-                ),
+                    ElevatedButton(
+                      onPressed: () => context
+                          .read<AuthenticationCubit>()
+                          .restoreSessionState(),
+                      child: Text(S.of(context)!.verifyIdentity),
+                    ),
+                  ],
+                ).padded(16),
               ],
-            ).padded(16),
-          ],
+            );
+          },
         ),
       ),
     );

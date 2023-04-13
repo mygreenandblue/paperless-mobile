@@ -1,17 +1,22 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/user_credentials.model.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
+import 'package:paperless_mobile/features/settings/user_app_settings.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 part 'authentication_state.dart';
-part 'authentication_cubit.g.dart';
 
-class AuthenticationCubit extends Cubit<AuthenticationState>
-    with HydratedMixin<AuthenticationState> {
+class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LocalAuthenticationService _localAuthService;
   final PaperlessAuthenticationApi _authApi;
   final SessionManager _dioWrapper;
@@ -42,15 +47,31 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
       clientCertificate: clientCertificate,
       authToken: token,
     );
+    final authInfo = AuthenticationInformation(
+      username: credentials.username!,
+      serverUrl: serverUrl,
+      clientCertificate: clientCertificate,
+      token: token,
+    );
+    final userId = "${credentials.username}@$serverUrl";
+
+    // Mark logged in user as currently active user.
+    final globalSettings = GlobalAppSettings.boxedValue;
+    globalSettings.currentLoggedInUser = userId;
+    await globalSettings.save();
+
+    // Save credentials in encrypted box
+    final encryptedBox = await _openEncryptedBox();
+    await encryptedBox.put(
+      userId,
+      authInfo,
+    );
+    encryptedBox.close();
 
     emit(
       AuthenticationState(
         wasLoginStored: false,
-        authentication: AuthenticationInformation(
-          serverUrl: serverUrl,
-          clientCertificate: clientCertificate,
-          token: token,
-        ),
+        authentication: authInfo,
       ),
     );
   }
@@ -58,24 +79,27 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
   ///
   /// Performs a conditional hydration based on the local authentication success.
   ///
-  Future<void> restoreSessionState(bool promptForLocalAuthentication) async {
-    final json = HydratedBloc.storage.read(storageToken);
-
-    if (json == null) {
+  Future<void> restoreSessionState() async {
+    final globalSettings = GlobalAppSettings.boxedValue;
+    if (globalSettings.currentLoggedInUser == null) {
       // If there is nothing to restore, we can quit here.
       return;
     }
 
-    if (promptForLocalAuthentication) {
+    final userSettings = Hive.box<UserAppSettings>(HiveBoxes.userSettings)
+        .get(globalSettings.currentLoggedInUser!);
+
+    if (userSettings!.isBiometricAuthenticationEnabled) {
       final localAuthSuccess = await _localAuthService
-          .authenticateLocalUser("Authenticate to log back in");
+          .authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
       if (localAuthSuccess) {
-        hydrate();
-        if (state.isAuthenticated) {
+        final authentication = await _readAuthenticationFromEncryptedBox(
+            globalSettings.currentLoggedInUser!);
+        if (authentication != null) {
           _dioWrapper.updateSettings(
-            clientCertificate: state.authentication!.clientCertificate,
-            authToken: state.authentication!.token,
-            baseUrl: state.authentication!.serverUrl,
+            clientCertificate: authentication.clientCertificate,
+            authToken: authentication.token,
+            baseUrl: authentication.serverUrl,
           );
           return emit(
             AuthenticationState(
@@ -86,44 +110,62 @@ class AuthenticationCubit extends Cubit<AuthenticationState>
           );
         }
       } else {
-        hydrate();
         return emit(
           AuthenticationState(
             wasLoginStored: true,
             wasLocalAuthenticationSuccessful: false,
-            authentication: state.authentication,
+            authentication: null,
           ),
         );
       }
     } else {
-      hydrate();
-      if (state.isAuthenticated) {
+      final authentication = await _readAuthenticationFromEncryptedBox(
+          globalSettings.currentLoggedInUser!);
+      if (authentication != null) {
         _dioWrapper.updateSettings(
-          clientCertificate: state.authentication!.clientCertificate,
-          authToken: state.authentication!.token,
-          baseUrl: state.authentication!.serverUrl,
+          clientCertificate: authentication.clientCertificate,
+          authToken: authentication.token,
+          baseUrl: authentication.serverUrl,
         );
-        final authState = AuthenticationState(
-          authentication: state.authentication!,
-          wasLoginStored: true,
+        emit(
+          AuthenticationState(
+            authentication: authentication,
+            wasLoginStored: true,
+          ),
         );
-        return emit(authState);
       } else {
         return emit(AuthenticationState.initial);
       }
     }
   }
 
+  Future<AuthenticationInformation?> _readAuthenticationFromEncryptedBox(
+      String userId) {
+    return _openEncryptedBox().then((box) => box.get(userId));
+  }
+
+  Future<Box<AuthenticationInformation?>> _openEncryptedBox() async {
+    const secureStorage = FlutterSecureStorage();
+    final encryptionKeyString = await secureStorage.read(key: 'key');
+    if (encryptionKeyString == null) {
+      final key = Hive.generateSecureKey();
+
+      await secureStorage.write(
+        key: 'key',
+        value: base64UrlEncode(key),
+      );
+    }
+    final key = await secureStorage.read(key: 'key');
+    final encryptionKeyUint8List = base64Url.decode(key!);
+    return await Hive.openBox<AuthenticationInformation>(
+      HiveBoxes.vault,
+      encryptionCipher: HiveAesCipher(encryptionKeyUint8List),
+    );
+  }
+
   Future<void> logout() async {
-    await clear();
+    await Hive.box<AuthenticationInformation>(HiveBoxes.authentication).clear();
     _dioWrapper.resetSettings();
     emit(AuthenticationState.initial);
   }
-
-  @override
-  AuthenticationState? fromJson(Map<String, dynamic> json) =>
-      AuthenticationState.fromJson(json);
-
-  @override
-  Map<String, dynamic>? toJson(AuthenticationState state) => state.toJson();
 }

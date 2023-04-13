@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/pages/application_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -68,10 +70,7 @@ class SettingsPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider.value(
-          value: context.read<ApplicationSettingsCubit>(),
-          child: page,
-        ),
+        builder: (context) => page,
         maintainState: true,
       ),
     );

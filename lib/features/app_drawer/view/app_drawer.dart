@@ -69,10 +69,7 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => BlocProvider.value(
-                    value: context.read<ApplicationSettingsCubit>(),
-                    child: const SettingsPage(),
-                  ),
+                  builder: (context) => const SettingsPage(),
                 ),
               ),
             ),

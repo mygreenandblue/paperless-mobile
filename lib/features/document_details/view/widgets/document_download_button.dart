@@ -5,6 +5,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -69,10 +70,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       setState(() => _isDownloadPending = true);
       await context.read<DocumentDetailsCubit>().downloadDocument(
             downloadOriginal: downloadOriginal,
-            locale: context
-                .read<ApplicationSettingsCubit>()
-                .state
-                .preferredLocaleSubtag,
+            locale: context.read<GlobalAppSettings>().preferredLocaleSubtag,
           );
       // showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
     } on PaperlessServerException catch (error, stackTrace) {

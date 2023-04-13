@@ -12,10 +12,13 @@ class ConfirmBulkModifyLabelDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AlertDialog(
       title: Text(S.of(context)!.confirmAction),
       content: RichText(
         text: TextSpan(
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           text: content,
           children: [
             const TextSpan(text: "\n\n"),

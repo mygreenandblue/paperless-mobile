@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:hive_flutter/adapters.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 
+part 'client_certificate.g.dart';
+
+@HiveType(typeId: HiveTypeIds.clientCertificate)
 class ClientCertificate {
   static const bytesKey = 'bytes';
   static const passphraseKey = 'passphrase';
 
+  @HiveField(0)
   final Uint8List bytes;
+  @HiveField(1)
   final String? passphrase;
 
   ClientCertificate({required this.bytes, this.passphrase});

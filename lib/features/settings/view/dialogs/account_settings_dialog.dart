@@ -9,6 +9,7 @@ import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/settings/global_app_settings.dart';
 import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -81,7 +82,7 @@ class AccountSettingsDialog extends StatelessWidget {
   Future<void> _onLogout(BuildContext context) async {
     try {
       await context.read<AuthenticationCubit>().logout();
-      await context.read<ApplicationSettingsCubit>().clear();
+      await context.read<GlobalAppSettings>();
       await context.read<LabelRepository>().clear();
       await context.read<SavedViewRepository>().clear();
       await HydratedBloc.storage.clear();
