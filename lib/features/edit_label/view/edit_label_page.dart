@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -95,19 +97,10 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
                 S.of(context)!.deleteLabelWarningText,
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(S.of(context)!.cancel),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                  child: Text(
-                    S.of(context)!.delete,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
+                const DialogCancelButton(),
+                DialogConfirmButton(
+                  label: S.of(context)!.delete,
+                  style: DialogConfirmButtonStyle.danger,
                 ),
               ],
             ),

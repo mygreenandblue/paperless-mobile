@@ -32,7 +32,8 @@ class EditTagPage extends StatelessWidget {
             decoration: InputDecoration(
               label: Text(S.of(context)!.color),
             ),
-            colorPickerType: ColorPickerType.blockPicker,
+            colorPickerType: ColorPickerType.materialPicker,
+            readOnly: true,
           ),
           FormBuilderCheckbox(
             initialValue: tag.isInboxTag,

@@ -1,6 +1,4 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -12,7 +10,7 @@ class FullscreenTagsForm extends StatefulWidget {
   final bool allowOnlySelection;
   final bool allowCreation;
   final bool allowExclude;
-
+  final bool autofocus;
   const FullscreenTagsForm({
     super.key,
     this.initialValue,
@@ -21,6 +19,7 @@ class FullscreenTagsForm extends StatefulWidget {
     required this.allowOnlySelection,
     required this.allowCreation,
     required this.allowExclude,
+    this.autofocus = true,
   });
 
   @override
@@ -56,13 +55,15 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     _textEditingController.addListener(() => setState(() {
           _showClearIcon = _textEditingController.text.isNotEmpty;
         }));
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      //Delay keyboard popup to ensure open animation is finished before.
-      Future.delayed(
-        const Duration(milliseconds: 200),
-        () => _focusNode.requestFocus(),
-      );
-    });
+    if (widget.autofocus) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        //Delay keyboard popup to ensure open animation is finished before.
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => _focusNode.requestFocus(),
+        );
+      });
+    }
   }
 
   @override
@@ -72,7 +73,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
       floatingActionButton: widget.allowCreation
           ? FloatingActionButton(
               onPressed: _onAddTag,
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
             )
           : null,
       appBar: AppBar(
@@ -145,12 +146,12 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
                       ButtonSegment(
                         enabled: isSegmentedButtonEnabled,
                         value: false,
-                        label: const Text("All"), //TODO: INTL
+                        label: Text(S.of(context)!.allTags),
                       ),
                       ButtonSegment(
                         enabled: isSegmentedButtonEnabled,
                         value: true,
-                        label: Text(S.of(context)!.anyAssigned),
+                        label: Text(S.of(context)!.anyTag),
                       ),
                     ],
                     multiSelectionEnabled: false,
@@ -308,7 +309,7 @@ class SelectableTagWidget extends StatelessWidget {
           : (selected ? const Icon(Icons.done) : null),
       leading: CircleAvatar(
         backgroundColor: tag.color,
-        child: (tag.isInboxTag ?? false)
+        child: (tag.isInboxTag)
             ? Icon(
                 Icons.inbox,
                 color: tag.textColor,

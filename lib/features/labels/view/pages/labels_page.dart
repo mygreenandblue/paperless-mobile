@@ -220,7 +220,7 @@ class _LabelsPageState extends State<LabelsPage>
                                   onEdit: _openEditTagPage,
                                   leadingBuilder: (t) => CircleAvatar(
                                     backgroundColor: t.color,
-                                    child: t.isInboxTag ?? false
+                                    child: t.isInboxTag
                                         ? Icon(
                                             Icons.inbox,
                                             color: t.textColor,

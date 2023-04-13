@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class RadioSettingsDialog<T> extends StatefulWidget {
@@ -38,14 +40,11 @@ class _RadioSettingsDialogState<T> extends State<RadioSettingsDialog<T>> {
   Widget build(BuildContext context) {
     return AlertDialog(
       actions: [
+        const DialogCancelButton(),
         widget.confirmButton ??
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(S.of(context)!.cancel)),
-        widget.confirmButton ??
-            TextButton(
-                onPressed: () => Navigator.pop(context, _groupValue),
-                child: Text(S.of(context)!.ok)),
+            DialogConfirmButton(
+              returnValue: _groupValue,
+            ),
       ],
       title: widget.titleText != null ? Text(widget.titleText!) : null,
       content: Column(

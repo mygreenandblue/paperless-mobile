@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class FullscreenSelectionForm extends StatefulWidget {
   final FocusNode? focusNode;
@@ -115,31 +117,39 @@ class _FullscreenSelectionFormState extends State<FullscreenSelectionForm> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: widget.selectionCount,
-              itemBuilder: (BuildContext context, int index) {
-                final highlight =
-                    AutocompleteHighlightedOption.of(context) == index;
-                if (highlight) {
-                  SchedulerBinding.instance
-                      .addPostFrameCallback((Duration timeStamp) {
-                    Scrollable.ensureVisible(
-                      context,
-                      alignment: 0,
-                    );
-                  });
-                }
-                return widget.selectionBuilder(context, index);
-              },
+      body: Builder(builder: (context) {
+        if (widget.selectionCount == 0) {
+          return Align(
+            alignment: Alignment.topCenter,
+            child: Text(S.of(context)!.noItemsFound).padded(16),
+          );
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: widget.selectionCount,
+                itemBuilder: (BuildContext context, int index) {
+                  final highlight =
+                      AutocompleteHighlightedOption.of(context) == index;
+                  if (highlight) {
+                    SchedulerBinding.instance
+                        .addPostFrameCallback((Duration timeStamp) {
+                      Scrollable.ensureVisible(
+                        context,
+                        alignment: 0,
+                      );
+                    });
+                  }
+                  return widget.selectionBuilder(context, index);
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }

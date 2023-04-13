@@ -65,7 +65,7 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
     final deletedDocuments = state.selection
         .where((element) => deletedDocumentIds.contains(element.id));
     for (final doc in deletedDocuments) {
-      _notifier.notifyUpdated(doc);
+      _notifier.notifyDeleted(doc);
     }
   }
 
@@ -128,7 +128,7 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
     final updatedDocuments = state.selection
         .where((element) => modifiedDocumentIds.contains(element.id))
         .map((doc) => doc.copyWith(tags: [
-              ...doc.tags.toSet().difference(addTagIds.toSet()),
+              ...doc.tags.toSet().difference(removeTagIds.toSet()),
               ...addTagIds
             ]));
     for (final doc in updatedDocuments) {

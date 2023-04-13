@@ -35,6 +35,7 @@ class AddTagPage extends StatelessWidget {
             colorPickerType: ColorPickerType.materialPicker,
             initialValue: Color((Random().nextDouble() * 0xFFFFFF).toInt())
                 .withOpacity(1.0),
+            readOnly: true,
           ),
           FormBuilderCheckbox(
             name: Tag.isInboxTagKey,

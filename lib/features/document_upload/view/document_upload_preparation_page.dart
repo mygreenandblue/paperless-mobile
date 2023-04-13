@@ -222,13 +222,12 @@ class _DocumentUploadPreparationPageState
                   options: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
                 ),
-                TagFormField(
+                TagsFormField(
                   name: DocumentModel.tagsKey,
-                  notAssignedSelectable: false,
-                  anyAssignedSelectable: false,
-                  excludeAllowed: false,
-                  selectableOptions: state.tags,
-                  //Label: "Tags" + " *",
+                  allowCreation: true,
+                  allowExclude: false,
+                  allowOnlySelection: true,
+                  options: state.tags,
                 ),
                 Text(
                   "* " + S.of(context)!.uploadInferValuesHint,

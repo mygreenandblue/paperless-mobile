@@ -78,7 +78,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> loadInbox() async {
     debugPrint("Initializing inbox...");
     final inboxTags = await _labelRepository.findAllTags().then(
-          (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
+          (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
         );
 
     if (inboxTags.isEmpty) {
@@ -106,7 +106,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> reloadInbox() async {
     emit(state.copyWith(hasLoaded: false, isLoading: true));
     final inboxTags = await _labelRepository.findAllTags().then(
-          (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
+          (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
         );
 
     if (inboxTags.isEmpty) {

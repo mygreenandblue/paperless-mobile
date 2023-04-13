@@ -1,335 +1,213 @@
 import 'dart:developer';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
+import 'package:paperless_mobile/features/labels/tags/view/widgets/fullscreen_tags_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-class TagFormField extends StatefulWidget {
-  final TagsQuery? initialValue;
+class TagsFormField extends StatelessWidget {
   final String name;
+  final Map<int, Tag> options;
+  final TagsQuery? initialValue;
+  final bool allowOnlySelection;
   final bool allowCreation;
-  final bool notAssignedSelectable;
-  final bool anyAssignedSelectable;
-  final bool excludeAllowed;
-  final Map<int, Tag> selectableOptions;
-  final Widget? suggestions;
-  final String? labelText;
-  final String? hintText;
+  final bool allowExclude;
 
-  const TagFormField({
+  const TagsFormField({
     super.key,
-    required this.name,
+    required this.options,
     this.initialValue,
-    this.allowCreation = true,
-    this.notAssignedSelectable = true,
-    this.anyAssignedSelectable = true,
-    this.excludeAllowed = true,
-    required this.selectableOptions,
-    this.suggestions,
-    this.labelText,
-    this.hintText,
+    required this.name,
+    required this.allowOnlySelection,
+    required this.allowCreation,
+    required this.allowExclude,
   });
 
   @override
-  State<TagFormField> createState() => _TagFormFieldState();
+  Widget build(BuildContext context) {
+    return FormBuilderField<TagsQuery?>(
+      initialValue: initialValue,
+      builder: (field) {
+        final values = _generateOptions(context, field.value, field).toList();
+        final isEmpty = (field.value is IdsTagsQuery &&
+                (field.value as IdsTagsQuery).ids.isEmpty) ||
+            field.value == null;
+        bool anyAssigned = field.value is AnyAssignedTagsQuery;
+        return OpenContainer<TagsQuery>(
+          middleColor: Theme.of(context).colorScheme.background,
+          closedColor: Theme.of(context).colorScheme.background,
+          openColor: Theme.of(context).colorScheme.background,
+          closedShape: InputBorder.none,
+          openElevation: 0,
+          closedElevation: 0,
+          closedBuilder: (context, openForm) => Container(
+              margin: const EdgeInsets.only(top: 6),
+              child: GestureDetector(
+                onTap: openForm,
+                child: InputDecorator(
+                  isEmpty: isEmpty,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(12),
+                    labelText:
+                        '${S.of(context)!.tags}${anyAssigned ? ' (${S.of(context)!.anyAssigned})' : ''}',
+                    prefixIcon: const Icon(Icons.label_outline),
+                  ),
+                  child: SizedBox(
+                    height: 32,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 4),
+                      itemBuilder: (context, index) => values[index],
+                      itemCount: values.length,
+                    ),
+                  ),
+                ),
+              )),
+          openBuilder: (context, closeForm) => FullscreenTagsForm(
+            options: options,
+            onSubmit: closeForm,
+            initialValue: field.value,
+            allowOnlySelection: allowOnlySelection,
+            allowCreation: allowCreation,
+            allowExclude: allowExclude,
+          ),
+          onClosed: (data) {
+            if (data != null) {
+              field.didChange(data);
+            }
+          },
+        );
+      },
+      name: name,
+    );
+  }
+
+  Iterable<Widget> _generateOptions(
+    BuildContext context,
+    TagsQuery? query,
+    FormFieldState<TagsQuery?> field,
+  ) sync* {
+    if (query == null) {
+      yield Container();
+    } else if (query is IdsTagsQuery) {
+      for (final e in query.queries) {
+        yield _buildTagIdQueryWidget(context, e, field);
+      }
+    } else if (query is OnlyNotAssignedTagsQuery) {
+      yield _buildNotAssignedTagWidget(context, field);
+    } else if (query is AnyAssignedTagsQuery) {
+      for (final e in query.tagIds) {
+        yield _buildAnyAssignedTagWidget(context, e, field, query);
+      }
+    }
+  }
+
+  Widget _buildTagIdQueryWidget(
+    BuildContext context,
+    TagIdQuery e,
+    FormFieldState<TagsQuery?> field,
+  ) {
+    assert(field.value is IdsTagsQuery);
+    final formValue = field.value as IdsTagsQuery;
+    final tag = options[e.id]!;
+    return QueryTagChip(
+      onDeleted: () => field.didChange(formValue.withIdsRemoved([e.id])),
+      onSelected: allowExclude
+          ? () => field.didChange(formValue.withIdQueryToggled(e.id))
+          : null,
+      exclude: e is ExcludeTagIdQuery,
+      backgroundColor: tag.color,
+      foregroundColor: tag.textColor,
+      labelText: tag.name,
+    );
+  }
+
+  Widget _buildNotAssignedTagWidget(
+    BuildContext context,
+    FormFieldState<TagsQuery?> field,
+  ) {
+    return QueryTagChip(
+      onDeleted: () => field.didChange(null),
+      exclude: false,
+      backgroundColor: Colors.grey,
+      foregroundColor: Colors.black,
+      labelText: S.of(context)!.notAssigned,
+    );
+  }
+
+  Widget _buildAnyAssignedTagWidget(
+    BuildContext context,
+    int e,
+    FormFieldState<TagsQuery?> field,
+    AnyAssignedTagsQuery query,
+  ) {
+    return QueryTagChip(
+      onDeleted: () {
+        final updatedQuery = query.withRemoved([e]);
+        if (updatedQuery.tagIds.isEmpty) {
+          field.didChange(const IdsTagsQuery());
+        } else {
+          field.didChange(updatedQuery);
+        }
+      },
+      exclude: false,
+      backgroundColor: options[e]!.color,
+      foregroundColor: options[e]!.textColor,
+      labelText: options[e]!.name,
+    );
+  }
 }
 
-class _TagFormFieldState extends State<TagFormField> {
-  static const _onlyNotAssignedId = -1;
-  static const _anyAssignedId = -2;
+typedef TagQueryCallback = void Function(Tag tag);
 
-  late final TextEditingController _textEditingController;
-  bool _showCreationSuffixIcon = false;
-  bool _showClearSuffixIcon = false;
+class QueryTagChip extends StatelessWidget {
+  final VoidCallback onDeleted;
+  final VoidCallback? onSelected;
+  final bool exclude;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final String labelText;
 
-  @override
-  void initState() {
-    super.initState();
-    _textEditingController = TextEditingController()
-      ..addListener(() {
-        setState(() {
-          _showCreationSuffixIcon = widget.selectableOptions.values.where(
-            (item) {
-              log(item.name
-                  .toLowerCase()
-                  .startsWith(
-                    _textEditingController.text.toLowerCase(),
-                  )
-                  .toString());
-              return item.name.toLowerCase().startsWith(
-                    _textEditingController.text.toLowerCase(),
-                  );
-            },
-          ).isEmpty;
-        });
-        setState(
-          () => _showClearSuffixIcon = _textEditingController.text.isNotEmpty,
-        );
-      });
-  }
+  const QueryTagChip({
+    super.key,
+    required this.onDeleted,
+    this.onSelected,
+    required this.exclude,
+    this.backgroundColor,
+    this.foregroundColor,
+    required this.labelText,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = widget.selectableOptions.values.fold<bool>(
-            false,
-            (previousValue, element) =>
-                previousValue || (element.documentCount ?? 0) > 0) ||
-        widget.allowCreation;
-
-    return FormBuilderField<TagsQuery>(
-      enabled: isEnabled,
-      builder: (field) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TypeAheadField<int>(
-              textFieldConfiguration: TextFieldConfiguration(
-                enabled: isEnabled,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Icons.label_outline,
-                  ),
-                  suffixIcon: _buildSuffixIcon(context, field),
-                  labelText: widget.labelText ?? S.of(context)!.tags,
-                  hintText: widget.hintText ?? S.of(context)!.filterTags,
-                ),
-                controller: _textEditingController,
-              ),
-              suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                elevation: 4.0,
-                shadowColor: Theme.of(context).colorScheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              suggestionsCallback: (query) {
-                final suggestions = widget.selectableOptions.entries
-                    .where(
-                      (entry) => entry.value.name
-                          .toLowerCase()
-                          .startsWith(query.toLowerCase()),
-                    )
-                    .where((entry) =>
-                        widget.allowCreation ||
-                        (entry.value.documentCount ?? 0) > 0)
-                    .map((entry) => entry.key)
-                    .toList();
-                if (field.value is IdsTagsQuery) {
-                  suggestions.removeWhere((element) =>
-                      (field.value as IdsTagsQuery).ids.contains(element));
-                }
-                if (widget.notAssignedSelectable &&
-                    field.value is! OnlyNotAssignedTagsQuery) {
-                  suggestions.insert(0, _onlyNotAssignedId);
-                }
-                if (widget.anyAssignedSelectable &&
-                    field.value is! AnyAssignedTagsQuery) {
-                  suggestions.insert(0, _anyAssignedId);
-                }
-                return suggestions;
-              },
-              getImmediateSuggestions: true,
-              animationStart: 1,
-              itemBuilder: (context, data) {
-                late String? title;
-                switch (data) {
-                  case _onlyNotAssignedId:
-                    title = S.of(context)!.notAssigned;
-                    break;
-                  case _anyAssignedId:
-                    title = S.of(context)!.anyAssigned;
-                    break;
-                  default:
-                    title = widget.selectableOptions[data]?.name;
-                }
-
-                final tag = widget.selectableOptions[data];
-                return ListTile(
-                  dense: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  style: ListTileStyle.list,
-                  leading: data != _onlyNotAssignedId && data != _anyAssignedId
-                      ? Icon(
-                          Icons.circle,
-                          color: tag?.color,
-                        )
-                      : null,
-                  title: Text(
-                    title ?? '',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onBackground),
-                  ),
-                );
-              },
-              onSuggestionSelected: (id) {
-                if (id == _onlyNotAssignedId) {
-                  //Not assigned tag
-                  field.didChange(const OnlyNotAssignedTagsQuery());
-                  return;
-                } else if (id == _anyAssignedId) {
-                  field.didChange(const AnyAssignedTagsQuery());
-                } else {
-                  final tagsQuery = field.value is IdsTagsQuery
-                      ? field.value as IdsTagsQuery
-                      : const IdsTagsQuery();
-                  field.didChange(
-                      tagsQuery.withIdQueriesAdded([IncludeTagIdQuery(id)]));
-                }
-                _textEditingController.clear();
-              },
-              direction: AxisDirection.up,
-            ),
-            if (field.value is OnlyNotAssignedTagsQuery) ...[
-              _buildNotAssignedTag(field).padded()
-            ] else if (field.value is AnyAssignedTagsQuery) ...[
-              _buildAnyAssignedTag(field).padded()
-            ] else ...[
-              if (widget.suggestions != null) widget.suggestions!,
-              // field.value is IdsTagsQuery
-              Wrap(
-                alignment: WrapAlignment.start,
-                runAlignment: WrapAlignment.start,
-                spacing: 4.0,
-                runSpacing: 4.0,
-                children: ((field.value as IdsTagsQuery).queries)
-                    .map(
-                      (query) => _buildTag(
-                        field,
-                        query,
-                        widget.selectableOptions[query.id],
-                      ),
-                    )
-                    .toList(),
-              ).padded(),
-            ]
-          ],
-        );
-      },
-      initialValue: widget.initialValue ?? const IdsTagsQuery(),
-      name: widget.name,
-    );
-  }
-
-  Widget? _buildSuffixIcon(
-    BuildContext context,
-    FormFieldState<TagsQuery> field,
-  ) {
-    if (_showCreationSuffixIcon && widget.allowCreation) {
-      return IconButton(
-        onPressed: () => _onAddTag(context, field),
-        icon: const Icon(
-          Icons.new_label,
-        ),
-      );
-    }
-    if (_showClearSuffixIcon) {
-      return IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: _textEditingController.clear,
-      );
-    }
-    return null;
-  }
-
-  void _onAddTag(BuildContext context, FormFieldState<TagsQuery> field) async {
-    final Tag? tag = await Navigator.of(context).push<Tag>(
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: AddTagPage(initialValue: _textEditingController.text),
-        ),
-      ),
-    );
-    if (tag != null) {
-      final tagsQuery = field.value is IdsTagsQuery
-          ? field.value as IdsTagsQuery
-          : const IdsTagsQuery();
-      field.didChange(
-        tagsQuery.withIdQueriesAdded([IncludeTagIdQuery(tag.id!)]),
-      );
-    }
-    _textEditingController.clear();
-    // Call has to be delayed as otherwise the framework will not hide the keyboard directly after closing the add page.
-    Future.delayed(
-      const Duration(milliseconds: 100),
-      FocusScope.of(context).unfocus,
-    );
-  }
-
-  Widget _buildNotAssignedTag(FormFieldState<TagsQuery> field) {
     return ColoredChipWrapper(
       child: InputChip(
-        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.all(4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        side: BorderSide.none,
-        label: Text(
-          S.of(context)!.notAssigned,
+        labelPadding: const EdgeInsets.symmetric(
+          horizontal: 4,
+          vertical: 2,
         ),
-        backgroundColor:
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
-        onDeleted: () => field.didChange(const IdsTagsQuery()),
-      ),
-    );
-  }
-
-  Widget _buildTag(
-    FormFieldState<TagsQuery> field,
-    TagIdQuery query,
-    Tag? tag,
-  ) {
-    final currentQuery = field.value as IdsTagsQuery;
-    final isIncludedTag = currentQuery.includedIds.contains(query.id);
-    if (tag == null) {
-      return Container();
-    }
-    return ColoredChipWrapper(
-      child: InputChip(
-        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
         padding: const EdgeInsets.all(4),
+        selectedColor: backgroundColor,
+        visualDensity: const VisualDensity(vertical: -2),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        side: BorderSide.none,
         label: Text(
-          tag.name,
+          labelText,
           style: TextStyle(
-            color: tag.textColor,
-            decorationColor: tag.textColor,
-            decoration: !isIncludedTag ? TextDecoration.lineThrough : null,
-            decorationThickness: 2.0,
+            color: foregroundColor,
+            decorationColor: foregroundColor,
+            decoration: exclude ? TextDecoration.lineThrough : null,
           ),
         ),
-        onPressed: widget.excludeAllowed
-            ? () => field.didChange(currentQuery.withIdQueryToggled(tag.id!))
-            : null,
-        backgroundColor: tag.color,
-        deleteIconColor: tag.textColor,
-        onDeleted: () => field.didChange(
-          (field.value as IdsTagsQuery).withIdsRemoved([tag.id!]),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAnyAssignedTag(FormFieldState<TagsQuery> field) {
-    return ColoredChipWrapper(
-      child: InputChip(
-        labelPadding: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.all(4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        onDeleted: onDeleted,
+        onPressed: onSelected,
+        deleteIconColor: foregroundColor,
+        checkmarkColor: foregroundColor,
+        backgroundColor: backgroundColor,
         side: BorderSide.none,
-        label: Text(S.of(context)!.anyAssigned),
-        backgroundColor:
-            Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.12),
-        onDeleted: () => field.didChange(const IdsTagsQuery()),
       ),
     );
   }

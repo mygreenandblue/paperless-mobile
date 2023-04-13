@@ -46,7 +46,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
 
   String _buildText(BuildContext context, IdQueryParameter? value) {
     if (value?.isSet ?? false) {
-      return options[value!.id]?.name ?? 'undefined';
+      return options[value!.id]!.name;
     } else if (value?.onlyNotAssigned ?? false) {
       return S.of(context)!.notAssigned;
     } else if (value?.onlyAssigned ?? false) {

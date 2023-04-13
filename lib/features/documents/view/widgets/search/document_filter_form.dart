@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_query_form_field.dart';
+import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -193,19 +193,13 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
   }
 
   Widget _buildTagsFormField() {
-    return TagQueryFormField(
-      allowExclude: false,
-      options: widget.tags,
+    return TagsFormField(
       name: DocumentModel.tagsKey,
       initialValue: widget.initialFilter.tags,
+      options: widget.tags,
+      allowExclude: false,
       allowOnlySelection: false,
       allowCreation: false,
-    );
-    return TagFormField(
-      name: DocumentModel.tagsKey,
-      initialValue: widget.initialFilter.tags,
-      allowCreation: false,
-      selectableOptions: widget.tags,
     );
   }
 }

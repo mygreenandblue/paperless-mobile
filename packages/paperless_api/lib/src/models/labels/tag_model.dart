@@ -20,7 +20,7 @@ class Tag extends Label {
 
   final Color? textColor;
 
-  final bool? isInboxTag;
+  final bool isInboxTag;
 
   @protected
   @JsonKey(name: colorKey)

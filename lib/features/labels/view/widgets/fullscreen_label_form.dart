@@ -14,6 +14,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
   final void Function({IdQueryParameter returnValue}) onSubmit;
   final Widget leadingIcon;
   final String? addNewLabelText;
+  final bool autofocus;
 
   FullscreenLabelForm({
     super.key,
@@ -25,6 +26,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
     required this.onSubmit,
     required this.leadingIcon,
     this.addNewLabelText,
+    this.autofocus = true,
   })  : assert(
           !(initialValue?.onlyAssigned ?? false) || showAnyAssignedOption,
         ),
@@ -49,13 +51,15 @@ class _FullscreenLabelFormState<T extends Label>
     _textEditingController.addListener(() => setState(() {
           _showClearIcon = _textEditingController.text.isNotEmpty;
         }));
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      //Delay keyboard popup to ensure open animation is finished before.
-      Future.delayed(
-        const Duration(milliseconds: 200),
-        () => _focusNode.requestFocus(),
-      );
-    });
+    if (widget.autofocus) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        //Delay keyboard popup to ensure open animation is finished before.
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => _focusNode.requestFocus(),
+        );
+      });
+    }
   }
 
   @override
@@ -215,7 +219,7 @@ class _FullscreenLabelFormState<T extends Label>
 
   String? _buildHintText() {
     if (widget.initialValue?.isSet ?? false) {
-      return widget.options[widget.initialValue!.id]?.name ?? 'undefined';
+      return widget.options[widget.initialValue!.id]!.name;
     }
     if (widget.initialValue?.onlyNotAssigned ?? false) {
       return S.of(context)!.notAssigned;

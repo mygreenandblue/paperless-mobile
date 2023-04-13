@@ -703,5 +703,31 @@
   "@confirmAction": {
     "description": "Typically used as a title to confirm a previously selected action"
   },
-  "areYouSureYouWantToContinue": "Bist Du sicher, dass Du fortfahren möchtest?"
+  "areYouSureYouWantToContinue": "Bist Du sicher, dass Du fortfahren möchtest?",
+  "bulkEditTagsAddMessage": "{count, plural, one{Diese Operation wird die Tags {tags} dem ausgewählten Dokument hinzufügen.} other{Diese Operation wird die Tags {tags} den {count} ausgewählten Dokumenten hinzufügen.}}",
+  "@bulkEditTagsAddMessage": {
+    "description": "Message of the confirmation dialog when bulk adding tags."
+  },
+  "bulkEditTagsRemoveMessage": "{count, plural, one{Diese Operation wird die Tags {tags} vom ausgewählten Dokument entfernen.} other{Diese Operation wird die Tags {tags} von den {count} ausgewählten Dokumenten entfernen.}}",
+  "@bulkEditTagsRemoveMessage": {
+    "description": "Message of the confirmation dialog when bulk removing tags."
+  },
+  "bulkEditTagsModifyMessage": "{count, plural, one{Diese Operation wird die Tags {addTags} hinzufügen und die Tags {removeTags} von dem ausgewählten Dokument entfernen.} other{Diese Operation wird die Tags {addTags} hinzufügen und die Tags {removeTags} von {count} ausgewählten Dokumenten entfernen.}}",
+  "@bulkEditTagsModifyMessage": {
+    "description": "Message of the confirmation dialog when both adding and removing tags."
+  },
+  "bulkEditCorrespondentAssignMessage": "{count, plural, one{Diese Operation wird den Korrespondent {correspondent} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Korrespondent {correspondent} den {count} ausgewählten Dokumenten zuweisen.}}",
+  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Diese Operation wird den Dokumenttyp {docType} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Dokumenttyp {docType} den {count} ausgewählten Dokumenten zuweisen.}}",
+  "bulkEditStoragePathAssignMessage": "{count, plural, one{Diese Operation wird den Speicherpfad {path} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Speicherpfad {path} den {count} ausgewählten Dokumenten zuweisen.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Diese Operation wird den Korrespondent {correspondent} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Korrespondenten {correspondent} von {count} ausgewählten Dokumenten entfernen.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Diese Operation wird den Dokumenttyp {docType} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Dokumenttyp {docType} von {count} ausgewählten Dokumenten entfernen.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{Diese Operation wird den Speicherpfad {path} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Speicherpfad {path} von {count} ausgewählten Dokumenten entfernen.}}",
+  "anyTag": "Irgendeines",
+  "@anyTag": {
+    "description": "Label shown when any tag should be filtered"
+  },
+  "allTags": "Alle",
+  "@allTags": {
+    "description": "Label shown when a document has to be assigned to all selected tags"
+  }
 }

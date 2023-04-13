@@ -8,7 +8,6 @@ import 'package:paperless_mobile/features/document_search/cubit/document_search_
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/routes/document_details_route.dart';
@@ -70,13 +69,14 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           controller: _queryController,
           onChanged: (query) {
             _debounceTimer?.cancel();
-            _debounceTimer = Timer(const Duration(milliseconds: 700), () {
+            _debounceTimer = Timer(const Duration(milliseconds: 500), () {
               context.read<DocumentSearchCubit>().suggest(query);
             });
           },
           textInputAction: TextInputAction.search,
           onSubmitted: (query) {
             FocusScope.of(context).unfocus();
+            _debounceTimer?.cancel();
             context.read<DocumentSearchCubit>().search(query);
           },
         ),

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/bulk_edit_label_bottom_sheet.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/bulk_edit_tags_bottom_sheet.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_form_field.dart';
+import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
+import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -82,7 +79,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                         child: BlocBuilder<DocumentBulkActionCubit,
                             DocumentBulkActionState>(
                           builder: (context, state) {
-                            return FullscreenBulkEditLabelFormField(
+                            return FullscreenBulkEditLabelPage(
                               options: state.correspondents,
                               selection: state.selection,
                               labelMapper: (document) => document.correspondent,
@@ -91,6 +88,22 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyCorrespondent,
+                              assignStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditCorrespondentAssignMessage(
+                                      name,
+                                      count,
+                                    );
+                              },
+                              removeStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditCorrespondentRemoveMessage(
+                                      name,
+                                      count,
+                                    );
+                              },
                             );
                           },
                         ),
@@ -115,7 +128,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                         child: BlocBuilder<DocumentBulkActionCubit,
                             DocumentBulkActionState>(
                           builder: (context, state) {
-                            return FullscreenBulkEditLabelFormField(
+                            return FullscreenBulkEditLabelPage(
                               options: state.documentTypes,
                               selection: state.selection,
                               labelMapper: (document) => document.documentType,
@@ -125,6 +138,22 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyDocumentType,
+                              assignStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditDocumentTypeAssignMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
+                              removeStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditDocumentTypeRemoveMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
                             );
                           },
                         ),
@@ -149,7 +178,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                         child: BlocBuilder<DocumentBulkActionCubit,
                             DocumentBulkActionState>(
                           builder: (context, state) {
-                            return FullscreenBulkEditLabelFormField(
+                            return FullscreenBulkEditLabelPage(
                               options: state.storagePaths,
                               selection: state.selection,
                               labelMapper: (document) => document.storagePath,
@@ -158,6 +187,22 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyStoragePath,
+                              assignStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditStoragePathAssignMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
+                              removeStringFnBuilder: (int count) {
+                                return (String name) => S
+                                    .of(context)!
+                                    .bulkEditStoragePathRemoveMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
                             );
                           },
                         ),
@@ -179,17 +224,9 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
       label: Text(S.of(context)!.tags),
       avatar: const Icon(Icons.edit),
       onPressed: () {
-        showModalBottomSheet(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-          ),
-          isScrollControlled: true,
-          context: context,
-          builder: (_) {
-            return BlocProvider(
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
               create: (context) => DocumentBulkActionCubit(
                 context.read(),
                 context.read(),
@@ -197,10 +234,10 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 selection: state.selection,
               ),
               child: Builder(builder: (context) {
-                return const BulkEditTagsBottomSheet();
+                return const FullscreenBulkEditTagsWidget();
               }),
-            );
-          },
+            ),
+          ),
         );
       },
     );

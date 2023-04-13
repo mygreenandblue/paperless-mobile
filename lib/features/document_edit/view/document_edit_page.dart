@@ -15,7 +15,7 @@ import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubi
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_query_form_field.dart';
+import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -207,7 +207,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             ],
                           ).padded(),
                           // Tag form field
-                          TagQueryFormField(
+                          TagsFormField(
                             options: state.tags,
                             name: fkTags,
                             allowOnlySelection: true,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -29,19 +31,10 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text(S.of(context)!.cancel),
-        ),
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor:
-                MaterialStateProperty.all(Theme.of(context).colorScheme.error),
-          ),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-          child: Text(S.of(context)!.delete),
+        const DialogCancelButton(),
+        DialogConfirmButton(
+          label: S.of(context)!.delete,
+          style: DialogConfirmButtonStyle.danger,
         ),
       ],
     );
