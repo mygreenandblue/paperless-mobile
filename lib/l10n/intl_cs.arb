@@ -719,9 +719,9 @@
   "bulkEditCorrespondentAssignMessage": "{count, plural, one{This operation will assign the correspondent {correspondent} to the selected document.} other{This operation will assign the correspondent {correspondent} to {count} selected documents.}}",
   "bulkEditDocumentTypeAssignMessage": "{count, plural, one{This operation will assign the document type {docType} to the selected document.} other{This operation will assign the documentType {docType} to {count} selected documents.}}",
   "bulkEditStoragePathAssignMessage": "{count, plural, one{This operation will assign the storage path {path} to the selected document.} other{This operation will assign the storage path {path} to {count} selected documents.}}",
-  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{This operation will remove the correspondent {correspondent} from the selected document.} other{This operation will remove the correspondent {correspondent} from {count} selected documents.}}",
-  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{This operation will remove the document type {docType} from the selected document.} other{This operation will remove the document type {docType} from {count} selected documents.}}",
-  "bulkEditStoragePathRemoveMessage": "{count, plural, one{This operation will remove the storage path {path} from the selected document.} other{This operation will remove the storage path {path} from {count} selected documents.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{This operation will remove the correspondent from the selected document.} other{This operation will remove the correspondent from {count} selected documents.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{This operation will remove the document type from the selected document.} other{This operation will remove the document type from {count} selected documents.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{This operation will remove the storage path from the selected document.} other{This operation will remove the storage path from {count} selected documents.}}",
   "anyTag": "Any",
   "@anyTag": {
     "description": "Label shown when any tag should be filtered"

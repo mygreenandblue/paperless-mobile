@@ -88,21 +88,18 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyCorrespondent,
-                              assignStringFnBuilder: (int count) {
-                                return (String name) => S
+                              assignMessageBuilder: (int count, String name) {
+                                return S
                                     .of(context)!
                                     .bulkEditCorrespondentAssignMessage(
                                       name,
                                       count,
                                     );
                               },
-                              removeStringFnBuilder: (int count) {
-                                return (String name) => S
+                              removeMessageBuilder: (int count) {
+                                return S
                                     .of(context)!
-                                    .bulkEditCorrespondentRemoveMessage(
-                                      name,
-                                      count,
-                                    );
+                                    .bulkEditCorrespondentRemoveMessage(count);
                               },
                             );
                           },
@@ -138,21 +135,18 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyDocumentType,
-                              assignStringFnBuilder: (int count) {
-                                return (String name) => S
+                              assignMessageBuilder: (int count, String name) {
+                                return S
                                     .of(context)!
                                     .bulkEditDocumentTypeAssignMessage(
                                       count,
                                       name,
                                     );
                               },
-                              removeStringFnBuilder: (int count) {
-                                return (String name) => S
+                              removeMessageBuilder: (int count) {
+                                return S
                                     .of(context)!
-                                    .bulkEditDocumentTypeRemoveMessage(
-                                      count,
-                                      name,
-                                    );
+                                    .bulkEditDocumentTypeRemoveMessage(count);
                               },
                             );
                           },
@@ -187,21 +181,18 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                               onSubmit: context
                                   .read<DocumentBulkActionCubit>()
                                   .bulkModifyStoragePath,
-                              assignStringFnBuilder: (int count) {
-                                return (String name) => S
+                              assignMessageBuilder: (int count, String name) {
+                                return S
                                     .of(context)!
                                     .bulkEditStoragePathAssignMessage(
                                       count,
                                       name,
                                     );
                               },
-                              removeStringFnBuilder: (int count) {
-                                return (String name) => S
+                              removeMessageBuilder: (int count) {
+                                return S
                                     .of(context)!
-                                    .bulkEditStoragePathRemoveMessage(
-                                      count,
-                                      name,
-                                    );
+                                    .bulkEditStoragePathRemoveMessage(count);
                               },
                             );
                           },

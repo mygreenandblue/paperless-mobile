@@ -1,10 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/core/widgets/form_fields/fullscreen_selection_form.dart';
 import 'package:paperless_mobile/extensions/dart_extensions.dart';
+import 'package:paperless_mobile/features/document_bulk_action/view/widgets/confirm_bulk_modify_label_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class FullscreenBulkEditLabelPage extends StatefulWidget {
@@ -14,8 +13,8 @@ class FullscreenBulkEditLabelPage extends StatefulWidget {
   final int? Function(DocumentModel document) labelMapper;
   final Widget leadingIcon;
   final void Function(int? id) onSubmit;
-  final Function(String name) Function(int count) removeStringFnBuilder;
-  final String Function(String name) Function(int count) assignStringFnBuilder;
+  final String Function(int count) removeMessageBuilder;
+  final String Function(int count, String name) assignMessageBuilder;
 
   FullscreenBulkEditLabelPage({
     super.key,
@@ -25,8 +24,8 @@ class FullscreenBulkEditLabelPage extends StatefulWidget {
     required this.leadingIcon,
     required this.hintText,
     required this.onSubmit,
-    required this.removeStringFnBuilder,
-    required this.assignStringFnBuilder,
+    required this.removeMessageBuilder,
+    required this.assignMessageBuilder,
   }) : assert(selection.isNotEmpty);
 
   @override
@@ -87,42 +86,11 @@ class _FullscreenBulkEditLabelPageState<T extends Label>
       selectionCount: _labels.length,
       floatingActionButton: !hideFab
           ? FloatingActionButton.extended(
-              onPressed: () async {
-                if (_selection == null) {
-                  Navigator.pop(context);
-                } else {
-                  final shouldPerformAction = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => _buildConfirmDialog(context),
-                        // if _selection.labelId is null: show dialog asking to remove label from widget.selection.length documents
-                        // else show dialog asking to assign label to widget.selection.length documents
-                      ) ??
-                      false;
-                  if (shouldPerformAction) {
-                    widget.onSubmit(_selection!.label);
-                    Navigator.pop(context);
-                  }
-                }
-              },
+              onPressed: _onSubmit,
               label: Text(S.of(context)!.apply),
-              icon: Icon(Icons.done),
+              icon: const Icon(Icons.done),
             )
           : null,
-    );
-  }
-
-  AlertDialog _buildConfirmDialog(BuildContext context) {
-    return AlertDialog(
-      title: Text(S.of(context)!.confirmAction),
-      content: Text(
-        S.of(context)!.areYouSureYouWantToContinue,
-      ),
-      actions: const [
-        DialogCancelButton(),
-        DialogConfirmButton(
-          style: DialogConfirmButtonStyle.danger,
-        ),
-      ],
     );
   }
 
@@ -150,6 +118,39 @@ class _FullscreenBulkEditLabelPageState<T extends Label>
         }
       },
     );
+  }
+
+  void _onSubmit() async {
+    if (_selection == null) {
+      Navigator.pop(context);
+    } else {
+      bool shouldPerformAction;
+      if (_selection!.label == null) {
+        shouldPerformAction = await showDialog<bool>(
+              context: context,
+              builder: (context) => ConfirmBulkModifyLabelDialog(
+                content: widget.removeMessageBuilder(widget.selection.length),
+              ),
+            ) ??
+            false;
+      } else {
+        final labelName = widget.options[_selection!.label]!.name;
+        shouldPerformAction = await showDialog<bool>(
+              context: context,
+              builder: (context) => ConfirmBulkModifyLabelDialog(
+                content: widget.assignMessageBuilder(
+                  widget.selection.length,
+                  '"$labelName"',
+                ),
+              ),
+            ) ??
+            false;
+      }
+      if (shouldPerformAction) {
+        widget.onSubmit(_selection!.label);
+        Navigator.pop(context);
+      }
+    }
   }
 }
 

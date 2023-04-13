@@ -719,9 +719,9 @@
   "bulkEditCorrespondentAssignMessage": "{count, plural, one{Diese Operation wird den Korrespondent {correspondent} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Korrespondent {correspondent} den {count} ausgewählten Dokumenten zuweisen.}}",
   "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Diese Operation wird den Dokumenttyp {docType} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Dokumenttyp {docType} den {count} ausgewählten Dokumenten zuweisen.}}",
   "bulkEditStoragePathAssignMessage": "{count, plural, one{Diese Operation wird den Speicherpfad {path} dem ausgewählten Dokument zuweisen.} other{Diese Operation wird den Speicherpfad {path} den {count} ausgewählten Dokumenten zuweisen.}}",
-  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Diese Operation wird den Korrespondent {correspondent} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Korrespondenten {correspondent} von {count} ausgewählten Dokumenten entfernen.}}",
-  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Diese Operation wird den Dokumenttyp {docType} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Dokumenttyp {docType} von {count} ausgewählten Dokumenten entfernen.}}",
-  "bulkEditStoragePathRemoveMessage": "{count, plural, one{Diese Operation wird den Speicherpfad {path} vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Speicherpfad {path} von {count} ausgewählten Dokumenten entfernen.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Diese Operation wird den Korrespondent vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Korrespondent von {count} ausgewählten Dokumenten entfernen.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Diese Operation wird den Dokumenttyp vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Dokumenttyp von {count} ausgewählten Dokumenten entfernen.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{Diese Operation wird den Speicherpfad vom ausgewählten Dokument entfernen.} other{Diese Operation wird den Speicherpfad von {count} ausgewählten Dokumenten entfernen.}}",
   "anyTag": "Irgendeines",
   "@anyTag": {
     "description": "Label shown when any tag should be filtered"

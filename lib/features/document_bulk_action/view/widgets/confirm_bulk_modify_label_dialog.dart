@@ -4,11 +4,9 @@ import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ConfirmBulkModifyLabelDialog extends StatelessWidget {
-  final int selectionCount;
   final String content;
   const ConfirmBulkModifyLabelDialog({
     super.key,
-    required this.selectionCount,
     required this.content,
   });
 
