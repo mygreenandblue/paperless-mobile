@@ -5,8 +5,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
-import 'package:paperless_mobile/features/settings/global_app_settings.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/model/global_settings.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -44,9 +43,8 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
               width: 16,
             )
           : const Icon(Icons.download),
-      onPressed: widget.document != null && widget.enabled
-          ? () => _onDownload(widget.document!)
-          : null,
+      onPressed:
+          widget.document != null && widget.enabled ? () => _onDownload(widget.document!) : null,
     ).paddedOnly(right: 4);
   }
 
@@ -70,7 +68,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       setState(() => _isDownloadPending = true);
       await context.read<DocumentDetailsCubit>().downloadDocument(
             downloadOriginal: downloadOriginal,
-            locale: context.read<GlobalAppSettings>().preferredLocaleSubtag,
+            locale: context.read<GlobalSettings>().preferredLocaleSubtag,
           );
       // showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
     } on PaperlessServerException catch (error, stackTrace) {

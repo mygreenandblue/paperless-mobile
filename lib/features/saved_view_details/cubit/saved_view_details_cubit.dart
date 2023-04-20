@@ -43,12 +43,14 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
     _labelRepository.addListener(
       this,
       onChanged: (labels) {
-        emit(state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          tags: labels.tags,
-          storagePaths: labels.storagePaths,
-        ));
+        if (!isClosed) {
+          emit(state.copyWith(
+            correspondents: labels.correspondents,
+            documentTypes: labels.documentTypes,
+            tags: labels.tags,
+            storagePaths: labels.storagePaths,
+          ));
+        }
       },
     );
     updateFilter(filter: savedView.toDocumentFilter());

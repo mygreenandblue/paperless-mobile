@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
-import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart'
-    as s;
+import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart' as s;
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
+import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 
 typedef OpenSearchCallback = void Function(BuildContext context);
 
@@ -47,8 +47,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
           onPressed: Scaffold.of(context).openDrawer,
         ),
         trailingIcon: IconButton(
-          icon: BlocBuilder<PaperlessServerInformationCubit,
-              PaperlessServerInformationState>(
+          icon: BlocBuilder<PaperlessServerInformationCubit, PaperlessServerInformationState>(
             builder: (context, state) {
               return CircleAvatar(
                 child: Text(state.information?.userInitials ?? ''),
@@ -58,7 +57,10 @@ class _SearchAppBarState extends State<SearchAppBar> {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => const AccountSettingsDialog(),
+              builder: (context) => BlocProvider.value(
+                value: context.read<PaperlessServerInformationCubit>(),
+                child: const ManageAccountsPage(),
+              ),
             );
           },
         ),

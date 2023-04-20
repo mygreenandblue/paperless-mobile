@@ -1,13 +1,13 @@
 {
-  "developedBy": "Developed by {name}",
+  "developedBy": "Stworzone przez {name}",
   "@developedBy": {
     "placeholders": {
       "name": {}
     }
   },
-  "addAnotherAccount": "Add another account",
+  "addAnotherAccount": "Dodaj kolejne konto",
   "@addAnotherAccount": {},
-  "account": "Account",
+  "account": "Konto",
   "@account": {},
   "addCorrespondent": "New Correspondent",
   "@addCorrespondent": {
@@ -35,11 +35,11 @@
       "name": {}
     }
   },
-  "disconnect": "Disconnect",
+  "disconnect": "Rozłącz się",
   "@disconnect": {
     "description": "Logout button label"
   },
-  "reportABug": "Report a Bug",
+  "reportABug": "Zgłoś błąd",
   "@reportABug": {},
   "settings": "Ustawienia",
   "@settings": {},
@@ -49,7 +49,7 @@
   },
   "biometricAuthentication": "Biometric authentication",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate to enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}
@@ -67,7 +67,7 @@
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Do you really want to delete this view?",
   "@doYouReallyWantToDeleteThisView": {},
-  "deleteView": "Delete view ",
+  "deleteView": "Usuń widok ",
   "@deleteView": {},
   "addedAt": "Added at",
   "@addedAt": {},
@@ -141,13 +141,13 @@
   },
   "documentSuccessfullyDownloaded": "Document successfully downloaded.",
   "@documentSuccessfullyDownloaded": {},
-  "suggestions": "Suggestions: ",
+  "suggestions": "Sugestie: ",
   "@suggestions": {},
   "editDocument": "Edytuj Dokument",
   "@editDocument": {},
-  "advanced": "Advanced",
+  "advanced": "Zaawansowane",
   "@advanced": {},
-  "apply": "Apply",
+  "apply": "Zastosuj",
   "@apply": {},
   "extended": "Extended",
   "@extended": {},
@@ -155,7 +155,7 @@
   "@titleAndContent": {},
   "title": "Tytuł",
   "@title": {},
-  "reset": "Reset",
+  "reset": "Zresetuj",
   "@reset": {},
   "filterDocuments": "Filter Documents",
   "@filterDocuments": {
@@ -163,7 +163,7 @@
   },
   "originalMD5Checksum": "Original MD5-Checksum",
   "@originalMD5Checksum": {},
-  "mediaFilename": "Media Filename",
+  "mediaFilename": "Nazwa pliku",
   "@mediaFilename": {},
   "originalFileSize": "Original File Size",
   "@originalFileSize": {},
@@ -183,7 +183,7 @@
   "@or": {
     "description": "Used on the scanner page between both main actions when no scans have been captured."
   },
-  "deleteAllScans": "Delete all scans",
+  "deleteAllScans": "Usuń wszystkie skany",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Upload a document from this device",
   "@uploadADocumentFromThisDevice": {
@@ -201,7 +201,7 @@
   },
   "searchDocuments": "Search documents",
   "@searchDocuments": {},
-  "resetFilter": "Reset filter",
+  "resetFilter": "Zresetuj filtr",
   "@resetFilter": {},
   "lastMonth": "Last Month",
   "@lastMonth": {},
@@ -221,7 +221,7 @@
   "@oops": {},
   "newDocumentAvailable": "New document available!",
   "@newDocumentAvailable": {},
-  "orderBy": "Order By",
+  "orderBy": "Sortuj według",
   "@orderBy": {},
   "thisActionIsIrreversibleDoYouWishToProceedAnyway": "This action is irreversible. Do you wish to proceed anyway?",
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
@@ -252,7 +252,7 @@
   "@fileName": {},
   "synchronizeTitleAndFilename": "Synchronize title and filename",
   "@synchronizeTitleAndFilename": {},
-  "reload": "Reload",
+  "reload": "Odśwież",
   "@reload": {},
   "documentSuccessfullyUploadedProcessing": "Dokument pomyślnie przesłany, przetwarzam...",
   "@documentSuccessfullyUploadedProcessing": {},

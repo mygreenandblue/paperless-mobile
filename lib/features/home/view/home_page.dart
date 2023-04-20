@@ -25,6 +25,7 @@ import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
@@ -185,6 +186,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final userId = context.watch<AuthenticationCubit>().state.userId;
     final destinations = [
       RouteDescription(
         icon: const Icon(Icons.description_outlined),
@@ -232,19 +234,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     final routes = <Widget>[
       MultiBlocProvider(
+        key: ValueKey(userId),
         providers: [
           BlocProvider(
             create: (context) => DocumentsCubit(
               context.read(),
               context.read(),
               context.read(),
-            ),
+            )..reload(),
           ),
           BlocProvider(
             create: (context) => SavedViewCubit(
               context.read(),
               context.read(),
-            ),
+            )..reload(),
           ),
         ],
         child: const DocumentsPage(),
@@ -254,6 +257,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: const ScannerPage(),
       ),
       MultiBlocProvider(
+        key: ValueKey(userId),
         providers: [
           BlocProvider(
             create: (context) => LabelCubit(context.read()),
@@ -266,12 +270,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: const InboxPage(),
       ),
     ];
+
     return MultiBlocListener(
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
           //Only re-initialize data if the connectivity changed from not connected to connected
-          listenWhen: (previous, current) =>
-              current == ConnectivityState.connected,
+          listenWhen: (previous, current) => current == ConnectivityState.connected,
           listener: (context, state) {
             _initializeData(context);
           },
@@ -280,9 +284,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           listener: (context, state) {
             if (state.task != null) {
               // Handle local notifications on task change (only when app is running for now).
-              context
-                  .read<LocalNotificationService>()
-                  .notifyTaskChanged(state.task!);
+              context.read<LocalNotificationService>().notifyTaskChanged(state.task!);
             }
           },
         ),
@@ -295,9 +297,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   NavigationRail(
                     labelType: NavigationRailLabelType.all,
-                    destinations: destinations
-                        .map((e) => e.toNavigationRailDestination())
-                        .toList(),
+                    destinations: destinations.map((e) => e.toNavigationRailDestination()).toList(),
                     selectedIndex: _currentIndex,
                     onDestinationSelected: _onNavigationChanged,
                   ),
@@ -315,8 +315,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
-              destinations:
-                  destinations.map((e) => e.toNavigationDestination()).toList(),
+              destinations: destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
             body: routes[_currentIndex],
           );

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
-import 'package:paperless_mobile/features/settings/global_app_settings.dart';
+import 'package:paperless_mobile/features/settings/model/global_settings.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
@@ -11,8 +10,7 @@ class LanguageSelectionSetting extends StatefulWidget {
   const LanguageSelectionSetting({super.key});
 
   @override
-  State<LanguageSelectionSetting> createState() =>
-      _LanguageSelectionSettingState();
+  State<LanguageSelectionSetting> createState() => _LanguageSelectionSettingState();
 }
 
 class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {

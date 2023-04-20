@@ -46,9 +46,8 @@ class DocumentDetailedItem extends DocumentItem {
         padding.bottom -
         kBottomNavigationBarHeight -
         kToolbarHeight;
-    final maxHeight = highlights != null
-        ? min(600.0, availableHeight)
-        : min(500.0, availableHeight);
+    final maxHeight =
+        highlights != null ? min(600.0, availableHeight) : min(500.0, availableHeight);
     return Card(
       color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(

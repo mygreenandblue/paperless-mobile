@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:paperless_api/src/models/paperless_server_exception.dart';
 import 'package:paperless_api/src/models/paperless_server_information_model.dart';
 import 'package:paperless_api/src/models/paperless_server_statistics_model.dart';
+import 'package:paperless_api/src/models/paperless_ui_settings_model.dart';
 
 import 'paperless_server_stats_api.dart';
 
@@ -21,15 +22,12 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
   @override
   Future<PaperlessServerInformationModel> getServerInformation() async {
     final response = await client.get("/api/ui_settings/");
-    final version = response
-            .headers[PaperlessServerInformationModel.versionHeader]?.first ??
-        'unknown';
-    final apiVersion = int.tryParse(response
-            .headers[PaperlessServerInformationModel.apiVersionHeader]?.first ??
-        '1');
+    final version =
+        response.headers[PaperlessServerInformationModel.versionHeader]?.first ?? 'unknown';
+    final apiVersion = int.tryParse(
+        response.headers[PaperlessServerInformationModel.apiVersionHeader]?.first ?? '1');
     final String username = response.data['username'];
-    final String host = response
-            .headers[PaperlessServerInformationModel.hostHeader]?.first ??
+    final String host = response.headers[PaperlessServerInformationModel.hostHeader]?.first ??
         response.headers[PaperlessServerInformationModel.hostHeader]?.first ??
         ('${response.requestOptions.uri.host}:${response.requestOptions.uri.port}');
     return PaperlessServerInformationModel(
@@ -45,6 +43,15 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
     final response = await client.get('/api/statistics/');
     if (response.statusCode == 200) {
       return PaperlessServerStatisticsModel.fromJson(response.data);
+    }
+    throw const PaperlessServerException.unknown();
+  }
+
+  @override
+  Future<PaperlessUiSettingsModel> getUiSettings() async {
+    final response = await client.get("/api/ui_settings/");
+    if (response.statusCode == 200) {
+      return PaperlessUiSettingsModel.fromJson(response.data);
     }
     throw const PaperlessServerException.unknown();
   }

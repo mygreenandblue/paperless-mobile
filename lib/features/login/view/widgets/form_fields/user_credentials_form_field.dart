@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/login/model/user_credentials.model.dart';
+import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/obscured_input_text_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -14,14 +14,13 @@ class UserCredentialsFormField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<UserCredentialsFormField> createState() =>
-      _UserCredentialsFormFieldState();
+  State<UserCredentialsFormField> createState() => _UserCredentialsFormFieldState();
 }
 
 class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
   @override
   Widget build(BuildContext context) {
-    return FormBuilderField<UserCredentials?>(
+    return FormBuilderField<LoginFormCredentials?>(
       name: UserCredentialsFormField.fkCredentials,
       builder: (field) => AutofillGroup(
         child: Column(
@@ -34,7 +33,7 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
               autocorrect: false,
               onChanged: (username) => field.didChange(
                 field.value?.copyWith(username: username) ??
-                    UserCredentials(username: username),
+                    LoginFormCredentials(username: username),
               ),
               validator: (value) {
                 if (value?.trim().isEmpty ?? true) {
@@ -51,7 +50,7 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
               label: S.of(context)!.password,
               onChanged: (password) => field.didChange(
                 field.value?.copyWith(password: password) ??
-                    UserCredentials(password: password),
+                    LoginFormCredentials(password: password),
               ),
               validator: (value) {
                 if (value?.trim().isEmpty ?? true) {

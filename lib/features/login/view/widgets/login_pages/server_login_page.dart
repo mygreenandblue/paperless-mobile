@@ -6,12 +6,14 @@ import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_cr
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ServerLoginPage extends StatefulWidget {
-  final Future<void> Function() onDone;
+  final String submitText;
+  final Future<void> Function() onSubmit;
   final GlobalKey<FormBuilderState> formBuilderKey;
   const ServerLoginPage({
     super.key,
-    required this.onDone,
+    required this.onSubmit,
     required this.formBuilderKey,
+    required this.submitText,
   });
 
   @override
@@ -23,8 +25,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
   @override
   Widget build(BuildContext context) {
     final serverAddress = (widget.formBuilderKey.currentState
-                    ?.getRawValue(ServerAddressFormField.fkServerAddress)
-                as String?)
+                ?.getRawValue(ServerAddressFormField.fkServerAddress) as String?)
             ?.replaceAll(RegExp(r'https?://'), '') ??
         '';
     return Scaffold(
@@ -50,7 +51,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
             FilledButton(
               onPressed: () async {
                 setState(() => _isLoginLoading = true);
-                await widget.onDone();
+                await widget.onSubmit();
                 setState(() => _isLoginLoading = false);
               },
               child: Text(S.of(context)!.signIn),

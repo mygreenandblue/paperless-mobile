@@ -3,10 +3,10 @@ import 'package:hive/hive.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 
-part 'global_app_settings.g.dart';
+part 'global_settings.g.dart';
 
 @HiveType(typeId: HiveTypeIds.globalSettings)
-class GlobalAppSettings with ChangeNotifier, HiveObjectMixin {
+class GlobalSettings with HiveObjectMixin {
   @HiveField(0)
   String preferredLocaleSubtag;
 
@@ -22,7 +22,7 @@ class GlobalAppSettings with ChangeNotifier, HiveObjectMixin {
   @HiveField(4)
   String? currentLoggedInUser;
 
-  GlobalAppSettings({
+  GlobalSettings({
     required this.preferredLocaleSubtag,
     this.preferredThemeMode = ThemeMode.system,
     this.preferredColorSchemeOption = ColorSchemeOption.classic,
@@ -30,7 +30,6 @@ class GlobalAppSettings with ChangeNotifier, HiveObjectMixin {
     this.currentLoggedInUser,
   });
 
-  static GlobalAppSettings get boxedValue =>
-      Hive.box<GlobalAppSettings>(HiveBoxes.globalSettings)
-          .get(HiveBoxSingleValueKey.value)!;
+  static GlobalSettings get boxedValue =>
+      Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
 }

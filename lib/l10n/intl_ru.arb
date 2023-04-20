@@ -49,7 +49,7 @@
   },
   "biometricAuthentication": "Biometric authentication",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate to enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}

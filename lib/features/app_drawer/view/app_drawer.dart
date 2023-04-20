@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -42,8 +42,7 @@ class AppDrawer extends StatelessWidget {
               leading: const Icon(Icons.bug_report_outlined),
               title: Text(S.of(context)!.reportABug),
               onTap: () {
-                launchUrlString(
-                    'https://github.com/astubenbord/paperless-mobile/issues/new');
+                launchUrlString('https://github.com/astubenbord/paperless-mobile/issues/new');
               },
             ),
             ListTile(
@@ -69,7 +68,10 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const SettingsPage(),
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<PaperlessServerInformationCubit>(),
+                    child: const SettingsPage(),
+                  ),
                 ),
               ),
             ),

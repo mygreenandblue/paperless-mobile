@@ -38,8 +38,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<Tag> createTag(Tag object) async {
     final created = await _api.saveTag(object);
-    final updatedState = {...state.tags}
-      ..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.tags}..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(tags: updatedState));
     return created;
   }
@@ -63,8 +62,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<Iterable<Tag>> findAllTags([Iterable<int>? ids]) async {
     final tags = await _api.getTags(ids);
-    final updatedState = {...state.tags}
-      ..addEntries(tags.map((e) => MapEntry(e.id!, e)));
+    final updatedState = {...state.tags}..addEntries(tags.map((e) => MapEntry(e.id!, e)));
     emit(state.copyWith(tags: updatedState));
     return tags;
   }
@@ -78,16 +76,14 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<Correspondent> createCorrespondent(Correspondent correspondent) async {
     final created = await _api.saveCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}
-      ..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.correspondents}..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(correspondents: updatedState));
     return created;
   }
 
   Future<int> deleteCorrespondent(Correspondent correspondent) async {
     await _api.deleteCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}
-      ..removeWhere((k, v) => k == correspondent.id);
+    final updatedState = {...state.correspondents}..removeWhere((k, v) => k == correspondent.id);
     emit(state.copyWith(correspondents: updatedState));
 
     return correspondent.id!;
@@ -104,8 +100,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<Correspondent>> findAllCorrespondents(
-      [Iterable<int>? ids]) async {
+  Future<Iterable<Correspondent>> findAllCorrespondents([Iterable<int>? ids]) async {
     final correspondents = await _api.getCorrespondents(ids);
     final updatedState = {...state.correspondents}
       ..addEntries(correspondents.map((e) => MapEntry(e.id!, e)));
@@ -116,8 +111,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<Correspondent> updateCorrespondent(Correspondent correspondent) async {
     final updated = await _api.updateCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}
-      ..update(updated.id!, (_) => updated);
+    final updatedState = {...state.correspondents}..update(updated.id!, (_) => updated);
     emit(state.copyWith(correspondents: updatedState));
 
     return updated;
@@ -125,16 +119,14 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<DocumentType> createDocumentType(DocumentType documentType) async {
     final created = await _api.saveDocumentType(documentType);
-    final updatedState = {...state.documentTypes}
-      ..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.documentTypes}..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(documentTypes: updatedState));
     return created;
   }
 
   Future<int> deleteDocumentType(DocumentType documentType) async {
     await _api.deleteDocumentType(documentType);
-    final updatedState = {...state.documentTypes}
-      ..removeWhere((k, v) => k == documentType.id);
+    final updatedState = {...state.documentTypes}..removeWhere((k, v) => k == documentType.id);
     emit(state.copyWith(documentTypes: updatedState));
     return documentType.id!;
   }
@@ -149,8 +141,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<DocumentType>> findAllDocumentTypes(
-      [Iterable<int>? ids]) async {
+  Future<Iterable<DocumentType>> findAllDocumentTypes([Iterable<int>? ids]) async {
     final documentTypes = await _api.getDocumentTypes(ids);
     final updatedState = {...state.documentTypes}
       ..addEntries(documentTypes.map((e) => MapEntry(e.id!, e)));
@@ -160,24 +151,21 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<DocumentType> updateDocumentType(DocumentType documentType) async {
     final updated = await _api.updateDocumentType(documentType);
-    final updatedState = {...state.documentTypes}
-      ..update(updated.id!, (_) => updated);
+    final updatedState = {...state.documentTypes}..update(updated.id!, (_) => updated);
     emit(state.copyWith(documentTypes: updatedState));
     return updated;
   }
 
   Future<StoragePath> createStoragePath(StoragePath storagePath) async {
     final created = await _api.saveStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}
-      ..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.storagePaths}..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(storagePaths: updatedState));
     return created;
   }
 
   Future<int> deleteStoragePath(StoragePath storagePath) async {
     await _api.deleteStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}
-      ..removeWhere((k, v) => k == storagePath.id);
+    final updatedState = {...state.storagePaths}..removeWhere((k, v) => k == storagePath.id);
     emit(state.copyWith(storagePaths: updatedState));
     return storagePath.id!;
   }
@@ -192,8 +180,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<StoragePath>> findAllStoragePaths(
-      [Iterable<int>? ids]) async {
+  Future<Iterable<StoragePath>> findAllStoragePaths([Iterable<int>? ids]) async {
     final storagePaths = await _api.getStoragePaths(ids);
     final updatedState = {...state.storagePaths}
       ..addEntries(storagePaths.map((e) => MapEntry(e.id!, e)));
@@ -203,8 +190,7 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
 
   Future<StoragePath> updateStoragePath(StoragePath storagePath) async {
     final updated = await _api.updateStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}
-      ..update(updated.id!, (_) => updated);
+    final updatedState = {...state.storagePaths}..update(updated.id!, (_) => updated);
     emit(state.copyWith(storagePaths: updatedState));
     return updated;
   }
@@ -215,6 +201,12 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
       subscription.cancel();
     });
     return super.close();
+  }
+
+  @override
+  Future<void> clear() async {
+    await super.clear();
+    emit(const LabelRepositoryState());
   }
 
   @override

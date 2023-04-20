@@ -3,6 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/login/model/client_certificate.dart';
+import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
@@ -35,9 +37,8 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
         toolbarHeight: kToolbarHeight - 4,
         title: Text(S.of(context)!.connectToPaperless),
         bottom: PreferredSize(
-          child: _isCheckingConnection
-              ? const LinearProgressIndicator()
-              : const SizedBox(height: 4.0),
+          child:
+              _isCheckingConnection ? const LinearProgressIndicator() : const SizedBox(height: 4.0),
           preferredSize: const Size.fromHeight(4.0),
         ),
       ),
@@ -67,9 +68,8 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
             ),
             FilledButton(
               child: Text(S.of(context)!.continueLabel),
-              onPressed: _reachabilityStatus == ReachabilityStatus.reachable
-                  ? widget.onContinue
-                  : null,
+              onPressed:
+                  _reachabilityStatus == ReachabilityStatus.reachable ? widget.onContinue : null,
             ),
           ],
         ),
@@ -81,16 +81,16 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     setState(() {
       _isCheckingConnection = true;
     });
-
-    final status = await context
-        .read<ConnectivityStatusService>()
-        .isPaperlessServerReachable(
+    final certForm = widget.formBuilderKey.currentState
+            ?.getRawValue(ClientCertificateFormField.fkClientCertificate)
+        as ClientCertificateFormModel?;
+    final status = await context.read<ConnectivityStatusService>().isPaperlessServerReachable(
           address ??
               widget.formBuilderKey.currentState!
                   .getRawValue(ServerAddressFormField.fkServerAddress),
-          widget.formBuilderKey.currentState?.getRawValue(
-            ClientCertificateFormField.fkClientCertificate,
-          ),
+          certForm != null
+              ? ClientCertificate(bytes: certForm.bytes, passphrase: certForm.passphrase)
+              : null,
         );
     setState(() {
       _isCheckingConnection = false;

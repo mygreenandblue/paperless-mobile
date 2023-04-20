@@ -27,8 +27,7 @@ class SavedViewRepository extends HydratedCubit<SavedViewRepositoryState> {
 
   Future<SavedView> create(SavedView object) async {
     final created = await _api.save(object);
-    final updatedState = {...state.savedViews}
-      ..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.savedViews}..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(savedViews: updatedState));
     return created;
   }
@@ -43,8 +42,7 @@ class SavedViewRepository extends HydratedCubit<SavedViewRepositoryState> {
   Future<SavedView?> find(int id) async {
     final found = await _api.find(id);
     if (found != null) {
-      final updatedState = {...state.savedViews}
-        ..update(id, (_) => found, ifAbsent: () => found);
+      final updatedState = {...state.savedViews}..update(id, (_) => found, ifAbsent: () => found);
       emit(state.copyWith(savedViews: updatedState));
     }
     return found;
@@ -66,6 +64,12 @@ class SavedViewRepository extends HydratedCubit<SavedViewRepositoryState> {
       subscription.cancel();
     });
     return super.close();
+  }
+
+  @override
+  Future<void> clear() async {
+    await super.clear();
+    emit(const SavedViewRepositoryState());
   }
 
   @override

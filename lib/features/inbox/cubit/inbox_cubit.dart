@@ -13,8 +13,7 @@ import 'package:paperless_mobile/features/paged_document_view/cubit/document_pag
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
 
-class InboxCubit extends HydratedCubit<InboxState>
-    with DocumentPagingBlocMixin {
+class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin {
   final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
@@ -37,10 +36,7 @@ class InboxCubit extends HydratedCubit<InboxState>
       this,
       onDeleted: remove,
       onUpdated: (document) {
-        if (document.tags
-            .toSet()
-            .intersection(state.inboxTags.toSet())
-            .isEmpty) {
+        if (document.tags.toSet().intersection(state.inboxTags.toSet()).isEmpty) {
           remove(document);
           emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
         } else {
@@ -76,28 +72,32 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> loadInbox() async {
-    debugPrint("Initializing inbox...");
-    final inboxTags = await _labelRepository.findAllTags().then(
-          (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
-        );
+    if (!isClosed) {
+      debugPrint("Initializing inbox...");
 
-    if (inboxTags.isEmpty) {
-      // no inbox tags = no inbox items.
-      return emit(
-        state.copyWith(
-          hasLoaded: true,
-          value: [],
-          inboxTags: [],
+      final inboxTags = await _labelRepository.findAllTags().then(
+            (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
+          );
+
+      if (inboxTags.isEmpty) {
+        // no inbox tags = no inbox items.
+        return emit(
+          state.copyWith(
+            hasLoaded: true,
+            value: [],
+            inboxTags: [],
+          ),
+        );
+      }
+
+      emit(state.copyWith(inboxTags: inboxTags));
+      updateFilter(
+        filter: DocumentFilter(
+          sortField: SortField.added,
+          tags: IdsTagsQuery.fromIds(inboxTags),
         ),
       );
     }
-    emit(state.copyWith(inboxTags: inboxTags));
-    updateFilter(
-      filter: DocumentFilter(
-        sortField: SortField.added,
-        tags: IdsTagsQuery.fromIds(inboxTags),
-      ),
-    );
   }
 
   ///
@@ -133,8 +133,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// from the inbox.
   ///
   Future<Iterable<int>> removeFromInbox(DocumentModel document) async {
-    final tagsToRemove =
-        document.tags.toSet().intersection(state.inboxTags.toSet());
+    final tagsToRemove = document.tags.toSet().intersection(state.inboxTags.toSet());
 
     final updatedTags = {...document.tags}..removeAll(tagsToRemove);
     final updatedDocument = await api.update(
@@ -188,8 +187,8 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> assignAsn(DocumentModel document) async {
     if (document.archiveSerialNumber == null) {
       final int asn = await _documentsApi.findNextAsn();
-      final updatedDocument = await _documentsApi
-          .update(document.copyWith(archiveSerialNumber: () => asn));
+      final updatedDocument =
+          await _documentsApi.update(document.copyWith(archiveSerialNumber: () => asn));
 
       replace(updatedDocument);
     }

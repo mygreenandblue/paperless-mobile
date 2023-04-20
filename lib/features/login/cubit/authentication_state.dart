@@ -1,35 +1,43 @@
 part of 'authentication_cubit.dart';
 
-@JsonSerializable()
-class AuthenticationState {
-  final bool wasLoginStored;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final bool? wasLocalAuthenticationSuccessful;
-  final AuthenticationInformation? authentication;
+class AuthenticationState with EquatableMixin {
+  final bool showBiometricAuthenticationScreen;
+  final bool isAuthenticated;
+  final String? username;
+  final String? fullName;
+  final String? userId;
 
-  static final AuthenticationState initial = AuthenticationState(
-    wasLoginStored: false,
-  );
-
-  bool get isAuthenticated => authentication != null;
-
-  AuthenticationState({
-    required this.wasLoginStored,
-    this.wasLocalAuthenticationSuccessful,
-    this.authentication,
+  const AuthenticationState({
+    this.isAuthenticated = false,
+    this.showBiometricAuthenticationScreen = false,
+    this.username,
+    this.fullName,
+    this.userId,
   });
 
   AuthenticationState copyWith({
-    bool? wasLoginStored,
     bool? isAuthenticated,
-    AuthenticationInformation? authentication,
-    bool? wasLocalAuthenticationSuccessful,
+    bool? showBiometricAuthenticationScreen,
+    String? username,
+    String? fullName,
+    String? userId,
   }) {
     return AuthenticationState(
-      wasLoginStored: wasLoginStored ?? this.wasLoginStored,
-      authentication: authentication ?? this.authentication,
-      wasLocalAuthenticationSuccessful: wasLocalAuthenticationSuccessful ??
-          this.wasLocalAuthenticationSuccessful,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      showBiometricAuthenticationScreen:
+          showBiometricAuthenticationScreen ?? this.showBiometricAuthenticationScreen,
+      username: username ?? this.username,
+      fullName: fullName ?? this.fullName,
+      userId: userId ?? this.userId,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        userId,
+        username,
+        fullName,
+        isAuthenticated,
+        showBiometricAuthenticationScreen,
+      ];
 }

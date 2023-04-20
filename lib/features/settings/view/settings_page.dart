@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
-import 'package:paperless_mobile/features/settings/global_app_settings.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/pages/application_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -18,14 +15,13 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(S.of(context)!.settings),
       ),
-      bottomNavigationBar: BlocBuilder<PaperlessServerInformationCubit,
-          PaperlessServerInformationState>(
+      bottomNavigationBar:
+          BlocBuilder<PaperlessServerInformationCubit, PaperlessServerInformationState>(
         builder: (context, state) {
           final info = state.information!;
           return ListTile(
             title: Text(
-              S.of(context)!.loggedInAs(info.username ?? 'unknown') +
-                  "@${info.host}",
+              S.of(context)!.loggedInAs(info.username ?? 'unknown') + "@${info.host}",
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),
