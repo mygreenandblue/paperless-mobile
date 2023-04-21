@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -72,14 +73,10 @@ class _InboxItemState extends State<InboxItem> {
                             _buildTextWithLeadingIcon(
                               Icon(
                                 Icons.person_outline,
-                                size: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.fontSize,
+                                size: Theme.of(context).textTheme.bodyMedium?.fontSize,
                               ),
                               LabelText<Correspondent>(
-                                label: state.labels.correspondents[
-                                    widget.document.correspondent],
+                                label: state.labels.correspondents[widget.document.correspondent],
                                 style: Theme.of(context).textTheme.bodyMedium,
                                 placeholder: "-",
                               ),
@@ -87,14 +84,10 @@ class _InboxItemState extends State<InboxItem> {
                             _buildTextWithLeadingIcon(
                               Icon(
                                 Icons.description_outlined,
-                                size: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.fontSize,
+                                size: Theme.of(context).textTheme.bodyMedium?.fontSize,
                               ),
                               LabelText<DocumentType>(
-                                label: state.labels.documentTypes[
-                                    widget.document.documentType],
+                                label: state.labels.documentTypes[widget.document.documentType],
                                 style: Theme.of(context).textTheme.bodyMedium,
                                 placeholder: "-",
                               ),
@@ -102,8 +95,10 @@ class _InboxItemState extends State<InboxItem> {
                             const Spacer(),
                             TagsWidget(
                               tags: widget.document.tags
-                                  .map((e) => state.labels.tags[e]!)
-                                  .toList(),
+                                  .map((e) => state.labels.tags[e])
+                                  .whereNot((element) => element == null)
+                                  .toList()
+                                  .cast<Tag>(),
                               isMultiLine: false,
                               isClickable: false,
                               showShortNames: true,
@@ -142,8 +137,7 @@ class _InboxItemState extends State<InboxItem> {
           onPressed: () async {
             final shouldDelete = await showDialog<bool>(
                   context: context,
-                  builder: (context) => DeleteDocumentConfirmationDialog(
-                      document: widget.document),
+                  builder: (context) => DeleteDocumentConfirmationDialog(document: widget.document),
                 ) ??
                 false;
             if (shouldDelete) {
@@ -237,10 +231,7 @@ class _InboxItemState extends State<InboxItem> {
                 setState(() {
                   _isAsnAssignLoading = true;
                 });
-                context
-                    .read<InboxCubit>()
-                    .assignAsn(widget.document)
-                    .whenComplete(
+                context.read<InboxCubit>().assignAsn(widget.document).whenComplete(
                       () => setState(() => _isAsnAssignLoading = false),
                     );
               }

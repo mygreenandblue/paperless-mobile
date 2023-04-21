@@ -28,11 +28,13 @@ class LoginPage extends StatefulWidget {
   ) onSubmit;
 
   final String submitText;
+  final String titleString;
 
   const LoginPage({
     Key? key,
     required this.onSubmit,
     required this.submitText,
+    required this.titleString,
   }) : super(key: key);
 
   @override
@@ -47,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // appBar: AppBar(
+      resizeToAvoidBottomInset: false,
       body: FormBuilder(
         key: _formKey,
         child: PageView(
@@ -55,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           scrollBehavior: NeverScrollableScrollBehavior(),
           children: [
             ServerConnectionPage(
+              titleString: widget.titleString,
               formBuilderKey: _formKey,
               onContinue: () {
                 _pageController.nextPage(

@@ -15,11 +15,13 @@ import 'package:provider/provider.dart';
 class ServerConnectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formBuilderKey;
   final void Function() onContinue;
+  final String titleString;
 
   const ServerConnectionPage({
     super.key,
     required this.formBuilderKey,
     required this.onContinue,
+    required this.titleString,
   });
 
   @override
@@ -35,7 +37,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight - 4,
-        title: Text(S.of(context)!.connectToPaperless),
+        title: Text(widget.titleString),
         bottom: PreferredSize(
           child:
               _isCheckingConnection ? const LinearProgressIndicator() : const SizedBox(height: 4.0),

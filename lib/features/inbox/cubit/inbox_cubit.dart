@@ -89,14 +89,16 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
           ),
         );
       }
+      if (!isClosed) {
+        emit(state.copyWith(inboxTags: inboxTags));
 
-      emit(state.copyWith(inboxTags: inboxTags));
-      updateFilter(
-        filter: DocumentFilter(
-          sortField: SortField.added,
-          tags: IdsTagsQuery.fromIds(inboxTags),
-        ),
-      );
+        updateFilter(
+          filter: DocumentFilter(
+            sortField: SortField.added,
+            tags: IdsTagsQuery.fromIds(inboxTags),
+          ),
+        );
+      }
     }
   }
 

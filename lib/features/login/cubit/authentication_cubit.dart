@@ -170,6 +170,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     assert(credentials.password != null && credentials.username != null);
     final userId = "${credentials.username}@$serverUrl";
+
     final userAccountsBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
     final userSettingsBox = Hive.box<UserSettings>(HiveBoxes.userSettings);
 

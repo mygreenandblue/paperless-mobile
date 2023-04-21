@@ -12,6 +12,16 @@ class ApplicationSettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.applicationSettings),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Tooltip(
+              triggerMode: TooltipTriggerMode.tap,
+              message: "These settings apply to all accounts", //TODO: INTL
+              child: Icon(Icons.info_outline),
+            ),
+          ),
+        ],
       ),
       body: ListView(
         children: const [

@@ -324,6 +324,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
           return const VerifyIdentityPage();
         }
         return LoginPage(
+          titleString: S.of(context)!.connectToPaperless,
           submitText: S.of(context)!.signIn,
           onSubmit: _onLogin,
         );

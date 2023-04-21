@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart' as s;
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/login/model/user_account.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SliverSearchBar extends StatelessWidget {
@@ -37,10 +42,14 @@ class SliverSearchBar extends StatelessWidget {
               onPressed: Scaffold.of(context).openDrawer,
             ),
             trailingIcon: IconButton(
-              icon: BlocBuilder<PaperlessServerInformationCubit, PaperlessServerInformationState>(
-                builder: (context, state) {
-                  return CircleAvatar(
-                    child: Text(state.information?.userInitials ?? ''),
+              icon: GlobalSettingsBuilder(
+                builder: (context, settings) {
+                  return ValueListenableBuilder(
+                    valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+                    builder: (context, box, _) {
+                      final account = box.get(settings.currentLoggedInUser!)!;
+                      return UserAvatar(userId: settings.currentLoggedInUser!, account: account);
+                    },
                   );
                 },
               ),
