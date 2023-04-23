@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
@@ -26,6 +28,7 @@ import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/login/model/user_account.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
@@ -213,24 +216,25 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         label: S.of(context)!.labels,
       ),
       RouteDescription(
-          icon: const Icon(Icons.inbox_outlined),
-          selectedIcon: Icon(
-            Icons.inbox,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          label: S.of(context)!.inbox,
-          badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
-                bloc: _inboxCubit,
-                builder: (context, state) {
-                  if (state.itemsInInboxCount > 0) {
-                    return Badge.count(
-                      count: state.itemsInInboxCount,
-                      child: icon,
-                    );
-                  }
-                  return icon;
-                },
-              )),
+        icon: const Icon(Icons.inbox_outlined),
+        selectedIcon: Icon(
+          Icons.inbox,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context)!.inbox,
+        badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
+          bloc: _inboxCubit,
+          builder: (context, state) {
+            if (state.itemsInInboxCount > 0) {
+              return Badge.count(
+                count: state.itemsInInboxCount,
+                child: icon,
+              );
+            }
+            return icon;
+          },
+        ),
+      ),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
@@ -241,6 +245,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               context.read(),
               context.read(),
               context.read(),
+              Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!,
             )..reload(),
           ),
           BlocProvider(
@@ -275,7 +280,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
           //Only re-initialize data if the connectivity changed from not connected to connected
-          listenWhen: (previous, current) => current == ConnectivityState.connected,
+          listenWhen: (previous, current) =>
+              current == ConnectivityState.connected,
           listener: (context, state) {
             _initializeData(context);
           },
@@ -284,7 +290,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           listener: (context, state) {
             if (state.task != null) {
               // Handle local notifications on task change (only when app is running for now).
-              context.read<LocalNotificationService>().notifyTaskChanged(state.task!);
+              context
+                  .read<LocalNotificationService>()
+                  .notifyTaskChanged(state.task!);
             }
           },
         ),
@@ -297,7 +305,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   NavigationRail(
                     labelType: NavigationRailLabelType.all,
-                    destinations: destinations.map((e) => e.toNavigationRailDestination()).toList(),
+                    destinations: destinations
+                        .map((e) => e.toNavigationRailDestination())
+                        .toList(),
                     selectedIndex: _currentIndex,
                     onDestinationSelected: _onNavigationChanged,
                   ),
@@ -315,7 +325,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
-              destinations: destinations.map((e) => e.toNavigationDestination()).toList(),
+              destinations:
+                  destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
             body: routes[_currentIndex],
           );

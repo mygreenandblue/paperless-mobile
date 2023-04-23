@@ -152,10 +152,10 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
 
   @override
   Future<int> findNextAsn() async {
-    const DocumentFilter asnQueryFilter = DocumentFilter(
+    final DocumentFilter asnQueryFilter = DocumentFilter(
       sortField: SortField.archiveSerialNumber,
       sortOrder: SortOrder.descending,
-      asnQuery: IdQueryParameter.anyAssigned(),
+      asnQuery: const IdQueryParameter.anyAssigned(),
       page: 1,
       pageSize: 1,
     );

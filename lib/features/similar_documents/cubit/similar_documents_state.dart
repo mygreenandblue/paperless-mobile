@@ -7,7 +7,7 @@ class SimilarDocumentsState extends DocumentPagingState {
   final Map<int, StoragePath> storagePaths;
 
   const SimilarDocumentsState({
-    super.filter,
+    required super.filter,
     super.hasLoaded,
     super.isLoading,
     super.value,

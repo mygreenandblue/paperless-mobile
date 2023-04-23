@@ -62,17 +62,17 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final userId = "${credentials.username}@$serverUrl";
 
     // If it is first time login, create settings for this user.
-    final userSettingsBox = Hive.box<UserSettings>(HiveBoxes.userSettings);
     final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-    if (!userSettingsBox.containsKey(userId)) {
-      userSettingsBox.put(userId, UserSettings());
-    }
-    final fullName = await _fetchFullName();
 
+    final fullName = await _fetchFullName();
     if (!userAccountBox.containsKey(userId)) {
       userAccountBox.put(
         userId,
         UserAccount(
+          id: userId,
+          settings: UserSettings(
+            currentDocumentFilter: DocumentFilter(),
+          ),
           serverUrl: serverUrl,
           username: credentials.username!,
           fullName: fullName,
@@ -81,7 +81,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
 
     // Mark logged in user as currently active user.
-    final globalSettings = GlobalSettings.boxedValue;
+    final globalSettings =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     globalSettings.currentLoggedInUser = userId;
     globalSettings.save();
 
@@ -108,26 +109,25 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   /// Switches to another account if it exists.
   Future<void> switchAccount(String userId) async {
-    final globalSettings = GlobalSettings.boxedValue;
+    final globalSettings =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     if (globalSettings.currentLoggedInUser == userId) {
       return;
     }
     final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-    final userSettingsBox = Hive.box<UserSettings>(HiveBoxes.userSettings);
 
-    if (!userSettingsBox.containsKey(userId)) {
+    if (!userAccountBox.containsKey(userId)) {
       debugPrint("User $userId not yet registered.");
       return;
     }
 
-    final userSettings = userSettingsBox.get(userId)!;
     final account = userAccountBox.get(userId)!;
 
-    if (userSettings.isBiometricAuthenticationEnabled) {
-      final authenticated =
-          await _localAuthService.authenticateLocalUser("Authenticate to switch your account.");
+    if (account.settings.isBiometricAuthenticationEnabled) {
+      final authenticated = await _localAuthService
+          .authenticateLocalUser("Authenticate to switch your account.");
       if (!authenticated) {
-        debugPrint("User unable to authenticate.");
+        debugPrint("User not authenticated.");
         return;
       }
     }
@@ -172,7 +172,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final userId = "${credentials.username}@$serverUrl";
 
     final userAccountsBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-    final userSettingsBox = Hive.box<UserSettings>(HiveBoxes.userSettings);
 
     if (userAccountsBox.containsKey(userId)) {
       throw Exception("User already exists");
@@ -192,18 +191,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       password: credentials.password!,
     );
     sessionManager.resetSettings();
-    await userSettingsBox.put(
-      userId,
-      UserSettings(
-        isBiometricAuthenticationEnabled: enableBiometricAuthentication,
-      ),
-    );
+
     final fullName = await _fetchFullName();
+
     await userAccountsBox.put(
       userId,
       UserAccount(
+        id: userId,
         serverUrl: serverUrl,
         username: credentials.username!,
+        settings: UserSettings(
+          isBiometricAuthenticationEnabled: enableBiometricAuthentication,
+          currentDocumentFilter: DocumentFilter(),
+        ),
         fullName: fullName,
       ),
     );
@@ -221,15 +221,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> removeAccount(String userId) async {
-    final globalSettings = GlobalSettings.boxedValue;
+    final globalSettings =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final currentUser = globalSettings.currentLoggedInUser;
     final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
     final userCredentialsBox = await _getUserCredentialsBox();
-    final userSettingsBox = Hive.box<UserSettings>(HiveBoxes.userSettings);
 
     await userAccountBox.delete(userId);
     await userCredentialsBox.delete(userId);
-    await userSettingsBox.delete(userId);
 
     if (currentUser == userId) {
       return logout();
@@ -240,27 +239,30 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   /// Performs a conditional hydration based on the local authentication success.
   ///
   Future<void> restoreSessionState() async {
-    final globalSettings = GlobalSettings.boxedValue;
+    final globalSettings =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final userId = globalSettings.currentLoggedInUser;
     if (userId == null) {
       // If there is nothing to restore, we can quit here.
       return;
     }
 
-    final userSettings = Hive.box<UserSettings>(HiveBoxes.userSettings).get(userId)!;
-    final userAccount = Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!;
+    final userAccount =
+        Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!;
 
-    if (userSettings.isBiometricAuthenticationEnabled) {
-      final localAuthSuccess =
-          await _localAuthService.authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
+    if (userAccount.settings.isBiometricAuthenticationEnabled) {
+      final localAuthSuccess = await _localAuthService
+          .authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
       if (!localAuthSuccess) {
-        emit(const AuthenticationState(showBiometricAuthenticationScreen: true));
+        emit(
+            const AuthenticationState(showBiometricAuthenticationScreen: true));
         return;
       }
     }
     final userCredentialsBox = await _getUserCredentialsBox();
 
-    final authentication = userCredentialsBox.get(globalSettings.currentLoggedInUser!);
+    final authentication =
+        userCredentialsBox.get(globalSettings.currentLoggedInUser!);
     if (authentication != null) {
       _dioWrapper.updateSettings(
         clientCertificate: authentication.clientCertificate,
@@ -276,13 +278,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         ),
       );
     } else {
-      throw Exception("User should be authenticated but no authentication information was found.");
+      throw Exception(
+          "User should be authenticated but no authentication information was found.");
     }
   }
 
   Future<void> logout() async {
     await _resetExternalState();
-    final globalSettings = GlobalSettings.boxedValue;
+    final globalSettings =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     globalSettings
       ..currentLoggedInUser = null
       ..save();

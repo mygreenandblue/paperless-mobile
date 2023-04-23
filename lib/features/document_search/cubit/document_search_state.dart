@@ -24,7 +24,7 @@ class DocumentSearchState extends DocumentPagingState {
     this.searchHistory = const [],
     this.suggestions = const [],
     this.viewType = ViewType.detailed,
-    super.filter,
+    super.filter = const DocumentFilter(),
     super.hasLoaded,
     super.isLoading,
     super.value,

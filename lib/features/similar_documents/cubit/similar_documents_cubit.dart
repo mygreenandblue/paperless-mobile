@@ -24,7 +24,7 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
     this.notifier,
     this._labelRepository, {
     required this.documentId,
-  }) : super(const SimilarDocumentsState()) {
+  }) : super(SimilarDocumentsState(filter: DocumentFilter())) {
     notifier.addListener(
       this,
       onDeleted: remove,

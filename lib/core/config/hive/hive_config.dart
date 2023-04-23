@@ -1,5 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/config/hive/custpm_adapters/theme_mode_adapter.dart';
+import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/config/hive/custom_adapters/theme_mode_adapter.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/user_account.dart';
@@ -38,6 +39,7 @@ void registerHiveAdapters() {
   Hive.registerAdapter(UserSettingsAdapter());
   Hive.registerAdapter(UserCredentialsAdapter());
   Hive.registerAdapter(UserAccountAdapter());
+  Hive.registerAdapter(DocumentFilterAdapter());
 }
 
 extension HiveSingleValueBox<T> on Box<T> {

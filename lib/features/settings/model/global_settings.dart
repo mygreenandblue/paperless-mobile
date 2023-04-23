@@ -29,7 +29,4 @@ class GlobalSettings with HiveObjectMixin {
     this.showOnboarding = true,
     this.currentLoggedInUser,
   });
-
-  static GlobalSettings get boxedValue =>
-      Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
 }

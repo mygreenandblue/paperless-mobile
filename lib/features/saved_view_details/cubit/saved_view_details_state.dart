@@ -12,7 +12,7 @@ class SavedViewDetailsState extends DocumentPagingState {
 
   const SavedViewDetailsState({
     this.viewType = ViewType.list,
-    super.filter,
+    super.filter = const DocumentFilter(),
     super.hasLoaded,
     super.isLoading,
     super.value,

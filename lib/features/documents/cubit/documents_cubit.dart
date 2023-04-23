@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/features/login/model/user_account.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -23,8 +24,15 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   final DocumentChangedNotifier notifier;
 
-  DocumentsCubit(this.api, this.notifier, this._labelRepository)
-      : super(const DocumentsState()) {
+  @override
+  final UserAccount account;
+
+  DocumentsCubit(
+    this.api,
+    this.notifier,
+    this._labelRepository,
+    this.account,
+  ) : super(DocumentsState(filter: account.settings.currentDocumentFilter)) {
     notifier.addListener(
       this,
       onUpdated: (document) {

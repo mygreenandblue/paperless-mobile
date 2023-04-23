@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/features/login/model/user_account.dart';
 
 import 'paged_documents_state.dart';
 
@@ -13,6 +14,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     on BlocBase<State> {
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;
+  UserAccount get account;
 
   Future<void> loadMore() async {
     if (state.isLastPageLoaded) {
@@ -28,6 +30,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         value: [...state.value, result],
       ));
     } finally {
+      account.settings.currentDocumentFilter = newFilter;
+      account.save();
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -36,7 +40,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   /// Updates document filter and automatically reloads documents. Always resets page to 1.
   /// Use [loadMore] to load more data.
   Future<void> updateFilter({
-    final DocumentFilter filter = DocumentFilter.initial,
+    final DocumentFilter filter = const DocumentFilter(),
   }) async {
     try {
       emit(state.copyWithPaged(isLoading: true));
@@ -48,6 +52,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         hasLoaded: true,
       ));
     } finally {
+      account.settings.currentDocumentFilter = filter;
+      account.save();
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -65,13 +71,15 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
       sortField: state.filter.sortField,
       sortOrder: state.filter.sortOrder,
     );
+    account.settings.currentDocumentFilter = filter;
+    account.save();
     return updateFilter(filter: filter);
   }
 
   Future<void> reload() async {
     emit(state.copyWithPaged(isLoading: true));
+    final filter = state.filter.copyWith(page: 1);
     try {
-      final filter = state.filter.copyWith(page: 1);
       final result = await api.findAll(filter);
       if (!isClosed) {
         emit(state.copyWithPaged(
@@ -82,6 +90,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         ));
       }
     } finally {
+      account.settings.currentDocumentFilter = filter;
+      account.save();
       if (!isClosed) {
         emit(state.copyWithPaged(isLoading: false));
       }
@@ -106,7 +116,6 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     try {
       await api.delete(document);
       notifier.notifyDeleted(document);
-      // remove(document); // Removing deleted now works with the change notifier.
     } finally {
       emit(state.copyWithPaged(isLoading: false));
     }

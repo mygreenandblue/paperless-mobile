@@ -210,16 +210,16 @@ void main() {
     test('Values are correctly parsed if unset.', () {
       expect(
         SavedView.fromDocumentFilter(
-          const DocumentFilter(
-            correspondent: IdQueryParameter.unset(),
-            documentType: IdQueryParameter.unset(),
-            storagePath: IdQueryParameter.unset(),
-            tags: IdsTagsQuery(),
+          DocumentFilter(
+            correspondent: const IdQueryParameter.unset(),
+            documentType: const IdQueryParameter.unset(),
+            storagePath: const IdQueryParameter.unset(),
+            tags: const IdsTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.descending,
-            added: UnsetDateRangeQuery(),
-            created: UnsetDateRangeQuery(),
-            query: TextQuery(),
+            added: const UnsetDateRangeQuery(),
+            created: const UnsetDateRangeQuery(),
+            query: const TextQuery(),
           ),
           name: "test_name",
           showInSidebar: false,
@@ -241,11 +241,11 @@ void main() {
     test('Values are correctly parsed if not assigned.', () {
       expect(
         SavedView.fromDocumentFilter(
-          const DocumentFilter(
-            correspondent: IdQueryParameter.notAssigned(),
-            documentType: IdQueryParameter.notAssigned(),
-            storagePath: IdQueryParameter.notAssigned(),
-            tags: OnlyNotAssignedTagsQuery(),
+          DocumentFilter(
+            correspondent: const IdQueryParameter.notAssigned(),
+            documentType: const IdQueryParameter.notAssigned(),
+            storagePath: const IdQueryParameter.notAssigned(),
+            tags: const OnlyNotAssignedTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.ascending,
           ),

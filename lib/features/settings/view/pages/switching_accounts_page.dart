@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class SwitchingAccountsPage extends StatelessWidget {
   const SwitchingAccountsPage({super.key});
@@ -13,7 +11,14 @@ class SwitchingAccountsPage extends StatelessWidget {
       },
       child: Material(
         child: Center(
-          child: Text("Switching accounts. Please wait..."),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              Text("Switching accounts. Please wait..."),
+            ],
+          ),
         ),
       ),
     );

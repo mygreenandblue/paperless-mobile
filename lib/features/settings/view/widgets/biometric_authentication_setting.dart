@@ -14,13 +14,13 @@ class BiometricAuthenticationSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserSettingsBuilder(
-      builder: (context, settings) {
-        if (settings == null) {
+    return UserAccountBuilder(
+      builder: (context, account) {
+        if (account == null) {
           return const SizedBox.shrink();
         }
         return SwitchListTile(
-          value: settings.isBiometricAuthenticationEnabled,
+          value: account.settings.isBiometricAuthenticationEnabled,
           title: Text(S.of(context)!.biometricAuthentication),
           subtitle: Text(S.of(context)!.authenticateOnAppStart),
           onChanged: (val) async {
@@ -33,8 +33,8 @@ class BiometricAuthenticationSetting extends StatelessWidget {
                 .read<LocalAuthenticationService>()
                 .authenticateLocalUser(localizedReason);
             if (isAuthenticated) {
-              settings.isBiometricAuthenticationEnabled = val;
-              settings.save();
+              account.settings.isBiometricAuthenticationEnabled = val;
+              account.save();
             }
           },
         );

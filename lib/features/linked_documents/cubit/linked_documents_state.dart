@@ -12,7 +12,7 @@ class LinkedDocumentsState extends DocumentPagingState {
 
   const LinkedDocumentsState({
     this.viewType = ViewType.list,
-    super.filter,
+    super.filter = const DocumentFilter(),
     super.isLoading,
     super.hasLoaded,
     super.value,

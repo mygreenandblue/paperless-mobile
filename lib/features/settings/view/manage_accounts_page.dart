@@ -1,7 +1,9 @@
+import 'dart:ui';
+
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -14,91 +16,71 @@ import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_d
 import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ManageAccountsPage extends StatelessWidget {
   const ManageAccountsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Dialog.fullscreen(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: const CloseButton(),
-          title: const Text("Accounts"), //TODO: INTL
-        ),
-        body: GlobalSettingsBuilder(
-          builder: (context, globalSettings) {
-            return ValueListenableBuilder(
-              valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
-              builder: (context, box, _) {
-                final userIds = box.keys.toList().cast<String>();
-                final otherAccounts = userIds
-                    .whereNot((element) => element == globalSettings.currentLoggedInUser)
-                    .toList();
-                return CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Your account", //TODO: INTL
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ).padded(16),
-                          _buildAccountTile(
-                            context,
-                            globalSettings.currentLoggedInUser!,
-                            box.get(globalSettings.currentLoggedInUser!)!,
-                            globalSettings,
-                          ),
-                          if (otherAccounts.isNotEmpty) const Divider(),
-                        ],
+    return GlobalSettingsBuilder(
+      builder: (context, globalSettings) {
+        return ValueListenableBuilder(
+          valueListenable:
+              Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+          builder: (context, box, _) {
+            final userIds = box.keys.toList().cast<String>();
+            final otherAccounts = userIds
+                .whereNot(
+                    (element) => element == globalSettings.currentLoggedInUser)
+                .toList();
+            return SimpleDialog(
+              insetPadding: EdgeInsets.all(24),
+              contentPadding: EdgeInsets.all(8),
+              title: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: CloseButton(),
+                  ),
+                  Center(child: Text("Accounts")),
+                ],
+              ), //TODO: INTL
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              children: [
+                _buildAccountTile(
+                    context,
+                    globalSettings.currentLoggedInUser!,
+                    box.get(globalSettings.currentLoggedInUser!)!,
+                    globalSettings),
+                // if (otherAccounts.isNotEmpty) Text("Other accounts"),
+                Column(
+                  children: [
+                    for (int index = 0; index < otherAccounts.length; index++)
+                      _buildAccountTile(
+                        context,
+                        otherAccounts[index],
+                        box.get(otherAccounts[index])!,
+                        globalSettings,
                       ),
-                    ),
-                    if (otherAccounts.isNotEmpty)
-                      SliverToBoxAdapter(
-                        child: Text(
-                          "Other accounts", //TODO: INTL
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ).padded(16),
-                      ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => _buildAccountTile(
-                          context,
-                          otherAccounts[index],
-                          box.get(otherAccounts[index])!,
-                          globalSettings,
-                        ),
-                        childCount: otherAccounts.length,
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          const Divider(),
-                          ListTile(
-                            title: const Text("Add account"),
-                            leading: const Icon(Icons.person_add),
-                            onTap: () {
-                              _onAddAccount(context);
-                            },
-                          ),
-                          // FilledButton.tonalIcon(
-                          //   icon: Icon(Icons.person_add),
-                          //   label: Text("Add account"),
-                          //   onPressed: () {},
-                          // ),
-                        ],
-                      ),
-                    ),
                   ],
-                );
-              },
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text("Add account"),
+                  leading: const Icon(Icons.person_add),
+                  onTap: () {
+                    _onAddAccount(context);
+                  },
+                ),
+              ],
             );
           },
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -108,69 +90,96 @@ class ManageAccountsPage extends StatelessWidget {
     UserAccount account,
     GlobalSettings settings,
   ) {
+    final isLoggedIn = userId == settings.currentLoggedInUser;
     final theme = Theme.of(context);
-    return ListTile(
-      title: Text(account.username),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (account.fullName != null) Text(account.fullName!),
-          Text(account.serverUrl),
-        ],
-      ),
-      isThreeLine: true,
-      leading: UserAvatar(
-        account: account,
-        userId: userId,
-      ),
-      trailing: PopupMenuButton(
-        icon: const Icon(Icons.more_vert),
-        itemBuilder: (context) {
-          return [
-            if (settings.currentLoggedInUser != userId)
-              const PopupMenuItem(
-                child: ListTile(
-                  title: Text("Switch"), //TODO: INTL
-                  leading: Icon(Icons.switch_account_outlined),
-                ),
-                value: 0,
+    final child = SizedBox(
+      width: double.maxFinite,
+      child: ListTile(
+        title: Text(account.username),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (account.fullName != null) Text(account.fullName!),
+            Text(
+              account.serverUrl.replaceFirst(RegExp(r'https://?'), ''),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
               ),
-            const PopupMenuItem(
-              child: ListTile(
-                title: Text("Remove"), // TODO: INTL
-                leading: Icon(
-                  Icons.remove_circle_outline,
-                  color: Colors.red,
-                ),
-              ),
-              value: 1,
             ),
-          ];
-        },
-        onSelected: (value) async {
-          if (value == 0) {
-            // Switch
-            final navigator = Navigator.of(context);
-            if (settings.currentLoggedInUser == userId) return;
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SwitchingAccountsPage(),
-              ),
-            );
-            await context.read<AuthenticationCubit>().switchAccount(userId);
-            navigator.popUntil((route) => route.isFirst);
-          } else if (value == 1) {
-            // Remove
-            final shouldPop = userId == settings.currentLoggedInUser;
-            await context.read<AuthenticationCubit>().removeAccount(userId);
-            if (shouldPop) {
-              Navigator.pop(context);
+          ],
+        ),
+        isThreeLine: true,
+        leading: UserAvatar(
+          account: account,
+          userId: userId,
+        ),
+        trailing: PopupMenuButton(
+          icon: const Icon(Icons.more_vert),
+          itemBuilder: (context) {
+            return [
+              if (!isLoggedIn)
+                const PopupMenuItem(
+                  child: ListTile(
+                    title: Text("Switch"), //TODO: INTL
+                    leading: Icon(Icons.switch_account_rounded),
+                  ),
+                  value: 0,
+                ),
+              if (!isLoggedIn)
+                const PopupMenuItem(
+                  child: ListTile(
+                    title: Text("Remove"), // TODO: INTL
+                    leading: Icon(
+                      Icons.person_remove,
+                      color: Colors.red,
+                    ),
+                  ),
+                  value: 1,
+                )
+              else
+                const PopupMenuItem(
+                  child: ListTile(
+                    title: Text("Logout"), // TODO: INTL
+                    leading: Icon(
+                      Icons.person_remove,
+                      color: Colors.red,
+                    ),
+                  ),
+                  value: 1,
+                ),
+            ];
+          },
+          onSelected: (value) async {
+            if (value == 0) {
+              // Switch
+              final navigator = Navigator.of(context);
+              if (settings.currentLoggedInUser == userId) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SwitchingAccountsPage(),
+                ),
+              );
+              await context.read<AuthenticationCubit>().switchAccount(userId);
+              navigator.popUntil((route) => route.isFirst);
+            } else if (value == 1) {
+              // Remove
+              final shouldPop = userId == settings.currentLoggedInUser;
+              await context.read<AuthenticationCubit>().removeAccount(userId);
+              if (shouldPop) {
+                Navigator.pop(context);
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
+    if (isLoggedIn) {
+      return Card(
+        child: child,
+      );
+    }
+    return child;
   }
 
   Future<void> _onAddAccount(BuildContext context) {
@@ -179,7 +188,8 @@ class ManageAccountsPage extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => LoginPage(
           titleString: "Add account", //TODO: INTL
-          onSubmit: (context, username, password, serverUrl, clientCertificate) async {
+          onSubmit: (context, username, password, serverUrl,
+              clientCertificate) async {
             final userId = await context.read<AuthenticationCubit>().addAccount(
                   credentials: LoginFormCredentials(
                     username: username,
@@ -192,8 +202,8 @@ class ManageAccountsPage extends StatelessWidget {
                 );
             final shoudSwitch = await showDialog(
                   context: context,
-                  builder: (context) =>
-                      SwitchAccountDialog(username: username, serverUrl: serverUrl),
+                  builder: (context) => SwitchAccountDialog(
+                      username: username, serverUrl: serverUrl),
                 ) ??
                 false;
             if (shoudSwitch) {
