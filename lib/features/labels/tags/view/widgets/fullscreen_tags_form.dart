@@ -44,12 +44,12 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     _options = widget.options.values.toList();
     final value = widget.initialValue;
     if (value is IdsTagsQuery) {
-      _include = value.includedIds.toList();
-      _exclude = value.excludedIds.toList();
+      _include = value.include.toList();
+      _exclude = value.include.toList();
     } else if (value is AnyAssignedTagsQuery) {
       _include = value.tagIds.toList();
       _anyAssigned = true;
-    } else if (value is OnlyNotAssignedTagsQuery) {
+    } else if (value is NotAssignedTagsQuery) {
       _notAssigned = true;
     }
     _textEditingController.addListener(() => setState(() {
@@ -113,28 +113,24 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
             icon: const Icon(Icons.done),
             onPressed: () {
               if (widget.allowOnlySelection) {
-                widget.onSubmit(returnValue: IdsTagsQuery.included(_include));
+                widget.onSubmit(returnValue: TagsQuery.ids(include: _include));
                 return;
               }
               late final TagsQuery query;
               if (_notAssigned) {
-                query = const OnlyNotAssignedTagsQuery();
+                query = const TagsQuery.notAssigned();
               } else if (_anyAssigned) {
-                query = AnyAssignedTagsQuery(tagIds: _include);
+                query = TagsQuery.anyAssigned(tagIds: _include);
               } else {
-                query = IdsTagsQuery([
-                  for (var id in _include) IncludeTagIdQuery(id),
-                  for (var id in _exclude) ExcludeTagIdQuery(id),
-                ]);
+                query = TagsQuery.ids(include: _include, exclude: _exclude);
               }
               widget.onSubmit(returnValue: query);
             },
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: !widget.allowOnlySelection
-              ? const Size.fromHeight(32)
-              : const Size.fromHeight(1),
+          preferredSize:
+              !widget.allowOnlySelection ? const Size.fromHeight(32) : const Size.fromHeight(1),
           child: Column(
             children: [
               Divider(color: theme.colorScheme.outline),
@@ -237,8 +233,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
       yield _buildNotAssignedOption();
     }
 
-    var matches = _options
-        .where((e) => e.name.trim().toLowerCase().contains(normalizedQuery));
+    var matches = _options.where((e) => e.name.trim().toLowerCase().contains(normalizedQuery));
     if (matches.isEmpty && widget.allowCreation) {
       yield Text(S.of(context)!.noItemsFound);
       yield TextButton(
@@ -304,9 +299,7 @@ class SelectableTagWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(tag.name),
-      trailing: excluded
-          ? const Icon(Icons.close)
-          : (selected ? const Icon(Icons.done) : null),
+      trailing: excluded ? const Icon(Icons.close) : (selected ? const Icon(Icons.done) : null),
       leading: CircleAvatar(
         backgroundColor: tag.color,
         child: (tag.isInboxTag)

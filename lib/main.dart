@@ -20,6 +20,7 @@ import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -35,12 +36,11 @@ import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
-import 'package:paperless_mobile/features/settings/model/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
@@ -54,8 +54,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 String get defaultPreferredLocaleSubtag {
   String preferredLocale = Platform.localeName.split("_").first;
-  if (!S.supportedLocales
-      .any((locale) => locale.languageCode == preferredLocale)) {
+  if (!S.supportedLocales.any((locale) => locale.languageCode == preferredLocale)) {
     preferredLocale = 'en';
   }
   return preferredLocale;
@@ -63,14 +62,13 @@ String get defaultPreferredLocaleSubtag {
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
-  //TODO: REMOVE!
-  // await getApplicationDocumentsDirectory()
-  //     .then((value) => value.delete(recursive: true));
+  // //TODO: REMOVE!
+  // await getApplicationDocumentsDirectory().then((value) => value.delete(recursive: true));
 
   registerHiveAdapters();
   await Hive.openBox<UserAccount>(HiveBoxes.userAccount);
-  final globalSettingsBox =
-      await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
+  await Hive.openBox<UserAppState>(HiveBoxes.userAppState);
+  final globalSettingsBox = await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
 
   if (!globalSettingsBox.hasValue) {
     await globalSettingsBox.setValue(
@@ -155,8 +153,7 @@ void main() async {
 
   //Update language header in interceptor on language change.
   globalSettingsBox.listenable().addListener(() {
-    languageHeaderInterceptor.preferredLocaleSubtag =
-        globalSettings.preferredLocaleSubtag;
+    languageHeaderInterceptor.preferredLocaleSubtag = globalSettings.preferredLocaleSubtag;
   });
 
   runApp(
@@ -180,8 +177,7 @@ void main() async {
         Provider<ConnectivityStatusService>.value(
           value: connectivityStatusService,
         ),
-        Provider<LocalNotificationService>.value(
-            value: localNotificationService),
+        Provider<LocalNotificationService>.value(value: localNotificationService),
         Provider.value(value: DocumentChangedNotifier()),
       ],
       child: MultiRepositoryProvider(
@@ -211,8 +207,7 @@ class PaperlessMobileEntrypoint extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<PaperlessMobileEntrypoint> createState() =>
-      _PaperlessMobileEntrypointState();
+  State<PaperlessMobileEntrypoint> createState() => _PaperlessMobileEntrypointState();
 }
 
 class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
@@ -247,8 +242,7 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                 GlobalWidgetsLocalizations.delegate,
               ],
               routes: {
-                DocumentDetailsRoute.routeName: (context) =>
-                    const DocumentDetailsRoute(),
+                DocumentDetailsRoute.routeName: (context) => const DocumentDetailsRoute(),
               },
               home: const AuthenticationWrapper(),
             );
@@ -283,11 +277,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     }
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
-    ReceiveSharingIntent.getMediaStream()
-        .listen(ShareIntentQueue.instance.addAll);
+    ReceiveSharingIntent.getMediaStream().listen(ShareIntentQueue.instance.addAll);
     // For sharing files coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia()
-        .then(ShareIntentQueue.instance.addAll);
+    ReceiveSharingIntent.getInitialMedia().then(ShareIntentQueue.instance.addAll);
   }
 
   Future<void> _setOptimalDisplayMode() async {
@@ -299,8 +291,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
         .toList()
       ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
 
-    final DisplayMode mostOptimalMode =
-        sameResolution.isNotEmpty ? sameResolution.first : active;
+    final DisplayMode mostOptimalMode = sameResolution.isNotEmpty ? sameResolution.first : active;
     debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
 
     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
@@ -351,14 +342,12 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   ) async {
     try {
       await context.read<AuthenticationCubit>().login(
-            credentials:
-                LoginFormCredentials(username: username, password: password),
+            credentials: LoginFormCredentials(username: username, password: password),
             serverUrl: serverUrl,
             clientCertificate: clientCertificate,
           );
       // Show onboarding after first login!
-      final globalSettings =
-          Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+      final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
       if (globalSettings.showOnboarding) {
         Navigator.push(
           context,

@@ -9,9 +9,9 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
@@ -26,13 +26,11 @@ class ManageAccountsPage extends StatelessWidget {
     return GlobalSettingsBuilder(
       builder: (context, globalSettings) {
         return ValueListenableBuilder(
-          valueListenable:
-              Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+          valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
           builder: (context, box, _) {
             final userIds = box.keys.toList().cast<String>();
             final otherAccounts = userIds
-                .whereNot(
-                    (element) => element == globalSettings.currentLoggedInUser)
+                .whereNot((element) => element == globalSettings.currentLoggedInUser)
                 .toList();
             return SimpleDialog(
               insetPadding: EdgeInsets.all(24),
@@ -51,11 +49,8 @@ class ManageAccountsPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
               ),
               children: [
-                _buildAccountTile(
-                    context,
-                    globalSettings.currentLoggedInUser!,
-                    box.get(globalSettings.currentLoggedInUser!)!,
-                    globalSettings),
+                _buildAccountTile(context, globalSettings.currentLoggedInUser!,
+                    box.get(globalSettings.currentLoggedInUser!)!, globalSettings),
                 // if (otherAccounts.isNotEmpty) Text("Other accounts"),
                 Column(
                   children: [
@@ -188,8 +183,7 @@ class ManageAccountsPage extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => LoginPage(
           titleString: "Add account", //TODO: INTL
-          onSubmit: (context, username, password, serverUrl,
-              clientCertificate) async {
+          onSubmit: (context, username, password, serverUrl, clientCertificate) async {
             final userId = await context.read<AuthenticationCubit>().addAccount(
                   credentials: LoginFormCredentials(
                     username: username,
@@ -202,8 +196,8 @@ class ManageAccountsPage extends StatelessWidget {
                 );
             final shoudSwitch = await showDialog(
                   context: context,
-                  builder: (context) => SwitchAccountDialog(
-                      username: username, serverUrl: serverUrl),
+                  builder: (context) =>
+                      SwitchAccountDialog(username: username, serverUrl: serverUrl),
                 ) ??
                 false;
             if (shoudSwitch) {

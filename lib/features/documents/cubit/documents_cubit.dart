@@ -4,9 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -14,8 +15,7 @@ import 'package:paperless_mobile/features/settings/model/view_type.dart';
 part 'documents_cubit.g.dart';
 part 'documents_state.dart';
 
-class DocumentsCubit extends HydratedCubit<DocumentsState>
-    with DocumentPagingBlocMixin {
+class DocumentsCubit extends HydratedCubit<DocumentsState> with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 
@@ -24,24 +24,21 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
   @override
   final DocumentChangedNotifier notifier;
 
-  @override
-  final UserAccount account;
+  final UserAppState _userState;
 
   DocumentsCubit(
     this.api,
     this.notifier,
     this._labelRepository,
-    this.account,
-  ) : super(DocumentsState(filter: account.settings.currentDocumentFilter)) {
+    this._userState,
+  ) : super(DocumentsState(filter: _userState.currentDocumentFilter)) {
     notifier.addListener(
       this,
       onUpdated: (document) {
         replace(document);
         emit(
           state.copyWith(
-            selection: state.selection
-                .map((e) => e.id == document.id ? document : e)
-                .toList(),
+            selection: state.selection.map((e) => e.id == document.id ? document : e).toList(),
           ),
         );
       },
@@ -49,8 +46,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
         remove(document);
         emit(
           state.copyWith(
-            selection:
-                state.selection.where((e) => e.id != document.id).toList(),
+            selection: state.selection.where((e) => e.id != document.id).toList(),
           ),
         );
       },
@@ -84,9 +80,7 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     if (state.selectedIds.contains(model.id)) {
       emit(
         state.copyWith(
-          selection: state.selection
-              .where((element) => element.id != model.id)
-              .toList(),
+          selection: state.selection.where((element) => element.id != model.id).toList(),
         ),
       );
     } else {
@@ -128,5 +122,11 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
 
   void setViewType(ViewType viewType) {
     emit(state.copyWith(viewType: viewType));
+  }
+
+  @override
+  Future<void> onFilterUpdated(DocumentFilter filter) async {
+    _userState.currentDocumentFilter = filter;
+    await _userState.save();
   }
 }

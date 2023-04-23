@@ -7,8 +7,7 @@ import 'package:paperless_mobile/features/paged_document_view/cubit/paged_docume
 
 part 'similar_documents_state.dart';
 
-class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
-    with DocumentPagingBlocMixin {
+class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState> with DocumentPagingBlocMixin {
   final int documentId;
 
   @override
@@ -60,4 +59,7 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
     _labelRepository.removeListener(this);
     return super.close();
   }
+
+  @override
+  Future<void> onFilterUpdated(DocumentFilter filter) async {}
 }

@@ -1,6 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/features/settings/model/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_settings.dart';
 
 part 'user_account.g.dart';
 

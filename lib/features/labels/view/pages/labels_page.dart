@@ -27,12 +27,9 @@ class LabelsPage extends StatefulWidget {
   State<LabelsPage> createState() => _LabelsPageState();
 }
 
-class _LabelsPageState extends State<LabelsPage>
-    with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle =
-      SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle tabBarHandle =
-      SliverOverlapAbsorberHandle();
+class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle tabBarHandle = SliverOverlapAbsorberHandle();
 
   late final TabController _tabController;
   int _currentIndex = 0;
@@ -82,33 +79,25 @@ class _LabelsPageState extends State<LabelsPage>
                                 Tab(
                                   icon: Icon(
                                     Icons.person_outline,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   ),
                                 ),
                                 Tab(
                                   icon: Icon(
                                     Icons.description_outlined,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   ),
                                 ),
                                 Tab(
                                   icon: Icon(
                                     Icons.label_outline,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   ),
                                 ),
                                 Tab(
                                   icon: Icon(
                                     Icons.folder_open,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   ),
                                 ),
                               ],
@@ -126,20 +115,17 @@ class _LabelsPageState extends State<LabelsPage>
                       return true;
                     }
                     final desiredTab =
-                        ((metrics.pixels / metrics.maxScrollExtent) *
-                                (_tabController.length - 1))
+                        ((metrics.pixels / metrics.maxScrollExtent) * (_tabController.length - 1))
                             .round();
 
-                    if (metrics.axis == Axis.horizontal &&
-                        _currentIndex != desiredTab) {
+                    if (metrics.axis == Axis.horizontal && _currentIndex != desiredTab) {
                       setState(() => _currentIndex = desiredTab);
                     }
                     return true;
                   },
                   child: RefreshIndicator(
                     edgeOffset: kTextTabBarHeight,
-                    notificationPredicate: (notification) =>
-                        connectedState.isConnected,
+                    notificationPredicate: (notification) => connectedState.isConnected,
                     onRefresh: () => [
                       context.read<LabelCubit>().reloadCorrespondents,
                       context.read<LabelCubit>().reloadDocumentTypes,
@@ -157,20 +143,14 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<Correspondent>(
-                                  labels: context
-                                      .watch<LabelCubit>()
-                                      .state
-                                      .correspondents,
+                                  labels: context.watch<LabelCubit>().state.correspondents,
                                   filterBuilder: (label) => DocumentFilter(
-                                    correspondent:
-                                        IdQueryParameter.fromId(label.id),
+                                    correspondent: IdQueryParameter.fromId(label.id),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   onEdit: _openEditCorrespondentPage,
-                                  emptyStateActionButtonLabel:
-                                      S.of(context)!.addNewCorrespondent,
-                                  emptyStateDescription:
-                                      S.of(context)!.noCorrespondentsSetUp,
+                                  emptyStateActionButtonLabel: S.of(context)!.addNewCorrespondent,
+                                  emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
                                   onAddNew: _openAddCorrespondentPage,
                                 ),
                               ],
@@ -184,20 +164,14 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<DocumentType>(
-                                  labels: context
-                                      .watch<LabelCubit>()
-                                      .state
-                                      .documentTypes,
+                                  labels: context.watch<LabelCubit>().state.documentTypes,
                                   filterBuilder: (label) => DocumentFilter(
-                                    documentType:
-                                        IdQueryParameter.fromId(label.id),
+                                    documentType: IdQueryParameter.fromId(label.id),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   onEdit: _openEditDocumentTypePage,
-                                  emptyStateActionButtonLabel:
-                                      S.of(context)!.addNewDocumentType,
-                                  emptyStateDescription:
-                                      S.of(context)!.noDocumentTypesSetUp,
+                                  emptyStateActionButtonLabel: S.of(context)!.addNewDocumentType,
+                                  emptyStateDescription: S.of(context)!.noDocumentTypesSetUp,
                                   onAddNew: _openAddDocumentTypePage,
                                 ),
                               ],
@@ -211,10 +185,9 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<Tag>(
-                                  labels:
-                                      context.watch<LabelCubit>().state.tags,
+                                  labels: context.watch<LabelCubit>().state.tags,
                                   filterBuilder: (label) => DocumentFilter(
-                                    tags: IdsTagsQuery.fromIds([label.id!]),
+                                    tags: TagsQuery.ids(include: [label.id!]),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   onEdit: _openEditTagPage,
@@ -227,10 +200,8 @@ class _LabelsPageState extends State<LabelsPage>
                                           )
                                         : null,
                                   ),
-                                  emptyStateActionButtonLabel:
-                                      S.of(context)!.addNewTag,
-                                  emptyStateDescription:
-                                      S.of(context)!.noTagsSetUp,
+                                  emptyStateActionButtonLabel: S.of(context)!.addNewTag,
+                                  emptyStateDescription: S.of(context)!.noTagsSetUp,
                                   onAddNew: _openAddTagPage,
                                 ),
                               ],
@@ -244,21 +215,15 @@ class _LabelsPageState extends State<LabelsPage>
                                 SliverOverlapInjector(handle: searchBarHandle),
                                 SliverOverlapInjector(handle: tabBarHandle),
                                 LabelTabView<StoragePath>(
-                                  labels: context
-                                      .watch<LabelCubit>()
-                                      .state
-                                      .storagePaths,
+                                  labels: context.watch<LabelCubit>().state.storagePaths,
                                   onEdit: _openEditStoragePathPage,
                                   filterBuilder: (label) => DocumentFilter(
-                                    storagePath:
-                                        IdQueryParameter.fromId(label.id),
+                                    storagePath: IdQueryParameter.fromId(label.id),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   contentBuilder: (path) => Text(path.path),
-                                  emptyStateActionButtonLabel:
-                                      S.of(context)!.addNewStoragePath,
-                                  emptyStateDescription:
-                                      S.of(context)!.noStoragePathsSetUp,
+                                  emptyStateActionButtonLabel: S.of(context)!.addNewStoragePath,
+                                  emptyStateDescription: S.of(context)!.noStoragePathsSetUp,
                                   onAddNew: _openAddStoragePathPage,
                                 ),
                               ],

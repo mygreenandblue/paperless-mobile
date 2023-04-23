@@ -7,17 +7,18 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
-import 'package:paperless_mobile/features/login/model/user_credentials.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
-import 'package:paperless_mobile/features/settings/model/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_settings.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 part 'authentication_state.dart';
 
@@ -58,33 +59,33 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       clientCertificate: clientCertificate,
       authToken: token,
     );
+    final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
+    final userStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
 
     final userId = "${credentials.username}@$serverUrl";
 
-    // If it is first time login, create settings for this user.
-    final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-
-    final fullName = await _fetchFullName();
-    if (!userAccountBox.containsKey(userId)) {
-      userAccountBox.put(
-        userId,
-        UserAccount(
-          id: userId,
-          settings: UserSettings(
-            currentDocumentFilter: DocumentFilter(),
-          ),
-          serverUrl: serverUrl,
-          username: credentials.username!,
-          fullName: fullName,
-        ),
-      );
+    if (userAccountBox.containsKey(userId)) {
+      throw Exception("User with id $userId already exists!");
     }
 
-    // Mark logged in user as currently active user.
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings.currentLoggedInUser = userId;
-    globalSettings.save();
+    final fullName = await _fetchFullName();
+    // Create user account
+    await userAccountBox.put(
+      userId,
+      UserAccount(
+        id: userId,
+        settings: UserSettings(),
+        serverUrl: serverUrl,
+        username: credentials.username!,
+        fullName: fullName,
+      ),
+    );
+
+    // Create user state
+    await userStateBox.put(
+      userId,
+      UserAppState(userId: userId),
+    );
 
     // Save credentials in encrypted box
     final userCredentialsBox = await _getUserCredentialsBox();
@@ -96,21 +97,25 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       ),
     );
     userCredentialsBox.close();
+
+    // Mark logged in user as currently active user.
+    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    globalSettings.currentLoggedInUser = userId;
+    await globalSettings.save();
+
     emit(
       AuthenticationState(
         isAuthenticated: true,
         username: credentials.username,
         userId: userId,
         fullName: fullName,
-        //TODO: Query ui settings with full name and add as parameter here...
       ),
     );
   }
 
   /// Switches to another account if it exists.
   Future<void> switchAccount(String userId) async {
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     if (globalSettings.currentLoggedInUser == userId) {
       return;
     }
@@ -124,8 +129,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final account = userAccountBox.get(userId)!;
 
     if (account.settings.isBiometricAuthenticationEnabled) {
-      final authenticated = await _localAuthService
-          .authenticateLocalUser("Authenticate to switch your account.");
+      final authenticated =
+          await _localAuthService.authenticateLocalUser("Authenticate to switch your account.");
       if (!authenticated) {
         debugPrint("User not authenticated.");
         return;
@@ -172,6 +177,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final userId = "${credentials.username}@$serverUrl";
 
     final userAccountsBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
+    final userStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
 
     if (userAccountsBox.containsKey(userId)) {
       throw Exception("User already exists");
@@ -202,9 +208,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         username: credentials.username!,
         settings: UserSettings(
           isBiometricAuthenticationEnabled: enableBiometricAuthentication,
-          currentDocumentFilter: DocumentFilter(),
         ),
         fullName: fullName,
+      ),
+    );
+
+    await userStateBox.put(
+      userId,
+      UserAppState(
+        userId: userId,
       ),
     );
 
@@ -221,14 +233,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> removeAccount(String userId) async {
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    final currentUser = globalSettings.currentLoggedInUser;
+    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
     final userCredentialsBox = await _getUserCredentialsBox();
+    final userAppStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
+    final currentUser = globalSettings.currentLoggedInUser;
 
     await userAccountBox.delete(userId);
+    await userAppStateBox.delete(userId);
     await userCredentialsBox.delete(userId);
+    await userAccountBox.close();
 
     if (currentUser == userId) {
       return logout();
@@ -239,54 +253,49 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   /// Performs a conditional hydration based on the local authentication success.
   ///
   Future<void> restoreSessionState() async {
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final userId = globalSettings.currentLoggedInUser;
     if (userId == null) {
       // If there is nothing to restore, we can quit here.
       return;
     }
 
-    final userAccount =
-        Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!;
+    final userAccount = Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!;
 
     if (userAccount.settings.isBiometricAuthenticationEnabled) {
-      final localAuthSuccess = await _localAuthService
-          .authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
+      final localAuthSuccess =
+          await _localAuthService.authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
       if (!localAuthSuccess) {
-        emit(
-            const AuthenticationState(showBiometricAuthenticationScreen: true));
+        emit(const AuthenticationState(showBiometricAuthenticationScreen: true));
         return;
       }
     }
     final userCredentialsBox = await _getUserCredentialsBox();
+    final authentication = userCredentialsBox.get(globalSettings.currentLoggedInUser!);
 
-    final authentication =
-        userCredentialsBox.get(globalSettings.currentLoggedInUser!);
-    if (authentication != null) {
-      _dioWrapper.updateSettings(
-        clientCertificate: authentication.clientCertificate,
-        authToken: authentication.token,
-        baseUrl: userAccount.serverUrl,
-        serverInformation: PaperlessServerInformationModel(),
-      );
-      emit(
-        AuthenticationState(
-          isAuthenticated: true,
-          showBiometricAuthenticationScreen: false,
-          username: userAccount.username,
-        ),
-      );
-    } else {
-      throw Exception(
-          "User should be authenticated but no authentication information was found.");
+    await userCredentialsBox.close();
+
+    if (authentication == null) {
+      throw Exception("User should be authenticated but no authentication information was found.");
     }
+    _dioWrapper.updateSettings(
+      clientCertificate: authentication.clientCertificate,
+      authToken: authentication.token,
+      baseUrl: userAccount.serverUrl,
+      serverInformation: PaperlessServerInformationModel(),
+    );
+    emit(
+      AuthenticationState(
+        isAuthenticated: true,
+        showBiometricAuthenticationScreen: false,
+        username: userAccount.username,
+      ),
+    );
   }
 
   Future<void> logout() async {
     await _resetExternalState();
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     globalSettings
       ..currentLoggedInUser = null
       ..save();

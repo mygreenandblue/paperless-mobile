@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
 
 import 'paged_documents_state.dart';
 
@@ -10,11 +9,11 @@ import 'paged_documents_state.dart';
 /// Mixin which can be used on cubits that handle documents.
 /// This implements all paging and filtering logic.
 ///
-mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
-    on BlocBase<State> {
+mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<State> {
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;
-  UserAccount get account;
+
+  Future<void> onFilterUpdated(DocumentFilter filter);
 
   Future<void> loadMore() async {
     if (state.isLastPageLoaded) {
@@ -30,8 +29,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         value: [...state.value, result],
       ));
     } finally {
-      account.settings.currentDocumentFilter = newFilter;
-      account.save();
+      await onFilterUpdated(newFilter);
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -52,8 +50,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         hasLoaded: true,
       ));
     } finally {
-      account.settings.currentDocumentFilter = filter;
-      account.save();
+      await onFilterUpdated(filter);
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -66,13 +63,11 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   ) async =>
       updateFilter(filter: transformFn(state.filter));
 
-  Future<void> resetFilter() {
+  Future<void> resetFilter() async {
     final filter = DocumentFilter.initial.copyWith(
       sortField: state.filter.sortField,
       sortOrder: state.filter.sortOrder,
     );
-    account.settings.currentDocumentFilter = filter;
-    account.save();
     return updateFilter(filter: filter);
   }
 
@@ -90,8 +85,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         ));
       }
     } finally {
-      account.settings.currentDocumentFilter = filter;
-      account.save();
+      await onFilterUpdated(filter);
       if (!isClosed) {
         emit(state.copyWithPaged(isLoading: false));
       }
@@ -132,8 +126,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     if (index != -1) {
       final foundPage = state.value[index];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results
-          ..removeWhere((element) => element.id == document.id),
+        results: foundPage.results..removeWhere((element) => element.id == document.id),
       );
       final newCount = foundPage.count - 1;
       emit(
@@ -141,8 +134,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
           value: state.value
               .mapIndexed(
                 (currIndex, element) =>
-                    (currIndex == index ? replacementPage : element)
-                        .copyWith(count: newCount),
+                    (currIndex == index ? replacementPage : element).copyWith(count: newCount),
               )
               .toList(),
         ),
@@ -165,14 +157,11 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     if (pageIndex != -1) {
       final foundPage = state.value[pageIndex];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results
-            .map((doc) => doc.id == document.id ? document : doc)
-            .toList(),
+        results: foundPage.results.map((doc) => doc.id == document.id ? document : doc).toList(),
       );
       final newState = state.copyWithPaged(
         value: state.value
-            .mapIndexed((currIndex, element) =>
-                currIndex == pageIndex ? replacementPage : element)
+            .mapIndexed((currIndex, element) => currIndex == pageIndex ? replacementPage : element)
             .toList(),
       );
       emit(newState);

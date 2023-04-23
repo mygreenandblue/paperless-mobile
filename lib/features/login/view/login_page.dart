@@ -12,7 +12,7 @@ import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/login_pages/server_connection_page.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 import 'widgets/login_pages/server_login_page.dart';

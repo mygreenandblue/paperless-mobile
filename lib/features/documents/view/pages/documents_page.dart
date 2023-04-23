@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart' as b;
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -41,12 +42,9 @@ class DocumentsPage extends StatefulWidget {
   State<DocumentsPage> createState() => _DocumentsPageState();
 }
 
-class _DocumentsPageState extends State<DocumentsPage>
-    with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle =
-      SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle tabBarHandle =
-      SliverOverlapAbsorberHandle();
+class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle tabBarHandle = SliverOverlapAbsorberHandle();
   late final TabController _tabController;
 
   int _currentTab = 0;
@@ -83,8 +81,7 @@ class _DocumentsPageState extends State<DocumentsPage>
   @override
   Widget build(BuildContext context) {
     return BlocListener<TaskStatusCubit, TaskStatusState>(
-      listenWhen: (previous, current) =>
-          !previous.isSuccess && current.isSuccess,
+      listenWhen: (previous, current) => !previous.isSuccess && current.isSuccess,
       listener: (context, state) {
         showSnackBar(
           context,
@@ -101,8 +98,7 @@ class _DocumentsPageState extends State<DocumentsPage>
       },
       child: BlocConsumer<ConnectivityCubit, ConnectivityState>(
         listenWhen: (previous, current) =>
-            previous != ConnectivityState.connected &&
-            current == ConnectivityState.connected,
+            previous != ConnectivityState.connected && current == ConnectivityState.connected,
         listener: (context, state) {
           try {
             context.read<DocumentsCubit>().reload();
@@ -150,11 +146,7 @@ class _DocumentsPageState extends State<DocumentsPage>
               resizeToAvoidBottomInset: true,
               body: WillPopScope(
                 onWillPop: () async {
-                  if (context
-                      .read<DocumentsCubit>()
-                      .state
-                      .selection
-                      .isNotEmpty) {
+                  if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
                     context.read<DocumentsCubit>().resetSelection();
                   }
                   return false;
@@ -189,8 +181,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                               }
                               return SliverPersistentHeader(
                                 pinned: true,
-                                delegate:
-                                    CustomizableSliverPersistentHeaderDelegate(
+                                delegate: CustomizableSliverPersistentHeaderDelegate(
                                   minExtent: kTextTabBarHeight,
                                   maxExtent: kTextTabBarHeight,
                                   child: ColoredTabBar(
@@ -214,22 +205,15 @@ class _DocumentsPageState extends State<DocumentsPage>
                           if (metrics.maxScrollExtent == 0) {
                             return true;
                           }
-                          final desiredTab =
-                              (metrics.pixels / metrics.maxScrollExtent)
-                                  .round();
-                          if (metrics.axis == Axis.horizontal &&
-                              _currentTab != desiredTab) {
+                          final desiredTab = (metrics.pixels / metrics.maxScrollExtent).round();
+                          if (metrics.axis == Axis.horizontal && _currentTab != desiredTab) {
                             setState(() => _currentTab = desiredTab);
                           }
                           return false;
                         },
                         child: TabBarView(
                           controller: _tabController,
-                          physics: context
-                                  .watch<DocumentsCubit>()
-                                  .state
-                                  .selection
-                                  .isNotEmpty
+                          physics: context.watch<DocumentsCubit>().state.selection.isNotEmpty
                               ? const NeverScrollableScrollPhysics()
                               : null,
                           children: [
@@ -297,19 +281,13 @@ class _DocumentsPageState extends State<DocumentsPage>
 
         final currState = context.read<DocumentsCubit>().state;
         final max = notification.metrics.maxScrollExtent;
-        if (max == 0 ||
-            _currentTab != 0 ||
-            currState.isLoading ||
-            currState.isLastPageLoaded) {
+        if (max == 0 || _currentTab != 0 || currState.isLoading || currState.isLastPageLoaded) {
           return false;
         }
 
         final offset = notification.metrics.pixels;
         if (offset >= max * 0.7) {
-          context
-              .read<DocumentsCubit>()
-              .loadMore()
-              .onError<PaperlessServerException>(
+          context.read<DocumentsCubit>().loadMore().onError<PaperlessServerException>(
                 (error, stackTrace) => showErrorMessage(
                   context,
                   error,
@@ -344,8 +322,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                 return SliverAdaptiveDocumentsView(
                   viewType: state.viewType,
                   onTap: _openDetails,
-                  onSelected:
-                      context.read<DocumentsCubit>().toggleDocumentSelection,
+                  onSelected: context.read<DocumentsCubit>().toggleDocumentSelection,
                   hasInternetConnection: connectivityState.isConnected,
                   onTagSelected: _addTagToFilter,
                   onCorrespondentSelected: _addCorrespondentToFilter,
@@ -436,8 +413,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           snapSizes: const [0.9, 1],
           initialChildSize: .9,
           maxChildSize: 1,
-          builder: (context, controller) =>
-              BlocBuilder<DocumentsCubit, DocumentsState>(
+          builder: (context, controller) => BlocBuilder<DocumentsCubit, DocumentsState>(
             builder: (context, state) {
               return DocumentFilterPanel(
                 initialFilter: context.read<DocumentsCubit>().state.filter,
@@ -458,9 +434,7 @@ class _DocumentsPageState extends State<DocumentsPage>
         if (filterIntent.shouldReset) {
           await context.read<DocumentsCubit>().resetFilter();
         } else {
-          await context
-              .read<DocumentsCubit>()
-              .updateFilter(filter: filterIntent.filter!);
+          await context.read<DocumentsCubit>().updateFilter(filter: filterIntent.filter!);
         }
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
@@ -480,20 +454,21 @@ class _DocumentsPageState extends State<DocumentsPage>
 
   void _addTagToFilter(int tagId) {
     try {
-      final tagsQuery =
-          context.read<DocumentsCubit>().state.filter.tags is IdsTagsQuery
-              ? context.read<DocumentsCubit>().state.filter.tags as IdsTagsQuery
-              : const IdsTagsQuery();
-      if (tagsQuery.includedIds.contains(tagId)) {
+      final tagsQuery = context.read<DocumentsCubit>().state.filter.tags is IdsTagsQuery
+          ? context.read<DocumentsCubit>().state.filter.tags as IdsTagsQuery
+          : const IdsTagsQuery();
+      if (tagsQuery.include.contains(tagId)) {
         context.read<DocumentsCubit>().updateCurrentFilter(
               (filter) => filter.copyWith(
-                tags: tagsQuery.withIdsRemoved([tagId]),
+                tags: tagsQuery.copyWith(
+                    include: tagsQuery.include.whereNot((id) => id == tagId),
+                    exclude: tagsQuery.exclude.whereNot((id) => id == tagId)),
               ),
             );
       } else {
         context.read<DocumentsCubit>().updateCurrentFilter(
               (filter) => filter.copyWith(
-                tags: tagsQuery.withIdQueriesAdded([IncludeTagIdQuery(tagId)]),
+                tags: tagsQuery.copyWith(include: [...tagsQuery.include, tagId]),
               ),
             );
       }
@@ -505,16 +480,17 @@ class _DocumentsPageState extends State<DocumentsPage>
   void _addCorrespondentToFilter(int? correspondentId) {
     final cubit = context.read<DocumentsCubit>();
     try {
-      if (cubit.state.filter.correspondent.id == correspondentId) {
-        cubit.updateCurrentFilter(
-          (filter) =>
-              filter.copyWith(correspondent: const IdQueryParameter.unset()),
-        );
-      } else {
-        cubit.updateCurrentFilter(
-          (filter) => filter.copyWith(
-              correspondent: IdQueryParameter.fromId(correspondentId)),
-        );
+      final correspondent = cubit.state.filter.correspondent;
+      if (correspondent is SetIdQueryParameter) {
+        if (correspondent.id == correspondentId) {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(correspondent: const IdQueryParameter.unset()),
+          );
+        } else {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(correspondent: IdQueryParameter.fromId(correspondentId)),
+          );
+        }
       }
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
@@ -524,16 +500,17 @@ class _DocumentsPageState extends State<DocumentsPage>
   void _addDocumentTypeToFilter(int? documentTypeId) {
     final cubit = context.read<DocumentsCubit>();
     try {
-      if (cubit.state.filter.documentType.id == documentTypeId) {
-        cubit.updateCurrentFilter(
-          (filter) =>
-              filter.copyWith(documentType: const IdQueryParameter.unset()),
-        );
-      } else {
-        cubit.updateCurrentFilter(
-          (filter) => filter.copyWith(
-              documentType: IdQueryParameter.fromId(documentTypeId)),
-        );
+      final documentType = cubit.state.filter.documentType;
+      if (documentType is SetIdQueryParameter) {
+        if (documentType.id == documentTypeId) {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(documentType: const IdQueryParameter.unset()),
+          );
+        } else {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(documentType: IdQueryParameter.fromId(documentTypeId)),
+          );
+        }
       }
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
@@ -543,16 +520,17 @@ class _DocumentsPageState extends State<DocumentsPage>
   void _addStoragePathToFilter(int? pathId) {
     final cubit = context.read<DocumentsCubit>();
     try {
-      if (cubit.state.filter.correspondent.id == pathId) {
-        cubit.updateCurrentFilter(
-          (filter) =>
-              filter.copyWith(storagePath: const IdQueryParameter.unset()),
-        );
-      } else {
-        cubit.updateCurrentFilter(
-          (filter) =>
-              filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
-        );
+      final path = cubit.state.filter.documentType;
+      if (path is SetIdQueryParameter) {
+        if (path.id == pathId) {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(storagePath: const IdQueryParameter.unset()),
+          );
+        } else {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
+          );
+        }
       }
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);

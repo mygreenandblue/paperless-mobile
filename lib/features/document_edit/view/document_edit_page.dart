@@ -50,8 +50,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   @override
   void initState() {
     super.initState();
-    _filteredSuggestions = widget.suggestions
-        ?.documentDifference(context.read<DocumentEditCubit>().state.document);
+    _filteredSuggestions =
+        widget.suggestions?.documentDifference(context.read<DocumentEditCubit>().state.document);
   }
 
   @override
@@ -95,16 +95,14 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                       ListView(
                         children: [
                           _buildTitleFormField(state.document.title).padded(),
-                          _buildCreatedAtFormField(state.document.created)
-                              .padded(),
+                          _buildCreatedAtFormField(state.document.created).padded(),
                           // Correspondent form field
                           Column(
                             children: [
                               LabelFormField<Correspondent>(
                                 showAnyAssignedOption: false,
                                 showNotAssignedOption: false,
-                                addLabelPageBuilder: (initialValue) =>
-                                    RepositoryProvider.value(
+                                addLabelPageBuilder: (initialValue) => RepositoryProvider.value(
                                   value: context.read<LabelRepository>(),
                                   child: AddCorrespondentPage(
                                     initialName: initialValue,
@@ -112,30 +110,20 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 ),
                                 addLabelText: S.of(context)!.addCorrespondent,
                                 labelText: S.of(context)!.correspondent,
-                                options: context
-                                    .watch<DocumentEditCubit>()
-                                    .state
-                                    .correspondents,
+                                options: context.watch<DocumentEditCubit>().state.correspondents,
                                 initialValue: IdQueryParameter.fromId(
                                   state.document.correspondent,
                                 ),
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
                               ),
-                              if (_filteredSuggestions
-                                      ?.hasSuggestedCorrespondents ??
-                                  false)
+                              if (_filteredSuggestions?.hasSuggestedCorrespondents ?? false)
                                 _buildSuggestionsSkeleton<int>(
-                                  suggestions:
-                                      _filteredSuggestions!.correspondents,
-                                  itemBuilder: (context, itemData) =>
-                                      ActionChip(
-                                    label: Text(
-                                        state.correspondents[itemData]!.name),
+                                  suggestions: _filteredSuggestions!.correspondents,
+                                  itemBuilder: (context, itemData) => ActionChip(
+                                    label: Text(state.correspondents[itemData]!.name),
                                     onPressed: () {
-                                      _formKey
-                                          .currentState?.fields[fkCorrespondent]
-                                          ?.didChange(
+                                      _formKey.currentState?.fields[fkCorrespondent]?.didChange(
                                         IdQueryParameter.fromId(itemData),
                                       );
                                     },
@@ -149,8 +137,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                               LabelFormField<DocumentType>(
                                 showAnyAssignedOption: false,
                                 showNotAssignedOption: false,
-                                addLabelPageBuilder: (currentInput) =>
-                                    RepositoryProvider.value(
+                                addLabelPageBuilder: (currentInput) => RepositoryProvider.value(
                                   value: context.read<LabelRepository>(),
                                   child: AddDocumentTypePage(
                                     initialName: currentInput,
@@ -158,26 +145,18 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 ),
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType,
-                                initialValue: IdQueryParameter.fromId(
-                                    state.document.documentType),
+                                initialValue: IdQueryParameter.fromId(state.document.documentType),
                                 options: state.documentTypes,
                                 name: _DocumentEditPageState.fkDocumentType,
-                                prefixIcon:
-                                    const Icon(Icons.description_outlined),
+                                prefixIcon: const Icon(Icons.description_outlined),
                               ),
-                              if (_filteredSuggestions
-                                      ?.hasSuggestedDocumentTypes ??
-                                  false)
+                              if (_filteredSuggestions?.hasSuggestedDocumentTypes ?? false)
                                 _buildSuggestionsSkeleton<int>(
-                                  suggestions:
-                                      _filteredSuggestions!.documentTypes,
-                                  itemBuilder: (context, itemData) =>
-                                      ActionChip(
-                                    label: Text(
-                                        state.documentTypes[itemData]!.name),
-                                    onPressed: () => _formKey
-                                        .currentState?.fields[fkDocumentType]
-                                        ?.didChange(
+                                  suggestions: _filteredSuggestions!.documentTypes,
+                                  itemBuilder: (context, itemData) => ActionChip(
+                                    label: Text(state.documentTypes[itemData]!.name),
+                                    onPressed: () =>
+                                        _formKey.currentState?.fields[fkDocumentType]?.didChange(
                                       IdQueryParameter.fromId(itemData),
                                     ),
                                   ),
@@ -190,17 +169,14 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                               LabelFormField<StoragePath>(
                                 showAnyAssignedOption: false,
                                 showNotAssignedOption: false,
-                                addLabelPageBuilder: (initialValue) =>
-                                    RepositoryProvider.value(
+                                addLabelPageBuilder: (initialValue) => RepositoryProvider.value(
                                   value: context.read<LabelRepository>(),
-                                  child: AddStoragePathPage(
-                                      initalName: initialValue),
+                                  child: AddStoragePathPage(initalName: initialValue),
                                 ),
                                 addLabelText: S.of(context)!.addStoragePath,
                                 labelText: S.of(context)!.storagePath,
                                 options: state.storagePaths,
-                                initialValue: IdQueryParameter.fromId(
-                                    state.document.storagePath),
+                                initialValue: IdQueryParameter.fromId(state.document.storagePath),
                                 name: fkStoragePath,
                                 prefixIcon: const Icon(Icons.folder_outlined),
                               ),
@@ -213,8 +189,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             allowOnlySelection: true,
                             allowCreation: true,
                             allowExclude: false,
-                            initialValue: IdsTagsQuery.included(
-                              state.document.tags,
+                            initialValue: TagsQuery.ids(
+                              include: state.document.tags,
                             ),
                           ).padded(),
                           if (_filteredSuggestions?.tags
@@ -223,8 +199,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                   .isNotEmpty ??
                               false)
                             _buildSuggestionsSkeleton<int>(
-                              suggestions:
-                                  (_filteredSuggestions?.tags.toSet() ?? {}),
+                              suggestions: (_filteredSuggestions?.tags.toSet() ?? {}),
                               itemBuilder: (context, itemData) {
                                 final tag = state.tags[itemData]!;
                                 return ActionChip(
@@ -234,17 +209,15 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                   ),
                                   backgroundColor: tag.color,
                                   onPressed: () {
-                                    final currentTags = _formKey.currentState
-                                        ?.fields[fkTags]?.value as TagsQuery;
-                                    if (currentTags is IdsTagsQuery) {
-                                      _formKey.currentState?.fields[fkTags]
-                                          ?.didChange((IdsTagsQuery.fromIds(
-                                              {...currentTags.ids, itemData})));
-                                    } else {
-                                      _formKey.currentState?.fields[fkTags]
-                                          ?.didChange((IdsTagsQuery.fromIds(
-                                              {itemData})));
-                                    }
+                                    final currentTags =
+                                        _formKey.currentState?.fields[fkTags]?.value as TagsQuery;
+                                    _formKey.currentState?.fields[fkTags]?.didChange(
+                                      currentTags.maybeWhen(
+                                        ids: (include, exclude) => TagsQuery.ids(
+                                            include: [...include, itemData], exclude: exclude),
+                                        orElse: () => TagsQuery.ids(include: [itemData]),
+                                      ),
+                                    );
                                   },
                                 );
                               },
@@ -282,13 +255,14 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
       var mergedDocument = document.copyWith(
-          title: values[fkTitle],
-          created: values[fkCreatedDate],
-          documentType: () => (values[fkDocumentType] as IdQueryParameter).id,
-          correspondent: () => (values[fkCorrespondent] as IdQueryParameter).id,
-          storagePath: () => (values[fkStoragePath] as IdQueryParameter).id,
-          tags: (values[fkTags] as IdsTagsQuery).includedIds,
-          content: values[fkContent]);
+        title: values[fkTitle],
+        created: values[fkCreatedDate],
+        documentType: () => (values[fkDocumentType] as SetIdQueryParameter).id,
+        correspondent: () => (values[fkCorrespondent] as SetIdQueryParameter).id,
+        storagePath: () => (values[fkStoragePath] as SetIdQueryParameter).id,
+        tags: (values[fkTags] as IdsTagsQuery).include,
+        content: values[fkContent],
+      );
       setState(() {
         _isSubmitLoading = true;
       });
@@ -342,8 +316,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             suggestions: _filteredSuggestions!.dates,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(DateFormat.yMMMd().format(itemData)),
-              onPressed: () => _formKey.currentState?.fields[fkCreatedDate]
-                  ?.didChange(itemData),
+              onPressed: () => _formKey.currentState?.fields[fkCreatedDate]?.didChange(itemData),
             ),
           ),
       ],
@@ -372,8 +345,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             itemBuilder: (context, index) => ColoredChipWrapper(
               child: itemBuilder(context, suggestions.elementAt(index)),
             ),
-            separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(width: 4.0),
+            separatorBuilder: (BuildContext context, int index) => const SizedBox(width: 4.0),
           ),
         ),
       ],

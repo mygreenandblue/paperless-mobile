@@ -3,7 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 
 class GlobalSettingsBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, GlobalSettings settings) builder;

@@ -5,7 +5,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -32,9 +32,7 @@ class VerifyIdentityPage extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(S
-                        .of(context)!
-                        .useTheConfiguredBiometricFactorToAuthenticate)
+                Text(S.of(context)!.useTheConfiguredBiometricFactorToAuthenticate)
                     .paddedSymmetrically(horizontal: 16),
                 const Icon(
                   Icons.fingerprint,
@@ -56,9 +54,7 @@ class VerifyIdentityPage extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () => context
-                          .read<AuthenticationCubit>()
-                          .restoreSessionState(),
+                      onPressed: () => context.read<AuthenticationCubit>().restoreSessionState(),
                       child: Text(S.of(context)!.verifyIdentity),
                     ),
                   ],

@@ -5,10 +5,9 @@ import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.da
 import 'package:paperless_mobile/core/bloc/paperless_server_information_state.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
-import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart'
-    as s;
+import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart' as s;
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/account_settings_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
@@ -46,14 +45,10 @@ class SliverSearchBar extends StatelessWidget {
               icon: GlobalSettingsBuilder(
                 builder: (context, settings) {
                   return ValueListenableBuilder(
-                    valueListenable:
-                        Hive.box<UserAccount>(HiveBoxes.userAccount)
-                            .listenable(),
+                    valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
                     builder: (context, box, _) {
                       final account = box.get(settings.currentLoggedInUser!)!;
-                      return UserAvatar(
-                          userId: settings.currentLoggedInUser!,
-                          account: account);
+                      return UserAvatar(userId: settings.currentLoggedInUser!, account: account);
                     },
                   );
                 },

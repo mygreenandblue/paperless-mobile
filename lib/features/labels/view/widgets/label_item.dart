@@ -5,8 +5,8 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/helpers/format_helpers.dart';
 
 class LabelItem<T extends Label> extends StatelessWidget {
@@ -46,10 +46,9 @@ class LabelItem<T extends Label> extends StatelessWidget {
       onPressed: (label.documentCount ?? 0) == 0
           ? null
           : () {
-              final currentUser =
-                  Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
-                      .getValue()!
-                      .currentLoggedInUser!;
+              final currentUser = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+                  .getValue()!
+                  .currentLoggedInUser!;
               final filter = filterBuilder(label);
               Navigator.push(
                 context,
@@ -60,8 +59,7 @@ class LabelItem<T extends Label> extends StatelessWidget {
                       context.read(),
                       context.read(),
                       context.read(),
-                      Hive.box<UserAccount>(HiveBoxes.userAccount)
-                          .get(currentUser)!,
+                      Hive.box<UserAccount>(HiveBoxes.userAccount).get(currentUser)!,
                     ),
                     child: const LinkedDocumentsPage(),
                   ),

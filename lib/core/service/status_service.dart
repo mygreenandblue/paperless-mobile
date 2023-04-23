@@ -9,7 +9,7 @@ import 'package:paperless_mobile/core/bloc/document_status_cubit.dart';
 import 'package:paperless_mobile/core/model/document_processing_status.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
 import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/features/login/model/user_credentials.dart';
+import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:web_socket_channel/io.dart';
 
 abstract class StatusService {

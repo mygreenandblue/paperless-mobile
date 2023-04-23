@@ -4,11 +4,10 @@ import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/converters/tags_query_json_converter.dart';
+import 'package:paperless_api/src/models/query_parameters/tags_query/tags_query.dart';
 
 part 'document_filter.g.dart';
 
-@TagsQueryJsonConverter()
 @DateRangeQueryJsonConverter()
 @JsonSerializable(explicitToJson: true)
 @HiveType(typeId: PaperlessApiHiveTypeIds.documentFilter)
@@ -48,8 +47,6 @@ class DocumentFilter extends Equatable {
   final DateRangeQuery modified;
   @HiveField(12)
   final TextQuery query;
-
-  /// Query documents similar to the document with this id.
   @HiveField(13)
   final int? moreLike;
 
@@ -58,7 +55,7 @@ class DocumentFilter extends Equatable {
     this.correspondent = const IdQueryParameter.unset(),
     this.storagePath = const IdQueryParameter.unset(),
     this.asnQuery = const IdQueryParameter.unset(),
-    this.tags = const IdsTagsQuery(),
+    this.tags = const TagsQuery.ids(),
     this.sortField = SortField.created,
     this.sortOrder = SortOrder.descending,
     this.page = 1,
@@ -107,9 +104,7 @@ class DocumentFilter extends Equatable {
     final queryParams = groupBy(params, (e) => e.key).map(
       (key, entries) => MapEntry(
         key,
-        entries.length == 1
-            ? entries.first.value
-            : entries.map((e) => e.value).join(","),
+        entries.length == 1 ? entries.first.value : entries.map((e) => e.value).join(","),
       ),
     );
     return queryParams;
@@ -150,8 +145,7 @@ class DocumentFilter extends Equatable {
       modified: modified ?? this.modified,
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
     );
-    if (query?.queryType != QueryType.extended &&
-        newFilter.forceExtendedQuery) {
+    if (query?.queryType != QueryType.extended && newFilter.forceExtendedQuery) {
       //Prevents infinite recursion
       return newFilter.copyWith(
         query: newFilter.query.copyWith(queryType: QueryType.extended),
@@ -207,8 +201,7 @@ class DocumentFilter extends Equatable {
         query,
       ];
 
-  factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
-      _$DocumentFilterFromJson(json);
+  factory DocumentFilter.fromJson(Map<String, dynamic> json) => _$DocumentFilterFromJson(json);
 
   Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
 }

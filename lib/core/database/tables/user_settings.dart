@@ -9,11 +9,7 @@ class UserSettings with HiveObjectMixin {
   @HiveField(0)
   bool isBiometricAuthenticationEnabled;
 
-  @HiveField(1)
-  DocumentFilter currentDocumentFilter;
-
   UserSettings({
     this.isBiometricAuthenticationEnabled = false,
-    required this.currentDocumentFilter,
   });
 }

@@ -1,21 +1,23 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/custom_adapters/theme_mode_adapter.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
-import 'package:paperless_mobile/features/login/model/user_credentials.dart';
-import 'package:paperless_mobile/features/settings/model/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
-import 'package:paperless_mobile/features/settings/model/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_settings.dart';
 
 class HiveBoxes {
   HiveBoxes._();
   static const globalSettings = 'globalSettings';
-  static const userSettings = 'userSettings';
   static const authentication = 'authentication';
   static const userCredentials = 'userCredentials';
   static const userAccount = 'userAccount';
+  static const userAppState = 'userAppState';
+  static const userSettings = 'userSettings';
 }
 
 class HiveTypeIds {
@@ -28,9 +30,11 @@ class HiveTypeIds {
   static const clientCertificate = 5;
   static const userCredentials = 6;
   static const userAccount = 7;
+  static const userAppState = 8;
 }
 
 void registerHiveAdapters() {
+  registerPaperlessApiHiveTypeAdapters();
   Hive.registerAdapter(ColorSchemeOptionAdapter());
   Hive.registerAdapter(ThemeModeAdapter());
   Hive.registerAdapter(GlobalSettingsAdapter());
@@ -39,7 +43,7 @@ void registerHiveAdapters() {
   Hive.registerAdapter(UserSettingsAdapter());
   Hive.registerAdapter(UserCredentialsAdapter());
   Hive.registerAdapter(UserAccountAdapter());
-  Hive.registerAdapter(DocumentFilterAdapter());
+  Hive.registerAdapter(UserAppStateAdapter());
 }
 
 extension HiveSingleValueBox<T> on Box<T> {

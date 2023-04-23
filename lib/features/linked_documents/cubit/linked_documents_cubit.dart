@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/login/model/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -73,4 +73,7 @@ class LinkedDocumentsCubit extends HydratedCubit<LinkedDocumentsState>
   Map<String, dynamic>? toJson(LinkedDocumentsState state) {
     return state.toJson();
   }
+
+  @override
+  Future<void> onFilterUpdated(DocumentFilter filter) async {}
 }

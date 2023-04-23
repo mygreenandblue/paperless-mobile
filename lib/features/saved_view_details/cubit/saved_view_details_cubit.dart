@@ -69,4 +69,7 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
   Map<String, dynamic>? toJson(SavedViewDetailsState state) {
     return state.toJson();
   }
+
+  @override
+  Future<void> onFilterUpdated(DocumentFilter filter) async {}
 }

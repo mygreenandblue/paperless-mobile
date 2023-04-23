@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:animations/animations.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -32,9 +33,9 @@ class TagsFormField extends StatelessWidget {
       initialValue: initialValue,
       builder: (field) {
         final values = _generateOptions(context, field.value, field).toList();
-        final isEmpty = (field.value is IdsTagsQuery &&
-                (field.value as IdsTagsQuery).ids.isEmpty) ||
-            field.value == null;
+        final isEmpty =
+            (field.value is IdsTagsQuery && (field.value as IdsTagsQuery).include.isEmpty) ||
+                field.value == null;
         bool anyAssigned = field.value is AnyAssignedTagsQuery;
         return OpenContainer<TagsQuery>(
           middleColor: Theme.of(context).colorScheme.background,
@@ -59,8 +60,7 @@ class TagsFormField extends StatelessWidget {
                     height: 32,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 4),
+                      separatorBuilder: (context, index) => const SizedBox(width: 4),
                       itemBuilder: (context, index) => values[index],
                       itemCount: values.length,
                     ),
@@ -93,33 +93,56 @@ class TagsFormField extends StatelessWidget {
   ) sync* {
     if (query == null) {
       yield Container();
-    } else if (query is IdsTagsQuery) {
-      for (final e in query.queries) {
-        yield _buildTagIdQueryWidget(context, e, field);
-      }
-    } else if (query is OnlyNotAssignedTagsQuery) {
-      yield _buildNotAssignedTagWidget(context, field);
-    } else if (query is AnyAssignedTagsQuery) {
-      for (final e in query.tagIds) {
-        yield _buildAnyAssignedTagWidget(context, e, field, query);
+    } else {
+      final widgets = query.map(
+        ids: (value) => [
+          for (var inc in value.include) _buildTagIdQueryWidget(context, inc, field, false),
+          for (var exc in value.exclude) _buildTagIdQueryWidget(context, exc, field, true),
+        ],
+        anyAssigned: (value) => [
+          for (var id in value.tagIds) _buildAnyAssignedTagWidget(context, id, field, value),
+        ],
+        notAssigned: (value) => [_buildNotAssignedTagWidget(context, field)],
+      );
+      for (var child in widgets) {
+        yield child;
       }
     }
   }
 
   Widget _buildTagIdQueryWidget(
     BuildContext context,
-    TagIdQuery e,
+    int id,
     FormFieldState<TagsQuery?> field,
+    bool exclude,
   ) {
     assert(field.value is IdsTagsQuery);
     final formValue = field.value as IdsTagsQuery;
-    final tag = options[e.id]!;
+    final tag = options[id]!;
     return QueryTagChip(
-      onDeleted: () => field.didChange(formValue.withIdsRemoved([e.id])),
+      onDeleted: () => field.didChange(formValue.copyWith(
+        include: formValue.include.whereNot((element) => element == id),
+        exclude: formValue.exclude.whereNot((element) => element == id),
+      )),
       onSelected: allowExclude
-          ? () => field.didChange(formValue.withIdQueryToggled(e.id))
+          ? () {
+              if (formValue.include.contains(id)) {
+                field.didChange(
+                  formValue.copyWith(
+                    include: formValue.include.whereNot((element) => element == id),
+                    exclude: [...formValue.exclude, id],
+                  ),
+                );
+              } else if (formValue.exclude.contains(id)) {}
+              field.didChange(
+                formValue.copyWith(
+                  include: [...formValue.include, id],
+                  exclude: formValue.exclude.whereNot((element) => element == id),
+                ),
+              );
+            }
           : null,
-      exclude: e is ExcludeTagIdQuery,
+      exclude: exclude,
       backgroundColor: tag.color,
       foregroundColor: tag.textColor,
       labelText: tag.name,
@@ -147,9 +170,11 @@ class TagsFormField extends StatelessWidget {
   ) {
     return QueryTagChip(
       onDeleted: () {
-        final updatedQuery = query.withRemoved([e]);
+        final updatedQuery = query.copyWith(
+          tagIds: query.tagIds.whereNot((element) => element == e),
+        );
         if (updatedQuery.tagIds.isEmpty) {
-          field.didChange(const IdsTagsQuery());
+          field.didChange(const TagsQuery.ids());
         } else {
           field.didChange(updatedQuery);
         }
