@@ -34,22 +34,22 @@ mixin _$TagsQuery {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() notAssigned,
-    required TResult Function(Iterable<int> tagIds) anyAssigned,
-    required TResult Function(Iterable<int> include, Iterable<int> exclude) ids,
+    required TResult Function(List<int> tagIds) anyAssigned,
+    required TResult Function(List<int> include, List<int> exclude) ids,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? notAssigned,
-    TResult? Function(Iterable<int> tagIds)? anyAssigned,
-    TResult? Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult? Function(List<int> tagIds)? anyAssigned,
+    TResult? Function(List<int> include, List<int> exclude)? ids,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? notAssigned,
-    TResult Function(Iterable<int> tagIds)? anyAssigned,
-    TResult Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult Function(List<int> tagIds)? anyAssigned,
+    TResult Function(List<int> include, List<int> exclude)? ids,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -144,8 +144,8 @@ class _$NotAssignedTagsQuery extends NotAssignedTagsQuery {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() notAssigned,
-    required TResult Function(Iterable<int> tagIds) anyAssigned,
-    required TResult Function(Iterable<int> include, Iterable<int> exclude) ids,
+    required TResult Function(List<int> tagIds) anyAssigned,
+    required TResult Function(List<int> include, List<int> exclude) ids,
   }) {
     return notAssigned();
   }
@@ -154,8 +154,8 @@ class _$NotAssignedTagsQuery extends NotAssignedTagsQuery {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? notAssigned,
-    TResult? Function(Iterable<int> tagIds)? anyAssigned,
-    TResult? Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult? Function(List<int> tagIds)? anyAssigned,
+    TResult? Function(List<int> include, List<int> exclude)? ids,
   }) {
     return notAssigned?.call();
   }
@@ -164,8 +164,8 @@ class _$NotAssignedTagsQuery extends NotAssignedTagsQuery {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? notAssigned,
-    TResult Function(Iterable<int> tagIds)? anyAssigned,
-    TResult Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult Function(List<int> tagIds)? anyAssigned,
+    TResult Function(List<int> include, List<int> exclude)? ids,
     required TResult orElse(),
   }) {
     if (notAssigned != null) {
@@ -230,7 +230,7 @@ abstract class _$$AnyAssignedTagsQueryCopyWith<$Res> {
           $Res Function(_$AnyAssignedTagsQuery) then) =
       __$$AnyAssignedTagsQueryCopyWithImpl<$Res>;
   @useResult
-  $Res call({Iterable<int> tagIds});
+  $Res call({List<int> tagIds});
 }
 
 /// @nodoc
@@ -248,9 +248,9 @@ class __$$AnyAssignedTagsQueryCopyWithImpl<$Res>
   }) {
     return _then(_$AnyAssignedTagsQuery(
       tagIds: null == tagIds
-          ? _value.tagIds
+          ? _value._tagIds
           : tagIds // ignore: cast_nullable_to_non_nullable
-              as Iterable<int>,
+              as List<int>,
     ));
   }
 }
@@ -259,16 +259,23 @@ class __$$AnyAssignedTagsQueryCopyWithImpl<$Res>
 @JsonSerializable()
 @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedTagsQuery)
 class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
-  const _$AnyAssignedTagsQuery({this.tagIds = const [], final String? $type})
-      : $type = $type ?? 'anyAssigned',
+  const _$AnyAssignedTagsQuery(
+      {final List<int> tagIds = const [], final String? $type})
+      : _tagIds = tagIds,
+        $type = $type ?? 'anyAssigned',
         super._();
 
   factory _$AnyAssignedTagsQuery.fromJson(Map<String, dynamic> json) =>
       _$$AnyAssignedTagsQueryFromJson(json);
 
+  final List<int> _tagIds;
   @override
   @JsonKey()
-  final Iterable<int> tagIds;
+  List<int> get tagIds {
+    if (_tagIds is EqualUnmodifiableListView) return _tagIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tagIds);
+  }
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -283,13 +290,13 @@ class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AnyAssignedTagsQuery &&
-            const DeepCollectionEquality().equals(other.tagIds, tagIds));
+            const DeepCollectionEquality().equals(other._tagIds, _tagIds));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(tagIds));
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_tagIds));
 
   @JsonKey(ignore: true)
   @override
@@ -302,8 +309,8 @@ class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() notAssigned,
-    required TResult Function(Iterable<int> tagIds) anyAssigned,
-    required TResult Function(Iterable<int> include, Iterable<int> exclude) ids,
+    required TResult Function(List<int> tagIds) anyAssigned,
+    required TResult Function(List<int> include, List<int> exclude) ids,
   }) {
     return anyAssigned(tagIds);
   }
@@ -312,8 +319,8 @@ class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? notAssigned,
-    TResult? Function(Iterable<int> tagIds)? anyAssigned,
-    TResult? Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult? Function(List<int> tagIds)? anyAssigned,
+    TResult? Function(List<int> include, List<int> exclude)? ids,
   }) {
     return anyAssigned?.call(tagIds);
   }
@@ -322,8 +329,8 @@ class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? notAssigned,
-    TResult Function(Iterable<int> tagIds)? anyAssigned,
-    TResult Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult Function(List<int> tagIds)? anyAssigned,
+    TResult Function(List<int> include, List<int> exclude)? ids,
     required TResult orElse(),
   }) {
     if (anyAssigned != null) {
@@ -375,14 +382,14 @@ class _$AnyAssignedTagsQuery extends AnyAssignedTagsQuery {
 }
 
 abstract class AnyAssignedTagsQuery extends TagsQuery {
-  const factory AnyAssignedTagsQuery({final Iterable<int> tagIds}) =
+  const factory AnyAssignedTagsQuery({final List<int> tagIds}) =
       _$AnyAssignedTagsQuery;
   const AnyAssignedTagsQuery._() : super._();
 
   factory AnyAssignedTagsQuery.fromJson(Map<String, dynamic> json) =
       _$AnyAssignedTagsQuery.fromJson;
 
-  Iterable<int> get tagIds;
+  List<int> get tagIds;
   @JsonKey(ignore: true)
   _$$AnyAssignedTagsQueryCopyWith<_$AnyAssignedTagsQuery> get copyWith =>
       throw _privateConstructorUsedError;
@@ -394,7 +401,7 @@ abstract class _$$IdsTagsQueryCopyWith<$Res> {
           _$IdsTagsQuery value, $Res Function(_$IdsTagsQuery) then) =
       __$$IdsTagsQueryCopyWithImpl<$Res>;
   @useResult
-  $Res call({Iterable<int> include, Iterable<int> exclude});
+  $Res call({List<int> include, List<int> exclude});
 }
 
 /// @nodoc
@@ -413,13 +420,13 @@ class __$$IdsTagsQueryCopyWithImpl<$Res>
   }) {
     return _then(_$IdsTagsQuery(
       include: null == include
-          ? _value.include
+          ? _value._include
           : include // ignore: cast_nullable_to_non_nullable
-              as Iterable<int>,
+              as List<int>,
       exclude: null == exclude
-          ? _value.exclude
+          ? _value._exclude
           : exclude // ignore: cast_nullable_to_non_nullable
-              as Iterable<int>,
+              as List<int>,
     ));
   }
 }
@@ -429,19 +436,34 @@ class __$$IdsTagsQueryCopyWithImpl<$Res>
 @HiveType(typeId: PaperlessApiHiveTypeIds.idsTagsQuery)
 class _$IdsTagsQuery extends IdsTagsQuery {
   const _$IdsTagsQuery(
-      {this.include = const [], this.exclude = const [], final String? $type})
-      : $type = $type ?? 'ids',
+      {final List<int> include = const [],
+      final List<int> exclude = const [],
+      final String? $type})
+      : _include = include,
+        _exclude = exclude,
+        $type = $type ?? 'ids',
         super._();
 
   factory _$IdsTagsQuery.fromJson(Map<String, dynamic> json) =>
       _$$IdsTagsQueryFromJson(json);
 
+  final List<int> _include;
   @override
   @JsonKey()
-  final Iterable<int> include;
+  List<int> get include {
+    if (_include is EqualUnmodifiableListView) return _include;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_include);
+  }
+
+  final List<int> _exclude;
   @override
   @JsonKey()
-  final Iterable<int> exclude;
+  List<int> get exclude {
+    if (_exclude is EqualUnmodifiableListView) return _exclude;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_exclude);
+  }
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -456,16 +478,16 @@ class _$IdsTagsQuery extends IdsTagsQuery {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$IdsTagsQuery &&
-            const DeepCollectionEquality().equals(other.include, include) &&
-            const DeepCollectionEquality().equals(other.exclude, exclude));
+            const DeepCollectionEquality().equals(other._include, _include) &&
+            const DeepCollectionEquality().equals(other._exclude, _exclude));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(include),
-      const DeepCollectionEquality().hash(exclude));
+      const DeepCollectionEquality().hash(_include),
+      const DeepCollectionEquality().hash(_exclude));
 
   @JsonKey(ignore: true)
   @override
@@ -477,8 +499,8 @@ class _$IdsTagsQuery extends IdsTagsQuery {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() notAssigned,
-    required TResult Function(Iterable<int> tagIds) anyAssigned,
-    required TResult Function(Iterable<int> include, Iterable<int> exclude) ids,
+    required TResult Function(List<int> tagIds) anyAssigned,
+    required TResult Function(List<int> include, List<int> exclude) ids,
   }) {
     return ids(include, exclude);
   }
@@ -487,8 +509,8 @@ class _$IdsTagsQuery extends IdsTagsQuery {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? notAssigned,
-    TResult? Function(Iterable<int> tagIds)? anyAssigned,
-    TResult? Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult? Function(List<int> tagIds)? anyAssigned,
+    TResult? Function(List<int> include, List<int> exclude)? ids,
   }) {
     return ids?.call(include, exclude);
   }
@@ -497,8 +519,8 @@ class _$IdsTagsQuery extends IdsTagsQuery {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? notAssigned,
-    TResult Function(Iterable<int> tagIds)? anyAssigned,
-    TResult Function(Iterable<int> include, Iterable<int> exclude)? ids,
+    TResult Function(List<int> tagIds)? anyAssigned,
+    TResult Function(List<int> include, List<int> exclude)? ids,
     required TResult orElse(),
   }) {
     if (ids != null) {
@@ -551,15 +573,14 @@ class _$IdsTagsQuery extends IdsTagsQuery {
 
 abstract class IdsTagsQuery extends TagsQuery {
   const factory IdsTagsQuery(
-      {final Iterable<int> include,
-      final Iterable<int> exclude}) = _$IdsTagsQuery;
+      {final List<int> include, final List<int> exclude}) = _$IdsTagsQuery;
   const IdsTagsQuery._() : super._();
 
   factory IdsTagsQuery.fromJson(Map<String, dynamic> json) =
       _$IdsTagsQuery.fromJson;
 
-  Iterable<int> get include;
-  Iterable<int> get exclude;
+  List<int> get include;
+  List<int> get exclude;
   @JsonKey(ignore: true)
   _$$IdsTagsQueryCopyWith<_$IdsTagsQuery> get copyWith =>
       throw _privateConstructorUsedError;

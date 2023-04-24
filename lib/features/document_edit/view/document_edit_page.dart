@@ -190,7 +190,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             allowCreation: true,
                             allowExclude: false,
                             initialValue: TagsQuery.ids(
-                              include: state.document.tags,
+                              include: state.document.tags.toList(),
                             ),
                           ).padded(),
                           if (_filteredSuggestions?.tags

@@ -4,25 +4,19 @@ import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SwitchAccountDialog extends StatelessWidget {
-  final String username;
-  final String serverUrl;
-  const SwitchAccountDialog({
-    super.key,
-    required this.username,
-    required this.serverUrl,
-  });
+  const SwitchAccountDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Switch account"),
-      content: Text("Do you want to switch to $serverUrl and log in as $username?"),
+      title: Text(S.of(context)!.switchAccountTitle),
+      content: Text(S.of(context)!.switchToNewAccount),
       actions: [
+        const DialogCancelButton(),
         DialogConfirmButton(
-          style: DialogConfirmButtonStyle.danger,
-          label: S.of(context)!.continueLabel, //TODO: INTL change labels
+          style: DialogConfirmButtonStyle.normal,
+          label: S.of(context)!.switchAccount,
         ),
-        DialogCancelButton(),
       ],
     );
   }

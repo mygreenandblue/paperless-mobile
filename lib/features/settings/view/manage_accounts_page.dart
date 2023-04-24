@@ -42,7 +42,7 @@ class ManageAccountsPage extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: CloseButton(),
                   ),
-                  Center(child: Text("Accounts")),
+                  Center(child: Text(S.of(context)!.accounts)),
                 ],
               ), //TODO: INTL
               shape: RoundedRectangleBorder(
@@ -65,7 +65,7 @@ class ManageAccountsPage extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text("Add account"),
+                  title: Text(S.of(context)!.addAccount),
                   leading: const Icon(Icons.person_add),
                   onTap: () {
                     _onAddAccount(context);
@@ -113,17 +113,17 @@ class ManageAccountsPage extends StatelessWidget {
           itemBuilder: (context) {
             return [
               if (!isLoggedIn)
-                const PopupMenuItem(
+                PopupMenuItem(
                   child: ListTile(
-                    title: Text("Switch"), //TODO: INTL
+                    title: Text(S.of(context)!.switchAccount),
                     leading: Icon(Icons.switch_account_rounded),
                   ),
                   value: 0,
                 ),
               if (!isLoggedIn)
-                const PopupMenuItem(
+                PopupMenuItem(
                   child: ListTile(
-                    title: Text("Remove"), // TODO: INTL
+                    title: Text(S.of(context)!.remove),
                     leading: Icon(
                       Icons.person_remove,
                       color: Colors.red,
@@ -132,9 +132,9 @@ class ManageAccountsPage extends StatelessWidget {
                   value: 1,
                 )
               else
-                const PopupMenuItem(
+                PopupMenuItem(
                   child: ListTile(
-                    title: Text("Logout"), // TODO: INTL
+                    title: Text(S.of(context)!.logout),
                     leading: Icon(
                       Icons.person_remove,
                       color: Colors.red,
@@ -177,12 +177,12 @@ class ManageAccountsPage extends StatelessWidget {
     return child;
   }
 
-  Future<void> _onAddAccount(BuildContext context) {
-    return Navigator.push(
+  Future<void> _onAddAccount(BuildContext context) async {
+    final userId = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => LoginPage(
-          titleString: "Add account", //TODO: INTL
+          titleString: S.of(context)!.addAccount,
           onSubmit: (context, username, password, serverUrl, clientCertificate) async {
             final userId = await context.read<AuthenticationCubit>().addAccount(
                   credentials: LoginFormCredentials(
@@ -194,19 +194,22 @@ class ManageAccountsPage extends StatelessWidget {
                   //TODO: Ask user whether to enable biometric authentication
                   enableBiometricAuthentication: false,
                 );
-            final shoudSwitch = await showDialog(
-                  context: context,
-                  builder: (context) =>
-                      SwitchAccountDialog(username: username, serverUrl: serverUrl),
-                ) ??
-                false;
-            if (shoudSwitch) {
-              context.read<AuthenticationCubit>().switchAccount(userId);
-            }
+            Navigator.of(context).pop<String?>(userId);
           },
-          submitText: "Add account", //TODO: INTL
+          submitText: S.of(context)!.addAccount,
         ),
       ),
     );
+    if (userId != null) {
+      final shoudSwitch = await showDialog<bool>(
+            context: context,
+            builder: (context) => const SwitchAccountDialog(),
+          ) ??
+          false;
+      if (shoudSwitch) {
+        await context.read<AuthenticationCubit>().switchAccount(userId);
+        Navigator.pop(context);
+      }
+    }
   }
 }

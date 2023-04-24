@@ -729,5 +729,37 @@
   "allTags": "All",
   "@allTags": {
     "description": "Label shown when a document has to be assigned to all selected tags"
+  },
+  "switchingAccountsPleaseWait": "Switching accounts. Please wait...",
+  "@switchingAccountsPleaseWait": {
+    "description": "Message shown while switching accounts is in progress."
+  },
+  "testConnection": "Test connection",
+  "@testConnection": {
+    "description": "Button label shown on login page. Allows user to test whether the server is reachable or not."
+  },
+  "accounts": "Accounts",
+  "@accounts": {
+    "description": "Title of the account management dialog"
+  },
+  "addAccount": "Add account",
+  "@addAccount": {
+    "description": "Label of add account action"
+  },
+  "switchAccount": "Switch",
+  "@switchAccount": {
+    "description": "Label for switch account action"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Generic Logout label"
+  },
+  "switchAccountTitle": "Switch account",
+  "@switchAccountTitle": {
+    "description": "Title of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
+  },
+  "switchToNewAccount": "Do you want to switch to the new account? You can switch back at any time.",
+  "@switchToNewAccount": {
+    "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   }
 }

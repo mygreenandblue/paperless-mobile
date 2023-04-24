@@ -15,7 +15,7 @@ import 'package:paperless_mobile/features/settings/model/view_type.dart';
 part 'documents_cubit.g.dart';
 part 'documents_state.dart';
 
-class DocumentsCubit extends HydratedCubit<DocumentsState> with DocumentPagingBlocMixin {
+class DocumentsCubit extends Cubit<DocumentsState> with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 

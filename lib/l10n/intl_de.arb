@@ -729,5 +729,37 @@
   "allTags": "Alle",
   "@allTags": {
     "description": "Label shown when a document has to be assigned to all selected tags"
+  },
+  "switchingAccountsPleaseWait": "Kontowechsel, bitte warten...",
+  "@switchingAccountsPleaseWait": {
+    "description": "Message shown while switching accounts is in progress."
+  },
+  "testConnection": "Verbindung testen",
+  "@testConnection": {
+    "description": "Button label shown on login page. Allows user to test whether the server is reachable or not."
+  },
+  "accounts": "Accounts",
+  "@accounts": {
+    "description": "Title of the account management dialog"
+  },
+  "addAccount": "Account hinzufügen",
+  "@addAccount": {
+    "description": "Label of add account action"
+  },
+  "switchAccount": "Wechseln",
+  "@switchAccount": {
+    "description": "Label for switch account action"
+  },
+  "logout": "Ausloggen",
+  "@logout": {
+    "description": "Generic Logout label"
+  },
+  "switchAccountTitle": "Account wechseln",
+  "@switchAccountTitle": {
+    "description": "Title of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
+  },
+  "switchToNewAccount": "Möchtest du zum neuen Account wechseln? Du kannst jederzeit zurückwechseln.",
+  "@switchToNewAccount": {
+    "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   }
 }

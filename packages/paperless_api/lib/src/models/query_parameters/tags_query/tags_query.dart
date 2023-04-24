@@ -13,13 +13,13 @@ class TagsQuery with _$TagsQuery {
 
   @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedTagsQuery)
   const factory TagsQuery.anyAssigned({
-    @Default([]) Iterable<int> tagIds,
+    @Default([]) List<int> tagIds,
   }) = AnyAssignedTagsQuery;
 
   @HiveType(typeId: PaperlessApiHiveTypeIds.idsTagsQuery)
   const factory TagsQuery.ids({
-    @Default([]) Iterable<int> include,
-    @Default([]) Iterable<int> exclude,
+    @Default([]) List<int> include,
+    @Default([]) List<int> exclude,
   }) = IdsTagsQuery;
 
   Map<String, String> toQueryParameter() {
@@ -44,10 +44,6 @@ class TagsQuery with _$TagsQuery {
         return {'is_tagged': '0'};
       },
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {};
   }
 
   bool matches(Iterable<int> ids) {

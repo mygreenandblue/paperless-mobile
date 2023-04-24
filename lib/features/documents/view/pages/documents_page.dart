@@ -461,8 +461,8 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
         context.read<DocumentsCubit>().updateCurrentFilter(
               (filter) => filter.copyWith(
                 tags: tagsQuery.copyWith(
-                    include: tagsQuery.include.whereNot((id) => id == tagId),
-                    exclude: tagsQuery.exclude.whereNot((id) => id == tagId)),
+                    include: tagsQuery.include.whereNot((id) => id == tagId).toList(),
+                    exclude: tagsQuery.exclude.whereNot((id) => id == tagId).toList()),
               ),
             );
       } else {

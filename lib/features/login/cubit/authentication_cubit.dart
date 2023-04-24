@@ -143,8 +143,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       debugPrint("Invalid authentication for $userId");
       return;
     }
-
     final credentials = credentialsBox.get(userId);
+    await credentialsBox.close();
+
     await _resetExternalState();
 
     _dioWrapper.updateSettings(
@@ -154,9 +155,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       baseUrl: account.serverUrl,
     );
 
+    await _reloadRepositories();
     globalSettings.currentLoggedInUser = userId;
     await globalSettings.save();
-    await _reloadRepositories();
+
     emit(
       AuthenticationState(
         isAuthenticated: true,

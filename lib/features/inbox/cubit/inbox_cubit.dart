@@ -97,7 +97,7 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
         updateFilter(
           filter: DocumentFilter(
             sortField: SortField.added,
-            tags: TagsQuery.ids(include: inboxTags),
+            tags: TagsQuery.ids(include: inboxTags.toList()),
           ),
         );
       }
@@ -127,7 +127,7 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
     updateFilter(
       filter: DocumentFilter(
         sortField: SortField.added,
-        tags: TagsQuery.ids(include: inboxTags),
+        tags: TagsQuery.ids(include: inboxTags.toList()),
       ),
     );
   }

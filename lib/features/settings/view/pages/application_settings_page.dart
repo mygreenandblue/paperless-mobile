@@ -15,12 +15,8 @@ class ApplicationSettingsPage extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Tooltip(
-              triggerMode: TooltipTriggerMode.tap,
-              message: "These settings apply to all accounts", //TODO: INTL
-              child: Icon(Icons.info_outline),
-            ),
-          ),
+            child: const Icon(Icons.public),
+          )
         ],
       ),
       body: ListView(

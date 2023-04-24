@@ -11,6 +11,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
@@ -40,6 +41,8 @@ import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+/// Wrapper around all functionality for a logged in user.
+/// Performs initialization logic.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -50,14 +53,37 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _currentIndex = 0;
   final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
+  late final DocumentsCubit _documentsCubit;
   late final InboxCubit _inboxCubit;
+  late final SavedViewCubit _savedViewCubit;
   late Timer _inboxTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _listenForReceivedFiles();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _initializeData(context);
+    final userId =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
+    _documentsCubit = DocumentsCubit(
+      context.read(),
+      context.read(),
+      context.read(),
+      Hive.box<UserAppState>(HiveBoxes.userAppState).get(userId)!,
+    )..reload();
+    _savedViewCubit = SavedViewCubit(
+      context.read(),
+      context.read(),
+    )..reload();
     _inboxCubit = InboxCubit(
       context.read(),
       context.read(),
@@ -65,14 +91,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context.read(),
     );
     _listenToInboxChanges();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _listenForReceivedFiles();
-    });
   }
 
   void _listenToInboxChanges() {
-    _inboxCubit.refreshItemsInInboxCount();
     _inboxTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (!mounted) {
         timer.cancel();
@@ -108,6 +129,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _inboxTimer.cancel();
     _inboxCubit.close();
+    _documentsCubit.close();
+    _savedViewCubit.close();
     super.dispose();
   }
 
@@ -190,7 +213,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final userId = context.watch<AuthenticationCubit>().state.userId;
+    final userId =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser!;
     final destinations = [
       RouteDescription(
         icon: const Icon(Icons.description_outlined),
@@ -239,22 +263,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     final routes = <Widget>[
       MultiBlocProvider(
-        key: ValueKey(userId),
+        // key: ValueKey(userId),
         providers: [
-          BlocProvider(
-            create: (context) => DocumentsCubit(
-              context.read(),
-              context.read(),
-              context.read(),
-              Hive.box<UserAppState>(HiveBoxes.userAppState).get(userId)!,
-            )..reload(),
-          ),
-          BlocProvider(
-            create: (context) => SavedViewCubit(
-              context.read(),
-              context.read(),
-            )..reload(),
-          ),
+          BlocProvider.value(value: _documentsCubit),
+          BlocProvider.value(value: _savedViewCubit),
         ],
         child: const DocumentsPage(),
       ),
@@ -263,7 +275,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: const ScannerPage(),
       ),
       MultiBlocProvider(
-        key: ValueKey(userId),
+        // key: ValueKey(userId),
         providers: [
           BlocProvider(
             create: (context) => LabelCubit(context.read()),

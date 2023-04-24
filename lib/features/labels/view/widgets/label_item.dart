@@ -59,7 +59,6 @@ class LabelItem<T extends Label> extends StatelessWidget {
                       context.read(),
                       context.read(),
                       context.read(),
-                      Hive.box<UserAccount>(HiveBoxes.userAccount).get(currentUser)!,
                     ),
                     child: const LinkedDocumentsPage(),
                   ),

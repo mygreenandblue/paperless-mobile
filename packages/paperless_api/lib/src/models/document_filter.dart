@@ -2,9 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_api/config/hive/hive_type_ids.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/models/query_parameters/tags_query/tags_query.dart';
 
 part 'document_filter.g.dart';
 
@@ -23,30 +21,43 @@ class DocumentFilter extends Equatable {
 
   @HiveField(0)
   final int pageSize;
+
   @HiveField(1)
   final int page;
+
   @HiveField(2)
   final IdQueryParameter documentType;
+
   @HiveField(3)
   final IdQueryParameter correspondent;
+
   @HiveField(4)
   final IdQueryParameter storagePath;
+
   @HiveField(5)
   final IdQueryParameter asnQuery;
+
   @HiveField(6)
   final TagsQuery tags;
+
   @HiveField(7)
   final SortField? sortField;
+
   @HiveField(8)
   final SortOrder sortOrder;
+
   @HiveField(9)
   final DateRangeQuery created;
+
   @HiveField(10)
   final DateRangeQuery added;
+
   @HiveField(11)
   final DateRangeQuery modified;
+
   @HiveField(12)
   final TextQuery query;
+
   @HiveField(13)
   final int? moreLike;
 

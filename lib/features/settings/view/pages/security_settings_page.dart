@@ -13,12 +13,8 @@ class SecuritySettingsPage extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Tooltip(
-              triggerMode: TooltipTriggerMode.tap,
-              message: "These settings apply to the current user only", //TODO: INTL
-              child: Icon(Icons.info_outline),
-            ),
-          ),
+            child: const Icon(Icons.person_outline),
+          )
         ],
       ),
       body: ListView(

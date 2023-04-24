@@ -121,15 +121,15 @@ class TagsFormField extends StatelessWidget {
     final tag = options[id]!;
     return QueryTagChip(
       onDeleted: () => field.didChange(formValue.copyWith(
-        include: formValue.include.whereNot((element) => element == id),
-        exclude: formValue.exclude.whereNot((element) => element == id),
+        include: formValue.include.whereNot((element) => element == id).toList(),
+        exclude: formValue.exclude.whereNot((element) => element == id).toList(),
       )),
       onSelected: allowExclude
           ? () {
               if (formValue.include.contains(id)) {
                 field.didChange(
                   formValue.copyWith(
-                    include: formValue.include.whereNot((element) => element == id),
+                    include: formValue.include.whereNot((element) => element == id).toList(),
                     exclude: [...formValue.exclude, id],
                   ),
                 );
@@ -137,7 +137,7 @@ class TagsFormField extends StatelessWidget {
               field.didChange(
                 formValue.copyWith(
                   include: [...formValue.include, id],
-                  exclude: formValue.exclude.whereNot((element) => element == id),
+                  exclude: formValue.exclude.whereNot((element) => element == id).toList(),
                 ),
               );
             }
@@ -171,7 +171,7 @@ class TagsFormField extends StatelessWidget {
     return QueryTagChip(
       onDeleted: () {
         final updatedQuery = query.copyWith(
-          tagIds: query.tagIds.whereNot((element) => element == e),
+          tagIds: query.tagIds.whereNot((element) => element == e).toList(),
         );
         if (updatedQuery.tagIds.isEmpty) {
           field.didChange(const TagsQuery.ids());

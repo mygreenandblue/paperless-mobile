@@ -65,7 +65,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextButton(
-              child: Text("Test connection"), //TODO: INTL
+              child: Text(S.of(context)!.testConnection),
               onPressed: _updateReachability,
             ),
             FilledButton(

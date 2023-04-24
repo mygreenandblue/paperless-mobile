@@ -1,27 +1,32 @@
 import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
-import 'package:paperless_mobile/core/database/tables/user_settings.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
-part 'document_search_state.dart';
 part 'document_search_cubit.g.dart';
+part 'document_search_state.dart';
 
-class DocumentSearchCubit extends HydratedCubit<DocumentSearchState> with DocumentPagingBlocMixin {
+class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 
   final LabelRepository _labelRepository;
   @override
   final DocumentChangedNotifier notifier;
-  DocumentSearchCubit(this.api, this.notifier, this._labelRepository)
-      : super(const DocumentSearchState()) {
+
+  final UserAppState _userAppState;
+  DocumentSearchCubit(
+    this.api,
+    this.notifier,
+    this._labelRepository,
+    this._userAppState,
+  ) : super(DocumentSearchState(searchHistory: _userAppState.documentSearchHistory)) {
     _labelRepository.addListener(
       this,
       onChanged: (labels) {
@@ -61,6 +66,9 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState> with Docume
         ],
       ),
     );
+    _userAppState
+      ..documentSearchHistory = state.searchHistory
+      ..save();
   }
 
   void updateViewType(ViewType viewType) {
@@ -73,6 +81,9 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState> with Docume
         searchHistory: state.searchHistory.whereNot((element) => element == entry).toList(),
       ),
     );
+    _userAppState
+      ..documentSearchHistory = state.searchHistory
+      ..save();
   }
 
   Future<void> suggest(String query) async {
@@ -92,11 +103,13 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState> with Docume
   }
 
   void reset() {
-    emit(state.copyWith(
-      view: SearchView.suggestions,
-      suggestions: [],
-      isLoading: false,
-    ));
+    emit(
+      state.copyWith(
+        view: SearchView.suggestions,
+        suggestions: [],
+        isLoading: false,
+      ),
+    );
   }
 
   @override
@@ -104,16 +117,6 @@ class DocumentSearchCubit extends HydratedCubit<DocumentSearchState> with Docume
     notifier.removeListener(this);
     _labelRepository.removeListener(this);
     return super.close();
-  }
-
-  @override
-  DocumentSearchState? fromJson(Map<String, dynamic> json) {
-    return DocumentSearchState.fromJson(json);
-  }
-
-  @override
-  Map<String, dynamic>? toJson(DocumentSearchState state) {
-    return state.toJson();
   }
 
   @override

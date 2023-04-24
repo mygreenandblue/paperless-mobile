@@ -319,7 +319,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
                 ),
               ),
             ],
-            child: const HomePage(),
+            child: HomePage(
+              key: ValueKey(authentication.userId),
+            ),
           );
         } else if (authentication.showBiometricAuthenticationScreen) {
           return const VerifyIdentityPage();

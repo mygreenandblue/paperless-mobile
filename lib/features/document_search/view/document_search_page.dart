@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
@@ -14,6 +18,8 @@ import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'dart:math' as math;
 
 Future<void> showDocumentSearchPage(BuildContext context) {
+  final currentUser =
+      Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
   return Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => BlocProvider(
@@ -21,6 +27,7 @@ Future<void> showDocumentSearchPage(BuildContext context) {
           context.read(),
           context.read(),
           context.read(),
+          Hive.box<UserAppState>(HiveBoxes.userAppState).get(currentUser)!,
         ),
         child: const DocumentSearchPage(),
       ),
@@ -111,9 +118,8 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
   }
 
   Widget _buildSuggestionsView(DocumentSearchState state) {
-    final suggestions = state.suggestions
-        .whereNot((element) => state.searchHistory.contains(element))
-        .toList();
+    final suggestions =
+        state.suggestions.whereNot((element) => state.searchHistory.contains(element)).toList();
     final historyMatches = state.searchHistory
         .where(
           (element) => element.startsWith(query),
@@ -195,8 +201,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           builder: (context, state) {
             return ViewTypeSelectionWidget(
               viewType: state.viewType,
-              onChanged: (type) =>
-                  context.read<DocumentSearchCubit>().updateViewType(type),
+              onChanged: (type) => context.read<DocumentSearchCubit>().updateViewType(type),
             );
           },
         )
