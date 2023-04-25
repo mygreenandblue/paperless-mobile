@@ -9,7 +9,7 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
@@ -26,7 +26,7 @@ class ManageAccountsPage extends StatelessWidget {
     return GlobalSettingsBuilder(
       builder: (context, globalSettings) {
         return ValueListenableBuilder(
-          valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+          valueListenable: Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
           builder: (context, box, _) {
             final userIds = box.keys.toList().cast<String>();
             final otherAccounts = userIds
@@ -68,7 +68,7 @@ class ManageAccountsPage extends StatelessWidget {
                   title: Text(S.of(context)!.addAccount),
                   leading: const Icon(Icons.person_add),
                   onTap: () {
-                    _onAddAccount(context);
+                    _onAddAccount(context, globalSettings.currentLoggedInUser!);
                   },
                 ),
               ],
@@ -82,7 +82,7 @@ class ManageAccountsPage extends StatelessWidget {
   Widget _buildAccountTile(
     BuildContext context,
     String userId,
-    UserAccount account,
+    LocalUserAccount account,
     GlobalSettings settings,
   ) {
     final isLoggedIn = userId == settings.currentLoggedInUser;
@@ -147,16 +147,7 @@ class ManageAccountsPage extends StatelessWidget {
           onSelected: (value) async {
             if (value == 0) {
               // Switch
-              final navigator = Navigator.of(context);
-              if (settings.currentLoggedInUser == userId) return;
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SwitchingAccountsPage(),
-                ),
-              );
-              await context.read<AuthenticationCubit>().switchAccount(userId);
-              navigator.popUntil((route) => route.isFirst);
+              _onSwitchAccount(context, settings.currentLoggedInUser!, userId);
             } else if (value == 1) {
               // Remove
               final shouldPop = userId == settings.currentLoggedInUser;
@@ -177,7 +168,7 @@ class ManageAccountsPage extends StatelessWidget {
     return child;
   }
 
-  Future<void> _onAddAccount(BuildContext context) async {
+  Future<void> _onAddAccount(BuildContext context, String currentUser) async {
     final userId = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -207,9 +198,21 @@ class ManageAccountsPage extends StatelessWidget {
           ) ??
           false;
       if (shoudSwitch) {
-        await context.read<AuthenticationCubit>().switchAccount(userId);
-        Navigator.pop(context);
+        _onSwitchAccount(context, currentUser, userId);
       }
     }
+  }
+
+  _onSwitchAccount(BuildContext context, String currentUser, String newUser) async {
+    final navigator = Navigator.of(context);
+    if (currentUser == newUser) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SwitchingAccountsPage(),
+      ),
+    );
+    await context.read<AuthenticationCubit>().switchAccount(newUser);
+    navigator.popUntil((route) => route.isFirst);
   }
 }

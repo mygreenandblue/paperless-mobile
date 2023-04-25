@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/type/types.dart';
-import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
@@ -12,8 +7,6 @@ import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/login_pages/server_connection_page.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 import 'widgets/login_pages/server_login_page.dart';
 import 'widgets/never_scrollable_scroll_behavior.dart';

@@ -38,7 +38,7 @@ mixin _$IdQueryParameter {
     required TResult Function() unset,
     required TResult Function() notAssigned,
     required TResult Function() anyAssigned,
-    required TResult Function(@HiveField(0) int? id) fromId,
+    required TResult Function(@HiveField(0) int id) fromId,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -46,7 +46,7 @@ mixin _$IdQueryParameter {
     TResult? Function()? unset,
     TResult? Function()? notAssigned,
     TResult? Function()? anyAssigned,
-    TResult? Function(@HiveField(0) int? id)? fromId,
+    TResult? Function(@HiveField(0) int id)? fromId,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -54,7 +54,7 @@ mixin _$IdQueryParameter {
     TResult Function()? unset,
     TResult Function()? notAssigned,
     TResult Function()? anyAssigned,
-    TResult Function(@HiveField(0) int? id)? fromId,
+    TResult Function(@HiveField(0) int id)? fromId,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -155,7 +155,7 @@ class _$UnsetIdQueryParameter extends UnsetIdQueryParameter {
     required TResult Function() unset,
     required TResult Function() notAssigned,
     required TResult Function() anyAssigned,
-    required TResult Function(@HiveField(0) int? id) fromId,
+    required TResult Function(@HiveField(0) int id) fromId,
   }) {
     return unset();
   }
@@ -166,7 +166,7 @@ class _$UnsetIdQueryParameter extends UnsetIdQueryParameter {
     TResult? Function()? unset,
     TResult? Function()? notAssigned,
     TResult? Function()? anyAssigned,
-    TResult? Function(@HiveField(0) int? id)? fromId,
+    TResult? Function(@HiveField(0) int id)? fromId,
   }) {
     return unset?.call();
   }
@@ -177,7 +177,7 @@ class _$UnsetIdQueryParameter extends UnsetIdQueryParameter {
     TResult Function()? unset,
     TResult Function()? notAssigned,
     TResult Function()? anyAssigned,
-    TResult Function(@HiveField(0) int? id)? fromId,
+    TResult Function(@HiveField(0) int id)? fromId,
     required TResult orElse(),
   }) {
     if (unset != null) {
@@ -293,7 +293,7 @@ class _$NotAssignedIdQueryParameter extends NotAssignedIdQueryParameter {
     required TResult Function() unset,
     required TResult Function() notAssigned,
     required TResult Function() anyAssigned,
-    required TResult Function(@HiveField(0) int? id) fromId,
+    required TResult Function(@HiveField(0) int id) fromId,
   }) {
     return notAssigned();
   }
@@ -304,7 +304,7 @@ class _$NotAssignedIdQueryParameter extends NotAssignedIdQueryParameter {
     TResult? Function()? unset,
     TResult? Function()? notAssigned,
     TResult? Function()? anyAssigned,
-    TResult? Function(@HiveField(0) int? id)? fromId,
+    TResult? Function(@HiveField(0) int id)? fromId,
   }) {
     return notAssigned?.call();
   }
@@ -315,7 +315,7 @@ class _$NotAssignedIdQueryParameter extends NotAssignedIdQueryParameter {
     TResult Function()? unset,
     TResult Function()? notAssigned,
     TResult Function()? anyAssigned,
-    TResult Function(@HiveField(0) int? id)? fromId,
+    TResult Function(@HiveField(0) int id)? fromId,
     required TResult orElse(),
   }) {
     if (notAssigned != null) {
@@ -431,7 +431,7 @@ class _$AnyAssignedIdQueryParameter extends AnyAssignedIdQueryParameter {
     required TResult Function() unset,
     required TResult Function() notAssigned,
     required TResult Function() anyAssigned,
-    required TResult Function(@HiveField(0) int? id) fromId,
+    required TResult Function(@HiveField(0) int id) fromId,
   }) {
     return anyAssigned();
   }
@@ -442,7 +442,7 @@ class _$AnyAssignedIdQueryParameter extends AnyAssignedIdQueryParameter {
     TResult? Function()? unset,
     TResult? Function()? notAssigned,
     TResult? Function()? anyAssigned,
-    TResult? Function(@HiveField(0) int? id)? fromId,
+    TResult? Function(@HiveField(0) int id)? fromId,
   }) {
     return anyAssigned?.call();
   }
@@ -453,7 +453,7 @@ class _$AnyAssignedIdQueryParameter extends AnyAssignedIdQueryParameter {
     TResult Function()? unset,
     TResult Function()? notAssigned,
     TResult Function()? anyAssigned,
-    TResult Function(@HiveField(0) int? id)? fromId,
+    TResult Function(@HiveField(0) int id)? fromId,
     required TResult orElse(),
   }) {
     if (anyAssigned != null) {
@@ -521,7 +521,7 @@ abstract class _$$SetIdQueryParameterCopyWith<$Res> {
           $Res Function(_$SetIdQueryParameter) then) =
       __$$SetIdQueryParameterCopyWithImpl<$Res>;
   @useResult
-  $Res call({@HiveField(0) int? id});
+  $Res call({@HiveField(0) int id});
 }
 
 /// @nodoc
@@ -535,13 +535,13 @@ class __$$SetIdQueryParameterCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
   }) {
     return _then(_$SetIdQueryParameter(
-      freezed == id
+      null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int?,
+              as int,
     ));
   }
 }
@@ -559,7 +559,7 @@ class _$SetIdQueryParameter extends SetIdQueryParameter {
 
   @override
   @HiveField(0)
-  final int? id;
+  final int id;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -594,7 +594,7 @@ class _$SetIdQueryParameter extends SetIdQueryParameter {
     required TResult Function() unset,
     required TResult Function() notAssigned,
     required TResult Function() anyAssigned,
-    required TResult Function(@HiveField(0) int? id) fromId,
+    required TResult Function(@HiveField(0) int id) fromId,
   }) {
     return fromId(id);
   }
@@ -605,7 +605,7 @@ class _$SetIdQueryParameter extends SetIdQueryParameter {
     TResult? Function()? unset,
     TResult? Function()? notAssigned,
     TResult? Function()? anyAssigned,
-    TResult? Function(@HiveField(0) int? id)? fromId,
+    TResult? Function(@HiveField(0) int id)? fromId,
   }) {
     return fromId?.call(id);
   }
@@ -616,7 +616,7 @@ class _$SetIdQueryParameter extends SetIdQueryParameter {
     TResult Function()? unset,
     TResult Function()? notAssigned,
     TResult Function()? anyAssigned,
-    TResult Function(@HiveField(0) int? id)? fromId,
+    TResult Function(@HiveField(0) int id)? fromId,
     required TResult orElse(),
   }) {
     if (fromId != null) {
@@ -671,7 +671,7 @@ class _$SetIdQueryParameter extends SetIdQueryParameter {
 }
 
 abstract class SetIdQueryParameter extends IdQueryParameter {
-  const factory SetIdQueryParameter(@HiveField(0) final int? id) =
+  const factory SetIdQueryParameter(@HiveField(0) final int id) =
       _$SetIdQueryParameter;
   const SetIdQueryParameter._() : super._();
 
@@ -679,7 +679,7 @@ abstract class SetIdQueryParameter extends IdQueryParameter {
       _$SetIdQueryParameter.fromJson;
 
   @HiveField(0)
-  int? get id;
+  int get id;
   @JsonKey(ignore: true)
   _$$SetIdQueryParameterCopyWith<_$SetIdQueryParameter> get copyWith =>
       throw _privateConstructorUsedError;

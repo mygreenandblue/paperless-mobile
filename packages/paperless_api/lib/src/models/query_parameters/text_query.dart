@@ -7,6 +7,7 @@ import 'query_type.dart';
 
 part 'text_query.g.dart';
 
+//TODO: Realize with freezed...
 @HiveType(typeId: PaperlessApiHiveTypeIds.textQuery)
 @JsonSerializable()
 class TextQuery extends Equatable {

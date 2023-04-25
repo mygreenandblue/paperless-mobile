@@ -55,7 +55,9 @@ class _BulkEditLabelBottomSheetState<T extends Label> extends State<BulkEditLabe
                   FormBuilder(
                     key: _formKey,
                     child: LabelFormField<T>(
-                      initialValue: IdQueryParameter.fromId(widget.initialValue),
+                      initialValue: widget.initialValue != null
+                          ? IdQueryParameter.fromId(widget.initialValue!)
+                          : const IdQueryParameter.unset(),
                       name: "labelFormField",
                       options: widget.availableOptionsSelector(state),
                       labelText: widget.formFieldLabel,

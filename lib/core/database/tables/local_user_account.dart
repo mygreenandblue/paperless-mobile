@@ -1,11 +1,11 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 
-part 'user_account.g.dart';
+part 'local_user_account.g.dart';
 
-@HiveType(typeId: HiveTypeIds.userAccount)
-class UserAccount extends HiveObject {
+@HiveType(typeId: HiveTypeIds.localUserAccount)
+class LocalUserAccount extends HiveObject {
   @HiveField(0)
   final String serverUrl;
 
@@ -19,9 +19,9 @@ class UserAccount extends HiveObject {
   final String id;
 
   @HiveField(4)
-  UserSettings settings;
+  LocalUserSettings settings;
 
-  UserAccount({
+  LocalUserAccount({
     required this.id,
     required this.serverUrl,
     required this.username,

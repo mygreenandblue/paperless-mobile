@@ -14,7 +14,7 @@ class IdQueryParameter with _$IdQueryParameter {
   @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
   const factory IdQueryParameter.anyAssigned() = AnyAssignedIdQueryParameter;
   @HiveType(typeId: PaperlessApiHiveTypeIds.setIdQueryParameter)
-  const factory IdQueryParameter.fromId(@HiveField(0) int? id) = SetIdQueryParameter;
+  const factory IdQueryParameter.fromId(@HiveField(0) int id) = SetIdQueryParameter;
 
   Map<String, String> toQueryParameter(String field) {
     return when(

@@ -1,8 +1,6 @@
 part of 'saved_view_details_cubit.dart';
 
-@JsonSerializable(ignoreUnannotated: true)
 class SavedViewDetailsState extends DocumentPagingState {
-  @JsonKey()
   final ViewType viewType;
 
   final Map<int, Correspondent> correspondents;
@@ -70,9 +68,4 @@ class SavedViewDetailsState extends DocumentPagingState {
       storagePaths: storagePaths ?? this.storagePaths,
     );
   }
-
-  factory SavedViewDetailsState.fromJson(Map<String, dynamic> json) =>
-      _$SavedViewDetailsStateFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SavedViewDetailsStateToJson(this);
 }

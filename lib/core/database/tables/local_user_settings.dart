@@ -1,15 +1,14 @@
 import 'package:hive/hive.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 
-part 'user_settings.g.dart';
+part 'local_user_settings.g.dart';
 
-@HiveType(typeId: HiveTypeIds.userSettings)
-class UserSettings with HiveObjectMixin {
+@HiveType(typeId: HiveTypeIds.localUserSettings)
+class LocalUserSettings with HiveObjectMixin {
   @HiveField(0)
   bool isBiometricAuthenticationEnabled;
 
-  UserSettings({
+  LocalUserSettings({
     this.isBiometricAuthenticationEnabled = false,
   });
 }

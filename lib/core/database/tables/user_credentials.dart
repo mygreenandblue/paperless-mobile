@@ -4,7 +4,7 @@ import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 
 part 'user_credentials.g.dart';
 
-@HiveType(typeId: HiveTypeIds.userCredentials)
+@HiveType(typeId: HiveTypeIds.localUserCredentials)
 class UserCredentials extends HiveObject {
   @HiveField(0)
   final String token;

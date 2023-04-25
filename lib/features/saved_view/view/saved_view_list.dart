@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
@@ -17,11 +21,9 @@ class SavedViewList extends StatelessWidget {
         return BlocBuilder<SavedViewCubit, SavedViewState>(
           builder: (context, state) {
             return state.when(
-              initial: (correspondents, documentTypes, tags, storagePaths) =>
-                  Container(),
-              loading: (correspondents, documentTypes, tags, storagePaths) =>
-                  Center(
-                child: Text("Saved views loading..."),
+              initial: (correspondents, documentTypes, tags, storagePaths) => Container(),
+              loading: (correspondents, documentTypes, tags, storagePaths) => Center(
+                child: Text("Saved views loading..."), //TODO: INTL
               ),
               loaded: (
                 savedViews,
@@ -33,9 +35,7 @@ class SavedViewList extends StatelessWidget {
                 if (savedViews.isEmpty) {
                   return SliverToBoxAdapter(
                     child: HintCard(
-                      hintText: S
-                          .of(context)!
-                          .createViewsToQuicklyFilterYourDocuments,
+                      hintText: S.of(context)!.createViewsToQuicklyFilterYourDocuments,
                     ),
                   );
                 }
@@ -59,13 +59,17 @@ class SavedViewList extends StatelessWidget {
                                       ctxt.read(),
                                       ctxt.read(),
                                       context.read(),
+                                      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(
+                                        Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+                                            .getValue()!
+                                            .currentLoggedInUser!,
+                                      )!,
                                       savedView: view,
                                     ),
                                   ),
                                 ],
                                 child: SavedViewDetailsPage(
-                                  onDelete:
-                                      context.read<SavedViewCubit>().remove,
+                                  onDelete: context.read<SavedViewCubit>().remove,
                                 ),
                               ),
                             ),

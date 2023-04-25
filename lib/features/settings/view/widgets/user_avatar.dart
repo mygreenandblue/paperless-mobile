@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 
 class UserAvatar extends StatelessWidget {
   final String userId;
-  final UserAccount account;
+  final LocalUserAccount account;
   const UserAvatar({
     super.key,
     required this.userId,

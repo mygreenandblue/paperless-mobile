@@ -80,11 +80,12 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
             final index = AutocompleteHighlightedOption.of(context);
             final value = index.isNegative ? null : options.elementAt(index);
             widget.onSubmit(
-                returnValue: IdQueryParameter.fromId(
-              value?.whenOrNull(
-                fromId: (id) => id,
-              ),
-            ));
+              returnValue: value?.maybeWhen(
+                    fromId: (id) => IdQueryParameter.fromId(id),
+                    orElse: () => const IdQueryParameter.unset(),
+                  ) ??
+                  const IdQueryParameter.unset(),
+            );
           },
           autofocus: true,
           style: theme.textTheme.bodyLarge?.apply(
@@ -167,7 +168,7 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
       if (widget.initialValue == null) {
         // If nothing is selected yet, show all options first.
         for (final option in widget.options.values) {
-          yield IdQueryParameter.fromId(option.id);
+          yield IdQueryParameter.fromId(option.id!);
         }
         if (widget.showNotAssignedOption) {
           yield const IdQueryParameter.notAssigned();
@@ -189,7 +190,7 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
           if (initialValue is SetIdQueryParameter && option.id == initialValue.id) {
             continue;
           }
-          yield IdQueryParameter.fromId(option.id);
+          yield IdQueryParameter.fromId(option.id!);
         }
       }
     } else {
@@ -198,7 +199,7 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
           widget.options.values.where((e) => e.name.trim().toLowerCase().contains(normalizedQuery));
       if (matches.isNotEmpty) {
         for (final match in matches) {
-          yield IdQueryParameter.fromId(match.id);
+          yield IdQueryParameter.fromId(match.id!);
         }
         if (widget.showNotAssignedOption) {
           yield const IdQueryParameter.notAssigned();
@@ -225,7 +226,7 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
       unset: () => S.of(context)!.startTyping,
       notAssigned: () => S.of(context)!.notAssigned,
       anyAssigned: () => S.of(context)!.anyAssigned,
-      fromId: (id) => widget.options[id]!.name,
+      fromId: (id) => widget.options[id]?.name ?? S.of(context)!.startTyping,
     );
   }
 

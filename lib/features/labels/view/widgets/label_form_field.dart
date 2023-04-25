@@ -49,7 +49,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
           unset: () => '',
           notAssigned: () => S.of(context)!.notAssigned,
           anyAssigned: () => S.of(context)!.anyAssigned,
-          fromId: (id) => options[id]!.name,
+          fromId: (id) => options[id]?.name,
         ) ??
         '';
   }
@@ -142,7 +142,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                           child: ActionChip(
                             label: Text(suggestion.name),
                             onPressed: () => field.didChange(
-                              IdQueryParameter.fromId(suggestion.id),
+                              IdQueryParameter.fromId(suggestion.id!),
                             ),
                           ),
                         );

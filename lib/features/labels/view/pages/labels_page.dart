@@ -145,7 +145,7 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                 LabelTabView<Correspondent>(
                                   labels: context.watch<LabelCubit>().state.correspondents,
                                   filterBuilder: (label) => DocumentFilter(
-                                    correspondent: IdQueryParameter.fromId(label.id),
+                                    correspondent: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   onEdit: _openEditCorrespondentPage,
@@ -166,7 +166,7 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                 LabelTabView<DocumentType>(
                                   labels: context.watch<LabelCubit>().state.documentTypes,
                                   filterBuilder: (label) => DocumentFilter(
-                                    documentType: IdQueryParameter.fromId(label.id),
+                                    documentType: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   onEdit: _openEditDocumentTypePage,
@@ -218,7 +218,7 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                   labels: context.watch<LabelCubit>().state.storagePaths,
                                   onEdit: _openEditStoragePathPage,
                                   filterBuilder: (label) => DocumentFilter(
-                                    storagePath: IdQueryParameter.fromId(label.id),
+                                    storagePath: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
                                   contentBuilder: (path) => Text(path.path),

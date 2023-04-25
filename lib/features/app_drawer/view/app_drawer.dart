@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
@@ -69,7 +69,7 @@ class AppDrawer extends StatelessWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
-                    value: context.read<PaperlessServerInformationCubit>(),
+                    value: context.read<ServerInformationCubit>(),
                     child: const SettingsPage(),
                   ),
                 ),

@@ -7,25 +7,25 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LocalAuthenticationService _localAuthService;
   final PaperlessAuthenticationApi _authApi;
-  final SessionManager _dioWrapper;
+  final SessionManager _sessionManager;
   final LabelRepository _labelRepository;
   final SavedViewRepository _savedViewRepository;
   final PaperlessServerStatsApi _serverStatsApi;
@@ -33,7 +33,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit(
     this._localAuthService,
     this._authApi,
-    this._dioWrapper,
+    this._sessionManager,
     this._labelRepository,
     this._savedViewRepository,
     this._serverStatsApi,
@@ -46,7 +46,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     assert(credentials.username != null && credentials.password != null);
 
-    _dioWrapper.updateSettings(
+    _sessionManager.updateSettings(
       baseUrl: serverUrl,
       clientCertificate: clientCertificate,
     );
@@ -54,13 +54,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       username: credentials.username!,
       password: credentials.password!,
     );
-    _dioWrapper.updateSettings(
+    _sessionManager.updateSettings(
       baseUrl: serverUrl,
       clientCertificate: clientCertificate,
       authToken: token,
     );
-    final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-    final userStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
+
+    final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
+    final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
 
     final userId = "${credentials.username}@$serverUrl";
 
@@ -72,9 +73,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     // Create user account
     await userAccountBox.put(
       userId,
-      UserAccount(
+      LocalUserAccount(
         id: userId,
-        settings: UserSettings(),
+        settings: LocalUserSettings(),
         serverUrl: serverUrl,
         username: credentials.username!,
         fullName: fullName,
@@ -84,7 +85,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     // Create user state
     await userStateBox.put(
       userId,
-      UserAppState(userId: userId),
+      LocalUserAppState(userId: userId),
     );
 
     // Save credentials in encrypted box
@@ -119,7 +120,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     if (globalSettings.currentLoggedInUser == userId) {
       return;
     }
-    final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
+    final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
 
     if (!userAccountBox.containsKey(userId)) {
       debugPrint("User $userId not yet registered.");
@@ -148,7 +149,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     await _resetExternalState();
 
-    _dioWrapper.updateSettings(
+    _sessionManager.updateSettings(
       authToken: credentials!.token,
       clientCertificate: credentials.clientCertificate,
       serverInformation: PaperlessServerInformationModel(),
@@ -178,8 +179,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     assert(credentials.password != null && credentials.username != null);
     final userId = "${credentials.username}@$serverUrl";
 
-    final userAccountsBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
-    final userStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
+    final userAccountsBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
+    final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
 
     if (userAccountsBox.containsKey(userId)) {
       throw Exception("User already exists");
@@ -204,11 +205,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     await userAccountsBox.put(
       userId,
-      UserAccount(
+      LocalUserAccount(
         id: userId,
         serverUrl: serverUrl,
         username: credentials.username!,
-        settings: UserSettings(
+        settings: LocalUserSettings(
           isBiometricAuthenticationEnabled: enableBiometricAuthentication,
         ),
         fullName: fullName,
@@ -217,7 +218,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     await userStateBox.put(
       userId,
-      UserAppState(
+      LocalUserAppState(
         userId: userId,
       ),
     );
@@ -236,15 +237,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future<void> removeAccount(String userId) async {
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    final userAccountBox = Hive.box<UserAccount>(HiveBoxes.userAccount);
+    final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     final userCredentialsBox = await _getUserCredentialsBox();
-    final userAppStateBox = Hive.box<UserAppState>(HiveBoxes.userAppState);
+    final userAppStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
     final currentUser = globalSettings.currentLoggedInUser;
 
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
     await userCredentialsBox.delete(userId);
-    await userAccountBox.close();
+    await userCredentialsBox.close();
 
     if (currentUser == userId) {
       return logout();
@@ -262,7 +263,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       return;
     }
 
-    final userAccount = Hive.box<UserAccount>(HiveBoxes.userAccount).get(userId)!;
+    final userAccount = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(userId)!;
 
     if (userAccount.settings.isBiometricAuthenticationEnabled) {
       final localAuthSuccess =
@@ -280,7 +281,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     if (authentication == null) {
       throw Exception("User should be authenticated but no authentication information was found.");
     }
-    _dioWrapper.updateSettings(
+    _sessionManager.updateSettings(
       clientCertificate: authentication.clientCertificate,
       authToken: authentication.token,
       baseUrl: userAccount.serverUrl,
@@ -321,13 +322,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<Box<UserCredentials>> _getUserCredentialsBox() async {
     final keyBytes = await _getEncryptedBoxKey();
     return Hive.openBox<UserCredentials>(
-      HiveBoxes.userCredentials,
+      HiveBoxes.localUserCredentials,
       encryptionCipher: HiveAesCipher(keyBytes),
     );
   }
 
   Future<void> _resetExternalState() {
-    _dioWrapper.resetSettings();
+    _sessionManager.resetSettings();
     return Future.wait([
       HydratedBloc.storage.clear(),
       _labelRepository.clear(),

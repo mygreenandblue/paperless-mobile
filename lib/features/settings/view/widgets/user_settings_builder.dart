@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 
 class UserAccountBuilder extends StatelessWidget {
   final Widget Function(
     BuildContext context,
-    UserAccount? settings,
+    LocalUserAccount? settings,
   ) builder;
 
   const UserAccountBuilder({
@@ -18,8 +18,8 @@ class UserAccountBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box<UserAccount>>(
-      valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+    return ValueListenableBuilder<Box<LocalUserAccount>>(
+      valueListenable: Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
       builder: (context, accountBox, _) {
         final currentUser =
             Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;

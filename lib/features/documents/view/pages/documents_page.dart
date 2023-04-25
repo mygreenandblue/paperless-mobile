@@ -482,7 +482,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
     try {
       final correspondent = cubit.state.filter.correspondent;
       if (correspondent is SetIdQueryParameter) {
-        if (correspondent.id == correspondentId) {
+        if (correspondentId == null || correspondent.id == correspondentId) {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(correspondent: const IdQueryParameter.unset()),
           );
@@ -502,7 +502,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
     try {
       final documentType = cubit.state.filter.documentType;
       if (documentType is SetIdQueryParameter) {
-        if (documentType.id == documentTypeId) {
+        if (documentTypeId == null || documentType.id == documentTypeId) {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(documentType: const IdQueryParameter.unset()),
           );
@@ -522,7 +522,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
     try {
       final path = cubit.state.filter.documentType;
       if (path is SetIdQueryParameter) {
-        if (path.id == pathId) {
+        if (pathId == null || path.id == pathId) {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(storagePath: const IdQueryParameter.unset()),
           );

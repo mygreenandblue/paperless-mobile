@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
@@ -27,7 +27,7 @@ Future<void> showDocumentSearchPage(BuildContext context) {
           context.read(),
           context.read(),
           context.read(),
-          Hive.box<UserAppState>(HiveBoxes.userAppState).get(currentUser)!,
+          Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(currentUser)!,
         ),
         child: const DocumentSearchPage(),
       ),

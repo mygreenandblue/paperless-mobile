@@ -18,9 +18,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -32,11 +32,12 @@ import 'package:paperless_mobile/core/service/dio_file_service.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
+import 'package:paperless_mobile/features/home/view/home_route.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
@@ -66,8 +67,8 @@ Future<void> _initHive() async {
   // await getApplicationDocumentsDirectory().then((value) => value.delete(recursive: true));
 
   registerHiveAdapters();
-  await Hive.openBox<UserAccount>(HiveBoxes.userAccount);
-  await Hive.openBox<UserAppState>(HiveBoxes.userAppState);
+  await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
+  await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
   final globalSettingsBox = await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
 
   if (!globalSettingsBox.hasValue) {
@@ -302,26 +303,8 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, authentication) {
         if (authentication.isAuthenticated) {
-          return MultiBlocProvider(
-            // This key will cause the subtree to be remounted, which will again
-            // call the provider's create callback! Without this key, the blocs
-            // would not be recreated on account switch!
+          return HomeRoute(
             key: ValueKey(authentication.userId),
-            providers: [
-              BlocProvider(
-                create: (context) => TaskStatusCubit(
-                  context.read<PaperlessTasksApi>(),
-                ),
-              ),
-              BlocProvider<PaperlessServerInformationCubit>(
-                create: (context) => PaperlessServerInformationCubit(
-                  context.read<PaperlessServerStatsApi>(),
-                ),
-              ),
-            ],
-            child: HomePage(
-              key: ValueKey(authentication.userId),
-            ),
           );
         } else if (authentication.showBiometricAuthenticationScreen) {
           return const VerifyIdentityPage();

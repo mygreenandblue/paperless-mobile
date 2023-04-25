@@ -9,10 +9,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
@@ -30,7 +30,7 @@ import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
@@ -62,15 +62,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _listenForReceivedFiles();
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     _initializeData(context);
     final userId =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
@@ -78,7 +69,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context.read(),
       context.read(),
       context.read(),
-      Hive.box<UserAppState>(HiveBoxes.userAppState).get(userId)!,
+      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(userId)!,
     )..reload();
     _savedViewCubit = SavedViewCubit(
       context.read(),
@@ -91,6 +82,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context.read(),
     );
     _listenToInboxChanges();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _listenForReceivedFiles();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   void _listenToInboxChanges() {
@@ -352,7 +351,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Future.wait([
       context.read<LabelRepository>().initialize(),
       context.read<SavedViewRepository>().findAll(),
-      context.read<PaperlessServerInformationCubit>().updateInformtion(),
+      context.read<ServerInformationCubit>().updateInformation(),
     ]).onError<PaperlessServerException>((error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
       throw error;

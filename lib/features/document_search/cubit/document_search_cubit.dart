@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
@@ -20,7 +20,7 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
   @override
   final DocumentChangedNotifier notifier;
 
-  final UserAppState _userAppState;
+  final LocalUserAppState _userAppState;
   DocumentSearchCubit(
     this.api,
     this.notifier,
@@ -56,7 +56,7 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
     final searchFilter = DocumentFilter(
       query: TextQuery.extended(query),
     );
-
+    
     await updateFilter(filter: searchFilter);
     emit(
       state.copyWith(

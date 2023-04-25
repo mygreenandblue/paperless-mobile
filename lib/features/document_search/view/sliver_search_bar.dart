@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart' as s;
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
@@ -43,7 +43,8 @@ class SliverSearchBar extends StatelessWidget {
               icon: GlobalSettingsBuilder(
                 builder: (context, settings) {
                   return ValueListenableBuilder(
-                    valueListenable: Hive.box<UserAccount>(HiveBoxes.userAccount).listenable(),
+                    valueListenable:
+                        Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
                     builder: (context, box, _) {
                       final account = box.get(settings.currentLoggedInUser!)!;
                       return UserAvatar(userId: settings.currentLoggedInUser!, account: account);
@@ -55,7 +56,7 @@ class SliverSearchBar extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (_) => BlocProvider.value(
-                    value: context.read<PaperlessServerInformationCubit>(),
+                    value: context.read<ServerInformationCubit>(),
                     child: const ManageAccountsPage(),
                   ),
                 );

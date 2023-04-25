@@ -111,9 +111,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 addLabelText: S.of(context)!.addCorrespondent,
                                 labelText: S.of(context)!.correspondent,
                                 options: context.watch<DocumentEditCubit>().state.correspondents,
-                                initialValue: IdQueryParameter.fromId(
-                                  state.document.correspondent,
-                                ),
+                                initialValue: state.document.correspondent != null
+                                    ? IdQueryParameter.fromId(state.document.correspondent!)
+                                    : const IdQueryParameter.unset(),
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
                               ),
@@ -145,7 +145,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 ),
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType,
-                                initialValue: IdQueryParameter.fromId(state.document.documentType),
+                                initialValue: state.document.documentType != null
+                                    ? IdQueryParameter.fromId(state.document.documentType!)
+                                    : const IdQueryParameter.unset(),
                                 options: state.documentTypes,
                                 name: _DocumentEditPageState.fkDocumentType,
                                 prefixIcon: const Icon(Icons.description_outlined),
@@ -176,7 +178,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 addLabelText: S.of(context)!.addStoragePath,
                                 labelText: S.of(context)!.storagePath,
                                 options: state.storagePaths,
-                                initialValue: IdQueryParameter.fromId(state.document.storagePath),
+                                initialValue: state.document.storagePath != null
+                                    ? IdQueryParameter.fromId(state.document.storagePath!)
+                                    : const IdQueryParameter.unset(),
                                 name: fkStoragePath,
                                 prefixIcon: const Icon(Icons.folder_outlined),
                               ),

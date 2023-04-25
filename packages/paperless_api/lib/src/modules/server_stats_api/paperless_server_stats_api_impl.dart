@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:http/http.dart';
 import 'package:paperless_api/src/models/paperless_server_exception.dart';
 import 'package:paperless_api/src/models/paperless_server_information_model.dart';
 import 'package:paperless_api/src/models/paperless_server_statistics_model.dart';
@@ -21,20 +18,14 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
 
   @override
   Future<PaperlessServerInformationModel> getServerInformation() async {
-    final response = await client.get("/api/ui_settings/");
+    final response = await client.get("/api/");
     final version =
         response.headers[PaperlessServerInformationModel.versionHeader]?.first ?? 'unknown';
     final apiVersion = int.tryParse(
         response.headers[PaperlessServerInformationModel.apiVersionHeader]?.first ?? '1');
-    final String username = response.data['username'];
-    final String host = response.headers[PaperlessServerInformationModel.hostHeader]?.first ??
-        response.headers[PaperlessServerInformationModel.hostHeader]?.first ??
-        ('${response.requestOptions.uri.host}:${response.requestOptions.uri.port}');
     return PaperlessServerInformationModel(
-      username: username,
       version: version,
       apiVersion: apiVersion,
-      host: host,
     );
   }
 

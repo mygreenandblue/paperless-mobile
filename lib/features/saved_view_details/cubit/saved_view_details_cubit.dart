@@ -1,17 +1,16 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
-part 'saved_view_details_cubit.g.dart';
 part 'saved_view_details_state.dart';
 
-class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
-    with DocumentPagingBlocMixin {
+class SavedViewDetailsCubit extends Cubit<SavedViewDetailsState> with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 
@@ -22,10 +21,13 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
 
   final SavedView savedView;
 
+  final LocalUserAppState _userState;
+
   SavedViewDetailsCubit(
     this.api,
     this.notifier,
-    this._labelRepository, {
+    this._labelRepository,
+    this._userState, {
     required this.savedView,
   }) : super(
           SavedViewDetailsState(
@@ -33,6 +35,7 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
             documentTypes: _labelRepository.state.documentTypes,
             tags: _labelRepository.state.tags,
             storagePaths: _labelRepository.state.storagePaths,
+            viewType: _userState.savedViewsViewType,
           ),
         ) {
     notifier.addListener(
@@ -58,16 +61,9 @@ class SavedViewDetailsCubit extends HydratedCubit<SavedViewDetailsState>
 
   void setViewType(ViewType viewType) {
     emit(state.copyWith(viewType: viewType));
-  }
-
-  @override
-  SavedViewDetailsState? fromJson(Map<String, dynamic> json) {
-    return SavedViewDetailsState.fromJson(json);
-  }
-
-  @override
-  Map<String, dynamic>? toJson(SavedViewDetailsState state) {
-    return state.toJson();
+    _userState
+      ..savedViewsViewType = viewType
+      ..save();
   }
 
   @override
