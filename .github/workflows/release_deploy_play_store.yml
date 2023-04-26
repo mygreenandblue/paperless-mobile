@@ -34,7 +34,18 @@ jobs:
       # Clone repository
       - name: Checkout Paperless mobile, get packages and run code generators
         uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
-        
+      
+      # Extract secrets into corresponding files
+      - name: Test gpg decryption
+        run: |
+          echo "$TEST_ASC" > test.txt.asc
+          cat test.txt.asc
+          gpg --batch --passphrase "test123" -d -o test.txt test.txt.asc
+        env:
+          TEST_ASC: ${{ env.TEST_ASC }}
+        working-directory: android
+
+
       # Extract secrets into corresponding files
       - name: Configure Keystore
         run: |
