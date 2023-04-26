@@ -28,6 +28,7 @@ platform :android do
       track: 'alpha',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 
@@ -48,6 +49,7 @@ platform :android do
       track: 'beta',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 
@@ -68,6 +70,7 @@ platform :android do
       track: 'production',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 end
