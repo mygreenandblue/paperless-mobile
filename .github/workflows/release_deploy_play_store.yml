@@ -39,7 +39,7 @@ jobs:
       - name: Test gpg decryption
         run: |
           echo "$TEST_ASC" > test.txt.asc
-          cat test.txt.asc
+          echo "$(cat test.txt.asc)"
           gpg --batch --passphrase "test123" -d -o test.txt test.txt.asc
         env:
           TEST_ASC: ${{ env.TEST_ASC }}
@@ -50,7 +50,6 @@ jobs:
       - name: Configure Keystore
         run: |
           echo "$RELEASE_KEYSTORE" > upload-keystore.jks.asc
-          ls -la
           gpg --batch --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" -d -o upload-keystore.jks upload-keystore.jks.asc
           echo "storeFile=upload-keystore.jks" >> key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
