@@ -34,7 +34,7 @@ jobs:
       # Extract secrets into corresponding files
       - name: Configure Keystore
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase=$KEYSTORE_GPG_PASSPHRASE --output app/upload-keystore.jks upload-keystore.jks.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="$KEYSTORE_GPG_PASSPHRASE" --output app/upload-keystore.jks upload-keystore.jks.gpg
           echo "storeFile=upload-keystore.jks" >> key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
