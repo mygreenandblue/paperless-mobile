@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 
 class LanguageSelectionSetting extends StatefulWidget {
   const LanguageSelectionSetting({super.key});
@@ -15,12 +12,13 @@ class LanguageSelectionSetting extends StatefulWidget {
 
 class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
-    'en': 'English',
-    'de': 'Deutsch',
-    'cs': 'Česky',
-    'tr': 'Türkçe',
-    'fr': 'Français',
-    'pl': 'Polska',
+    'en': LanguageOption('English', true),
+    'de': LanguageOption('Deutsch', true),
+    'cs': LanguageOption('Česky', true),
+    'tr': LanguageOption('Türkçe', true),
+    'fr': LanguageOption('Français', true),
+    'pl': LanguageOption('Polska', true),
+    'ca': LanguageOption('Catalan', true),
   };
 
   @override
@@ -29,7 +27,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
       builder: (context, settings) {
         return ListTile(
           title: Text(S.of(context)!.language),
-          subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!),
+          subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!.name),
           onTap: () => showDialog<String>(
             context: context,
             builder: (_) => RadioSettingsDialog<String>(
@@ -38,30 +36,11 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
               ),
               titleText: S.of(context)!.language,
               options: [
-                RadioOption(
-                  value: 'en',
-                  label: _languageOptions['en']!,
-                ),
-                RadioOption(
-                  value: 'de',
-                  label: _languageOptions['de']!,
-                ),
-                RadioOption(
-                  value: 'fr',
-                  label: _languageOptions['fr']!,
-                ),
-                RadioOption(
-                  value: 'cs',
-                  label: _languageOptions['cs']! + "*",
-                ),
-                RadioOption(
-                  value: 'tr',
-                  label: _languageOptions['tr']! + "*",
-                ),
-                RadioOption(
-                  value: 'pl',
-                  label: _languageOptions['pl']! + "*",
-                )
+                for (var language in _languageOptions.entries)
+                  RadioOption(
+                    value: language.key,
+                    label: language.value.name + (language.value.isComplete ? '' : '*'),
+                  ),
               ],
               initialValue: settings.preferredLocaleSubtag,
             ),
@@ -75,4 +54,11 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
       },
     );
   }
+}
+
+class LanguageOption {
+  final String name;
+  final bool isComplete;
+
+  const LanguageOption(this.name, this.isComplete);
 }

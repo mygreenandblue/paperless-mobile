@@ -237,10 +237,7 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
                 languageCode: settings.preferredLocaleSubtag,
               ),
               localizationsDelegates: const [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
+                ...S.localizationsDelegates,
               ],
               routes: {
                 DocumentDetailsRoute.routeName: (context) => const DocumentDetailsRoute(),
