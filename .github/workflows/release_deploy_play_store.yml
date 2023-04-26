@@ -39,7 +39,7 @@ jobs:
       - name: Configure Keystore
         run: |
           echo "$RELEASE_KEYSTORE" > upload-keystore.jks.asc
-          gpg --batch --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" -d -o upload-keystore.jks upload-keystore.jks.asc
+          gpg --batch --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" -d -o app/upload-keystore.jks upload-keystore.jks.asc
           echo "storeFile=upload-keystore.jks" >> key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
