@@ -30,7 +30,16 @@ jobs:
         with:
           channel: stable
       - run: flutter doctor -v
-      
+
+
+
+      # Setup app
+      - name: Checkout Paperless mobile, get packages and run code generators
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - run:  |
+          bash install_dependencies.sh
+        working-directory: scripts
+        
       # Extract secrets into corresponding files
       - name: Configure Keystore
         run: |
@@ -47,12 +56,6 @@ jobs:
           KEYSTORE_GPG_PASSPHRASE: ${{ secrets.KEYSTORE_GPG_PASSPHRASE}}
         working-directory: android
 
-      # Setup app
-      - name: Checkout Paperless mobile, get packages and run code generators
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
-      - run:  |
-          bash install_dependencies.sh
-        working-directory: scripts
 
       # Setup Ruby, Bundler, and Gemfile dependencies
       - name: Setup Fastlane
