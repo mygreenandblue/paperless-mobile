@@ -41,7 +41,8 @@ jobs:
       # Extract secrets into corresponding files
       - name: Configure Keystore
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$KEYSTORE_GPG_PASSPHRASE" --output app/upload-keystore.jks upload-keystore.jks.gpg
+          echo "$RELEASE_KEYSTORE" > upload-keystore.jks.asc
+          gpg -d --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" --batch upload-keystore.jks.asc > upload-keystore.jks
           echo "storeFile=upload-keystore.jks" >> key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
@@ -51,9 +52,9 @@ jobs:
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          KEYSTORE_GPG_PASSPHRASE: ${{ secrets.KEYSTORE_GPG_PASSPHRASE}}
+          RELEASE_KEYSTORE_PASSPHRASE: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
         working-directory: android
-
 
       # Setup Ruby, Bundler, and Gemfile dependencies
       - name: Setup Fastlane
