@@ -23,21 +23,69 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
+### android internal
+
+```sh
+[bundle exec] fastlane android internal
+```
+
+Submit a new internal build to Google Play
+
+### android promote_to_alpha
+
+```sh
+[bundle exec] fastlane android promote_to_alpha
+```
+
+Promote internal track to alpha
+
+### android alpha
+
+```sh
+[bundle exec] fastlane android alpha
+```
+
+Submit a new alpha build to Google Play
+
+### android promote_to_beta
+
+```sh
+[bundle exec] fastlane android promote_to_beta
+```
+
+Promote alpha track to beta
+
 ### android beta
 
 ```sh
 [bundle exec] fastlane android beta
 ```
 
-Submit a new Beta Build to Crashlytics Beta
+Submit a new beta build to Google Play
 
-### android deploy
+### android promote_to_production
 
 ```sh
-[bundle exec] fastlane android deploy
+[bundle exec] fastlane android promote_to_production
 ```
 
-Deploy a new version to the Google Play
+Promote beta track to prod
+
+### android production
+
+```sh
+[bundle exec] fastlane android production
+```
+
+Submit a new production build to Google Play
+
+### android github
+
+```sh
+[bundle exec] fastlane android github
+```
+
+Builds apks and creates a new release on GitHub
 
 ----
 

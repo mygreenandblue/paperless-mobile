@@ -1,6 +1,6 @@
 ## See https://github.com/flutter/gallery/blob/main/.github/workflows/release_deploy_play_store.yml
 
-name: Deploy to Play Store
+name: Deploy to Play Store and draft new GitHub release
 on:
   # Enable manual run
   workflow_dispatch:
@@ -18,61 +18,104 @@ on:
           - beta
           - promote_to_production
           - production
+      version_tag:
+        description: "Tag for the release"
+        required: true
+        type: string
+      is_draft:
+        description: "Only create a draft and don't automatically publish?"
+        required: true
+        default: true
+        type: boolean
 
 # Declare default permissions as read only.
 permissions: read-all
 
 jobs:
-  fastlane-deploy:
+
+  fastlane-deploy-to-play-store:
     runs-on: ubuntu-latest
     steps:
-      # Set up Flutter.
-      - name: Clone Flutter repository with stable channel
-        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Clone flutter repository
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
       - run: flutter doctor -v
 
-      # Clone repository
-      - name: Checkout Paperless mobile, get packages and run code generators
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - name: Setup signing config
+        uses: ./.github/actions/setup-android-signing-config
+        with:
+          keystore-key-alias: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          keystore-key-password: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
+          release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
 
-      # Extract secrets into corresponding files
-      - name: Configure Keystore
-        run: |
-          echo "$RELEASE_KEYSTORE" > upload-keystore.jks.asc
-          gpg --batch --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" -d -o app/upload-keystore.jks upload-keystore.jks.asc
-          echo "storeFile=upload-keystore.jks" >> key.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
-        env:
-          PLAY_STORE_UPLOAD_KEY: ${{ secrets.PLAY_STORE_UPLOAD_KEY }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
-          RELEASE_KEYSTORE_PASSPHRASE: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
-        working-directory: android
-
-      # Run codegen
-      - name: Run Codegen
+      - name: Get packages and run codegen
         run:  |
           bash install_dependencies.sh
         working-directory: scripts
 
-      # Setup Ruby, Bundler, and Gemfile dependencies
       - name: Setup Fastlane
-        uses: ruby/setup-ruby@8df78e55761745aad83acaf3ff12976382356e6d
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
           working-directory: android
 
-
-      # Build and deploy with Fastlane (by default, to alpha track) 🚀.
-      # Naturally, promote_to_production only deploys.
-      - run: bundle exec fastlane ${{ github.event.inputs.lane || 'alpha' }}
+      # Build and deploy with Fastlane
+      # Naturally, promote_to_{alpha|beta|production} only deploys.
+      - run:  bundle exec fastlane ${{ github.event.inputs.lane }}
         env:
           PLAY_STORE_CREDENTIALS: ${{ secrets.PLAY_STORE_CREDENTIALS }}
         working-directory: android
+  
+  create-github-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Setup Ruby, Bundler, and Gemfile dependencies
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Clone flutter repository
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter doctor -v
+      
+      - name: Setup signing config
+        uses: ./.github/actions/setup-android-signing-config
+        with:
+          keystore-key-alias: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          keystore-key-password: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
+          release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
+
+      - name: Get packages and run codegen
+        run:  |
+          bash install_dependencies.sh
+        working-directory: scripts
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
+
+      - run: bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        working-directory: android
+

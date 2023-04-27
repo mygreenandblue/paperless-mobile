@@ -35,6 +35,9 @@ android/key.properties
 .pub/
 /build/
 
+# Fastlane related
+android/fastlane/report.xml
+
 # Web related
 lib/generated_plugin_registrant.dart
 
@@ -66,3 +69,4 @@ untranslated_messages.txt
 docker/
 
 crowdin_credentials.yml
+

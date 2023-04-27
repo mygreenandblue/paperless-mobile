@@ -2,15 +2,32 @@
 <testsuites>
   <testsuite name="fastlane.lanes">
     
-    
-    
-      
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.0014968">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.0011077">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: clean assembleRelease" time="96.2749608">
+      <testcase classname="fastlane.lanes" name="1: flutter build apk --split-per-abi --release" time="22.0839974">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: flutter build apk --release" time="22.6372297">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: flutter_version" time="0.0040597">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: flutter_version" time="0.0029306">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: set_github_release" time="3.0916503">
         
       </testcase>
     

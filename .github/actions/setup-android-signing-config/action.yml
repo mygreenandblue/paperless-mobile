@@ -1,0 +1,30 @@
+name: "Setup android signing config"
+description: "Writes credentials from environment into files"
+inputs:
+  release-keystore:
+    description: 'Encrypted keystore contents'
+    required: true
+  release-keystore-passphrase:
+    description: 'Keystore encryption passphrase'
+    required: true
+  keystore-key-alias:
+    description: 'key.properties keyAlias'
+    required: true
+  keystore-key-password:
+    description: 'key.properties keyPassword'
+    required: true
+  keystore-store-password:
+    description: 'key.properties storePassword'
+    required: true
+runs:
+  using: "composite"
+  steps: 
+    - run: |
+        echo "$${{ inputs.release-keystore }}" > ${{ inputs.keystore-key-alias }}-keystore.jks.asc
+        gpg --batch --passphrase "${{ inputs.release-keystore-passphrase }}" -d -o app/${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.keystore-key-alias }}-keystore.jks.asc
+        echo "storeFile=${{ inputs.keystore-key-alias }}-keystore.jks" >> key.properties
+        echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
+        echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
+        echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+      shell: bash
+      working-directory: android
