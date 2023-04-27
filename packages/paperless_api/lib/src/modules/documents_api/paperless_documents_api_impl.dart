@@ -78,6 +78,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentUpdateFailed);
       }
     } on DioError catch (err) {
+      //TODO: Handle 403 permission errors for 1.14.0
       throw err.error!;
     }
   }
@@ -86,8 +87,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   Future<PagedSearchResult<DocumentModel>> findAll(
     DocumentFilter filter,
   ) async {
-    final filterParams = filter.toQueryParameters()
-      ..addAll({'truncate_content': "true"});
+    final filterParams = filter.toQueryParameters()..addAll({'truncate_content': "true"});
     try {
       final response = await client.get(
         "/api/documents/",
@@ -137,9 +137,8 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     try {
       final response = await client.get(
         getPreviewUrl(documentId),
-        options: Options(
-            responseType: ResponseType
-                .bytes), //TODO: Check if bytes or stream is required
+        options:
+            Options(responseType: ResponseType.bytes), //TODO: Check if bytes or stream is required
       );
       if (response.statusCode == 200) {
         return response.data;
@@ -152,10 +151,10 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
 
   @override
   Future<int> findNextAsn() async {
-    const DocumentFilter asnQueryFilter = DocumentFilter(
+    final DocumentFilter asnQueryFilter = DocumentFilter(
       sortField: SortField.archiveSerialNumber,
       sortOrder: SortOrder.descending,
-      asnQuery: IdQueryParameter.anyAssigned(),
+      asnQuery: const IdQueryParameter.anyAssigned(),
       page: 1,
       pageSize: 1,
     );
@@ -219,8 +218,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       final response = await client.download(
         "/api/documents/${document.id}/download/",
         localFilePath,
-        onReceiveProgress: (count, total) =>
-            onProgressChanged?.call(count / total),
+        onReceiveProgress: (count, total) => onProgressChanged?.call(count / total),
         queryParameters: {'original': original},
       );
       return response.data;
@@ -232,8 +230,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   @override
   Future<DocumentMetaData> getMetaData(DocumentModel document) async {
     try {
-      final response =
-          await client.get("/api/documents/${document.id}/metadata/");
+      final response = await client.get("/api/documents/${document.id}/metadata/");
       return compute(
         DocumentMetaData.fromJson,
         response.data as Map<String, dynamic>,
@@ -265,11 +262,9 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   @override
   Future<FieldSuggestions> findSuggestions(DocumentModel document) async {
     try {
-      final response =
-          await client.get("/api/documents/${document.id}/suggestions/");
+      final response = await client.get("/api/documents/${document.id}/suggestions/");
       if (response.statusCode == 200) {
-        return FieldSuggestions.fromJson(response.data)
-            .forDocumentId(document.id);
+        return FieldSuggestions.fromJson(response.data).forDocumentId(document.id);
       }
       throw const PaperlessServerException(ErrorCode.suggestionsQueryError);
     } on DioError catch (err) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -8,27 +7,27 @@ class LanguageSelectionSetting extends StatefulWidget {
   const LanguageSelectionSetting({super.key});
 
   @override
-  State<LanguageSelectionSetting> createState() =>
-      _LanguageSelectionSettingState();
+  State<LanguageSelectionSetting> createState() => _LanguageSelectionSettingState();
 }
 
 class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
-    'en': 'English',
-    'de': 'Deutsch',
-    'cs': 'Česky',
-    'tr': 'Türkçe',
-    'fr': 'Français',
-    'pl': 'Polska',
+    'en': LanguageOption('English', true),
+    'de': LanguageOption('Deutsch', true),
+    'cs': LanguageOption('Česky', true),
+    'tr': LanguageOption('Türkçe', true),
+    'fr': LanguageOption('Français', true),
+    'pl': LanguageOption('Polska', true),
+    'ca': LanguageOption('Catalan', true),
   };
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+    return GlobalSettingsBuilder(
       builder: (context, settings) {
         return ListTile(
           title: Text(S.of(context)!.language),
-          subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!),
+          subtitle: Text(_languageOptions[settings.preferredLocaleSubtag]!.name),
           onTap: () => showDialog<String>(
             context: context,
             builder: (_) => RadioSettingsDialog<String>(
@@ -37,43 +36,29 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
               ),
               titleText: S.of(context)!.language,
               options: [
-                RadioOption(
-                  value: 'en',
-                  label: _languageOptions['en']!,
-                ),
-                RadioOption(
-                  value: 'de',
-                  label: _languageOptions['de']!,
-                ),
-                RadioOption(
-                  value: 'fr',
-                  label: _languageOptions['fr']!,
-                ),
-                RadioOption(
-                  value: 'cs',
-                  label: _languageOptions['cs']! + "*",
-                ),
-                RadioOption(
-                  value: 'tr',
-                  label: _languageOptions['tr']! + "*",
-                ),
-                RadioOption(
-                  value: 'pl',
-                  label: _languageOptions['pl']! + "*",
-                )
+                for (var language in _languageOptions.entries)
+                  RadioOption(
+                    value: language.key,
+                    label: language.value.name + (language.value.isComplete ? '' : '*'),
+                  ),
               ],
-              initialValue: context
-                  .read<ApplicationSettingsCubit>()
-                  .state
-                  .preferredLocaleSubtag,
+              initialValue: settings.preferredLocaleSubtag,
             ),
           ).then((value) {
             if (value != null) {
-              context.read<ApplicationSettingsCubit>().setLocale(value);
+              settings.preferredLocaleSubtag = value;
+              settings.save();
             }
           }),
         );
       },
     );
   }
+}
+
+class LanguageOption {
+  final String name;
+  final bool isComplete;
+
+  const LanguageOption(this.name, this.isComplete);
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -9,20 +9,16 @@ class ThemeModeSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
+    return GlobalSettingsBuilder(
       builder: (context, settings) {
         return ListTile(
           title: Text(S.of(context)!.appearance),
-          subtitle: Text(_mapThemeModeToLocalizedString(
-              settings.preferredThemeMode, context)),
+          subtitle: Text(_mapThemeModeToLocalizedString(settings.preferredThemeMode, context)),
           onTap: () => showDialog<ThemeMode>(
             context: context,
             builder: (_) => RadioSettingsDialog<ThemeMode>(
               titleText: S.of(context)!.appearance,
-              initialValue: context
-                  .read<ApplicationSettingsCubit>()
-                  .state
-                  .preferredThemeMode,
+              initialValue: settings.preferredThemeMode,
               options: [
                 RadioOption(
                   value: ThemeMode.system,
@@ -40,7 +36,8 @@ class ThemeModeSetting extends StatelessWidget {
             ),
           ).then((value) {
             if (value != null) {
-              context.read<ApplicationSettingsCubit>().setThemeMode(value);
+              settings.preferredThemeMode = value;
+              settings.save();
             }
           }),
         );

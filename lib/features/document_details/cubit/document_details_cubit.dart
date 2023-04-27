@@ -2,32 +2,47 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+part 'document_details_cubit.freezed.dart';
 part 'document_details_state.dart';
 
 class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   final PaperlessDocumentsApi _api;
   final DocumentChangedNotifier _notifier;
   final LocalNotificationService _notificationService;
+  final LabelRepository _labelRepository;
 
-  final List<StreamSubscription> _subscriptions = [];
   DocumentDetailsCubit(
     this._api,
+    this._labelRepository,
     this._notifier,
     this._notificationService, {
     required DocumentModel initialDocument,
-  }) : super(DocumentDetailsState(document: initialDocument)) {
-    _notifier.subscribe(this, onUpdated: replace);
+  }) : super(DocumentDetailsState(
+          document: initialDocument,
+        )) {
+    _notifier.addListener(this, onUpdated: replace);
+    _labelRepository.addListener(
+      this,
+      onChanged: (labels) => emit(
+        state.copyWith(
+          correspondents: labels.correspondents,
+          documentTypes: labels.documentTypes,
+          tags: labels.tags,
+          storagePaths: labels.storagePaths,
+        ),
+      ),
+    );
     loadSuggestions();
     loadMetaData();
   }
@@ -39,12 +54,16 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   Future<void> loadSuggestions() async {
     final suggestions = await _api.findSuggestions(state.document);
-    emit(state.copyWith(suggestions: suggestions));
+    if (!isClosed) {
+      emit(state.copyWith(suggestions: suggestions));
+    }
   }
 
   Future<void> loadMetaData() async {
     final metaData = await _api.getMetaData(state.document);
-    emit(state.copyWith(metaData: metaData));
+    if (!isClosed) {
+      emit(state.copyWith(metaData: metaData));
+    }
   }
 
   Future<void> loadFullContent() async {
@@ -70,8 +89,8 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       _notifier.notifyUpdated(updatedDocument);
     } else {
       final int autoAsn = await _api.findNextAsn();
-      final updatedDocument = await _api
-          .update(document.copyWith(archiveSerialNumber: () => autoAsn));
+      final updatedDocument =
+          await _api.update(document.copyWith(archiveSerialNumber: () => autoAsn));
       _notifier.notifyUpdated(updatedDocument);
     }
   }
@@ -82,8 +101,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (state.metaData == null) {
       await loadMetaData();
     }
-    final desc = FileDescription.fromPath(
-        state.metaData!.mediaFilename.replaceAll("/", " "));
+    final desc = FileDescription.fromPath(state.metaData!.mediaFilename.replaceAll("/", " "));
 
     final fileName = "${desc.filename}.pdf";
     final file = File("${cacheDir.path}/$fileName");
@@ -117,8 +135,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       await FileService.downloadsDirectory,
     );
     final desc = FileDescription.fromPath(
-      state.metaData!.mediaFilename
-          .replaceAll("/", " "), // Flatten directory structure
+      state.metaData!.mediaFilename.replaceAll("/", " "), // Flatten directory structure
     );
     if (!File(filePath).existsSync()) {
       File(filePath).createSync();
@@ -183,8 +200,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   String _buildDownloadFilePath(bool original, Directory dir) {
     final description = FileDescription.fromPath(
-      state.metaData!.mediaFilename
-          .replaceAll("/", " "), // Flatten directory structure
+      state.metaData!.mediaFilename.replaceAll("/", " "), // Flatten directory structure
     );
     final extension = original ? description.extension : 'pdf';
     return "${dir.path}/${description.filename}.$extension";
@@ -192,10 +208,8 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   @override
   Future<void> close() async {
-    for (final element in _subscriptions) {
-      await element.cancel();
-    }
-    _notifier.unsubscribe(this);
+    _labelRepository.removeListener(this);
+    _notifier.removeListener(this);
     await super.close();
   }
 }

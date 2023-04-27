@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 extension on Color {
@@ -136,11 +138,12 @@ class FormBuilderColorPickerField extends FormBuilderField<Color> {
                     : LayoutBuilder(
                         key: ObjectKey(state.value),
                         builder: (context, constraints) {
-                          return Icon(
-                            Icons.circle,
-                            key: ObjectKey(state.value),
-                            size: constraints.minHeight,
-                            color: state.value,
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircleAvatar(
+                              key: ObjectKey(state.value),
+                              backgroundColor: state.value,
+                            ),
                           );
                         },
                       ),
@@ -218,17 +221,11 @@ class FormBuilderColorPickerFieldState
 
           return AlertDialog(
             // title: null, //const Text('Pick a color!'),
-            content: SingleChildScrollView(
-              child: _buildColorPicker(),
-            ),
+            content: _buildColorPicker(),
             actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(materialLocalizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(materialLocalizations.ok),
+              const DialogCancelButton(),
+              DialogConfirmButton(
+                label: S.of(context)!.ok,
               ),
             ],
           );

@@ -10,6 +10,10 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class SortFieldSelectionBottomSheet extends StatefulWidget {
   final SortOrder initialSortOrder;
   final SortField? initialSortField;
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
 
   final Future Function(SortField? field, SortOrder order) onSubmit;
 
@@ -18,6 +22,10 @@ class SortFieldSelectionBottomSheet extends StatefulWidget {
     required this.initialSortOrder,
     required this.initialSortField,
     required this.onSubmit,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
   });
 
   @override
@@ -67,31 +75,20 @@ class _SortFieldSelectionBottomSheetState
             Column(
               children: [
                 _buildSortOption(SortField.archiveSerialNumber),
-                BlocBuilder<LabelCubit<Correspondent>,
-                    LabelState<Correspondent>>(
-                  builder: (context, state) {
-                    return _buildSortOption(
-                      SortField.correspondentName,
-                      enabled: state.labels.values.fold<bool>(
-                          false,
-                          (previousValue, element) =>
-                              previousValue ||
-                              (element.documentCount ?? 0) > 0),
-                    );
-                  },
+                _buildSortOption(
+                  SortField.correspondentName,
+                  enabled: widget.correspondents.values.fold<bool>(
+                      false,
+                      (previousValue, element) =>
+                          previousValue || (element.documentCount ?? 0) > 0),
                 ),
                 _buildSortOption(SortField.title),
-                BlocBuilder<LabelCubit<DocumentType>, LabelState<DocumentType>>(
-                  builder: (context, state) {
-                    return _buildSortOption(
-                      SortField.documentType,
-                      enabled: state.labels.values.fold<bool>(
-                          false,
-                          (previousValue, element) =>
-                              previousValue ||
-                              (element.documentCount ?? 0) > 0),
-                    );
-                  },
+                _buildSortOption(
+                  SortField.documentType,
+                  enabled: widget.documentTypes.values.fold<bool>(
+                      false,
+                      (previousValue, element) =>
+                          previousValue || (element.documentCount ?? 0) > 0),
                 ),
                 _buildSortOption(SortField.created),
                 _buildSortOption(SortField.added),

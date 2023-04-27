@@ -1,14 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/converters/tags_query_json_converter.dart';
 
 part 'document_filter.g.dart';
 
-@TagsQueryJsonConverter()
 @DateRangeQueryJsonConverter()
 @JsonSerializable(explicitToJson: true)
+@HiveType(typeId: PaperlessApiHiveTypeIds.documentFilter)
 class DocumentFilter extends Equatable {
   static const DocumentFilter initial = DocumentFilter();
 
@@ -19,21 +19,46 @@ class DocumentFilter extends Equatable {
     page: 1,
   );
 
+  @HiveField(0)
   final int pageSize;
+
+  @HiveField(1)
   final int page;
+
+  @HiveField(2)
   final IdQueryParameter documentType;
+
+  @HiveField(3)
   final IdQueryParameter correspondent;
+
+  @HiveField(4)
   final IdQueryParameter storagePath;
+
+  @HiveField(5)
   final IdQueryParameter asnQuery;
+
+  @HiveField(6)
   final TagsQuery tags;
+
+  @HiveField(7)
   final SortField? sortField;
+
+  @HiveField(8)
   final SortOrder sortOrder;
+
+  @HiveField(9)
   final DateRangeQuery created;
+
+  @HiveField(10)
   final DateRangeQuery added;
+
+  @HiveField(11)
   final DateRangeQuery modified;
+
+  @HiveField(12)
   final TextQuery query;
 
-  /// Query documents similar to the document with this id.
+  @HiveField(13)
   final int? moreLike;
 
   const DocumentFilter({
@@ -41,7 +66,7 @@ class DocumentFilter extends Equatable {
     this.correspondent = const IdQueryParameter.unset(),
     this.storagePath = const IdQueryParameter.unset(),
     this.asnQuery = const IdQueryParameter.unset(),
-    this.tags = const IdsTagsQuery(),
+    this.tags = const TagsQuery.ids(),
     this.sortField = SortField.created,
     this.sortOrder = SortOrder.descending,
     this.page = 1,
@@ -90,9 +115,7 @@ class DocumentFilter extends Equatable {
     final queryParams = groupBy(params, (e) => e.key).map(
       (key, entries) => MapEntry(
         key,
-        entries.length == 1
-            ? entries.first.value
-            : entries.map((e) => e.value).join(","),
+        entries.length == 1 ? entries.first.value : entries.map((e) => e.value).join(","),
       ),
     );
     return queryParams;
@@ -133,8 +156,7 @@ class DocumentFilter extends Equatable {
       modified: modified ?? this.modified,
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
     );
-    if (query?.queryType != QueryType.extended &&
-        newFilter.forceExtendedQuery) {
+    if (query?.queryType != QueryType.extended && newFilter.forceExtendedQuery) {
       //Prevents infinite recursion
       return newFilter.copyWith(
         query: newFilter.query.copyWith(queryType: QueryType.extended),
@@ -190,8 +212,7 @@ class DocumentFilter extends Equatable {
         query,
       ];
 
-  factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
-      _$DocumentFilterFromJson(json);
+  factory DocumentFilter.fromJson(Map<String, dynamic> json) => _$DocumentFilterFromJson(json);
 
   Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
 }

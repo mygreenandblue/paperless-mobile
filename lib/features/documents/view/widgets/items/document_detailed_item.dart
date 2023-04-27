@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
@@ -8,7 +9,6 @@ import 'package:paperless_mobile/features/documents/view/widgets/items/document_
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 class DocumentDetailedItem extends DocumentItem {
   final String? highlights;
@@ -26,6 +26,10 @@ class DocumentDetailedItem extends DocumentItem {
     super.onStoragePathSelected,
     super.onTagSelected,
     super.onTap,
+    required super.tags,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.storagePaths,
   });
 
   @override
@@ -40,10 +44,10 @@ class DocumentDetailedItem extends DocumentItem {
         padding.bottom -
         kBottomNavigationBarHeight -
         kToolbarHeight;
-    final maxHeight = highlights != null
-        ? min(600.0, availableHeight)
-        : min(500.0, availableHeight);
+    final maxHeight =
+        highlights != null ? min(600.0, availableHeight) : min(500.0, availableHeight);
     return Card(
+      color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(
         enableFeedback: true,
         borderRadius: BorderRadius.circular(12),
@@ -112,7 +116,7 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  correspondentId: document.correspondent,
+                  correspondent: correspondents[document.correspondent],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
@@ -127,13 +131,13 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  documentTypeId: document.documentType,
+                  documentType: documentTypes[document.documentType],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
             TagsWidget(
               isMultiLine: false,
-              tagIds: document.tags,
+              tags: document.tags.map((e) => tags[e]!).toList(),
             ).padded(),
             if (highlights != null)
               Html(

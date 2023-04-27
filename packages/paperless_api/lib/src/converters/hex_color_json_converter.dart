@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/painting.dart';
 
 import 'package:json_annotation/json_annotation.dart';
 

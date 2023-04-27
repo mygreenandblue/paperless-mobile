@@ -9,10 +9,11 @@ import 'paged_documents_state.dart';
 /// Mixin which can be used on cubits that handle documents.
 /// This implements all paging and filtering logic.
 ///
-mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
-    on BlocBase<State> {
+mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<State> {
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;
+
+  Future<void> onFilterUpdated(DocumentFilter filter);
 
   Future<void> loadMore() async {
     if (state.isLastPageLoaded) {
@@ -28,6 +29,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         value: [...state.value, result],
       ));
     } finally {
+      await onFilterUpdated(newFilter);
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -36,7 +38,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   /// Updates document filter and automatically reloads documents. Always resets page to 1.
   /// Use [loadMore] to load more data.
   Future<void> updateFilter({
-    final DocumentFilter filter = DocumentFilter.initial,
+    final DocumentFilter filter = const DocumentFilter(),
   }) async {
     try {
       emit(state.copyWithPaged(isLoading: true));
@@ -48,6 +50,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         hasLoaded: true,
       ));
     } finally {
+      await onFilterUpdated(filter);
       emit(state.copyWithPaged(isLoading: false));
     }
   }
@@ -60,7 +63,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   ) async =>
       updateFilter(filter: transformFn(state.filter));
 
-  Future<void> resetFilter() {
+  Future<void> resetFilter() async {
     final filter = DocumentFilter.initial.copyWith(
       sortField: state.filter.sortField,
       sortOrder: state.filter.sortOrder,
@@ -70,8 +73,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
 
   Future<void> reload() async {
     emit(state.copyWithPaged(isLoading: true));
+    final filter = state.filter.copyWith(page: 1);
     try {
-      final filter = state.filter.copyWith(page: 1);
       final result = await api.findAll(filter);
       if (!isClosed) {
         emit(state.copyWithPaged(
@@ -82,6 +85,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
         ));
       }
     } finally {
+      await onFilterUpdated(filter);
       if (!isClosed) {
         emit(state.copyWithPaged(isLoading: false));
       }
@@ -106,7 +110,6 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     try {
       await api.delete(document);
       notifier.notifyDeleted(document);
-      // remove(document); // Removing deleted now works with the change notifier.
     } finally {
       emit(state.copyWithPaged(isLoading: false));
     }
@@ -123,8 +126,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     if (index != -1) {
       final foundPage = state.value[index];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results
-          ..removeWhere((element) => element.id == document.id),
+        results: foundPage.results..removeWhere((element) => element.id == document.id),
       );
       final newCount = foundPage.count - 1;
       emit(
@@ -132,8 +134,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
           value: state.value
               .mapIndexed(
                 (currIndex, element) =>
-                    (currIndex == index ? replacementPage : element)
-                        .copyWith(count: newCount),
+                    (currIndex == index ? replacementPage : element).copyWith(count: newCount),
               )
               .toList(),
         ),
@@ -156,14 +157,11 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     if (pageIndex != -1) {
       final foundPage = state.value[pageIndex];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results
-            .map((doc) => doc.id == document.id ? document : doc)
-            .toList(),
+        results: foundPage.results.map((doc) => doc.id == document.id ? document : doc).toList(),
       );
       final newState = state.copyWithPaged(
         value: state.value
-            .mapIndexed((currIndex, element) =>
-                currIndex == pageIndex ? replacementPage : element)
+            .mapIndexed((currIndex, element) => currIndex == pageIndex ? replacementPage : element)
             .toList(),
       );
       emit(newState);
@@ -172,7 +170,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
 
   @override
   Future<void> close() {
-    notifier.unsubscribe(this);
+    notifier.removeListener(this);
     return super.close();
   }
 }

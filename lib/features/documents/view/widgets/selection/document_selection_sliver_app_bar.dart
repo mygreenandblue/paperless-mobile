@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
+import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
+import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:provider/provider.dart';
 
 class DocumentSelectionSliverAppBar extends StatelessWidget {
   final DocumentsState state;
@@ -15,7 +17,11 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      stretch: false,
       pinned: true,
+      floating: true,
+      snap: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
       title: Text(
         S.of(context)!.countSelected(state.selection.length),
       ),
@@ -50,6 +56,181 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
           },
         ),
       ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(kTextTabBarHeight),
+        child: SizedBox(
+          height: kTextTabBarHeight,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              ActionChip(
+                label: Text(S.of(context)!.correspondent),
+                avatar: const Icon(Icons.edit),
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => DocumentBulkActionCubit(
+                          context.read(),
+                          context.read(),
+                          context.read(),
+                          selection: state.selection,
+                        ),
+                        child: BlocBuilder<DocumentBulkActionCubit,
+                            DocumentBulkActionState>(
+                          builder: (context, state) {
+                            return FullscreenBulkEditLabelPage(
+                              options: state.correspondents,
+                              selection: state.selection,
+                              labelMapper: (document) => document.correspondent,
+                              leadingIcon: const Icon(Icons.person_outline),
+                              hintText: S.of(context)!.startTyping,
+                              onSubmit: context
+                                  .read<DocumentBulkActionCubit>()
+                                  .bulkModifyCorrespondent,
+                              assignMessageBuilder: (int count, String name) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditCorrespondentAssignMessage(
+                                      name,
+                                      count,
+                                    );
+                              },
+                              removeMessageBuilder: (int count) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditCorrespondentRemoveMessage(count);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).paddedOnly(left: 8, right: 4),
+              ActionChip(
+                label: Text(S.of(context)!.documentType),
+                avatar: const Icon(Icons.edit),
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => DocumentBulkActionCubit(
+                          context.read(),
+                          context.read(),
+                          context.read(),
+                          selection: state.selection,
+                        ),
+                        child: BlocBuilder<DocumentBulkActionCubit,
+                            DocumentBulkActionState>(
+                          builder: (context, state) {
+                            return FullscreenBulkEditLabelPage(
+                              options: state.documentTypes,
+                              selection: state.selection,
+                              labelMapper: (document) => document.documentType,
+                              leadingIcon:
+                                  const Icon(Icons.description_outlined),
+                              hintText: S.of(context)!.startTyping,
+                              onSubmit: context
+                                  .read<DocumentBulkActionCubit>()
+                                  .bulkModifyDocumentType,
+                              assignMessageBuilder: (int count, String name) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditDocumentTypeAssignMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
+                              removeMessageBuilder: (int count) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditDocumentTypeRemoveMessage(count);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).paddedOnly(left: 8, right: 4),
+              ActionChip(
+                label: Text(S.of(context)!.storagePath),
+                avatar: const Icon(Icons.edit),
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => DocumentBulkActionCubit(
+                          context.read(),
+                          context.read(),
+                          context.read(),
+                          selection: state.selection,
+                        ),
+                        child: BlocBuilder<DocumentBulkActionCubit,
+                            DocumentBulkActionState>(
+                          builder: (context, state) {
+                            return FullscreenBulkEditLabelPage(
+                              options: state.storagePaths,
+                              selection: state.selection,
+                              labelMapper: (document) => document.storagePath,
+                              leadingIcon: const Icon(Icons.folder_outlined),
+                              hintText: S.of(context)!.startTyping,
+                              onSubmit: context
+                                  .read<DocumentBulkActionCubit>()
+                                  .bulkModifyStoragePath,
+                              assignMessageBuilder: (int count, String name) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditStoragePathAssignMessage(
+                                      count,
+                                      name,
+                                    );
+                              },
+                              removeMessageBuilder: (int count) {
+                                return S
+                                    .of(context)!
+                                    .bulkEditStoragePathRemoveMessage(count);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).paddedOnly(left: 8, right: 4),
+              _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBulkEditTagsChip(BuildContext context) {
+    return ActionChip(
+      label: Text(S.of(context)!.tags),
+      avatar: const Icon(Icons.edit),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
+              create: (context) => DocumentBulkActionCubit(
+                context.read(),
+                context.read(),
+                context.read(),
+                selection: state.selection,
+              ),
+              child: Builder(builder: (context) {
+                return const FullscreenBulkEditTagsWidget();
+              }),
+            ),
+          ),
+        );
+      },
     );
   }
 }

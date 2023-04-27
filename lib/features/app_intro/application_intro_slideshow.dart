@@ -10,8 +10,7 @@ class ApplicationIntroSlideshow extends StatefulWidget {
   const ApplicationIntroSlideshow({super.key});
 
   @override
-  State<ApplicationIntroSlideshow> createState() =>
-      _ApplicationIntroSlideshowState();
+  State<ApplicationIntroSlideshow> createState() => _ApplicationIntroSlideshowState();
 }
 
 //TODO: INTL ALL
@@ -28,7 +27,9 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
         showDoneButton: true,
         next: Text(S.of(context)!.next),
         done: Text(S.of(context)!.done),
-        onDone: () => Navigator.pop(context),
+        onDone: () {
+          Navigator.pop(context);
+        },
         dotsDecorator: DotsDecorator(
           color: Theme.of(context).colorScheme.onBackground,
           activeColor: Theme.of(context).colorScheme.primary,

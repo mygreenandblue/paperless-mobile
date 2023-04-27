@@ -5,7 +5,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/material/search/colored_tab_bar.dart';
+import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
@@ -42,6 +42,8 @@ class DocumentDetailsPage extends StatefulWidget {
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   late Future<DocumentMetaData> _metaData;
   static const double _itemSpacing = 24;
+
+  final _pagingScrollController = ScrollController();
   @override
   void initState() {
     super.initState();
@@ -58,116 +60,104 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context)
-            .pop(context.read<DocumentDetailsCubit>().state.document);
+        Navigator.of(context).pop(context.read<DocumentDetailsCubit>().state.document);
         return false;
       },
       child: DefaultTabController(
         length: 4,
         child: BlocListener<ConnectivityCubit, ConnectivityState>(
-          listenWhen: (previous, current) =>
-              !previous.isConnected && current.isConnected,
+          listenWhen: (previous, current) => !previous.isConnected && current.isConnected,
           listener: (context, state) {
             _loadMetaData();
             setState(() {});
           },
           child: Scaffold(
             extendBodyBehindAppBar: false,
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endDocked,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
             floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
             bottomNavigationBar: _buildBottomAppBar(),
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverAppBar(
-                  title: Text(context
-                      .watch<DocumentDetailsCubit>()
-                      .state
-                      .document
-                      .title),
-                  leading: const BackButton(),
-                  pinned: true,
-                  forceElevated: innerBoxIsScrolled,
-                  collapsedHeight: kToolbarHeight,
-                  expandedHeight: 250.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Stack(
-                      alignment: Alignment.topCenter,
-                      children: [
-                        BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                          builder: (context, state) => Positioned.fill(
-                            child: DocumentPreview(
-                              document: state.document,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          top: 0,
-                          child: Container(
-                            height: 100,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.black.withOpacity(0.7),
-                                  Colors.black.withOpacity(0.2),
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
+                SliverOverlapAbsorber(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  sliver: SliverAppBar(
+                    title: Text(context.watch<DocumentDetailsCubit>().state.document.title),
+                    leading: const BackButton(),
+                    pinned: true,
+                    forceElevated: innerBoxIsScrolled,
+                    collapsedHeight: kToolbarHeight,
+                    expandedHeight: 250.0,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+                            builder: (context, state) => Positioned.fill(
+                              child: DocumentPreview(
+                                document: state.document,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned.fill(
+                            top: 0,
+                            child: Container(
+                              height: 100,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.7),
+                                    Colors.black.withOpacity(0.2),
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  bottom: ColoredTabBar(
-                    tabBar: TabBar(
-                      isScrollable: true,
-                      tabs: [
-                        Tab(
-                          child: Text(
-                            S.of(context)!.overview,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                    bottom: ColoredTabBar(
+                      tabBar: TabBar(
+                        isScrollable: true,
+                        tabs: [
+                          Tab(
+                            child: Text(
+                              S.of(context)!.overview,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.content,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.content,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.metaData,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.metaData,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            S.of(context)!.similarDocuments,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
+                          Tab(
+                            child: Text(
+                              S.of(context)!.similarDocuments,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -178,27 +168,69 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     create: (context) => SimilarDocumentsCubit(
                       context.read(),
                       context.read(),
+                      context.read(),
                       documentId: state.document.id,
                     ),
-                    child: TabBarView(
-                      children: [
-                        DocumentOverviewWidget(
-                          document: state.document,
-                          itemSpacing: _itemSpacing,
-                          queryString: widget.titleAndContentQueryString,
-                        ),
-                        DocumentContentWidget(
-                          isFullContentLoaded: state.isFullContentLoaded,
-                          document: state.document,
-                          fullContent: state.fullContent,
-                          queryString: widget.titleAndContentQueryString,
-                        ),
-                        DocumentMetaDataWidget(
-                          document: state.document,
-                          itemSpacing: _itemSpacing,
-                        ),
-                        const SimilarDocumentsView(),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
+                      ),
+                      child: TabBarView(
+                        children: [
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentOverviewWidget(
+                                document: state.document,
+                                itemSpacing: _itemSpacing,
+                                queryString: widget.titleAndContentQueryString,
+                                availableCorrespondents: state.correspondents,
+                                availableDocumentTypes: state.documentTypes,
+                                availableTags: state.tags,
+                                availableStoragePaths: state.storagePaths,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentContentWidget(
+                                isFullContentLoaded: state.isFullContentLoaded,
+                                document: state.document,
+                                fullContent: state.fullContent,
+                                queryString: widget.titleAndContentQueryString,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              DocumentMetaDataWidget(
+                                document: state.document,
+                                itemSpacing: _itemSpacing,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            controller: _pagingScrollController,
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              SimilarDocumentsView(
+                                pagingScrollController: _pagingScrollController,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -213,32 +245,21 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget _buildEditButton() {
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
-        final _filteredSuggestions =
-            state.suggestions.documentDifference(state.document);
+        // final _filteredSuggestions =
+        //     state.suggestions?.documentDifference(state.document);
         return BlocBuilder<ConnectivityCubit, ConnectivityState>(
           builder: (context, connectivityState) {
             if (!connectivityState.isConnected) {
               return const SizedBox.shrink();
             }
-            return b.Badge(
-              position: b.BadgePosition.topEnd(top: -12, end: -6),
-              showBadge: _filteredSuggestions.hasSuggestions,
-              child: Tooltip(
-                message: S.of(context)!.editDocumentTooltip,
-                preferBelow: false,
-                verticalOffset: 40,
-                child: FloatingActionButton(
-                  child: const Icon(Icons.edit),
-                  onPressed: () => _onEdit(state.document),
-                ),
+            return Tooltip(
+              message: S.of(context)!.editDocumentTooltip,
+              preferBelow: false,
+              verticalOffset: 40,
+              child: FloatingActionButton(
+                child: const Icon(Icons.edit),
+                onPressed: () => _onEdit(state.document),
               ),
-              badgeContent: Text(
-                '${_filteredSuggestions.suggestionsCount}',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              badgeColor: Colors.red,
             );
           },
         );
@@ -259,9 +280,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   IconButton(
                     tooltip: S.of(context)!.deleteDocumentTooltip,
                     icon: const Icon(Icons.delete),
-                    onPressed: widget.allowEdit && isConnected
-                        ? () => _onDelete(state.document)
-                        : null,
+                    onPressed:
+                        widget.allowEdit && isConnected ? () => _onDelete(state.document) : null,
                   ).paddedSymmetrically(horizontal: 4),
                   DocumentDownloadButton(
                     document: state.document,
@@ -271,8 +291,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,
                     icon: const Icon(Icons.visibility),
-                    onPressed:
-                        isConnected ? () => _onOpen(state.document) : null,
+                    onPressed: isConnected ? () => _onOpen(state.document) : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
@@ -299,13 +318,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             providers: [
               BlocProvider.value(
                 value: DocumentEditCubit(
-                  document,
-                  documentsApi: context.read(),
-                  correspondentRepository: context.read(),
-                  documentTypeRepository: context.read(),
-                  storagePathRepository: context.read(),
-                  tagRepository: context.read(),
-                  notifier: context.read(),
+                  context.read(),
+                  context.read(),
+                  context.read(),
+                  document: document,
                 ),
               ),
               BlocProvider<DocumentDetailsCubit>.value(
@@ -313,8 +329,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               ),
             ],
             child: BlocListener<DocumentEditCubit, DocumentEditState>(
-              listenWhen: (previous, current) =>
-                  previous.document != current.document,
+              listenWhen: (previous, current) => previous.document != current.document,
               listener: (context, state) {
                 cubit.replace(state.document);
               },
@@ -334,8 +349,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   }
 
   void _onOpenFileInSystemViewer() async {
-    final status =
-        await context.read<DocumentDetailsCubit>().openDocumentInSystemViewer();
+    final status = await context.read<DocumentDetailsCubit>().openDocumentInSystemViewer();
     if (status == ResultType.done) return;
     if (status == ResultType.noAppToOpen) {
       showGenericError(context, S.of(context)!.noAppToDisplayPDFFilesFound);
@@ -344,16 +358,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       showGenericError(context, translateError(context, ErrorCode.unknown));
     }
     if (status == ResultType.permissionDenied) {
-      showGenericError(
-          context, S.of(context)!.couldNotOpenFilePermissionDenied);
+      showGenericError(context, S.of(context)!.couldNotOpenFilePermissionDenied);
     }
   }
 
   void _onDelete(DocumentModel document) async {
     final delete = await showDialog(
           context: context,
-          builder: (context) =>
-              DeleteDocumentConfirmationDialog(document: document),
+          builder: (context) => DeleteDocumentConfirmationDialog(document: document),
         ) ??
         false;
     if (delete) {
@@ -373,8 +385,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => DocumentView(
-          documentBytes:
-              context.read<PaperlessDocumentsApi>().getPreview(document.id),
+          documentBytes: context.read<PaperlessDocumentsApi>().getPreview(document.id),
         ),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -46,7 +46,12 @@ class _StoragePathAutofillFormBuilderFieldState
         children: [
           TextFormField(
             controller: _textEditingController,
-            validator: FormBuilderValidators.required(), //TODO: INTL
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) {
+                return S.of(context)!.thisFieldIsRequired;
+              }
+              return null;
+            },
             decoration: InputDecoration(
                 label: Text(S.of(context)!.storagePath),
                 suffixIcon: _showClearIcon

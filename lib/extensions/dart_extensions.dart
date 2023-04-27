@@ -36,3 +36,9 @@ extension DateHelpers on DateTime {
         yesterday.year == year;
   }
 }
+
+extension StringNormalizer on String {
+  String normalized() {
+    return trim().toLowerCase();
+  }
+}

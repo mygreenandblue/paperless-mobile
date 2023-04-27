@@ -21,6 +21,27 @@ platform :android do
     gradle(task: "test")
   end
 
+  desc "Submit a new internal build to Google Play"
+  lane :internal do
+    sh "flutter build appbundle -v"
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
+    )
+  end
+
+  
+  desc "Promote internal track to alpha"
+  lane :promote_to_alpha do
+    upload_to_play_store(
+      track: 'internal',
+      track_promote_to: 'alpha',
+      json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+    )
+  end
+
   desc "Submit a new alpha build to Google Play"
   lane :alpha do
     sh "flutter build appbundle -v"
@@ -28,6 +49,7 @@ platform :android do
       track: 'alpha',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 
@@ -36,7 +58,6 @@ platform :android do
     upload_to_play_store(
       track: 'alpha',
       track_promote_to: 'beta',
-      skip_upload_changelogs: true,
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
     )
   end
@@ -48,6 +69,7 @@ platform :android do
       track: 'beta',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 
@@ -56,7 +78,6 @@ platform :android do
     upload_to_play_store(
       track: 'beta',
       track_promote_to: 'production',
-      skip_upload_changelogs: true,
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
     )
   end
@@ -68,6 +89,7 @@ platform :android do
       track: 'production',
       aab: '../build/app/outputs/bundle/release/app-release.aab',
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
+      release_status: "draft",
     )
   end
 end

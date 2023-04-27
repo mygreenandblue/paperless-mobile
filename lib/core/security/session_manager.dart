@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -8,14 +7,18 @@ import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_int
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+/// Manages the security context, authentication and base request URL for
+/// an underlying [Dio] client which is injected into all services
+/// requiring authenticated access to the Paperless HTTP API.
 class SessionManager {
-  final Dio client;
-  final List<Interceptor> interceptors;
-  PaperlessServerInformationModel serverInformation;
+  final Dio _client;
+  PaperlessServerInformationModel _serverInformation;
 
-  SessionManager([this.interceptors = const []])
-      : client = _initDio(interceptors),
-        serverInformation = PaperlessServerInformationModel();
+  Dio get client => _client;
+
+  SessionManager([List<Interceptor> interceptors = const []])
+      : _client = _initDio(interceptors),
+        _serverInformation = PaperlessServerInformationModel();
 
   static Dio _initDio(List<Interceptor> interceptors) {
     //en- and decoded by utf8 by default
@@ -63,8 +66,7 @@ class SessionManager {
         );
       final adapter = IOHttpClientAdapter()
         ..onHttpClientCreate = (client) => HttpClient(context: context)
-          ..badCertificateCallback =
-              (X509Certificate cert, String host, int port) => true;
+          ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
 
       client.httpClientAdapter = adapter;
     }
@@ -80,7 +82,7 @@ class SessionManager {
     }
 
     if (serverInformation != null) {
-      this.serverInformation = serverInformation;
+      _serverInformation = serverInformation;
     }
   }
 
@@ -88,6 +90,6 @@ class SessionManager {
     client.httpClientAdapter = IOHttpClientAdapter();
     client.options.baseUrl = '';
     client.options.headers.remove(HttpHeaders.authorizationHeader);
-    serverInformation = PaperlessServerInformationModel();
+    _serverInformation = PaperlessServerInformationModel();
   }
 }

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -41,12 +41,10 @@ class DocumentUploadPreparationPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DocumentUploadPreparationPage> createState() =>
-      _DocumentUploadPreparationPageState();
+  State<DocumentUploadPreparationPage> createState() => _DocumentUploadPreparationPageState();
 }
 
-class _DocumentUploadPreparationPageState
-    extends State<DocumentUploadPreparationPage> {
+class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparationPage> {
   static const fkFileName = "filename";
   static final fileNameDateFormat = DateFormat("yyyy_MM_ddTHH_mm_ss");
 
@@ -73,8 +71,7 @@ class _DocumentUploadPreparationPageState
         title: Text(S.of(context)!.prepareDocument),
         bottom: _isUploadLoading
             ? const PreferredSize(
-                child: LinearProgressIndicator(),
-                preferredSize: Size.fromHeight(4.0))
+                child: LinearProgressIndicator(), preferredSize: Size.fromHeight(4.0))
             : null,
       ),
       floatingActionButton: Visibility(
@@ -95,30 +92,30 @@ class _DocumentUploadPreparationPageState
                 FormBuilderTextField(
                   autovalidateMode: AutovalidateMode.always,
                   name: DocumentModel.titleKey,
-                  initialValue:
-                      widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
-                  validator: FormBuilderValidators.required(),
+                  initialValue: widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
+                  validator: (value) {
+                    if (value?.trim().isEmpty ?? true) {
+                      return S.of(context)!.thisFieldIsRequired;
+                    }
+                    return null;
+                  },
                   decoration: InputDecoration(
                     labelText: S.of(context)!.title,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () {
-                        _formKey.currentState?.fields[DocumentModel.titleKey]
-                            ?.didChange("");
+                        _formKey.currentState?.fields[DocumentModel.titleKey]?.didChange("");
                         if (_syncTitleAndFilename) {
-                          _formKey.currentState?.fields[fkFileName]
-                              ?.didChange("");
+                          _formKey.currentState?.fields[fkFileName]?.didChange("");
                         }
                       },
                     ),
                     errorText: _errors[DocumentModel.titleKey],
                   ),
                   onChanged: (value) {
-                    final String transformedValue =
-                        _formatFilename(value ?? '');
+                    final String transformedValue = _formatFilename(value ?? '');
                     if (_syncTitleAndFilename) {
-                      _formKey.currentState?.fields[fkFileName]
-                          ?.didChange(transformedValue);
+                      _formKey.currentState?.fields[fkFileName]?.didChange(transformedValue);
                     }
                   },
                 ),
@@ -133,12 +130,10 @@ class _DocumentUploadPreparationPageState
                     suffixText: widget.fileExtension,
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
-                      onPressed: () => _formKey.currentState?.fields[fkFileName]
-                          ?.didChange(''),
+                      onPressed: () => _formKey.currentState?.fields[fkFileName]?.didChange(''),
                     ),
                   ),
-                  initialValue: widget.filename ??
-                      "scan_${fileNameDateFormat.format(_now)}",
+                  initialValue: widget.filename ?? "scan_${fileNameDateFormat.format(_now)}",
                 ),
                 // Synchronize title and filename
                 SwitchListTile(
@@ -148,13 +143,10 @@ class _DocumentUploadPreparationPageState
                       () => _syncTitleAndFilename = value,
                     );
                     if (_syncTitleAndFilename) {
-                      final String transformedValue = _formatFilename(_formKey
-                          .currentState
-                          ?.fields[DocumentModel.titleKey]
-                          ?.value as String);
+                      final String transformedValue = _formatFilename(
+                          _formKey.currentState?.fields[DocumentModel.titleKey]?.value as String);
                       if (_syncTitleAndFilename) {
-                        _formKey.currentState?.fields[fkFileName]
-                            ?.didChange(transformedValue);
+                        _formKey.currentState?.fields[fkFileName]?.didChange(transformedValue);
                       }
                     }
                   },
@@ -179,8 +171,7 @@ class _DocumentUploadPreparationPageState
                         ? IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () {
-                              _formKey.currentState!
-                                  .fields[DocumentModel.createdKey]
+                              _formKey.currentState!.fields[DocumentModel.createdKey]
                                   ?.didChange(null);
                             },
                           )
@@ -189,47 +180,44 @@ class _DocumentUploadPreparationPageState
                 ),
                 // Correspondent
                 LabelFormField<Correspondent>(
-                  notAssignedSelectable: false,
-                  formBuilderState: _formKey.currentState,
-                  labelCreationWidgetBuilder: (initialName) =>
-                      RepositoryProvider(
-                    create: (context) =>
-                        context.read<LabelRepository<Correspondent>>(),
+                  showAnyAssignedOption: false,
+                  showNotAssignedOption: false,
+                  addLabelPageBuilder: (initialName) => RepositoryProvider.value(
+                    value: context.read<LabelRepository>(),
                     child: AddCorrespondentPage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context)!.correspondent + " *",
+                  addLabelText: S.of(context)!.addCorrespondent,
+                  labelText: S.of(context)!.correspondent + " *",
                   name: DocumentModel.correspondentKey,
-                  labelOptions: state.correspondents,
+                  options: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
                 ),
                 // Document type
                 LabelFormField<DocumentType>(
-                  notAssignedSelectable: false,
-                  formBuilderState: _formKey.currentState,
-                  labelCreationWidgetBuilder: (initialName) =>
-                      RepositoryProvider(
-                    create: (context) =>
-                        context.read<LabelRepository<DocumentType>>(),
+                  showAnyAssignedOption: false,
+                  showNotAssignedOption: false,
+                  addLabelPageBuilder: (initialName) => RepositoryProvider.value(
+                    value: context.read<LabelRepository>(),
                     child: AddDocumentTypePage(initialName: initialName),
                   ),
-                  textFieldLabel: S.of(context)!.documentType + " *",
+                  addLabelText: S.of(context)!.addDocumentType,
+                  labelText: S.of(context)!.documentType + " *",
                   name: DocumentModel.documentTypeKey,
-                  labelOptions: state.documentTypes,
+                  options: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
                 ),
-                TagFormField(
+                TagsFormField(
                   name: DocumentModel.tagsKey,
-                  notAssignedSelectable: false,
-                  anyAssignedSelectable: false,
-                  excludeAllowed: false,
-                  selectableOptions: state.tags,
-                  //Label: "Tags" + " *",
+                  allowCreation: true,
+                  allowExclude: false,
+                  allowOnlySelection: true,
+                  options: state.tags,
                 ),
                 Text(
                   "* " + S.of(context)!.uploadInferValuesHint,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                SizedBox(height: 300),
+                const SizedBox(height: 300),
               ].padded(),
             ),
           );
@@ -248,10 +236,9 @@ class _DocumentUploadPreparationPageState
 
         final createdAt = fv[DocumentModel.createdKey] as DateTime?;
         final title = fv[DocumentModel.titleKey] as String;
-        final docType = fv[DocumentModel.documentTypeKey] as IdQueryParameter;
+        final docType = fv[DocumentModel.documentTypeKey] as SetIdQueryParameter;
         final tags = fv[DocumentModel.tagsKey] as IdsTagsQuery;
-        final correspondent =
-            fv[DocumentModel.correspondentKey] as IdQueryParameter;
+        final correspondent = fv[DocumentModel.correspondentKey] as SetIdQueryParameter;
 
         final taskId = await cubit.upload(
           widget.fileBytes,
@@ -262,7 +249,7 @@ class _DocumentUploadPreparationPageState
           title: title,
           documentType: docType.id,
           correspondent: correspondent.id,
-          tags: tags.ids,
+          tags: tags.include,
           createdAt: createdAt,
         );
         showSnackBar(
@@ -279,8 +266,7 @@ class _DocumentUploadPreparationPageState
         setState(() => _errors = errors);
       } catch (unknownError, stackTrace) {
         debugPrint(unknownError.toString());
-        showErrorMessage(
-            context, const PaperlessServerException.unknown(), stackTrace);
+        showErrorMessage(context, const PaperlessServerException.unknown(), stackTrace);
       } finally {
         setState(() {
           _isUploadLoading = false;

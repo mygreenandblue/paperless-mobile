@@ -21,6 +21,10 @@ class DocumentGridItem extends DocumentItem {
     super.onTagSelected,
     super.onTap,
     required super.enableHeroAnimation,
+    required super.tags,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.storagePaths,
   });
 
   @override
@@ -54,10 +58,10 @@ class DocumentGridItem extends DocumentItem {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CorrespondentWidget(
-                        correspondentId: document.correspondent,
+                        correspondent: correspondents[document.correspondent],
                       ),
                       DocumentTypeWidget(
-                        documentTypeId: document.documentType,
+                        documentType: documentTypes[document.documentType],
                       ),
                       Text(
                         document.title,
@@ -67,7 +71,7 @@ class DocumentGridItem extends DocumentItem {
                       ),
                       const Spacer(),
                       TagsWidget(
-                        tagIds: document.tags,
+                        tags: document.tags.map((e) => tags[e]!).toList(),
                         isMultiLine: false,
                         onTagSelected: onTagSelected,
                       ),

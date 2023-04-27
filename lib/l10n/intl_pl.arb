@@ -1,13 +1,13 @@
 {
-  "developedBy": "Developed by {name}",
+  "developedBy": "Stworzone przez {name}",
   "@developedBy": {
     "placeholders": {
       "name": {}
     }
   },
-  "addAnotherAccount": "Add another account",
+  "addAnotherAccount": "Dodaj kolejne konto",
   "@addAnotherAccount": {},
-  "account": "Account",
+  "account": "Konto",
   "@account": {},
   "addCorrespondent": "New Correspondent",
   "@addCorrespondent": {
@@ -35,11 +35,11 @@
       "name": {}
     }
   },
-  "disconnect": "Disconnect",
+  "disconnect": "Rozłącz się",
   "@disconnect": {
     "description": "Logout button label"
   },
-  "reportABug": "Report a Bug",
+  "reportABug": "Zgłoś błąd",
   "@reportABug": {},
   "settings": "Ustawienia",
   "@settings": {},
@@ -49,7 +49,7 @@
   },
   "biometricAuthentication": "Biometric authentication",
   "@biometricAuthentication": {},
-  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate to enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
   "@authenticateToToggleBiometricAuthentication": {
     "placeholders": {
       "mode": {}
@@ -67,7 +67,7 @@
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Do you really want to delete this view?",
   "@doYouReallyWantToDeleteThisView": {},
-  "deleteView": "Delete view ",
+  "deleteView": "Usuń widok ",
   "@deleteView": {},
   "addedAt": "Added at",
   "@addedAt": {},
@@ -141,13 +141,13 @@
   },
   "documentSuccessfullyDownloaded": "Document successfully downloaded.",
   "@documentSuccessfullyDownloaded": {},
-  "suggestions": "Suggestions: ",
+  "suggestions": "Sugestie: ",
   "@suggestions": {},
   "editDocument": "Edytuj Dokument",
   "@editDocument": {},
-  "advanced": "Advanced",
+  "advanced": "Zaawansowane",
   "@advanced": {},
-  "apply": "Apply",
+  "apply": "Zastosuj",
   "@apply": {},
   "extended": "Extended",
   "@extended": {},
@@ -155,7 +155,7 @@
   "@titleAndContent": {},
   "title": "Tytuł",
   "@title": {},
-  "reset": "Reset",
+  "reset": "Zresetuj",
   "@reset": {},
   "filterDocuments": "Filter Documents",
   "@filterDocuments": {
@@ -163,7 +163,7 @@
   },
   "originalMD5Checksum": "Original MD5-Checksum",
   "@originalMD5Checksum": {},
-  "mediaFilename": "Media Filename",
+  "mediaFilename": "Nazwa pliku",
   "@mediaFilename": {},
   "originalFileSize": "Original File Size",
   "@originalFileSize": {},
@@ -183,7 +183,7 @@
   "@or": {
     "description": "Used on the scanner page between both main actions when no scans have been captured."
   },
-  "deleteAllScans": "Delete all scans",
+  "deleteAllScans": "Usuń wszystkie skany",
   "@deleteAllScans": {},
   "uploadADocumentFromThisDevice": "Upload a document from this device",
   "@uploadADocumentFromThisDevice": {
@@ -201,7 +201,7 @@
   },
   "searchDocuments": "Search documents",
   "@searchDocuments": {},
-  "resetFilter": "Reset filter",
+  "resetFilter": "Zresetuj filtr",
   "@resetFilter": {},
   "lastMonth": "Last Month",
   "@lastMonth": {},
@@ -221,7 +221,7 @@
   "@oops": {},
   "newDocumentAvailable": "New document available!",
   "@newDocumentAvailable": {},
-  "orderBy": "Order By",
+  "orderBy": "Sortuj według",
   "@orderBy": {},
   "thisActionIsIrreversibleDoYouWishToProceedAnyway": "This action is irreversible. Do you wish to proceed anyway?",
   "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
@@ -252,7 +252,7 @@
   "@fileName": {},
   "synchronizeTitleAndFilename": "Synchronize title and filename",
   "@synchronizeTitleAndFilename": {},
-  "reload": "Reload",
+  "reload": "Odśwież",
   "@reload": {},
   "documentSuccessfullyUploadedProcessing": "Dokument pomyślnie przesłany, przetwarzam...",
   "@documentSuccessfullyUploadedProcessing": {},
@@ -693,5 +693,73 @@
   "donateCoffee": "Buy me a coffee",
   "@donateCoffee": {
     "description": "Label displayed in the app drawer"
+  },
+  "thisFieldIsRequired": "This field is required!",
+  "@thisFieldIsRequired": {
+    "description": "Message shown below the form field when a required field has not been filled out."
+  },
+  "confirm": "Confirm",
+  "confirmAction": "Confirm action",
+  "@confirmAction": {
+    "description": "Typically used as a title to confirm a previously selected action"
+  },
+  "areYouSureYouWantToContinue": "Are you sure you want to continue?",
+  "bulkEditTagsAddMessage": "{count, plural, one{This operation will add the tags {tags} to the selected document.} other{This operation will add the tags {tags} to {count} selected documents.}}",
+  "@bulkEditTagsAddMessage": {
+    "description": "Message of the confirmation dialog when bulk adding tags."
+  },
+  "bulkEditTagsRemoveMessage": "{count, plural, one{This operation will remove the tags {tags} from the selected document.} other{This operation will remove the tags {tags} from {count} selected documents.}}",
+  "@bulkEditTagsRemoveMessage": {
+    "description": "Message of the confirmation dialog when bulk removing tags."
+  },
+  "bulkEditTagsModifyMessage": "{count, plural, one{This operation will add the tags {addTags} and remove the tags {removeTags} from the selected document.} other{This operation will add the tags {addTags} and remove the tags {removeTags} from {count} selected documents.}}",
+  "@bulkEditTagsModifyMessage": {
+    "description": "Message of the confirmation dialog when both adding and removing tags."
+  },
+  "bulkEditCorrespondentAssignMessage": "{count, plural, one{This operation will assign the correspondent {correspondent} to the selected document.} other{This operation will assign the correspondent {correspondent} to {count} selected documents.}}",
+  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{This operation will assign the document type {docType} to the selected document.} other{This operation will assign the documentType {docType} to {count} selected documents.}}",
+  "bulkEditStoragePathAssignMessage": "{count, plural, one{This operation will assign the storage path {path} to the selected document.} other{This operation will assign the storage path {path} to {count} selected documents.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{This operation will remove the correspondent from the selected document.} other{This operation will remove the correspondent from {count} selected documents.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{This operation will remove the document type from the selected document.} other{This operation will remove the document type from {count} selected documents.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{This operation will remove the storage path from the selected document.} other{This operation will remove the storage path from {count} selected documents.}}",
+  "anyTag": "Any",
+  "@anyTag": {
+    "description": "Label shown when any tag should be filtered"
+  },
+  "allTags": "All",
+  "@allTags": {
+    "description": "Label shown when a document has to be assigned to all selected tags"
+  },
+  "switchingAccountsPleaseWait": "Switching accounts. Please wait...",
+  "@switchingAccountsPleaseWait": {
+    "description": "Message shown while switching accounts is in progress."
+  },
+  "testConnection": "Test connection",
+  "@testConnection": {
+    "description": "Button label shown on login page. Allows user to test whether the server is reachable or not."
+  },
+  "accounts": "Accounts",
+  "@accounts": {
+    "description": "Title of the account management dialog"
+  },
+  "addAccount": "Add account",
+  "@addAccount": {
+    "description": "Label of add account action"
+  },
+  "switchAccount": "Switch",
+  "@switchAccount": {
+    "description": "Label for switch account action"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Generic Logout label"
+  },
+  "switchAccountTitle": "Switch account",
+  "@switchAccountTitle": {
+    "description": "Title of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
+  },
+  "switchToNewAccount": "Do you want to switch to the new account? You can switch back at any time.",
+  "@switchToNewAccount": {
+    "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
@@ -8,7 +8,18 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddSavedViewPage extends StatefulWidget {
   final DocumentFilter currentFilter;
-  const AddSavedViewPage({super.key, required this.currentFilter});
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, Tag> tags;
+  final Map<int, StoragePath> storagePaths;
+  const AddSavedViewPage({
+    super.key,
+    required this.currentFilter,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.tags,
+    required this.storagePaths,
+  });
 
   @override
   State<AddSavedViewPage> createState() => _AddSavedViewPageState();
@@ -44,7 +55,12 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 children: [
                   FormBuilderTextField(
                     name: _AddSavedViewPageState.fkName,
-                    validator: FormBuilderValidators.required(),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return S.of(context)!.thisFieldIsRequired;
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                       label: Text(S.of(context)!.name),
                     ),
@@ -62,7 +78,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 ],
               ),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Review filter",
               style: Theme.of(context).textTheme.bodyLarge,
@@ -72,46 +88,14 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 formKey: _filterFormKey,
                 initialFilter: widget.currentFilter,
+                correspondents: widget.correspondents,
+                documentTypes: widget.documentTypes,
+                storagePaths: widget.storagePaths,
+                tags: widget.tags,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Padding _buildOld(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          FormBuilder(
-            key: _savedViewFormKey,
-            child: Expanded(
-              child: ListView(
-                children: [
-                  FormBuilderTextField(
-                    name: fkName,
-                    validator: FormBuilderValidators.required(),
-                    decoration: InputDecoration(
-                      label: Text(S.of(context)!.name),
-                    ),
-                  ),
-                  FormBuilderCheckbox(
-                    name: fkShowOnDashboard,
-                    initialValue: false,
-                    title: Text(S.of(context)!.showOnDashboard),
-                  ),
-                  FormBuilderCheckbox(
-                    name: fkShowInSidebar,
-                    initialValue: false,
-                    title: Text(S.of(context)!.showInSidebar),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

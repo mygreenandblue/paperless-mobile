@@ -2,58 +2,87 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/bloc_changes_observer.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/impl/correspondent_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/document_type_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/saved_view_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/storage_path_repository_impl.dart';
-import 'package:paperless_mobile/core/repository/impl/tag_repository_impl.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
+import 'package:paperless_mobile/features/home/view/home_route.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/login/model/client_certificate.dart';
+import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/settings/cubit/application_settings_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'package:paperless_mobile/theme.dart';
-import 'package:paperless_mobile/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:dynamic_color/dynamic_color.dart';
+
+String get defaultPreferredLocaleSubtag {
+  String preferredLocale = Platform.localeName.split("_").first;
+  if (!S.supportedLocales.any((locale) => locale.languageCode == preferredLocale)) {
+    preferredLocale = 'en';
+  }
+  return preferredLocale;
+}
+
+Future<void> _initHive() async {
+  await Hive.initFlutter();
+  // //TODO: REMOVE!
+  // await getApplicationDocumentsDirectory().then((value) => value.delete(recursive: true));
+
+  registerHiveAdapters();
+  await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
+  await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
+  final globalSettingsBox = await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
+
+  if (!globalSettingsBox.hasValue) {
+    await globalSettingsBox.setValue(
+      GlobalSettings(preferredLocaleSubtag: defaultPreferredLocaleSubtag),
+    );
+  }
+}
 
 void main() async {
-  Bloc.observer = BlocChangesObserver();
+  await _initHive();
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final globalSettingsBox = Hive.box<GlobalSettings>(HiveBoxes.globalSettings);
+  final globalSettings = globalSettingsBox.getValue()!;
 
   await findSystemLocale();
   packageInfo = await PackageInfo.fromPlatform();
@@ -71,16 +100,14 @@ void main() async {
   final connectivityStatusService = ConnectivityStatusServiceImpl(connectivity);
   final localAuthService = LocalAuthenticationService(localAuthentication);
 
-  final hiveDir = await getApplicationDocumentsDirectory();
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: hiveDir,
+    storageDirectory: await getApplicationDocumentsDirectory(),
   );
 
-  final appSettingsCubit = ApplicationSettingsCubit(localAuthService);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   final languageHeaderInterceptor = LanguageHeaderInterceptor(
-    appSettingsCubit.state.preferredLocaleSubtag,
+    globalSettings.preferredLocaleSubtag,
   );
   // Manages security context, required for self signed client certificates
   final sessionManager = SessionManager([
@@ -105,41 +132,35 @@ void main() async {
   await connectivityCubit.initialize();
 
   // Create repositories
-  final tagRepository = TagRepositoryImpl(labelsApi);
-  final correspondentRepository = CorrespondentRepositoryImpl(labelsApi);
-  final documentTypeRepository = DocumentTypeRepositoryImpl(labelsApi);
-  final storagePathRepository = StoragePathRepositoryImpl(labelsApi);
-  final savedViewRepository = SavedViewRepositoryImpl(savedViewsApi);
+  final labelRepository = LabelRepository(labelsApi);
+  final savedViewRepository = SavedViewRepository(savedViewsApi);
 
   //Create cubits/blocs
   final authCubit = AuthenticationCubit(
     localAuthService,
     authApi,
     sessionManager,
-  );
-  await authCubit.restoreSessionState(
-    appSettingsCubit.state.isLocalAuthenticationEnabled,
+    labelRepository,
+    savedViewRepository,
+    statsApi,
   );
 
-  if (authCubit.state.isAuthenticated) {
-    final auth = authCubit.state.authentication!;
-    sessionManager.updateSettings(
-      baseUrl: auth.serverUrl,
-      authToken: auth.token,
-      clientCertificate: auth.clientCertificate,
-    );
+  if (globalSettings.currentLoggedInUser != null) {
+    await authCubit.restoreSessionState();
   }
 
   final localNotificationService = LocalNotificationService();
   await localNotificationService.initialize();
 
   //Update language header in interceptor on language change.
-  appSettingsCubit.stream.listen((event) => languageHeaderInterceptor
-      .preferredLocaleSubtag = event.preferredLocaleSubtag);
+  globalSettingsBox.listenable().addListener(() {
+    languageHeaderInterceptor.preferredLocaleSubtag = globalSettings.preferredLocaleSubtag;
+  });
 
   runApp(
     MultiProvider(
       providers: [
+        Provider<LocalAuthenticationService>.value(value: localAuthService),
         Provider<PaperlessAuthenticationApi>.value(value: authApi),
         Provider<PaperlessDocumentsApi>.value(value: documentsApi),
         Provider<PaperlessLabelsApi>.value(value: labelsApi),
@@ -157,23 +178,13 @@ void main() async {
         Provider<ConnectivityStatusService>.value(
           value: connectivityStatusService,
         ),
-        Provider<LocalNotificationService>.value(
-            value: localNotificationService),
+        Provider<LocalNotificationService>.value(value: localNotificationService),
         Provider.value(value: DocumentChangedNotifier()),
       ],
       child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider<LabelRepository<Tag>>.value(
-            value: tagRepository,
-          ),
-          RepositoryProvider<LabelRepository<Correspondent>>.value(
-            value: correspondentRepository,
-          ),
-          RepositoryProvider<LabelRepository<DocumentType>>.value(
-            value: documentTypeRepository,
-          ),
-          RepositoryProvider<LabelRepository<StoragePath>>.value(
-            value: storagePathRepository,
+          RepositoryProvider<LabelRepository>.value(
+            value: labelRepository,
           ),
           RepositoryProvider<SavedViewRepository>.value(
             value: savedViewRepository,
@@ -183,8 +194,6 @@ void main() async {
           providers: [
             BlocProvider<AuthenticationCubit>.value(value: authCubit),
             BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-            BlocProvider<ApplicationSettingsCubit>.value(
-                value: appSettingsCubit),
           ],
           child: const PaperlessMobileEntrypoint(),
         ),
@@ -199,60 +208,45 @@ class PaperlessMobileEntrypoint extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<PaperlessMobileEntrypoint> createState() =>
-      _PaperlessMobileEntrypointState();
+  State<PaperlessMobileEntrypoint> createState() => _PaperlessMobileEntrypointState();
 }
 
 class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => PaperlessServerInformationCubit(
-            context.read<PaperlessServerStatsApi>(),
-          ),
-        ),
-      ],
-      child: BlocBuilder<ApplicationSettingsCubit, ApplicationSettingsState>(
-        builder: (context, settings) {
-          return DynamicColorBuilder(
-            builder: (lightDynamic, darkDynamic) {
-              return MaterialApp(
-                debugShowCheckedModeBanner: true,
-                title: "Paperless Mobile",
-                theme: buildTheme(
-                  brightness: Brightness.light,
-                  dynamicScheme: lightDynamic,
-                  preferredColorScheme: settings.preferredColorSchemeOption,
-                ),
-                darkTheme: buildTheme(
-                  brightness: Brightness.dark,
-                  dynamicScheme: darkDynamic,
-                  preferredColorScheme: settings.preferredColorSchemeOption,
-                ),
-                themeMode: settings.preferredThemeMode,
-                supportedLocales: S.supportedLocales,
-                locale: Locale.fromSubtags(
-                  languageCode: settings.preferredLocaleSubtag,
-                ),
-                localizationsDelegates: const [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  FormBuilderLocalizations.delegate,
-                ],
-                routes: {
-                  DocumentDetailsRoute.routeName: (context) =>
-                      const DocumentDetailsRoute(),
-                },
-                home: const AuthenticationWrapper(),
-              );
-            },
-          );
-        },
-      ),
+    return GlobalSettingsBuilder(
+      builder: (context, settings) {
+        return DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: true,
+              title: "Paperless Mobile",
+              theme: buildTheme(
+                brightness: Brightness.light,
+                dynamicScheme: lightDynamic,
+                preferredColorScheme: settings.preferredColorSchemeOption,
+              ),
+              darkTheme: buildTheme(
+                brightness: Brightness.dark,
+                dynamicScheme: darkDynamic,
+                preferredColorScheme: settings.preferredColorSchemeOption,
+              ),
+              themeMode: settings.preferredThemeMode,
+              supportedLocales: S.supportedLocales,
+              locale: Locale.fromSubtags(
+                languageCode: settings.preferredLocaleSubtag,
+              ),
+              localizationsDelegates: const [
+                ...S.localizationsDelegates,
+              ],
+              routes: {
+                DocumentDetailsRoute.routeName: (context) => const DocumentDetailsRoute(),
+              },
+              home: const AuthenticationWrapper(),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -267,25 +261,23 @@ class AuthenticationWrapper extends StatefulWidget {
 class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   void didChangeDependencies() {
-    FlutterNativeSplash.remove();
     super.didChangeDependencies();
+    FlutterNativeSplash.remove();
   }
 
   @override
   void initState() {
     super.initState();
-    // Temporary Fix: Can be removed if the flutter engine implements the fix itself
+
     // Activate the highest supported refresh rate on the device
     if (Platform.isAndroid) {
       _setOptimalDisplayMode();
     }
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
-    ReceiveSharingIntent.getMediaStream()
-        .listen(ShareIntentQueue.instance.addAll);
+    ReceiveSharingIntent.getMediaStream().listen(ShareIntentQueue.instance.addAll);
     // For sharing files coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia()
-        .then(ShareIntentQueue.instance.addAll);
+    ReceiveSharingIntent.getInitialMedia().then(ShareIntentQueue.instance.addAll);
   }
 
   Future<void> _setOptimalDisplayMode() async {
@@ -297,8 +289,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
         .toList()
       ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
 
-    final DisplayMode mostOptimalMode =
-        sameResolution.isNotEmpty ? sameResolution.first : active;
+    final DisplayMode mostOptimalMode = sameResolution.isNotEmpty ? sameResolution.first : active;
     debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
 
     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
@@ -306,36 +297,61 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthenticationCubit, AuthenticationState>(
-      listener: (context, authState) {
-        final bool showIntroSlider =
-            authState.isAuthenticated && !authState.wasLoginStored;
-        if (showIntroSlider) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ApplicationIntroSlideshow(),
-              fullscreenDialog: true,
-            ),
-          );
-        }
-      },
+    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, authentication) {
-        if (authentication.isAuthenticated &&
-            (authentication.wasLocalAuthenticationSuccessful ?? true)) {
-          return BlocProvider(
-            create: (context) =>
-                TaskStatusCubit(context.read<PaperlessTasksApi>()),
-            child: const HomePage(),
+        if (authentication.isAuthenticated) {
+          return HomeRoute(
+            key: ValueKey(authentication.userId),
           );
-        } else {
-          if (authentication.wasLoginStored &&
-              !(authentication.wasLocalAuthenticationSuccessful ?? false)) {
-            return const VerifyIdentityPage();
-          }
-          return const LoginPage();
+        } else if (authentication.showBiometricAuthenticationScreen) {
+          return const VerifyIdentityPage();
         }
+        return LoginPage(
+          titleString: S.of(context)!.connectToPaperless,
+          submitText: S.of(context)!.signIn,
+          onSubmit: _onLogin,
+        );
       },
     );
+  }
+
+  void _onLogin(
+    BuildContext context,
+    String username,
+    String password,
+    String serverUrl,
+    ClientCertificate? clientCertificate,
+  ) async {
+    try {
+      await context.read<AuthenticationCubit>().login(
+            credentials: LoginFormCredentials(username: username, password: password),
+            serverUrl: serverUrl,
+            clientCertificate: clientCertificate,
+          );
+      // Show onboarding after first login!
+      final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+      if (globalSettings.showOnboarding) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ApplicationIntroSlideshow(),
+            fullscreenDialog: true,
+          ),
+        ).then((value) {
+          globalSettings.showOnboarding = false;
+          globalSettings.save();
+        });
+      }
+    } on PaperlessServerException catch (error, stackTrace) {
+      showErrorMessage(context, error, stackTrace);
+    } on PaperlessValidationErrors catch (error, stackTrace) {
+      if (error.hasFieldUnspecificError) {
+        showLocalizedError(context, error.fieldUnspecificError!);
+      } else {
+        showGenericError(context, error.values.first, stackTrace);
+      }
+    } catch (unknownError, stackTrace) {
+      showGenericError(context, unknownError.toString(), stackTrace);
+    }
   }
 }

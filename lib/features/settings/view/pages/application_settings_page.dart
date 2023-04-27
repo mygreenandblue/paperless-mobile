@@ -12,6 +12,12 @@ class ApplicationSettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.applicationSettings),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: const Icon(Icons.public),
+          )
+        ],
       ),
       body: ListView(
         children: const [

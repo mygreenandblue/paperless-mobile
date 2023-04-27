@@ -1,19 +1,11 @@
 part of 'label_cubit.dart';
 
-class LabelState<T extends Label> {
-  LabelState.initial() : this(isLoaded: false, labels: {});
-  final bool isLoaded;
-  final Map<int, T> labels;
-
-  LabelState({
-    this.isLoaded = false,
-    this.labels = const {},
-  });
-
-  T? getLabel(int? key) {
-    if (isLoaded) {
-      return labels[key];
-    }
-    return null;
-  }
+@freezed
+class LabelState with _$LabelState {
+  const factory LabelState({
+    @Default({}) Map<int, Correspondent> correspondents,
+    @Default({}) Map<int, DocumentType> documentTypes,
+    @Default({}) Map<int, Tag> tags,
+    @Default({}) Map<int, StoragePath> storagePaths,
+  }) = _LabelState;
 }

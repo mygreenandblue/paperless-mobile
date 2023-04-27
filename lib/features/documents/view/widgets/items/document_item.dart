@@ -10,6 +10,11 @@ abstract class DocumentItem extends StatelessWidget {
   final bool isLabelClickable;
   final bool enableHeroAnimation;
 
+  final Map<int, Tag> tags;
+  final Map<int, Correspondent> correspondents;
+  final Map<int, DocumentType> documentTypes;
+  final Map<int, StoragePath> storagePaths;
+
   final void Function(int tagId)? onTagSelected;
   final void Function(int? correspondentId)? onCorrespondentSelected;
   final void Function(int? documentTypeId)? onDocumentTypeSelected;
@@ -28,5 +33,9 @@ abstract class DocumentItem extends StatelessWidget {
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
     required this.enableHeroAnimation,
+    required this.tags,
+    required this.correspondents,
+    required this.documentTypes,
+    required this.storagePaths,
   });
 }

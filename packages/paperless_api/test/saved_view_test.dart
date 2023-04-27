@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/models/query_parameters/tags_query/include_tag_id_query.dart';
 import 'package:paperless_api/src/models/query_parameters/text_query.dart';
 
 void main() {
@@ -70,13 +69,9 @@ void main() {
             correspondent: const IdQueryParameter.fromId(42),
             documentType: const IdQueryParameter.fromId(69),
             storagePath: const IdQueryParameter.fromId(14),
-            tags: const IdsTagsQuery(
-              [
-                IncludeTagIdQuery(1),
-                IncludeTagIdQuery(2),
-                ExcludeTagIdQuery(3),
-                ExcludeTagIdQuery(4),
-              ],
+            tags: const TagsQuery.ids(
+              include: [1, 2],
+              exclude: [3, 4],
             ),
             created: AbsoluteDateRangeQuery(
               before: DateTime.parse("2022-10-27"),
@@ -140,7 +135,7 @@ void main() {
         correspondent: const IdQueryParameter.notAssigned(),
         documentType: const IdQueryParameter.notAssigned(),
         storagePath: const IdQueryParameter.notAssigned(),
-        tags: const OnlyNotAssignedTagsQuery(),
+        tags: const TagsQuery.notAssigned(),
       );
       expect(
         actual,
@@ -157,13 +152,10 @@ void main() {
             correspondent: const IdQueryParameter.fromId(1),
             documentType: const IdQueryParameter.fromId(2),
             storagePath: const IdQueryParameter.fromId(3),
-            tags: const IdsTagsQuery([
-              IncludeTagIdQuery(4),
-              IncludeTagIdQuery(5),
-              ExcludeTagIdQuery(6),
-              ExcludeTagIdQuery(7),
-              ExcludeTagIdQuery(8),
-            ]),
+            tags: const TagsQuery.ids(
+              include: [4, 5],
+              exclude: [6, 7, 8],
+            ),
             sortField: SortField.added,
             sortOrder: SortOrder.ascending,
             created: AbsoluteDateRangeQuery(
@@ -210,16 +202,16 @@ void main() {
     test('Values are correctly parsed if unset.', () {
       expect(
         SavedView.fromDocumentFilter(
-          const DocumentFilter(
-            correspondent: IdQueryParameter.unset(),
-            documentType: IdQueryParameter.unset(),
-            storagePath: IdQueryParameter.unset(),
-            tags: IdsTagsQuery(),
+          DocumentFilter(
+            correspondent: const IdQueryParameter.unset(),
+            documentType: const IdQueryParameter.unset(),
+            storagePath: const IdQueryParameter.unset(),
+            tags: const IdsTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.descending,
-            added: UnsetDateRangeQuery(),
-            created: UnsetDateRangeQuery(),
-            query: TextQuery(),
+            added: const UnsetDateRangeQuery(),
+            created: const UnsetDateRangeQuery(),
+            query: const TextQuery(),
           ),
           name: "test_name",
           showInSidebar: false,
@@ -245,7 +237,7 @@ void main() {
             correspondent: IdQueryParameter.notAssigned(),
             documentType: IdQueryParameter.notAssigned(),
             storagePath: IdQueryParameter.notAssigned(),
-            tags: OnlyNotAssignedTagsQuery(),
+            tags: TagsQuery.notAssigned(),
             sortField: SortField.created,
             sortOrder: SortOrder.ascending,
           ),

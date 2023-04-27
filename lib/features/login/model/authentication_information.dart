@@ -1,40 +1,32 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 
 part 'authentication_information.g.dart';
 
-@JsonSerializable()
+@HiveType(typeId: HiveTypeIds.authentication)
 class AuthenticationInformation {
-  final String? token;
-  final String serverUrl;
-  final ClientCertificate? clientCertificate;
+  @HiveField(0)
+  String? token;
+
+  @HiveField(1)
+  String serverUrl;
+
+  @HiveField(2)
+  ClientCertificate? clientCertificate;
+
+  @HiveField(3)
+  String username;
 
   AuthenticationInformation({
-    this.token,
+    required this.username,
     required this.serverUrl,
+    this.token,
     this.clientCertificate,
   });
 
   bool get isValid {
     return serverUrl.isNotEmpty && (token?.isNotEmpty ?? false);
   }
-
-  AuthenticationInformation copyWith({
-    String? token,
-    String? serverUrl,
-    ClientCertificate? clientCertificate,
-    bool removeClientCertificate = false,
-  }) {
-    return AuthenticationInformation(
-      token: token ?? this.token,
-      serverUrl: serverUrl ?? this.serverUrl,
-      clientCertificate: clientCertificate ??
-          (removeClientCertificate ? null : this.clientCertificate),
-    );
-  }
-
-  factory AuthenticationInformation.fromJson(Map<String, dynamic> json) =>
-      _$AuthenticationInformationFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AuthenticationInformationToJson(this);
 }

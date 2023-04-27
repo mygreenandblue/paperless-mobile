@@ -11,6 +11,8 @@ on:
         default: "alpha"
         type: choice
         options:
+          - internal
+          - promote_to_alpha
           - alpha
           - promote_to_beta
           - beta
@@ -30,26 +32,16 @@ jobs:
         with:
           channel: stable
       - run: flutter doctor -v
-      
-      # Setup app
+
+      # Clone repository
       - name: Checkout Paperless mobile, get packages and run code generators
         uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
-      - run:  |
-          pushd scripts
-          bash install_dependencies.sh
-          popd
 
-      # Setup Ruby, Bundler, and Gemfile dependencies
-      - name: Setup Fastlane
-        uses: ruby/setup-ruby@8df78e55761745aad83acaf3ff12976382356e6d
-        with:
-          ruby-version: "2.6"
-          bundler-cache: true
-          working-directory: android
-
+      # Extract secrets into corresponding files
       - name: Configure Keystore
         run: |
-          echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
+          echo "$RELEASE_KEYSTORE" > upload-keystore.jks.asc
+          gpg --batch --passphrase "$RELEASE_KEYSTORE_PASSPHRASE" -d -o app/upload-keystore.jks upload-keystore.jks.asc
           echo "storeFile=upload-keystore.jks" >> key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
@@ -59,7 +51,24 @@ jobs:
           KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+          RELEASE_KEYSTORE_PASSPHRASE: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
         working-directory: android
+
+      # Run codegen
+      - name: Run Codegen
+        run:  |
+          bash install_dependencies.sh
+        working-directory: scripts
+
+      # Setup Ruby, Bundler, and Gemfile dependencies
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@8df78e55761745aad83acaf3ff12976382356e6d
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
+
 
       # Build and deploy with Fastlane (by default, to alpha track) 🚀.
       # Naturally, promote_to_production only deploys.

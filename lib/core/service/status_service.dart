@@ -9,11 +9,12 @@ import 'package:paperless_mobile/core/bloc/document_status_cubit.dart';
 import 'package:paperless_mobile/core/model/document_processing_status.dart';
 import 'package:paperless_mobile/features/login/model/authentication_information.dart';
 import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:web_socket_channel/io.dart';
 
 abstract class StatusService {
-  Future<void> startListeningBeforeDocumentUpload(String httpUrl,
-      AuthenticationInformation credentials, String documentFileName);
+  Future<void> startListeningBeforeDocumentUpload(
+      String httpUrl, UserCredentials credentials, String documentFileName);
 }
 
 class WebSocketStatusService implements StatusService {
@@ -25,7 +26,7 @@ class WebSocketStatusService implements StatusService {
   @override
   Future<void> startListeningBeforeDocumentUpload(
     String httpUrl,
-    AuthenticationInformation credentials,
+    UserCredentials credentials,
     String documentFileName,
   ) async {
     //   socket = await WebSocket.connect(
@@ -57,7 +58,7 @@ class LongPollingStatusService implements StatusService {
   @override
   Future<void> startListeningBeforeDocumentUpload(
     String httpUrl,
-    AuthenticationInformation credentials,
+    UserCredentials credentials,
     String documentFileName,
   ) async {
     //   final today = DateTime.now();

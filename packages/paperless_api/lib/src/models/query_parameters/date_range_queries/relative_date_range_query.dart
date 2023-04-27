@@ -1,5 +1,7 @@
+import 'package:hive/hive.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/config/hive/hive_type_ids.dart';
 
 import 'date_range_query.dart';
 import 'date_range_query_field.dart';
@@ -7,8 +9,11 @@ import 'date_range_unit.dart';
 part 'relative_date_range_query.g.dart';
 
 @JsonSerializable()
+@HiveType(typeId: PaperlessApiHiveTypeIds.relativeDateRangeQuery)
 class RelativeDateRangeQuery extends DateRangeQuery {
+  @HiveField(0)
   final int offset;
+  @HiveField(1)
   final DateRangeUnit unit;
 
   const RelativeDateRangeQuery([

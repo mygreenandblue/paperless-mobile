@@ -1,42 +1,16 @@
 part of 'document_details_cubit.dart';
 
-class DocumentDetailsState with EquatableMixin {
-  final DocumentModel document;
-  final DocumentMetaData? metaData;
-  final bool isFullContentLoaded;
-  final String? fullContent;
-  final FieldSuggestions suggestions;
-
-  const DocumentDetailsState({
-    required this.document,
-    this.metaData,
-    this.suggestions = const FieldSuggestions(),
-    this.isFullContentLoaded = false,
-    this.fullContent,
-  });
-
-  @override
-  List<Object?> get props => [
-        document,
-        suggestions,
-        isFullContentLoaded,
-        fullContent,
-        metaData,
-      ];
-
-  DocumentDetailsState copyWith({
-    DocumentModel? document,
-    FieldSuggestions? suggestions,
-    bool? isFullContentLoaded,
-    String? fullContent,
+@freezed
+class DocumentDetailsState with _$DocumentDetailsState {
+  const factory DocumentDetailsState({
+    required DocumentModel document,
     DocumentMetaData? metaData,
-  }) {
-    return DocumentDetailsState(
-      document: document ?? this.document,
-      suggestions: suggestions ?? this.suggestions,
-      isFullContentLoaded: isFullContentLoaded ?? this.isFullContentLoaded,
-      fullContent: fullContent ?? this.fullContent,
-      metaData: metaData ?? this.metaData,
-    );
-  }
+    @Default(false) bool isFullContentLoaded,
+    String? fullContent,
+    FieldSuggestions? suggestions,
+    @Default({}) Map<int, Correspondent> correspondents,
+    @Default({}) Map<int, DocumentType> documentTypes,
+    @Default({}) Map<int, Tag> tags,
+    @Default({}) Map<int, StoragePath> storagePaths,
+  }) = _DocumentDetailsState;
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/extensions/dart_extensions.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -197,16 +199,10 @@ class _InboxPageState extends State<InboxPage>
               S.of(context)!.areYouSureYouWantToMarkAllDocumentsAsSeen,
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(S.of(context)!.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  S.of(context)!.ok,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
+              const DialogCancelButton(),
+              DialogConfirmButton(
+                label: S.of(context)!.markAsSeen,
+                style: DialogConfirmButtonStyle.danger,
               ),
             ],
           ),

@@ -31,50 +31,43 @@ class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
         if (state.metaData == null) {
           return const Center(child: CircularProgressIndicator());
         }
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 16,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ArchiveSerialNumberField(
-                  document: widget.document,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  DateFormat().format(widget.document.modified),
-                  context: context,
-                  label: S.of(context)!.modifiedAt,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  DateFormat().format(widget.document.added),
-                  context: context,
-                  label: S.of(context)!.addedAt,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  state.metaData!.mediaFilename,
-                  context: context,
-                  label: S.of(context)!.mediaFilename,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  state.metaData!.originalChecksum,
-                  context: context,
-                  label: S.of(context)!.originalMD5Checksum,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  formatBytes(state.metaData!.originalSize, 2),
-                  context: context,
-                  label: S.of(context)!.originalFileSize,
-                ).paddedOnly(bottom: widget.itemSpacing),
-                DetailsItem.text(
-                  state.metaData!.originalMimeType,
-                  context: context,
-                  label: S.of(context)!.originalMIMEType,
-                ).paddedOnly(bottom: widget.itemSpacing),
-              ],
-            ),
+        return SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              ArchiveSerialNumberField(
+                document: widget.document,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                DateFormat().format(widget.document.modified),
+                context: context,
+                label: S.of(context)!.modifiedAt,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                DateFormat().format(widget.document.added),
+                context: context,
+                label: S.of(context)!.addedAt,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                state.metaData!.mediaFilename,
+                context: context,
+                label: S.of(context)!.mediaFilename,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                state.metaData!.originalChecksum,
+                context: context,
+                label: S.of(context)!.originalMD5Checksum,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                formatBytes(state.metaData!.originalSize, 2),
+                context: context,
+                label: S.of(context)!.originalFileSize,
+              ).paddedOnly(bottom: widget.itemSpacing),
+              DetailsItem.text(
+                state.metaData!.originalMimeType,
+                context: context,
+                label: S.of(context)!.originalMIMEType,
+              ).paddedOnly(bottom: widget.itemSpacing),
+            ],
           ),
         );
       },

@@ -1,21 +1,20 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
 
-class InboxCubit extends HydratedCubit<InboxState>
-    with DocumentPagingBlocMixin {
-  final LabelRepository<Tag> _tagsRepository;
-  final LabelRepository<Correspondent> _correspondentRepository;
-  final LabelRepository<DocumentType> _documentTypeRepository;
+class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin {
+  final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
 
@@ -24,35 +23,22 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   final PaperlessServerStatsApi _statsApi;
 
-  final List<StreamSubscription> _subscriptions = [];
-
   @override
   PaperlessDocumentsApi get api => _documentsApi;
 
   InboxCubit(
-    this._tagsRepository,
     this._documentsApi,
-    this._correspondentRepository,
-    this._documentTypeRepository,
     this._statsApi,
+    this._labelRepository,
     this.notifier,
-  ) : super(
-          InboxState(
-            availableCorrespondents:
-                _correspondentRepository.current?.values ?? {},
-            availableDocumentTypes:
-                _documentTypeRepository.current?.values ?? {},
-            availableTags: _tagsRepository.current?.values ?? {},
-          ),
-        ) {
-    notifier.subscribe(
+  ) : super(InboxState(
+          labels: _labelRepository.state,
+        )) {
+    notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: (document) {
-        if (document.tags
-            .toSet()
-            .intersection(state.inboxTags.toSet())
-            .isEmpty) {
+        if (document.tags.toSet().intersection(state.inboxTags.toSet()).isEmpty) {
           remove(document);
           emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
         } else {
@@ -60,28 +46,11 @@ class InboxCubit extends HydratedCubit<InboxState>
         }
       },
     );
-    _subscriptions.add(
-      _tagsRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(availableTags: event!.values));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _correspondentRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(
-            availableCorrespondents: event!.values,
-          ));
-        }
-      }),
-    );
-    _subscriptions.add(
-      _documentTypeRepository.values.listen((event) {
-        if (event?.hasLoaded ?? false) {
-          emit(state.copyWith(availableDocumentTypes: event!.values));
-        }
-      }),
+    _labelRepository.addListener(
+      this,
+      onChanged: (labels) {
+        emit(state.copyWith(labels: labels));
+      },
     );
 
     refreshItemsInInboxCount(false);
@@ -105,27 +74,34 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> loadInbox() async {
-    final inboxTags = await _tagsRepository.findAll().then(
-          (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
-        );
+    if (!isClosed) {
+      debugPrint("Initializing inbox...");
 
-    if (inboxTags.isEmpty) {
-      // no inbox tags = no inbox items.
-      return emit(
-        state.copyWith(
-          hasLoaded: true,
-          value: [],
-          inboxTags: [],
-        ),
-      );
+      final inboxTags = await _labelRepository.findAllTags().then(
+            (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
+          );
+
+      if (inboxTags.isEmpty) {
+        // no inbox tags = no inbox items.
+        return emit(
+          state.copyWith(
+            hasLoaded: true,
+            value: [],
+            inboxTags: [],
+          ),
+        );
+      }
+      if (!isClosed) {
+        emit(state.copyWith(inboxTags: inboxTags));
+
+        updateFilter(
+          filter: DocumentFilter(
+            sortField: SortField.added,
+            tags: TagsQuery.ids(include: inboxTags.toList()),
+          ),
+        );
+      }
     }
-    emit(state.copyWith(inboxTags: inboxTags));
-    updateFilter(
-      filter: DocumentFilter(
-        sortField: SortField.added,
-        tags: IdsTagsQuery.fromIds(inboxTags),
-      ),
-    );
   }
 
   ///
@@ -133,8 +109,8 @@ class InboxCubit extends HydratedCubit<InboxState>
   ///
   Future<void> reloadInbox() async {
     emit(state.copyWith(hasLoaded: false, isLoading: true));
-    final inboxTags = await _tagsRepository.findAll().then(
-          (tags) => tags.where((t) => t.isInboxTag ?? false).map((t) => t.id!),
+    final inboxTags = await _labelRepository.findAllTags().then(
+          (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
         );
 
     if (inboxTags.isEmpty) {
@@ -151,7 +127,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     updateFilter(
       filter: DocumentFilter(
         sortField: SortField.added,
-        tags: IdsTagsQuery.fromIds(inboxTags),
+        tags: TagsQuery.ids(include: inboxTags.toList()),
       ),
     );
   }
@@ -161,8 +137,7 @@ class InboxCubit extends HydratedCubit<InboxState>
   /// from the inbox.
   ///
   Future<Iterable<int>> removeFromInbox(DocumentModel document) async {
-    final tagsToRemove =
-        document.tags.toSet().intersection(state.inboxTags.toSet());
+    final tagsToRemove = document.tags.toSet().intersection(state.inboxTags.toSet());
 
     final updatedTags = {...document.tags}..removeAll(tagsToRemove);
     final updatedDocument = await api.update(
@@ -216,8 +191,8 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> assignAsn(DocumentModel document) async {
     if (document.archiveSerialNumber == null) {
       final int asn = await _documentsApi.findNextAsn();
-      final updatedDocument = await _documentsApi
-          .update(document.copyWith(archiveSerialNumber: () => asn));
+      final updatedDocument =
+          await _documentsApi.update(document.copyWith(archiveSerialNumber: () => asn));
 
       replace(updatedDocument);
     }
@@ -239,9 +214,10 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   @override
   Future<void> close() {
-    for (var sub in _subscriptions) {
-      sub.cancel();
-    }
+    _labelRepository.removeListener(this);
     return super.close();
   }
+
+  @override
+  Future<void> onFilterUpdated(DocumentFilter filter) async {}
 }

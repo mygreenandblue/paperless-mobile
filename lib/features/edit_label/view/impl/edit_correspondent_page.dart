@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/state/impl/correspondent_repository_state.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
 
@@ -13,13 +11,20 @@ class EditCorrespondentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EditLabelCubit<Correspondent>(
-        context.read<LabelRepository<Correspondent>>(),
+      lazy: false,
+      create: (context) => EditLabelCubit(
+        context.read(),
       ),
-      child: EditLabelPage<Correspondent>(
-        label: correspondent,
-        fromJsonT: Correspondent.fromJson,
-      ),
+      child: Builder(builder: (context) {
+        return EditLabelPage<Correspondent>(
+          label: correspondent,
+          fromJsonT: Correspondent.fromJson,
+          onSubmit: (context, label) =>
+              context.read<EditLabelCubit>().replaceCorrespondent(label),
+          onDelete: (context, label) =>
+              context.read<EditLabelCubit>().removeCorrespondent(label),
+        );
+      }),
     );
   }
 }

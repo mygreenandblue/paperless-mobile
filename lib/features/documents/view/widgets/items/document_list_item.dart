@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/cubit/providers/document_type_bloc_provider.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 
@@ -25,11 +21,15 @@ class DocumentListItem extends DocumentItem {
     super.onTagSelected,
     super.onTap,
     super.enableHeroAnimation = true,
+    required super.tags,
+    required super.correspondents,
+    required super.documentTypes,
+    required super.storagePaths,
   });
 
   @override
   Widget build(BuildContext context) {
-    return DocumentTypeBlocProvider(
+    return Material(
       child: ListTile(
         dense: true,
         selected: isSelected,
@@ -46,7 +46,7 @@ class DocumentListItem extends DocumentItem {
                   absorbing: isSelectionActive,
                   child: CorrespondentWidget(
                     isClickable: isLabelClickable,
-                    correspondentId: document.correspondent,
+                    correspondent: correspondents[document.correspondent],
                     onSelected: onCorrespondentSelected,
                   ),
                 ),
@@ -61,62 +61,59 @@ class DocumentListItem extends DocumentItem {
               absorbing: isSelectionActive,
               child: TagsWidget(
                 isClickable: isLabelClickable,
-                tagIds: document.tags,
+                tags: document.tags
+                    .where((e) => tags.containsKey(e))
+                    .map((e) => tags[e]!)
+                    .toList(),
                 isMultiLine: false,
                 onTagSelected: (id) => onTagSelected?.call(id),
               ),
-            )
+            ),
           ],
         ),
         subtitle: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child:
-                BlocBuilder<LabelCubit<DocumentType>, LabelState<DocumentType>>(
-              builder: (context, docTypes) {
-                return RichText(
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                    text: DateFormat.yMMMd().format(document.created),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelSmall
-                        ?.apply(color: Colors.grey),
-                    children: document.documentType != null
-                        ? [
-                            const TextSpan(text: '\u30FB'),
-                            TextSpan(
-                              text:
-                                  docTypes.labels[document.documentType]?.name,
-                            ),
-                          ]
-                        : null,
-                  ),
-                );
-              },
-            )
-            // Row(
-            //   children: [
-            //     Text(
-            //       DateFormat.yMMMd().format(document.created),
-            //       style: Theme.of(context)
-            //           .textTheme
-            //           .bodySmall
-            //           ?.apply(color: Colors.grey),
-            //     ),
-            //     if (document.documentType != null) ...[
-            //       Text("\u30FB"),
-            //       DocumentTypeWidget(
-            //         documentTypeId: document.documentType,
-            //         textStyle: Theme.of(context).textTheme.bodySmall?.apply(
-            //               color: Colors.grey,
-            //               overflow: TextOverflow.ellipsis,
-            //             ),
-            //       ),
-            //     ],
-            //   ],
-            // ),
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+              text: DateFormat.yMMMd().format(document.created),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.apply(color: Colors.grey),
+              children: document.documentType != null
+                  ? [
+                      const TextSpan(text: '\u30FB'),
+                      TextSpan(
+                        text: documentTypes[document.documentType]?.name,
+                      ),
+                    ]
+                  : null,
             ),
+          ),
+          // Row(
+          //   children: [
+          //     Text(
+          //       DateFormat.yMMMd().format(document.created),
+          //       style: Theme.of(context)
+          //           .textTheme
+          //           .bodySmall
+          //           ?.apply(color: Colors.grey),
+          //     ),
+          //     if (document.documentType != null) ...[
+          //       Text("\u30FB"),
+          //       DocumentTypeWidget(
+          //         documentTypeId: document.documentType,
+          //         textStyle: Theme.of(context).textTheme.bodySmall?.apply(
+          //               color: Colors.grey,
+          //               overflow: TextOverflow.ellipsis,
+          //             ),
+          //       ),
+          //     ],
+          //   ],
+          // ),
+        ),
         isThreeLine: document.tags.isNotEmpty,
         leading: AspectRatio(
           aspectRatio: _a4AspectRatio,

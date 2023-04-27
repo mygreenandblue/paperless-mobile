@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/cubit/providers/document_type_bloc_provider.dart';
 
 class DocumentTypeWidget extends StatelessWidget {
-  final int? documentTypeId;
+  final DocumentType? documentType;
   final bool isClickable;
   final TextStyle? textStyle;
   final void Function(int? id)? onSelected;
   const DocumentTypeWidget({
     Key? key,
-    required this.documentTypeId,
+    required this.documentType,
     this.isClickable = true,
     this.textStyle,
     this.onSelected,
@@ -19,23 +16,16 @@ class DocumentTypeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DocumentTypeBlocProvider(
-      child: AbsorbPointer(
-        absorbing: !isClickable,
-        child: GestureDetector(
-          onTap: () => onSelected?.call(documentTypeId),
-          child:
-              BlocBuilder<LabelCubit<DocumentType>, LabelState<DocumentType>>(
-            builder: (context, state) {
-              return Text(
-                state.labels[documentTypeId]?.toString() ?? "-",
-                style: (textStyle ?? Theme.of(context).textTheme.bodyMedium)
-                    ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              );
-            },
-          ),
+    return AbsorbPointer(
+      absorbing: !isClickable,
+      child: GestureDetector(
+        onTap: () => onSelected?.call(documentType?.id),
+        child: Text(
+          documentType?.toString() ?? "-",
+          style: (textStyle ?? Theme.of(context).textTheme.bodyMedium)
+              ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
       ),
     );

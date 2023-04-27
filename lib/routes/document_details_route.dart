@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/provider/label_repositories_provider.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
 
@@ -19,9 +19,11 @@ class DocumentDetailsRoute extends StatelessWidget {
         context.read(),
         context.read(),
         context.read(),
+        context.read(),
         initialDocument: args.document,
       ),
-      child: LabelRepositoriesProvider(
+      child: RepositoryProvider.value(
+        value: context.read<LabelRepository>(),
         child: DocumentDetailsPage(
           allowEdit: args.allowEdit,
           isLabelClickable: args.isLabelClickable,

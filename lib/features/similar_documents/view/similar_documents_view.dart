@@ -7,11 +7,13 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SimilarDocumentsView extends StatefulWidget {
-  const SimilarDocumentsView({super.key});
+  final ScrollController pagingScrollController;
+  const SimilarDocumentsView({super.key, required this.pagingScrollController});
 
   @override
   State<SimilarDocumentsView> createState() => _SimilarDocumentsViewState();
@@ -20,8 +22,7 @@ class SimilarDocumentsView extends StatefulWidget {
 class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
     with DocumentPagingViewMixin<SimilarDocumentsView, SimilarDocumentsCubit> {
   @override
-  final pagingScrollController = ScrollController();
-
+  ScrollController get pagingScrollController => widget.pagingScrollController;
   @override
   void initState() {
     super.initState();
@@ -43,25 +44,20 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
         return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
           builder: (context, state) {
             if (!connectivity.isConnected && !state.hasLoaded) {
-              return const OfflineWidget();
+              return const SliverToBoxAdapter(
+                child: OfflineWidget(),
+              );
             }
             if (state.hasLoaded &&
                 !state.isLoading &&
                 state.documents.isEmpty) {
-              return DocumentsEmptyState(
-                state: state,
-                onReset: () => context
-                    .read<SimilarDocumentsCubit>()
-                    .updateFilter(
-                      filter: DocumentFilter.initial.copyWith(
-                        moreLike: () =>
-                            context.read<SimilarDocumentsCubit>().documentId,
-                      ),
-                    ),
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: Text(S.of(context)!.noItemsFound),
+                ),
               );
             }
-            return DefaultAdaptiveDocumentsView(
-              scrollController: pagingScrollController,
+            return SliverAdaptiveDocumentsView(
               documents: state.documents,
               hasInternetConnection: connectivity.isConnected,
               isLabelClickable: false,
@@ -78,6 +74,10 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
                   ),
                 );
               },
+              correspondents: state.correspondents,
+              documentTypes: state.documentTypes,
+              tags: state.tags,
+              storagePaths: state.storagePaths,
             );
           },
         );

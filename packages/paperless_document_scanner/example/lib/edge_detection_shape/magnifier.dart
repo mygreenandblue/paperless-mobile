@@ -78,7 +78,8 @@ class _MagnifierState extends State<Magnifier> {
         child: BackdropFilter(
           filter: ImageFilter.matrix(_matrix.storage),
           child: CustomPaint(
-            painter: MagnifierPainter(color: Theme.of(context).accentColor),
+            painter: MagnifierPainter(
+                color: Theme.of(context).colorScheme.secondary),
             size: _magnifierSize,
           ),
         ),

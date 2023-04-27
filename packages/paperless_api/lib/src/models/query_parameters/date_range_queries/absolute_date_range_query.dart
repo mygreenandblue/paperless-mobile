@@ -1,4 +1,6 @@
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/config/hive/hive_type_ids.dart';
 import 'package:paperless_api/src/constants.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 
@@ -8,11 +10,14 @@ import 'date_range_query_field.dart';
 part 'absolute_date_range_query.g.dart';
 
 @JsonSerializable()
+@HiveType(typeId: PaperlessApiHiveTypeIds.absoluteDateRangeQuery)
 class AbsoluteDateRangeQuery extends DateRangeQuery {
   @LocalDateTimeJsonConverter()
+  @HiveField(0)
   final DateTime? after;
 
   @LocalDateTimeJsonConverter()
+  @HiveField(1)
   final DateTime? before;
 
   const AbsoluteDateRangeQuery({this.after, this.before});
@@ -47,8 +52,7 @@ class AbsoluteDateRangeQuery extends DateRangeQuery {
     );
   }
 
-  factory AbsoluteDateRangeQuery.fromJson(json) =>
-      _$AbsoluteDateRangeQueryFromJson(json);
+  factory AbsoluteDateRangeQuery.fromJson(json) => _$AbsoluteDateRangeQueryFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$AbsoluteDateRangeQueryToJson(this);

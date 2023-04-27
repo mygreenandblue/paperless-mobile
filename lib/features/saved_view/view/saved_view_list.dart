@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
@@ -12,52 +16,81 @@ class SavedViewList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final savedViewCubit = context.read<SavedViewCubit>();
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectivity) {
         return BlocBuilder<SavedViewCubit, SavedViewState>(
           builder: (context, state) {
-            if (state.value.isEmpty) {
-              return SliverToBoxAdapter(
-                child: HintCard(
-                  hintText:
-                      S.of(context)!.createViewsToQuicklyFilterYourDocuments,
-                ),
-              );
-            }
-            return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final view = state.value.values.elementAt(index);
-                  return ListTile(
-                    enabled: connectivity.isConnected,
-                    title: Text(view.name),
-                    subtitle: Text(
-                      S.of(context)!.nFiltersSet(view.filterRules.length),
+            return state.when(
+              initial: (correspondents, documentTypes, tags, storagePaths) => Container(),
+              loading: (correspondents, documentTypes, tags, storagePaths) => Center(
+                child: Text("Saved views loading..."), //TODO: INTL
+              ),
+              loaded: (
+                savedViews,
+                correspondents,
+                documentTypes,
+                tags,
+                storagePaths,
+              ) {
+                if (savedViews.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: HintCard(
+                      hintText: S.of(context)!.createViewsToQuicklyFilterYourDocuments,
                     ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => MultiBlocProvider(
-                            providers: [
-                              BlocProvider(
-                                create: (context) => SavedViewDetailsCubit(
-                                  context.read(),
-                                  context.read(),
-                                  savedView: view,
+                  );
+                }
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final view = savedViews.values.elementAt(index);
+                      return ListTile(
+                        enabled: connectivity.isConnected,
+                        title: Text(view.name),
+                        subtitle: Text(
+                          S.of(context)!.nFiltersSet(view.filterRules.length),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctxt) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider(
+                                    create: (context) => SavedViewDetailsCubit(
+                                      ctxt.read(),
+                                      ctxt.read(),
+                                      context.read(),
+                                      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(
+                                        Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+                                            .getValue()!
+                                            .currentLoggedInUser!,
+                                      )!,
+                                      savedView: view,
+                                    ),
+                                  ),
+                                ],
+                                child: SavedViewDetailsPage(
+                                  onDelete: context.read<SavedViewCubit>().remove,
                                 ),
                               ),
-                            ],
-                            child: SavedViewDetailsPage(
-                              onDelete: savedViewCubit.remove,
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-                childCount: state.value.length,
+                    childCount: savedViews.length,
+                  ),
+                );
+              },
+              error: (
+                correspondents,
+                documentTypes,
+                tags,
+                storagePaths,
+              ) =>
+                  Center(
+                child: Text(
+                  "An error occurred while trying to load the saved views.",
+                ),
               ),
             );
           },

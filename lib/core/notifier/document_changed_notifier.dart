@@ -23,8 +23,8 @@ class DocumentChangedNotifier {
     _deleted.add(deleted);
   }
 
-  void subscribe(
-    dynamic subscriber, {
+  void addListener(
+    Object subscriber, {
     DocumentChangedCallback? onUpdated,
     DocumentChangedCallback? onDeleted,
   }) {
@@ -41,7 +41,7 @@ class DocumentChangedNotifier {
     );
   }
 
-  void unsubscribe(dynamic subscriber) {
+  void removeListener(Object subscriber) {
     _subscribers[subscriber]?.forEach((element) {
       element.cancel();
     });

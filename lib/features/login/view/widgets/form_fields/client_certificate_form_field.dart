@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
+import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/constants.dart';
@@ -15,23 +16,21 @@ import 'obscured_input_text_form_field.dart';
 class ClientCertificateFormField extends StatefulWidget {
   static const fkClientCertificate = 'clientCertificate';
 
-  final void Function(ClientCertificate? cert) onChanged;
+  final void Function(ClientCertificateFormModel? cert) onChanged;
   const ClientCertificateFormField({
     Key? key,
     required this.onChanged,
   }) : super(key: key);
 
   @override
-  State<ClientCertificateFormField> createState() =>
-      _ClientCertificateFormFieldState();
+  State<ClientCertificateFormField> createState() => _ClientCertificateFormFieldState();
 }
 
-class _ClientCertificateFormFieldState
-    extends State<ClientCertificateFormField> {
+class _ClientCertificateFormFieldState extends State<ClientCertificateFormField> {
   File? _selectedFile;
   @override
   Widget build(BuildContext context) {
-    return FormBuilderField<ClientCertificate?>(
+    return FormBuilderField<ClientCertificateFormModel?>(
       key: const ValueKey('login-client-cert'),
       onChanged: widget.onChanged,
       initialValue: null,
@@ -46,8 +45,7 @@ class _ClientCertificateFormFieldState
         return null;
       },
       builder: (field) {
-        final theme =
-            Theme.of(context).copyWith(dividerColor: Colors.transparent); //new
+        final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent); //new
         return Theme(
           data: theme,
           child: ExpansionTile(
@@ -124,7 +122,7 @@ class _ClientCertificateFormFieldState
     );
   }
 
-  Future<void> _onSelectFile(FormFieldState<ClientCertificate?> field) async {
+  Future<void> _onSelectFile(FormFieldState<ClientCertificateFormModel?> field) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
     );
@@ -133,14 +131,13 @@ class _ClientCertificateFormFieldState
       setState(() {
         _selectedFile = file;
       });
-      final changedValue =
-          field.value?.copyWith(bytes: file.readAsBytesSync()) ??
-              ClientCertificate(bytes: file.readAsBytesSync());
+      final changedValue = field.value?.copyWith(bytes: file.readAsBytesSync()) ??
+          ClientCertificateFormModel(bytes: file.readAsBytesSync());
       field.didChange(changedValue);
     }
   }
 
-  Widget _buildSelectedFileText(FormFieldState<ClientCertificate?> field) {
+  Widget _buildSelectedFileText(FormFieldState<ClientCertificateFormModel?> field) {
     if (field.value == null) {
       assert(_selectedFile == null);
       return Text(

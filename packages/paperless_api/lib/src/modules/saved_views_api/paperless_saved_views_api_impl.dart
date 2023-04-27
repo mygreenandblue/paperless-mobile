@@ -60,7 +60,7 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
   }
 
   @override
-  Future<SavedView> find(int id) {
+  Future<SavedView?> find(int id) {
     return getSingleResult(
       "/api/saved_views/$id/",
       SavedView.fromJson,

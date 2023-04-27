@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ServerAddressFormField extends StatefulWidget {
@@ -42,15 +42,14 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
       controller: _textEditingController,
       name: ServerAddressFormField.fkServerAddress,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: FormBuilderValidators.compose([
-        FormBuilderValidators.required(
-          errorText: S.of(context)!.serverAddressMustNotBeEmpty,
-        ),
-        FormBuilderValidators.match(
-          r"https?://.*",
-          errorText: S.of(context)!.serverAddressMustIncludeAScheme,
-        )
-      ]),
+      validator: (value) {
+        if (value?.trim().isEmpty ?? true) {
+          return S.of(context)!.serverAddressMustNotBeEmpty;
+        }
+        if (!RegExp(r"https?://.*").hasMatch(value!)) {
+          return S.of(context)!.serverAddressMustIncludeAScheme;
+        }
+      },
       decoration: InputDecoration(
         hintText: "http://192.168.1.50:8000",
         labelText: S.of(context)!.serverAddress,

@@ -3,24 +3,31 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'dart:math' as math;
 
 Future<void> showDocumentSearchPage(BuildContext context) {
+  final currentUser =
+      Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
   return Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => BlocProvider(
         create: (context) => DocumentSearchCubit(
           context.read(),
           context.read(),
+          context.read(),
+          Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(currentUser)!,
         ),
         child: const DocumentSearchPage(),
       ),
@@ -69,13 +76,14 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           controller: _queryController,
           onChanged: (query) {
             _debounceTimer?.cancel();
-            _debounceTimer = Timer(const Duration(milliseconds: 700), () {
+            _debounceTimer = Timer(const Duration(milliseconds: 500), () {
               context.read<DocumentSearchCubit>().suggest(query);
             });
           },
           textInputAction: TextInputAction.search,
           onSubmitted: (query) {
             FocusScope.of(context).unfocus();
+            _debounceTimer?.cancel();
             context.read<DocumentSearchCubit>().search(query);
           },
         ),
@@ -110,9 +118,8 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
   }
 
   Widget _buildSuggestionsView(DocumentSearchState state) {
-    final suggestions = state.suggestions
-        .whereNot((element) => state.searchHistory.contains(element))
-        .toList();
+    final suggestions =
+        state.suggestions.whereNot((element) => state.searchHistory.contains(element)).toList();
     final historyMatches = state.searchHistory
         .where(
           (element) => element.startsWith(query),
@@ -194,8 +201,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           builder: (context, state) {
             return ViewTypeSelectionWidget(
               viewType: state.viewType,
-              onChanged: (type) =>
-                  context.read<DocumentSearchCubit>().updateViewType(type),
+              onChanged: (type) => context.read<DocumentSearchCubit>().updateViewType(type),
             );
           },
         )
@@ -229,6 +235,10 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
                 ),
               );
             },
+            correspondents: state.correspondents,
+            documentTypes: state.documentTypes,
+            tags: state.tags,
+            storagePaths: state.storagePaths,
           )
       ],
     );

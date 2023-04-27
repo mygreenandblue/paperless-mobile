@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/src/models/paperless_server_exception.dart';
 
-Future<T> getSingleResult<T>(
+Future<T?> getSingleResult<T>(
   String url,
   T Function(Map<String, dynamic>) fromJson,
   ErrorCode errorCode, {

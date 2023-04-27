@@ -6,9 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/paperless_server_information_cubit.dart';
+import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
@@ -25,18 +29,20 @@ import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+/// Wrapper around all functionality for a logged in user.
+/// Performs initialization logic.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -47,7 +53,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _currentIndex = 0;
   final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
+  late final DocumentsCubit _documentsCubit;
   late final InboxCubit _inboxCubit;
+  late final SavedViewCubit _savedViewCubit;
   late Timer _inboxTimer;
 
   @override
@@ -55,23 +63,36 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeData(context);
+    final userId =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
+    _documentsCubit = DocumentsCubit(
+      context.read(),
+      context.read(),
+      context.read(),
+      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(userId)!,
+    )..reload();
+    _savedViewCubit = SavedViewCubit(
+      context.read(),
+      context.read(),
+    )..reload();
     _inboxCubit = InboxCubit(
-      context.read(),
-      context.read(),
       context.read(),
       context.read(),
       context.read(),
       context.read(),
     );
     _listenToInboxChanges();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   void _listenToInboxChanges() {
-    _inboxCubit.refreshItemsInInboxCount();
     _inboxTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (!mounted) {
         timer.cancel();
@@ -107,6 +128,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _inboxTimer.cancel();
     _inboxCubit.close();
+    _documentsCubit.close();
+    _savedViewCubit.close();
     super.dispose();
   }
 
@@ -161,10 +184,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         MaterialPageRoute(
           builder: (context) => BlocProvider.value(
             value: DocumentUploadCubit(
-              documentApi: context.read(),
-              tagRepository: context.read(),
-              correspondentRepository: context.read(),
-              documentTypeRepository: context.read(),
+              context.read(),
+              context.read(),
             ),
             child: DocumentUploadPreparationPage(
               fileBytes: bytes,
@@ -191,6 +212,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final userId =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser!;
     final destinations = [
       RouteDescription(
         icon: const Icon(Icons.description_outlined),
@@ -217,39 +240,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         label: S.of(context)!.labels,
       ),
       RouteDescription(
-          icon: const Icon(Icons.inbox_outlined),
-          selectedIcon: Icon(
-            Icons.inbox,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          label: S.of(context)!.inbox,
-          badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
-                bloc: _inboxCubit,
-                builder: (context, state) {
-                  if (state.itemsInInboxCount > 0) {
-                    return Badge.count(
-                      count: state.itemsInInboxCount,
-                      child: icon,
-                    );
-                  }
-                  return icon;
-                },
-              )),
+        icon: const Icon(Icons.inbox_outlined),
+        selectedIcon: Icon(
+          Icons.inbox,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        label: S.of(context)!.inbox,
+        badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
+          bloc: _inboxCubit,
+          builder: (context, state) {
+            if (state.itemsInInboxCount > 0) {
+              return Badge.count(
+                count: state.itemsInInboxCount,
+                child: icon,
+              );
+            }
+            return icon;
+          },
+        ),
+      ),
     ];
     final routes = <Widget>[
       MultiBlocProvider(
+        // key: ValueKey(userId),
         providers: [
-          BlocProvider(
-            create: (context) => DocumentsCubit(
-              context.read(),
-              context.read(),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => SavedViewCubit(
-              context.read(),
-            ),
-          ),
+          BlocProvider.value(value: _documentsCubit),
+          BlocProvider.value(value: _savedViewCubit),
         ],
         child: const DocumentsPage(),
       ),
@@ -258,19 +274,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: const ScannerPage(),
       ),
       MultiBlocProvider(
+        // key: ValueKey(userId),
         providers: [
           BlocProvider(
-            create: (context) => LabelCubit<Correspondent>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<DocumentType>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<Tag>(context.read()),
-          ),
-          BlocProvider(
-            create: (context) => LabelCubit<StoragePath>(context.read()),
-          ),
+            create: (context) => LabelCubit(context.read()),
+          )
         ],
         child: const LabelsPage(),
       ),
@@ -279,12 +287,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: const InboxPage(),
       ),
     ];
+
     return MultiBlocListener(
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
           //Only re-initialize data if the connectivity changed from not connected to connected
-          listenWhen: (previous, current) =>
-              current == ConnectivityState.connected,
+          listenWhen: (previous, current) => current == ConnectivityState.connected,
           listener: (context, state) {
             _initializeData(context);
           },
@@ -293,9 +301,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           listener: (context, state) {
             if (state.task != null) {
               // Handle local notifications on task change (only when app is running for now).
-              context
-                  .read<LocalNotificationService>()
-                  .notifyTaskChanged(state.task!);
+              context.read<LocalNotificationService>().notifyTaskChanged(state.task!);
             }
           },
         ),
@@ -308,9 +314,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   NavigationRail(
                     labelType: NavigationRailLabelType.all,
-                    destinations: destinations
-                        .map((e) => e.toNavigationRailDestination())
-                        .toList(),
+                    destinations: destinations.map((e) => e.toNavigationRailDestination()).toList(),
                     selectedIndex: _currentIndex,
                     onDestinationSelected: _onNavigationChanged,
                   ),
@@ -328,8 +332,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
-              destinations:
-                  destinations.map((e) => e.toNavigationDestination()).toList(),
+              destinations: destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
             body: routes[_currentIndex],
           );
@@ -345,15 +348,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _initializeData(BuildContext context) {
-    try {
-      context.read<LabelRepository<Tag>>().findAll();
-      context.read<LabelRepository<Correspondent>>().findAll();
-      context.read<LabelRepository<DocumentType>>().findAll();
-      context.read<LabelRepository<StoragePath>>().findAll();
-      context.read<SavedViewRepository>().findAll();
-      context.read<PaperlessServerInformationCubit>().updateInformtion();
-    } on PaperlessServerException catch (error, stackTrace) {
+    Future.wait([
+      context.read<LabelRepository>().initialize(),
+      context.read<SavedViewRepository>().findAll(),
+      context.read<ServerInformationCubit>().updateInformation(),
+    ]).onError<PaperlessServerException>((error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
-    }
+      throw error;
+    });
   }
 }
