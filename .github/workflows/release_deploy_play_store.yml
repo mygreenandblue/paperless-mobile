@@ -1,6 +1,6 @@
 ## See https://github.com/flutter/gallery/blob/main/.github/workflows/release_deploy_play_store.yml
 
-name: Deploy to Play Store and draft new GitHub release
+name: Create Release
 on:
   # Enable manual run
   workflow_dispatch:
