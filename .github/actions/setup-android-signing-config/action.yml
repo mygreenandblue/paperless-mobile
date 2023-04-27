@@ -20,11 +20,11 @@ runs:
   using: "composite"
   steps: 
     - run: |
-        echo "$${{ inputs.release-keystore }}" > ${{ inputs.keystore-key-alias }}-keystore.jks.asc
+        echo "${{ inputs.release-keystore }}" > ${{ inputs.keystore-key-alias }}-keystore.jks.asc
         gpg --batch --passphrase "${{ inputs.release-keystore-passphrase }}" -d -o app/${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.keystore-key-alias }}-keystore.jks.asc
         echo "storeFile=${{ inputs.keystore-key-alias }}-keystore.jks" >> key.properties
-        echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
-        echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
-        echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+        echo "keyAlias=${{ inputs.keystore-key-alias }}" >> key.properties
+        echo "storePassword=${{ inputs.keystore-store-password }}" >> key.properties
+        echo "keyPassword=${{ inputs.keystore-key-password }}" >> key.properties
       shell: bash
       working-directory: android
