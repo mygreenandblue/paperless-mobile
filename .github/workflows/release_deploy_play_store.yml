@@ -11,6 +11,8 @@ on:
         default: "alpha"
         type: choice
         options:
+          - internal
+          - promote_to_alpha
           - alpha
           - promote_to_beta
           - beta
