@@ -32,8 +32,8 @@ on:
 permissions: read-all
 
 jobs:
-
   fastlane-deploy-to-play-store:
+    name: "Deploy to Google Play Store"
     runs-on: ubuntu-latest
     steps:
 
@@ -75,6 +75,7 @@ jobs:
         working-directory: android
   
   create-github-release:
+    name: "Create GitHub Release"
     runs-on: ubuntu-latest
     steps:
       # Setup Ruby, Bundler, and Gemfile dependencies
