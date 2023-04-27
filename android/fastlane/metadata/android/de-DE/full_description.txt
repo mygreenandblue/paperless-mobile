@@ -3,13 +3,15 @@ Ein (fast) vollwertiger mobiler Paperless client kompatibel mit Paperless.
 Das Benutzen der App setzt den Zugang zu einer laufenden Paperless-ng*x Instanz voraus.
 
 * Betrachte und suche Dokumente
-* Bearbeite, lösche oder füge neue Dokumente hinzu
+* Bearbeite, lösche, oder füge neue Dokumente hinzu
 * Teile Dokumente, lade sie herunter oder betrachte deine Dateien
 * Verwalte Korrespondenten, Dokumenttypen, Tags oder Speicherpfade
 * Scanne und lade Dokumente mit bereits zugewiesenen Werten hoch
 * Überprüfe und verarbeite neue Dokumente im Posteingang
 * Sichere deine Daten mit biometrischer Authentifizierung
-* Unterstützung für TLS-Mutual Authentucation (Client Zertifikate)
+* Unterstützung von mTLS (Client Zertifikate)
+* Nahtloser Wechsel zwischen mehreren Nutzern und Instanzen 
 * Moderne, intuitive Nutzeroberfläche  basierend auf der Material Design 3 Spezifikation
-* Heller und Dunkler Modus sowie Unterstützung für dynamische Farbgebung (Android 12+)
-* Verfügbar in Deutsch, Englisch, Französisch, Tchechisch und Türkisch 
+* Heller und dunkler Modus 
+* Unterstützung von dynamischer Farbgebung (nur Android 12+)
+* Verfügbar in Deutsch, Englisch, Französisch, Katalan, Tschechisch und Türkisch 
