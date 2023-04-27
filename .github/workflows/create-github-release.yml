@@ -1,0 +1,59 @@
+name: Create GitHub Release
+on:
+  # Enable manual run
+  workflow_dispatch:
+    inputs:
+      is_draft:
+        description: "Only create a draft and don't automatically publish?"
+        required: true
+        default: true
+        type: boolean
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  create-github-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Setup Ruby, Bundler, and Gemfile dependencies
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Clone flutter repository
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter doctor -v
+      
+      - name: Setup signing config
+        uses: ./.github/actions/setup-android-signing-config
+        with:
+          keystore-key-alias: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          keystore-key-password: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
+          release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
+
+      - name: Get packages and run codegen
+        run: |
+          bash install_dependencies.sh
+        working-directory: scripts
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.6"
+          bundler-cache: true
+          working-directory: android
+
+      - run: bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        working-directory: android
