@@ -116,6 +116,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     : const IdQueryParameter.unset(),
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
+                                allowSelectUnassigned: true,
                               ),
                               if (_filteredSuggestions?.hasSuggestedCorrespondents ?? false)
                                 _buildSuggestionsSkeleton<int>(
@@ -151,6 +152,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 options: state.documentTypes,
                                 name: _DocumentEditPageState.fkDocumentType,
                                 prefixIcon: const Icon(Icons.description_outlined),
+                                allowSelectUnassigned: true,
                               ),
                               if (_filteredSuggestions?.hasSuggestedDocumentTypes ?? false)
                                 _buildSuggestionsSkeleton<int>(
@@ -183,6 +185,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     : const IdQueryParameter.unset(),
                                 name: fkStoragePath,
                                 prefixIcon: const Icon(Icons.folder_outlined),
+                                allowSelectUnassigned: true,
                               ),
                             ],
                           ).padded(),

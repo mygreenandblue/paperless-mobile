@@ -26,10 +26,7 @@ class IdQueryParameter with _$IdQueryParameter {
         '${field}__isnull': '0',
       },
       fromId: (id) {
-        if (id == null) {
-          return {};
-        }
-        return {'${field}_id': '$id'};
+        return {'${field}__id': '$id'};
       },
     );
   }

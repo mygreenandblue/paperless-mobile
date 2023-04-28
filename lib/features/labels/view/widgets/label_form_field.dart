@@ -27,6 +27,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
   final bool showAnyAssignedOption;
   final List<T> suggestions;
   final String? addLabelText;
+  final bool allowSelectUnassigned;
 
   const LabelFormField({
     Key? key,
@@ -42,6 +43,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
     this.showAnyAssignedOption = true,
     this.suggestions = const [],
     this.addLabelText,
+    required this.allowSelectUnassigned,
   }) : super(key: key);
 
   String _buildText(BuildContext context, IdQueryParameter? value) {
@@ -100,6 +102,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                 ),
               ),
               openBuilder: (context, closeForm) => FullscreenLabelForm<T>(
+                allowSelectUnassigned: allowSelectUnassigned,
                 addNewLabelText: addLabelText,
                 leadingIcon: prefixIcon,
                 onCreateNewLabel: addLabelPageBuilder != null

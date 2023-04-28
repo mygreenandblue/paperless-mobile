@@ -9,6 +9,7 @@ import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
+import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 class HiveBoxes {
@@ -33,6 +34,7 @@ class HiveTypeIds {
   static const localUserAccount = 7;
   static const localUserAppState = 8;
   static const viewType = 9;
+  static const fileDownloadType = 10;
 }
 
 void registerHiveAdapters() {
@@ -47,6 +49,7 @@ void registerHiveAdapters() {
   Hive.registerAdapter(LocalUserAccountAdapter());
   Hive.registerAdapter(LocalUserAppStateAdapter());
   Hive.registerAdapter(ViewTypeAdapter());
+  Hive.registerAdapter(FileDownloadTypeAdapter());
 }
 
 extension HiveSingleValueBox<T> on Box<T> {

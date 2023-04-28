@@ -15,6 +15,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
   final Widget leadingIcon;
   final String? addNewLabelText;
   final bool autofocus;
+  final bool allowSelectUnassigned;
 
   FullscreenLabelForm({
     super.key,
@@ -27,6 +28,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
     required this.leadingIcon,
     this.addNewLabelText,
     this.autofocus = true,
+    this.allowSelectUnassigned = true,
   })  : assert(
           !(initialValue?.isOnlyAssigned() ?? false) || showAnyAssignedOption,
         ),
@@ -248,16 +250,26 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
       );
     }
 
-    final title = option.whenOrNull(
-      notAssigned: () => S.of(context)!.notAssigned,
-      anyAssigned: () => S.of(context)!.anyAssigned,
-      fromId: (id) => widget.options[id]!.name,
+    return option.whenOrNull(
+      notAssigned: () => ListTile(
+        selected: highlight,
+        selectedTileColor: Theme.of(context).focusColor,
+        title: Text(S.of(context)!.notAssigned),
+        onTap: onTap,
+      ),
+      anyAssigned: () => ListTile(
+        selected: highlight,
+        selectedTileColor: Theme.of(context).focusColor,
+        title: Text(S.of(context)!.anyAssigned),
+        onTap: onTap,
+      ),
+      fromId: (id) => ListTile(
+        selected: highlight,
+        selectedTileColor: Theme.of(context).focusColor,
+        title: Text(widget.options[id]!.name),
+        onTap: onTap,
+        enabled: widget.allowSelectUnassigned ? true : widget.options[id]!.documentCount == 0,
+      ),
     )!; // Never null, since we already return on unset before
-    return ListTile(
-      selected: highlight,
-      selectedTileColor: Theme.of(context).focusColor,
-      title: Text(title),
-      onTap: onTap,
-    );
   }
 }

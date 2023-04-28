@@ -62,6 +62,7 @@ class _BulkEditLabelBottomSheetState<T extends Label> extends State<BulkEditLabe
                       options: widget.availableOptionsSelector(state),
                       labelText: widget.formFieldLabel,
                       prefixIcon: widget.formFieldPrefixIcon,
+                      allowSelectUnassigned: true,
                     ),
                   ),
                   const SizedBox(height: 8),

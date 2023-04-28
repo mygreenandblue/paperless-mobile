@@ -191,6 +191,7 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
                   name: DocumentModel.correspondentKey,
                   options: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
+                  allowSelectUnassigned: true,
                 ),
                 // Document type
                 LabelFormField<DocumentType>(
@@ -205,6 +206,7 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
                   name: DocumentModel.documentTypeKey,
                   options: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
+                  allowSelectUnassigned: true,
                 ),
                 TagsFormField(
                   name: DocumentModel.tagsKey,
