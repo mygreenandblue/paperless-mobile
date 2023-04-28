@@ -1,4 +1,3 @@
-import 'package:badges/badges.dart' as b;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';

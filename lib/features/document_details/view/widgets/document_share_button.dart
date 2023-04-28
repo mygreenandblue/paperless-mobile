@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
+import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
@@ -39,22 +43,41 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
               child: CircularProgressIndicator(),
             )
           : const Icon(Icons.share),
-      onPressed: widget.document != null && widget.enabled
-          ? () => _onShare(widget.document!)
-          : null,
+      onPressed:
+          widget.document != null && widget.enabled ? () => _onShare(widget.document!) : null,
     ).paddedOnly(right: 4);
   }
 
   Future<void> _onShare(DocumentModel document) async {
     try {
-      final shareOriginal = await showDialog<bool>(
-        context: context,
-        builder: (context) => const SelectFileTypeDialog(),
-      );
-      if (shareOriginal == null) {
-        // Download was cancelled
-        return;
+      final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+      bool original;
+
+      switch (globalSettings.defaultShareType) {
+        case FileDownloadType.original:
+          original = true;
+          break;
+        case FileDownloadType.archived:
+          original = false;
+          break;
+        case FileDownloadType.alwaysAsk:
+          final isOriginal = await showDialog<bool>(
+            context: context,
+            builder: (context) => SelectFileTypeDialog(
+              onRememberSelection: (downloadType) {
+                globalSettings.defaultShareType = downloadType;
+                globalSettings.save();
+              },
+            ),
+          );
+          if (isOriginal == null) {
+            return;
+          } else {
+            original = isOriginal;
+          }
+          break;
       }
+
       if (Platform.isAndroid && androidInfo!.version.sdkInt! < 30) {
         final isGranted = await askForPermission(Permission.storage);
         if (!isGranted) {
@@ -62,9 +85,9 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
         }
       }
       setState(() => _isDownloadPending = true);
-      await context
-          .read<DocumentDetailsCubit>()
-          .shareDocument(shareOriginal: shareOriginal);
+      await context.read<DocumentDetailsCubit>().shareDocument(
+            shareOriginal: original,
+          );
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {

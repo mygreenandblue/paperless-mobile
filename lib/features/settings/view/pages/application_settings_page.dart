@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/color_scheme_option_setting.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/default_download_file_type_setting.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/default_share_file_type_setting.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/language_selection_setting.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/theme_mode_setting.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -12,10 +14,10 @@ class ApplicationSettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.applicationSettings),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: const Icon(Icons.public),
+            padding: EdgeInsets.all(16.0),
+            child: Icon(Icons.public),
           )
         ],
       ),
@@ -24,6 +26,9 @@ class ApplicationSettingsPage extends StatelessWidget {
           LanguageSelectionSetting(),
           ThemeModeSetting(),
           ColorSchemeOptionSetting(),
+          Divider(),
+          DefaultDownloadFileTypeSetting(),
+          DefaultShareFileTypeSetting(),
         ],
       ),
     );
