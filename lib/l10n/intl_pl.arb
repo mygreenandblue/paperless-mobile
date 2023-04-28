@@ -1,5 +1,5 @@
 {
-  "developedBy": "Stworzone przez {name}",
+  "developedBy": "Stworzone przez {name}.",
   "@developedBy": {
     "placeholders": {
       "name": {}
@@ -761,5 +761,10 @@
   "switchToNewAccount": "Do you want to switch to the new account? You can switch back at any time.",
   "@switchToNewAccount": {
     "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
+  },
+  "sourceCode": "Source Code",
+  "findTheSourceCodeOn": "Find the source code on",
+  "@findTheSourceCodeOn": {
+    "description": "Text before link to Paperless Mobile GitHub"
   }
 }
