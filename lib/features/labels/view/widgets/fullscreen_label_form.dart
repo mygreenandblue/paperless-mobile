@@ -268,7 +268,7 @@ class _FullscreenLabelFormState<T extends Label> extends State<FullscreenLabelFo
         selectedTileColor: Theme.of(context).focusColor,
         title: Text(widget.options[id]!.name),
         onTap: onTap,
-        enabled: widget.allowSelectUnassigned ? true : widget.options[id]!.documentCount == 0,
+        enabled: widget.allowSelectUnassigned ? true : widget.options[id]!.documentCount != 0,
       ),
     )!; // Never null, since we already return on unset before
   }
