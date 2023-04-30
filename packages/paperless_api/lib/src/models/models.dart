@@ -24,3 +24,8 @@ export 'saved_view_model.dart';
 export 'task/task.dart';
 export 'task/task_status.dart';
 export 'field_suggestions.dart';
+export 'permissions/permissions.dart';
+export 'permissions/user_permissions.dart';
+export 'permissions/inherited_permissions.dart';
+export 'group_model.dart';
+export 'user_model.dart';

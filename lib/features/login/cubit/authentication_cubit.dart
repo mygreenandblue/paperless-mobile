@@ -8,7 +8,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
@@ -29,6 +28,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LabelRepository _labelRepository;
   final SavedViewRepository _savedViewRepository;
   final PaperlessServerStatsApi _serverStatsApi;
+  final PaperlessUserApi _userApi;
+  final PaperlessUserApiV3? _userApiV3;
 
   AuthenticationCubit(
     this._localAuthService,
@@ -37,7 +38,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     this._labelRepository,
     this._savedViewRepository,
     this._serverStatsApi,
-  ) : super(const AuthenticationState());
+    this._userApi, {
+    PaperlessUserApiV3? userApiV3,
+  })  : _userApiV3 = userApiV3,
+        super(const AuthenticationState());
 
   Future<void> login({
     required LoginFormCredentials credentials,
@@ -45,89 +49,49 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     ClientCertificate? clientCertificate,
   }) async {
     assert(credentials.username != null && credentials.password != null);
+    final localUserId = "${credentials.username}@$serverUrl";
 
-    _sessionManager.updateSettings(
-      baseUrl: serverUrl,
-      clientCertificate: clientCertificate,
-    );
-    final token = await _authApi.login(
-      username: credentials.username!,
-      password: credentials.password!,
-    );
-    _sessionManager.updateSettings(
-      baseUrl: serverUrl,
-      clientCertificate: clientCertificate,
-      authToken: token,
+    final serverUser = await _addUser(
+      localUserId,
+      serverUrl,
+      credentials,
+      clientCertificate,
+      _sessionManager,
     );
 
-    final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
-    final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
-
-    final userId = "${credentials.username}@$serverUrl";
-
-    if (userAccountBox.containsKey(userId)) {
-      throw Exception("User with id $userId already exists!");
-    }
-
-    final fullName = await _fetchFullName();
-    // Create user account
-    await userAccountBox.put(
-      userId,
-      LocalUserAccount(
-        id: userId,
-        settings: LocalUserSettings(),
-        serverUrl: serverUrl,
-        username: credentials.username!,
-        fullName: fullName,
-      ),
-    );
-
-    // Create user state
-    await userStateBox.put(
-      userId,
-      LocalUserAppState(userId: userId),
-    );
-
-    // Save credentials in encrypted box
-    final userCredentialsBox = await _getUserCredentialsBox();
-    await userCredentialsBox.put(
-      userId,
-      UserCredentials(
-        token: token,
-        clientCertificate: clientCertificate,
-      ),
-    );
-    userCredentialsBox.close();
+    final response = await _sessionManager.client.get("/api/");
+    final apiVersion = response.headers["x-api-version"] as int;
 
     // Mark logged in user as currently active user.
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings.currentLoggedInUser = userId;
+    globalSettings.currentLoggedInUser = localUserId;
     await globalSettings.save();
 
     emit(
       AuthenticationState(
         isAuthenticated: true,
         username: credentials.username,
-        userId: userId,
-        fullName: fullName,
+        localUserId: localUserId,
+        fullName: serverUser.fullName,
+        apiVersion: apiVersion,
       ),
     );
   }
 
   /// Switches to another account if it exists.
-  Future<void> switchAccount(String userId) async {
+  Future<void> switchAccount(String localUserId) async {
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    if (globalSettings.currentLoggedInUser == userId) {
+    if (globalSettings.currentLoggedInUser == localUserId) {
       return;
     }
     final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
 
-    if (!userAccountBox.containsKey(userId)) {
-      debugPrint("User $userId not yet registered.");
+    if (!userAccountBox.containsKey(localUserId)) {
+      debugPrint("User $localUserId not yet registered.");
       return;
     }
 
-    final account = userAccountBox.get(userId)!;
+    final account = userAccountBox.get(localUserId)!;
 
     if (account.settings.isBiometricAuthenticationEnabled) {
       final authenticated =
@@ -139,12 +103,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
 
     final credentialsBox = await _getUserCredentialsBox();
-    if (!credentialsBox.containsKey(userId)) {
+    if (!credentialsBox.containsKey(localUserId)) {
       await credentialsBox.close();
-      debugPrint("Invalid authentication for $userId");
+      debugPrint("Invalid authentication for $localUserId");
       return;
     }
-    final credentials = credentialsBox.get(userId);
+    final credentials = credentialsBox.get(localUserId);
     await credentialsBox.close();
 
     await _resetExternalState();
@@ -157,15 +121,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
 
     await _reloadRepositories();
-    globalSettings.currentLoggedInUser = userId;
+    globalSettings.currentLoggedInUser = localUserId;
     await globalSettings.save();
+
+    final response = await _sessionManager.client.get("/api/");
+    final apiVersion = response.headers["x-api-version"] as int;
 
     emit(
       AuthenticationState(
         isAuthenticated: true,
-        username: account.username,
-        fullName: account.fullName,
-        userId: userId,
+        username: account.paperlessUser.username,
+        fullName: account.paperlessUser.fullName,
+        localUserId: localUserId,
+        apiVersion: apiVersion,
       ),
     );
   }
@@ -177,62 +145,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     required bool enableBiometricAuthentication,
   }) async {
     assert(credentials.password != null && credentials.username != null);
-    final userId = "${credentials.username}@$serverUrl";
-
-    final userAccountsBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
-    final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
-
-    if (userAccountsBox.containsKey(userId)) {
-      throw Exception("User already exists");
-    }
-    // Creates a parallel session to get token and disposes of resources after.
-    final sessionManager = SessionManager([
-      DioHttpErrorInterceptor(),
-    ]);
-    sessionManager.updateSettings(
-      clientCertificate: clientCertificate,
-      baseUrl: serverUrl,
-    );
-    final authApi = PaperlessAuthenticationApiImpl(sessionManager.client);
-
-    final token = await authApi.login(
-      username: credentials.username!,
-      password: credentials.password!,
-    );
-    sessionManager.resetSettings();
-
-    final fullName = await _fetchFullName();
-
-    await userAccountsBox.put(
-      userId,
-      LocalUserAccount(
-        id: userId,
-        serverUrl: serverUrl,
-        username: credentials.username!,
-        settings: LocalUserSettings(
-          isBiometricAuthenticationEnabled: enableBiometricAuthentication,
-        ),
-        fullName: fullName,
-      ),
+    final localUserId = "${credentials.username}@$serverUrl";
+    await _addUser(
+      localUserId,
+      serverUrl,
+      credentials,
+      clientCertificate,
+      _sessionManager,
     );
 
-    await userStateBox.put(
-      userId,
-      LocalUserAppState(
-        userId: userId,
-      ),
-    );
-
-    final userCredentialsBox = await _getUserCredentialsBox();
-    await userCredentialsBox.put(
-      userId,
-      UserCredentials(
-        token: token,
-        clientCertificate: clientCertificate,
-      ),
-    );
-    await userCredentialsBox.close();
-    return userId;
+    return localUserId;
   }
 
   Future<void> removeAccount(String userId) async {
@@ -287,11 +209,16 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       baseUrl: userAccount.serverUrl,
       serverInformation: PaperlessServerInformationModel(),
     );
+    final response = await _sessionManager.client.get("/api/");
+    final apiVersion = response.headers["x-api-version"] as int;
+
     emit(
       AuthenticationState(
         isAuthenticated: true,
         showBiometricAuthenticationScreen: false,
-        username: userAccount.username,
+        username: userAccount.paperlessUser.username,
+        apiVersion: apiVersion,
+        fullName: userAccount.paperlessUser.fullName,
       ),
     );
   }
@@ -343,12 +270,68 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     ]);
   }
 
-  Future<String?> _fetchFullName() async {
-    try {
-      final uiSettings = await _serverStatsApi.getUiSettings();
-      return uiSettings.displayName;
-    } catch (error) {
-      return null;
+  Future<UserModel> _addUser(
+    String localUserId,
+    String serverUrl,
+    LoginFormCredentials credentials,
+    ClientCertificate? clientCert,
+    SessionManager sessionManager,
+  ) async {
+    assert(credentials.username != null && credentials.password != null);
+
+    sessionManager.updateSettings(
+      baseUrl: serverUrl,
+      clientCertificate: clientCert,
+    );
+    final authApi = PaperlessAuthenticationApiImpl(sessionManager.client);
+
+    final token = await authApi.login(
+      username: credentials.username!,
+      password: credentials.password!,
+    );
+    sessionManager.updateSettings(
+      baseUrl: serverUrl,
+      clientCertificate: clientCert,
+      authToken: token,
+    );
+
+    final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
+    final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
+
+    if (userAccountBox.containsKey(localUserId)) {
+      throw Exception("User with id $localUserId already exists!");
     }
+
+    final serverUserId = await _userApi.findCurrentUserId();
+    final serverUser = await _userApi.find(serverUserId);
+
+    // Create user account
+    await userAccountBox.put(
+      localUserId,
+      LocalUserAccount(
+        id: localUserId,
+        settings: LocalUserSettings(),
+        serverUrl: serverUrl,
+        paperlessUser: serverUser,
+      ),
+    );
+
+    // Create user state
+    await userStateBox.put(
+      localUserId,
+      LocalUserAppState(userId: localUserId),
+    );
+
+    // Save credentials in encrypted box
+    final userCredentialsBox = await _getUserCredentialsBox();
+    await userCredentialsBox.put(
+      localUserId,
+      UserCredentials(
+        token: token,
+        clientCertificate: clientCert,
+      ),
+    );
+    userCredentialsBox.close();
+    return serverUser;
   }
 }

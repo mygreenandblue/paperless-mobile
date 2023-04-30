@@ -5,14 +5,16 @@ class AuthenticationState with EquatableMixin {
   final bool isAuthenticated;
   final String? username;
   final String? fullName;
-  final String? userId;
+  final String? localUserId;
+  final int? apiVersion;
 
   const AuthenticationState({
     this.isAuthenticated = false,
     this.showBiometricAuthenticationScreen = false,
     this.username,
     this.fullName,
-    this.userId,
+    this.localUserId,
+    this.apiVersion,
   });
 
   AuthenticationState copyWith({
@@ -20,7 +22,8 @@ class AuthenticationState with EquatableMixin {
     bool? showBiometricAuthenticationScreen,
     String? username,
     String? fullName,
-    String? userId,
+    String? localUserId,
+    int? apiVersion,
   }) {
     return AuthenticationState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -28,16 +31,18 @@ class AuthenticationState with EquatableMixin {
           showBiometricAuthenticationScreen ?? this.showBiometricAuthenticationScreen,
       username: username ?? this.username,
       fullName: fullName ?? this.fullName,
-      userId: userId ?? this.userId,
+      localUserId: localUserId ?? this.localUserId,
+      apiVersion: apiVersion ?? this.apiVersion,
     );
   }
 
   @override
   List<Object?> get props => [
-        userId,
+        localUserId,
         username,
         fullName,
         isAuthenticated,
         showBiometricAuthenticationScreen,
+        apiVersion,
       ];
 }

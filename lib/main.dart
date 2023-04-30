@@ -297,7 +297,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
       builder: (context, authentication) {
         if (authentication.isAuthenticated) {
           return HomeRoute(
-            key: ValueKey(authentication.userId),
+            key: ValueKey(authentication.localUserId),
           );
         } else if (authentication.showBiometricAuthenticationScreen) {
           return const VerifyIdentityPage();
