@@ -52,35 +52,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _currentIndex = 0;
-  final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
-  late final DocumentsCubit _documentsCubit;
-  late final InboxCubit _inboxCubit;
-  late final SavedViewCubit _savedViewCubit;
   late Timer _inboxTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeData(context);
-    final userId =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
-    _documentsCubit = DocumentsCubit(
-      context.read(),
-      context.read(),
-      context.read(),
-      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(userId)!,
-    )..reload();
-    _savedViewCubit = SavedViewCubit(
-      context.read(),
-      context.read(),
-    )..reload();
-    _inboxCubit = InboxCubit(
-      context.read(),
-      context.read(),
-      context.read(),
-      context.read(),
-    );
     _listenToInboxChanges();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
@@ -97,7 +74,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       if (!mounted) {
         timer.cancel();
       } else {
-        _inboxCubit.refreshItemsInInboxCount();
+        context.read<InboxCubit>().refreshItemsInInboxCount();
       }
     });
   }
@@ -127,9 +104,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _inboxTimer.cancel();
-    _inboxCubit.close();
-    _documentsCubit.close();
-    _savedViewCubit.close();
     super.dispose();
   }
 
@@ -247,7 +221,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.inbox,
         badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
-          bloc: _inboxCubit,
           builder: (context, state) {
             if (state.itemsInInboxCount > 0) {
               return Badge.count(
@@ -261,31 +234,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
     ];
     final routes = <Widget>[
-      MultiBlocProvider(
-        // key: ValueKey(userId),
-        providers: [
-          BlocProvider.value(value: _documentsCubit),
-          BlocProvider.value(value: _savedViewCubit),
-        ],
-        child: const DocumentsPage(),
-      ),
-      BlocProvider.value(
-        value: _scannerCubit,
-        child: const ScannerPage(),
-      ),
-      MultiBlocProvider(
-        // key: ValueKey(userId),
-        providers: [
-          BlocProvider(
-            create: (context) => LabelCubit(context.read()),
-          )
-        ],
-        child: const LabelsPage(),
-      ),
-      BlocProvider<InboxCubit>.value(
-        value: _inboxCubit,
-        child: const InboxPage(),
-      ),
+      const DocumentsPage(),
+      const ScannerPage(),
+      const LabelsPage(),
+      const InboxPage(),
     ];
 
     return MultiBlocListener(

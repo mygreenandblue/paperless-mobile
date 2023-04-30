@@ -4,6 +4,7 @@ import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 class UserAvatar extends StatelessWidget {
   final String userId;
   final LocalUserAccount account;
+
   const UserAvatar({
     super.key,
     required this.userId,

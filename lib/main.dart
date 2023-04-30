@@ -21,6 +21,8 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
+import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -89,10 +91,8 @@ void main() async {
     iosInfo = await DeviceInfoPlugin().iosInfo;
   }
 
-  // Initialize External dependencies
   final connectivity = Connectivity();
   final localAuthentication = LocalAuthentication();
-  // Initialize other utility classes
   final connectivityStatusService = ConnectivityStatusServiceImpl(connectivity);
   final localAuthService = LocalAuthenticationService(localAuthentication);
 
@@ -111,39 +111,11 @@ void main() async {
     languageHeaderInterceptor,
   ]);
 
-  // Initialize Paperless APIs
-  final authApi = PaperlessAuthenticationApiImpl(sessionManager.client);
-  final documentsApi = PaperlessDocumentsApiImpl(sessionManager.client);
-  final labelsApi = PaperlessLabelApiImpl(sessionManager.client);
-  final statsApi = PaperlessServerStatsApiImpl(sessionManager.client);
-  final savedViewsApi = PaperlessSavedViewsApiImpl(sessionManager.client);
-  final tasksApi = PaperlessTasksApiImpl(
-    sessionManager.client,
-  );
-
   // Initialize Blocs/Cubits
   final connectivityCubit = ConnectivityCubit(connectivityStatusService);
 
   // Load application settings and stored authentication data
   await connectivityCubit.initialize();
-
-  // Create repositories
-  final labelRepository = LabelRepository(labelsApi);
-  final savedViewRepository = SavedViewRepository(savedViewsApi);
-
-  //Create cubits/blocs
-  final authCubit = AuthenticationCubit(
-    localAuthService,
-    authApi,
-    sessionManager,
-    labelRepository,
-    savedViewRepository,
-    statsApi,
-  );
-
-  if (globalSettings.currentLoggedInUser != null) {
-    await authCubit.restoreSessionState();
-  }
 
   final localNotificationService = LocalNotificationService();
   await localNotificationService.initialize();
@@ -156,42 +128,20 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: sessionManager),
         Provider<LocalAuthenticationService>.value(value: localAuthService),
-        Provider<PaperlessAuthenticationApi>.value(value: authApi),
-        Provider<PaperlessDocumentsApi>.value(value: documentsApi),
-        Provider<PaperlessLabelsApi>.value(value: labelsApi),
-        Provider<PaperlessServerStatsApi>.value(value: statsApi),
-        Provider<PaperlessSavedViewsApi>.value(value: savedViewsApi),
-        Provider<PaperlessTasksApi>.value(value: tasksApi),
-        Provider<cm.CacheManager>(
-          create: (context) => cm.CacheManager(
-            cm.Config(
-              'cacheKey',
-              fileService: DioFileService(sessionManager.client),
-            ),
-          ),
-        ),
         Provider<ConnectivityStatusService>.value(
           value: connectivityStatusService,
         ),
         Provider<LocalNotificationService>.value(value: localNotificationService),
         Provider.value(value: DocumentChangedNotifier()),
       ],
-      child: MultiRepositoryProvider(
+      child: MultiBlocProvider(
         providers: [
-          RepositoryProvider<LabelRepository>.value(
-            value: labelRepository,
-          ),
-          RepositoryProvider<SavedViewRepository>.value(
-            value: savedViewRepository,
-          ),
+          BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
         ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AuthenticationCubit>.value(value: authCubit),
-            BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-          ],
-          child: const PaperlessMobileEntrypoint(),
+        child: PaperlessMobileEntrypoint(
+          paperlessProviderFactory: PaperlessApiFactoryImpl(sessionManager),
         ),
       ),
     ),
@@ -199,8 +149,10 @@ void main() async {
 }
 
 class PaperlessMobileEntrypoint extends StatefulWidget {
+  final PaperlessApiFactory paperlessProviderFactory;
   const PaperlessMobileEntrypoint({
     Key? key,
+    required this.paperlessProviderFactory,
   }) : super(key: key);
 
   @override
@@ -238,7 +190,9 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
               routes: {
                 DocumentDetailsRoute.routeName: (context) => const DocumentDetailsRoute(),
               },
-              home: const AuthenticationWrapper(),
+              home: AuthenticationWrapper(
+                paperlessProviderFactory: widget.paperlessProviderFactory,
+              ),
             );
           },
         );
@@ -248,7 +202,12 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
 }
 
 class AuthenticationWrapper extends StatefulWidget {
-  const AuthenticationWrapper({Key? key}) : super(key: key);
+  final PaperlessApiFactory paperlessProviderFactory;
+
+  const AuthenticationWrapper({
+    Key? key,
+    required this.paperlessProviderFactory,
+  }) : super(key: key);
 
   @override
   State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
@@ -295,17 +254,19 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, authentication) {
-        if (authentication.isAuthenticated) {
-          return HomeRoute(
-            key: ValueKey(authentication.localUserId),
-          );
-        } else if (authentication.showBiometricAuthenticationScreen) {
-          return const VerifyIdentityPage();
-        }
-        return LoginPage(
-          titleString: S.of(context)!.connectToPaperless,
-          submitText: S.of(context)!.signIn,
-          onSubmit: _onLogin,
+        return authentication.when(
+          unauthenticated: () => LoginPage(
+            titleString: S.of(context)!.connectToPaperless,
+            submitText: S.of(context)!.signIn,
+            onSubmit: _onLogin,
+          ),
+          requriresLocalAuthentication: () => const VerifyIdentityPage(),
+          authenticated: (localUserId, apiVersion) => HomeRoute(
+            key: ValueKey(localUserId),
+            paperlessApiVersion: apiVersion,
+            paperlessProviderFactory: widget.paperlessProviderFactory,
+            localUserId: localUserId,
+          ),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository_state.dart';
@@ -24,6 +25,10 @@ class SavedViewRepository extends HydratedCubit<SavedViewRepositoryState> {
   }
 
   SavedViewRepository(this._api) : super(const SavedViewRepositoryState());
+
+  Future<void> initialize() {
+    return findAll();
+  }
 
   Future<SavedView> create(SavedView object) async {
     final created = await _api.save(object);

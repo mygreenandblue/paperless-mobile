@@ -14,15 +14,15 @@ class LocalUserAccount extends HiveObject {
   final String id;
 
   @HiveField(4)
-  LocalUserSettings settings;
+  final LocalUserSettings settings;
 
-  @HiveField(5)
-  UserModel paperlessUser;
+  @HiveField(6)
+  final int paperlessUserId;
 
   LocalUserAccount({
     required this.id,
     required this.serverUrl,
     required this.settings,
-    required this.paperlessUser,
+    required this.paperlessUserId,
   });
 }

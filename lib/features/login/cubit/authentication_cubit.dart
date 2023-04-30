@@ -3,13 +3,12 @@ import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
@@ -19,29 +18,22 @@ import 'package:paperless_mobile/features/login/services/authentication_service.
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 part 'authentication_state.dart';
+part 'authentication_cubit.freezed.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
+  final PaperlessUserApi _userApi;
   final LocalAuthenticationService _localAuthService;
   final PaperlessAuthenticationApi _authApi;
   final SessionManager _sessionManager;
-  final LabelRepository _labelRepository;
-  final SavedViewRepository _savedViewRepository;
-  final PaperlessServerStatsApi _serverStatsApi;
-  final PaperlessUserApi _userApi;
-  final PaperlessUserApiV3? _userApiV3;
 
   AuthenticationCubit(
     this._localAuthService,
     this._authApi,
     this._sessionManager,
-    this._labelRepository,
-    this._savedViewRepository,
-    this._serverStatsApi,
-    this._userApi, {
-    PaperlessUserApiV3? userApiV3,
-  })  : _userApiV3 = userApiV3,
-        super(const AuthenticationState());
+    this._userApi,
+  ) : super(const AuthenticationState.unauthenticated());
 
   Future<void> login({
     required LoginFormCredentials credentials,
@@ -66,14 +58,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     globalSettings.currentLoggedInUser = localUserId;
     await globalSettings.save();
-
     emit(
-      AuthenticationState(
-        isAuthenticated: true,
-        username: credentials.username,
-        localUserId: localUserId,
-        fullName: serverUser.fullName,
+      AuthenticationState.authenticated(
         apiVersion: apiVersion,
+        localUserId: localUserId,
       ),
     );
   }
@@ -116,26 +104,18 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     _sessionManager.updateSettings(
       authToken: credentials!.token,
       clientCertificate: credentials.clientCertificate,
-      serverInformation: PaperlessServerInformationModel(),
       baseUrl: account.serverUrl,
     );
 
-    await _reloadRepositories();
     globalSettings.currentLoggedInUser = localUserId;
     await globalSettings.save();
 
     final response = await _sessionManager.client.get("/api/");
     final apiVersion = response.headers["x-api-version"] as int;
-
-    emit(
-      AuthenticationState(
-        isAuthenticated: true,
-        username: account.paperlessUser.username,
-        fullName: account.paperlessUser.fullName,
-        localUserId: localUserId,
-        apiVersion: apiVersion,
-      ),
-    );
+    emit(AuthenticationState.authenticated(
+      localUserId: localUserId,
+      apiVersion: apiVersion,
+    ));
   }
 
   Future<String> addAccount({
@@ -179,19 +159,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   ///
   Future<void> restoreSessionState() async {
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    final userId = globalSettings.currentLoggedInUser;
-    if (userId == null) {
+    final localUserId = globalSettings.currentLoggedInUser;
+    if (localUserId == null) {
       // If there is nothing to restore, we can quit here.
       return;
     }
 
-    final userAccount = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(userId)!;
+    final userAccount = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(localUserId)!;
 
     if (userAccount.settings.isBiometricAuthenticationEnabled) {
       final localAuthSuccess =
           await _localAuthService.authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
       if (!localAuthSuccess) {
-        emit(const AuthenticationState(showBiometricAuthenticationScreen: true));
+        emit(const AuthenticationState.requriresLocalAuthentication());
         return;
       }
     }
@@ -207,18 +187,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       clientCertificate: authentication.clientCertificate,
       authToken: authentication.token,
       baseUrl: userAccount.serverUrl,
-      serverInformation: PaperlessServerInformationModel(),
     );
     final response = await _sessionManager.client.get("/api/");
     final apiVersion = response.headers["x-api-version"] as int;
-
     emit(
-      AuthenticationState(
-        isAuthenticated: true,
-        showBiometricAuthenticationScreen: false,
-        username: userAccount.paperlessUser.username,
+      AuthenticationState.authenticated(
         apiVersion: apiVersion,
-        fullName: userAccount.paperlessUser.fullName,
+        localUserId: localUserId,
       ),
     );
   }
@@ -229,7 +204,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     globalSettings
       ..currentLoggedInUser = null
       ..save();
-    emit(const AuthenticationState());
+    emit(const AuthenticationState.unauthenticated());
   }
 
   Future<Uint8List> _getEncryptedBoxKey() async {
@@ -254,23 +229,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> _resetExternalState() {
+  Future<void> _resetExternalState() async {
     _sessionManager.resetSettings();
-    return Future.wait([
-      HydratedBloc.storage.clear(),
-      _labelRepository.clear(),
-      _savedViewRepository.clear(),
-    ]);
+    await HydratedBloc.storage.clear();
   }
 
-  Future<void> _reloadRepositories() {
-    return Future.wait([
-      _labelRepository.initialize(),
-      _savedViewRepository.findAll(),
-    ]);
-  }
-
-  Future<UserModel> _addUser(
+  Future<int> _addUser(
     String localUserId,
     String serverUrl,
     LoginFormCredentials credentials,
@@ -303,7 +267,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
 
     final serverUserId = await _userApi.findCurrentUserId();
-    final serverUser = await _userApi.find(serverUserId);
 
     // Create user account
     await userAccountBox.put(
@@ -312,7 +275,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         id: localUserId,
         settings: LocalUserSettings(),
         serverUrl: serverUrl,
-        paperlessUser: serverUser,
+        paperlessUserId: 1,
       ),
     );
 
@@ -332,6 +295,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       ),
     );
     userCredentialsBox.close();
-    return serverUser;
+    return serverUserId;
   }
 }
