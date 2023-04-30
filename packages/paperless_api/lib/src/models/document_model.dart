@@ -61,8 +61,7 @@ class DocumentModel extends Equatable {
     this.searchHit,
   });
 
-  factory DocumentModel.fromJson(Map<String, dynamic> json) =>
-      _$DocumentModelFromJson(json);
+  factory DocumentModel.fromJson(Map<String, dynamic> json) => _$DocumentModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$DocumentModelToJson(this);
 
@@ -85,17 +84,15 @@ class DocumentModel extends Equatable {
       title: title ?? this.title,
       content: content ?? this.content,
       documentType: documentType != null ? documentType() : this.documentType,
-      correspondent:
-          correspondent != null ? correspondent() : this.correspondent,
+      correspondent: correspondent != null ? correspondent() : this.correspondent,
       storagePath: storagePath != null ? storagePath() : this.storagePath,
       tags: tags ?? this.tags,
       created: created ?? this.created,
       modified: modified ?? this.modified,
       added: added ?? this.added,
       originalFileName: originalFileName ?? this.originalFileName,
-      archiveSerialNumber: archiveSerialNumber != null
-          ? archiveSerialNumber()
-          : this.archiveSerialNumber,
+      archiveSerialNumber:
+          archiveSerialNumber != null ? archiveSerialNumber() : this.archiveSerialNumber,
       archivedFileName: archivedFileName ?? this.archivedFileName,
     );
   }

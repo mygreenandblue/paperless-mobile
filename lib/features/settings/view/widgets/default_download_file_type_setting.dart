@@ -12,7 +12,7 @@ class DefaultDownloadFileTypeSetting extends StatelessWidget {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
         return ListTile(
-          title: Text("Default download file type"),
+          title: Text(S.of(context)!.defaultDownloadFileType),
           subtitle: Text(
             _downloadFileTypeToString(context, settings.defaultDownloadType),
           ),
@@ -21,19 +21,19 @@ class DefaultDownloadFileTypeSetting extends StatelessWidget {
               context: context,
               builder: (context) {
                 return RadioSettingsDialog<FileDownloadType>(
-                  titleText: "Default download file type",
+                  titleText: S.of(context)!.defaultDownloadFileType,
                   options: [
                     RadioOption(
                       value: FileDownloadType.alwaysAsk,
-                      label: "Always ask",
+                      label: _downloadFileTypeToString(context, FileDownloadType.alwaysAsk),
                     ),
                     RadioOption(
                       value: FileDownloadType.original,
-                      label: S.of(context)!.original,
+                      label: _downloadFileTypeToString(context, FileDownloadType.original),
                     ),
                     RadioOption(
                       value: FileDownloadType.archived,
-                      label: S.of(context)!.archivedPdf,
+                      label: _downloadFileTypeToString(context, FileDownloadType.archived),
                     ),
                   ],
                   initialValue: settings.defaultDownloadType,
@@ -58,7 +58,7 @@ class DefaultDownloadFileTypeSetting extends StatelessWidget {
       case FileDownloadType.archived:
         return S.of(context)!.archivedPdf;
       case FileDownloadType.alwaysAsk:
-        return "Always ask";
+        return S.of(context)!.alwaysAsk;
     }
   }
 }

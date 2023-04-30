@@ -766,5 +766,18 @@
   "findTheSourceCodeOn": "Find the source code on",
   "@findTheSourceCodeOn": {
     "description": "Text before link to Paperless Mobile GitHub"
+  },
+  "rememberDecision": "Remember my decision",
+  "defaultDownloadFileType": "Default Download File Type",
+  "@defaultDownloadFileType": {
+    "description": "Label indicating the default filetype to download (one of archived, original and always ask)"
+  },
+  "defaultShareFileType": "Default Share File Type",
+  "@defaultShareFileType": {
+    "description": "Label indicating the default filetype to share (one of archived, original and always ask)"
+  },
+  "alwaysAsk": "Always ask",
+  "@alwaysAsk": {
+    "description": "Option to choose when the app should always ask the user which filetype to use"
   }
 }
