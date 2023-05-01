@@ -39,20 +39,13 @@ class DocumentDetailsPage extends StatefulWidget {
 }
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
-  late Future<DocumentMetaData> _metaData;
   static const double _itemSpacing = 24;
 
   final _pagingScrollController = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-    _loadMetaData();
-  }
 
-  void _loadMetaData() {
-    _metaData = context
-        .read<PaperlessDocumentsApi>()
-        .getMetaData(context.read<DocumentDetailsCubit>().state.document);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
@@ -67,8 +60,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         child: BlocListener<ConnectivityCubit, ConnectivityState>(
           listenWhen: (previous, current) => !previous.isConnected && current.isConnected,
           listener: (context, state) {
-            _loadMetaData();
-            setState(() {});
+            context.read<DocumentDetailsCubit>().loadMetaData();
           },
           child: Scaffold(
             extendBodyBehindAppBar: false,
@@ -98,7 +90,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ),
                           ),
-                          Positioned.fill(
+                          Positioned.fill( 
                             top: 0,
                             child: Container(
                               height: 100,
@@ -285,7 +277,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   DocumentDownloadButton(
                     document: state.document,
                     enabled: isConnected,
-                    metaData: _metaData,
                   ),
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,

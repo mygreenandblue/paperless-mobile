@@ -52,13 +52,10 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
                     isLoading: state.isLoading,
                     hasLoaded: state.hasLoaded,
                     onTap: (document) {
-                      Navigator.pushNamed(
+                      pushDocumentDetailsRoute(
                         context,
-                        DocumentDetailsRoute.routeName,
-                        arguments: DocumentDetailsRouteArguments(
-                          document: document,
-                          isLabelClickable: false,
-                        ),
+                        document: document,
+                        isLabelClickable: false,
                       );
                     },
                     correspondents: state.correspondents,

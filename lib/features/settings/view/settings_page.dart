@@ -22,7 +22,7 @@ class SettingsPage extends StatelessWidget {
           final host = user!.serverUrl.replaceFirst(RegExp(r"https?://"), "");
           return ListTile(
             title: Text(
-              S.of(context)!.loggedInAs(user.username) + "@$host",
+              S.of(context)!.loggedInAs(user.paperlessUser.username) + "@$host",
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),

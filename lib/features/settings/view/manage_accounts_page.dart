@@ -86,11 +86,11 @@ class ManageAccountsPage extends StatelessWidget {
     final child = SizedBox(
       width: double.maxFinite,
       child: ListTile(
-        title: Text(account.username),
+        title: Text(account.paperlessUser.username),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (account.fullName != null) Text(account.fullName!),
+            if (account.paperlessUser.fullName != null) Text(account.paperlessUser.fullName!),
             Text(
               account.serverUrl.replaceFirst(RegExp(r'https://?'), ''),
               style: TextStyle(
@@ -99,7 +99,7 @@ class ManageAccountsPage extends StatelessWidget {
             ),
           ],
         ),
-        isThreeLine: account.fullName != null,
+        isThreeLine: account.paperlessUser.fullName != null,
         leading: UserAvatar(
           account: account,
           userId: userId,

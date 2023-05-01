@@ -226,13 +226,10 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hasLoaded: state.hasLoaded,
             enableHeroAnimation: false,
             onTap: (document) {
-              Navigator.pushNamed(
+              pushDocumentDetailsRoute(
                 context,
-                DocumentDetailsRoute.routeName,
-                arguments: DocumentDetailsRouteArguments(
-                  document: document,
-                  isLabelClickable: false,
-                ),
+                document: document,
+                isLabelClickable: false,
               );
             },
             correspondents: state.correspondents,

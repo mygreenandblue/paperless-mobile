@@ -38,12 +38,9 @@ class ScannerPage extends StatefulWidget {
   State<ScannerPage> createState() => _ScannerPageState();
 }
 
-class _ScannerPageState extends State<ScannerPage>
-    with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle =
-      SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle actionsHandle =
-      SliverOverlapAbsorberHandle();
+class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle actionsHandle = SliverOverlapAbsorberHandle();
 
   @override
   Widget build(BuildContext context) {
@@ -180,8 +177,7 @@ class _ScannerPageState extends State<ScannerPage>
     final success = await EdgeDetection.detectEdge(file.path);
     if (!success) {
       if (kDebugMode) {
-        dev.log(
-            '[ScannerPage] Scan either not successful or canceled by user.');
+        dev.log('[ScannerPage] Scan either not successful or canceled by user.');
       }
       return;
     }
@@ -198,7 +194,7 @@ class _ScannerPageState extends State<ScannerPage>
     final uploadResult = await Navigator.of(context).push<DocumentUploadResult>(
       MaterialPageRoute(
         builder: (_) => BlocProvider(
-          create: (context) => DocumentUploadCubit(
+          create: (_) => DocumentUploadCubit(
             context.read(),
             context.read(),
           ),
@@ -212,9 +208,7 @@ class _ScannerPageState extends State<ScannerPage>
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context
-          .read<TaskStatusCubit>()
-          .listenToTaskChanges(uploadResult!.taskId!);
+      context.read<TaskStatusCubit>().listenToTaskChanges(uploadResult!.taskId!);
     }
   }
 

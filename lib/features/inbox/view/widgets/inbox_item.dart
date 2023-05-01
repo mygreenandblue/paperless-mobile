@@ -37,14 +37,11 @@ class _InboxItemState extends State<InboxItem> {
       builder: (context, state) {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () async {
-            Navigator.pushNamed(
+          onTap: () {
+            pushDocumentDetailsRoute(
               context,
-              DocumentDetailsRoute.routeName,
-              arguments: DocumentDetailsRouteArguments(
-                document: widget.document,
-                isLabelClickable: false,
-              ),
+              document: widget.document,
+              isLabelClickable: false,
             );
           },
           child: SizedBox(

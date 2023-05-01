@@ -7,4 +7,6 @@ abstract class PaperlessApiFactory {
   PaperlessLabelsApi createLabelsApi(Dio dio, {required int apiVersion});
   PaperlessServerStatsApi createServerStatsApi(Dio dio, {required int apiVersion});
   PaperlessTasksApi createTasksApi(Dio dio, {required int apiVersion});
+  PaperlessAuthenticationApi createAuthenticationApi(Dio dio);
+  PaperlessUserApi createUserApi(Dio dio, {required int apiVersion});
 }

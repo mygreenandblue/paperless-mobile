@@ -76,12 +76,13 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
                     isLoading: state.isLoading,
                     hasLoaded: state.hasLoaded,
                     onTap: (document) {
-                      Navigator.pushNamed(
+                      Navigator.push(
                         context,
-                        DocumentDetailsRoute.routeName,
-                        arguments: DocumentDetailsRouteArguments(
-                          document: document,
-                          isLabelClickable: false,
+                        MaterialPageRoute(
+                          builder: (context) => DocumentDetailsRoute(
+                            document: document,
+                            isLabelClickable: false,
+                          ),
                         ),
                       );
                     },

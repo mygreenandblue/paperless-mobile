@@ -23,8 +23,13 @@ import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:provider/provider.dart';
 
 class HomeRoute extends StatelessWidget {
+  /// The id of the currently authenticated user (e.g. demo@paperless.example.com)
   final String localUserId;
+
+  /// The Paperless API version of the currently connected instance
   final int paperlessApiVersion;
+
+  // A factory providing the API implementations given an API version
   final PaperlessApiFactory paperlessProviderFactory;
 
   const HomeRoute({
@@ -44,6 +49,7 @@ class HomeRoute extends StatelessWidget {
             Provider<CacheManager>(
               create: (context) => CacheManager(
                 Config(
+                  // Isolated cache per user.
                   localUserId,
                   fileService: DioFileService(context.read<SessionManager>().client),
                 ),
@@ -121,10 +127,14 @@ class HomeRoute extends StatelessWidget {
                       )..initialize(),
                     ),
                     ProxyProvider<PaperlessServerStatsApi, ServerInformationCubit>(
-                      update: (context, value, previous) => ServerInformationCubit(value),
+                      update: (context, value, previous) =>
+                          ServerInformationCubit(value)..updateInformation(),
                     ),
                     ProxyProvider<LabelRepository, LabelCubit>(
                       update: (context, value, previous) => LabelCubit(value),
+                    ),
+                    ProxyProvider<PaperlessTasksApi, TaskStatusCubit>(
+                      update: (context, value, previous) => TaskStatusCubit(value),
                     ),
                   ],
                   child: const HomePage(),

@@ -5,7 +5,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart' as cm;
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -26,11 +25,8 @@ import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/service/dio_file_service.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_route.dart';
@@ -125,6 +121,8 @@ void main() async {
     languageHeaderInterceptor.preferredLocaleSubtag = globalSettings.preferredLocaleSubtag;
   });
 
+  final apiFactory = PaperlessApiFactoryImpl(sessionManager);
+
   runApp(
     MultiProvider(
       providers: [
@@ -139,9 +137,17 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
+          BlocProvider(
+            create: (context) => AuthenticationCubit(
+              localAuthService,
+              apiFactory,
+              sessionManager,
+            ),
+            child: Container(),
+          )
         ],
         child: PaperlessMobileEntrypoint(
-          paperlessProviderFactory: PaperlessApiFactoryImpl(sessionManager),
+          paperlessProviderFactory: apiFactory,
         ),
       ),
     ),
@@ -187,9 +193,6 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
               localizationsDelegates: const [
                 ...S.localizationsDelegates,
               ],
-              routes: {
-                DocumentDetailsRoute.routeName: (context) => const DocumentDetailsRoute(),
-              },
               home: AuthenticationWrapper(
                 paperlessProviderFactory: widget.paperlessProviderFactory,
               ),
@@ -217,7 +220,10 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FlutterNativeSplash.remove();
+    context
+        .read<AuthenticationCubit>()
+        .restoreSessionState()
+        .then((value) => FlutterNativeSplash.remove());
   }
 
   @override

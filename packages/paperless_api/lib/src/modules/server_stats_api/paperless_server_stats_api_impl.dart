@@ -18,7 +18,12 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
 
   @override
   Future<PaperlessServerInformationModel> getServerInformation() async {
-    final response = await client.get("/api/");
+    final response = await client.get("/api/remote_version/");
+    if (response.statusCode == 200) {
+      final version = response.data["version"] as String;
+      final updateAvailable = response.data["update_available"] as bool;
+    }
+    throw PaperlessServerException.unknown();
     final version =
         response.headers[PaperlessServerInformationModel.versionHeader]?.first ?? 'unknown';
     final apiVersion = int.tryParse(

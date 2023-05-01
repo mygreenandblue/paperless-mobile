@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -443,12 +444,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   }
 
   void _openDetails(DocumentModel document) {
-    Navigator.pushNamed(
+    pushDocumentDetailsRoute(
       context,
-      DocumentDetailsRoute.routeName,
-      arguments: DocumentDetailsRouteArguments(
-        document: document,
-      ),
+      document: document,
     );
   }
 

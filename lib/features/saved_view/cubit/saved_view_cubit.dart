@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -37,18 +36,20 @@ class SavedViewCubit extends Cubit<SavedViewState> {
       },
     );
 
-    _savedViewRepository.subscribe(this, (views) {
-      emit(
-        state.maybeWhen(
-          loaded:
-              (savedViews, correspondents, documentTypes, tags, storagePaths) =>
-                  (state as _SavedViewLoadedState).copyWith(
-            savedViews: views,
+    _savedViewRepository.addListener(
+      this,
+      onChanged: (views) {
+        emit(
+          state.maybeWhen(
+            loaded: (savedViews, correspondents, documentTypes, tags, storagePaths) =>
+                (state as _SavedViewLoadedState).copyWith(
+              savedViews: views.savedViews,
+            ),
+            orElse: () => state,
           ),
-          orElse: () => state,
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   Future<SavedView> add(SavedView view) async {
@@ -77,7 +78,7 @@ class SavedViewCubit extends Cubit<SavedViewState> {
 
   @override
   Future<void> close() {
-    _savedViewRepository.unsubscribe(this);
+    _savedViewRepository.removeListener(this);
     _labelRepository.removeListener(this);
     return super.close();
   }

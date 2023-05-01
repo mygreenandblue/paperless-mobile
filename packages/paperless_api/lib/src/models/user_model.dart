@@ -51,7 +51,7 @@ class UserModel with _$UserModel {
           if (value.firstName == null) {
             return value.lastName;
           }
-          return value.firstName! + (value.lastName ?? '');
+          return "${value.firstName!} ${value.lastName ?? ''}";
         },
       );
 
