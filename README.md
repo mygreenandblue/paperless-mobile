@@ -42,7 +42,7 @@
 </div>
 
 ## Important Notice
-This project is under **very active** development. Breaking changes are expected and therefore a clean install is recommended for each update!
+This project is under **very active** development. Breaking changes are expected and therefore a clean install is recommended for each update! The newest version (2.2.0+28, available in Open Beta on Google Play) is **not** yet compatible with Paperless-ngx 1.14.0 and later!
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
