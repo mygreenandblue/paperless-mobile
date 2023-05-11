@@ -20,6 +20,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     int? documentType,
     int? correspondent,
     Iterable<int> tags = const [],
+    int? asn,
   }) async {
     final formData = FormData();
     formData.files.add(
@@ -40,6 +41,9 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     }
     if (documentType != null) {
       formData.fields.add(MapEntry('document_type', jsonEncode(documentType)));
+    }
+    if (asn != null) {
+      formData.fields.add(MapEntry('archive_serial_number', jsonEncode(asn)));
     }
     for (final tag in tags) {
       formData.fields.add(MapEntry('tags', tag.toString()));
