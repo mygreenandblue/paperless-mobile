@@ -38,6 +38,7 @@ import 'package:paperless_mobile/features/login/model/login_form_credentials.dar
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -270,6 +271,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
             paperlessProviderFactory: widget.paperlessProviderFactory,
             localUserId: localUserId,
           ),
+          switchingAccounts: () => const SwitchingAccountsPage(),
         );
       },
     );

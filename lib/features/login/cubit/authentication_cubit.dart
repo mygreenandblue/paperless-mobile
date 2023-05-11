@@ -66,6 +66,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   /// Switches to another account if it exists.
   Future<void> switchAccount(String localUserId) async {
+    emit(const AuthenticationState.switchingAccounts());
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     if (globalSettings.currentLoggedInUser == localUserId) {
       return;
@@ -130,12 +131,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     assert(credentials.password != null && credentials.username != null);
     final localUserId = "${credentials.username}@$serverUrl";
+    final sessionManager = SessionManager();
     await _addUser(
       localUserId,
       serverUrl,
       credentials,
       clientCertificate,
-      _sessionManager,
+      sessionManager,
     );
 
     return localUserId;

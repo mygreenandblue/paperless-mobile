@@ -42,7 +42,7 @@ class PaperlessApiFactoryImpl implements PaperlessApiFactory {
   PaperlessUserApi createUserApi(Dio dio, {required int apiVersion}) {
     if (apiVersion == 3) {
       return PaperlessUserApiV3Impl(dio);
-    } else if (apiVersion == 1 || apiVersion == 2) {
+    } else if (apiVersion < 3) {
       return PaperlessUserApiV2Impl(dio);
     }
     throw Exception("API $apiVersion not supported.");

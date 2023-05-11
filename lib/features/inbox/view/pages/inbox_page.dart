@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
@@ -41,11 +42,13 @@ class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin<Inbo
 
   @override
   Widget build(BuildContext context) {
+    final canEditDocument = LocalUserAccount.current.paperlessUser
+        .hasPermission(PermissionAction.change, PermissionTarget.document);
     return Scaffold(
       drawer: const AppDrawer(),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
         builder: (context, state) {
-          if (!state.hasLoaded || state.documents.isEmpty) {
+          if (!state.hasLoaded || state.documents.isEmpty || !canEditDocument) {
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(

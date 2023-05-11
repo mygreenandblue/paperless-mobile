@@ -21,6 +21,7 @@ mixin _$AuthenticationState {
     required TResult Function() unauthenticated,
     required TResult Function() requriresLocalAuthentication,
     required TResult Function(String localUserId, int apiVersion) authenticated,
+    required TResult Function() switchingAccounts,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -28,6 +29,7 @@ mixin _$AuthenticationState {
     TResult? Function()? unauthenticated,
     TResult? Function()? requriresLocalAuthentication,
     TResult? Function(String localUserId, int apiVersion)? authenticated,
+    TResult? Function()? switchingAccounts,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -35,6 +37,7 @@ mixin _$AuthenticationState {
     TResult Function()? unauthenticated,
     TResult Function()? requriresLocalAuthentication,
     TResult Function(String localUserId, int apiVersion)? authenticated,
+    TResult Function()? switchingAccounts,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -44,6 +47,7 @@ mixin _$AuthenticationState {
     required TResult Function(_RequiresLocalAuthentication value)
         requriresLocalAuthentication,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_SwitchingAccounts value) switchingAccounts,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -52,6 +56,7 @@ mixin _$AuthenticationState {
     TResult? Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_SwitchingAccounts value)? switchingAccounts,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -60,6 +65,7 @@ mixin _$AuthenticationState {
     TResult Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_SwitchingAccounts value)? switchingAccounts,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -124,6 +130,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     required TResult Function() unauthenticated,
     required TResult Function() requriresLocalAuthentication,
     required TResult Function(String localUserId, int apiVersion) authenticated,
+    required TResult Function() switchingAccounts,
   }) {
     return unauthenticated();
   }
@@ -134,6 +141,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     TResult? Function()? unauthenticated,
     TResult? Function()? requriresLocalAuthentication,
     TResult? Function(String localUserId, int apiVersion)? authenticated,
+    TResult? Function()? switchingAccounts,
   }) {
     return unauthenticated?.call();
   }
@@ -144,6 +152,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     TResult Function()? unauthenticated,
     TResult Function()? requriresLocalAuthentication,
     TResult Function(String localUserId, int apiVersion)? authenticated,
+    TResult Function()? switchingAccounts,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -159,6 +168,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     required TResult Function(_RequiresLocalAuthentication value)
         requriresLocalAuthentication,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_SwitchingAccounts value) switchingAccounts,
   }) {
     return unauthenticated(this);
   }
@@ -170,6 +180,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     TResult? Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_SwitchingAccounts value)? switchingAccounts,
   }) {
     return unauthenticated?.call(this);
   }
@@ -181,6 +192,7 @@ class _$_Unauthenticated implements _Unauthenticated {
     TResult Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_SwitchingAccounts value)? switchingAccounts,
     required TResult orElse(),
   }) {
     if (unauthenticated != null) {
@@ -239,6 +251,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     required TResult Function() unauthenticated,
     required TResult Function() requriresLocalAuthentication,
     required TResult Function(String localUserId, int apiVersion) authenticated,
+    required TResult Function() switchingAccounts,
   }) {
     return requriresLocalAuthentication();
   }
@@ -249,6 +262,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     TResult? Function()? unauthenticated,
     TResult? Function()? requriresLocalAuthentication,
     TResult? Function(String localUserId, int apiVersion)? authenticated,
+    TResult? Function()? switchingAccounts,
   }) {
     return requriresLocalAuthentication?.call();
   }
@@ -259,6 +273,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     TResult Function()? unauthenticated,
     TResult Function()? requriresLocalAuthentication,
     TResult Function(String localUserId, int apiVersion)? authenticated,
+    TResult Function()? switchingAccounts,
     required TResult orElse(),
   }) {
     if (requriresLocalAuthentication != null) {
@@ -274,6 +289,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     required TResult Function(_RequiresLocalAuthentication value)
         requriresLocalAuthentication,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_SwitchingAccounts value) switchingAccounts,
   }) {
     return requriresLocalAuthentication(this);
   }
@@ -285,6 +301,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     TResult? Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_SwitchingAccounts value)? switchingAccounts,
   }) {
     return requriresLocalAuthentication?.call(this);
   }
@@ -296,6 +313,7 @@ class _$_RequiresLocalAuthentication implements _RequiresLocalAuthentication {
     TResult Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_SwitchingAccounts value)? switchingAccounts,
     required TResult orElse(),
   }) {
     if (requriresLocalAuthentication != null) {
@@ -386,6 +404,7 @@ class _$_Authenticated implements _Authenticated {
     required TResult Function() unauthenticated,
     required TResult Function() requriresLocalAuthentication,
     required TResult Function(String localUserId, int apiVersion) authenticated,
+    required TResult Function() switchingAccounts,
   }) {
     return authenticated(localUserId, apiVersion);
   }
@@ -396,6 +415,7 @@ class _$_Authenticated implements _Authenticated {
     TResult? Function()? unauthenticated,
     TResult? Function()? requriresLocalAuthentication,
     TResult? Function(String localUserId, int apiVersion)? authenticated,
+    TResult? Function()? switchingAccounts,
   }) {
     return authenticated?.call(localUserId, apiVersion);
   }
@@ -406,6 +426,7 @@ class _$_Authenticated implements _Authenticated {
     TResult Function()? unauthenticated,
     TResult Function()? requriresLocalAuthentication,
     TResult Function(String localUserId, int apiVersion)? authenticated,
+    TResult Function()? switchingAccounts,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -421,6 +442,7 @@ class _$_Authenticated implements _Authenticated {
     required TResult Function(_RequiresLocalAuthentication value)
         requriresLocalAuthentication,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_SwitchingAccounts value) switchingAccounts,
   }) {
     return authenticated(this);
   }
@@ -432,6 +454,7 @@ class _$_Authenticated implements _Authenticated {
     TResult? Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_SwitchingAccounts value)? switchingAccounts,
   }) {
     return authenticated?.call(this);
   }
@@ -443,6 +466,7 @@ class _$_Authenticated implements _Authenticated {
     TResult Function(_RequiresLocalAuthentication value)?
         requriresLocalAuthentication,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_SwitchingAccounts value)? switchingAccounts,
     required TResult orElse(),
   }) {
     if (authenticated != null) {
@@ -462,4 +486,121 @@ abstract class _Authenticated implements AuthenticationState {
   @JsonKey(ignore: true)
   _$$_AuthenticatedCopyWith<_$_Authenticated> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$_SwitchingAccountsCopyWith<$Res> {
+  factory _$$_SwitchingAccountsCopyWith(_$_SwitchingAccounts value,
+          $Res Function(_$_SwitchingAccounts) then) =
+      __$$_SwitchingAccountsCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$_SwitchingAccountsCopyWithImpl<$Res>
+    extends _$AuthenticationStateCopyWithImpl<$Res, _$_SwitchingAccounts>
+    implements _$$_SwitchingAccountsCopyWith<$Res> {
+  __$$_SwitchingAccountsCopyWithImpl(
+      _$_SwitchingAccounts _value, $Res Function(_$_SwitchingAccounts) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$_SwitchingAccounts implements _SwitchingAccounts {
+  const _$_SwitchingAccounts();
+
+  @override
+  String toString() {
+    return 'AuthenticationState.switchingAccounts()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$_SwitchingAccounts);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() unauthenticated,
+    required TResult Function() requriresLocalAuthentication,
+    required TResult Function(String localUserId, int apiVersion) authenticated,
+    required TResult Function() switchingAccounts,
+  }) {
+    return switchingAccounts();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? unauthenticated,
+    TResult? Function()? requriresLocalAuthentication,
+    TResult? Function(String localUserId, int apiVersion)? authenticated,
+    TResult? Function()? switchingAccounts,
+  }) {
+    return switchingAccounts?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? unauthenticated,
+    TResult Function()? requriresLocalAuthentication,
+    TResult Function(String localUserId, int apiVersion)? authenticated,
+    TResult Function()? switchingAccounts,
+    required TResult orElse(),
+  }) {
+    if (switchingAccounts != null) {
+      return switchingAccounts();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Unauthenticated value) unauthenticated,
+    required TResult Function(_RequiresLocalAuthentication value)
+        requriresLocalAuthentication,
+    required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_SwitchingAccounts value) switchingAccounts,
+  }) {
+    return switchingAccounts(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Unauthenticated value)? unauthenticated,
+    TResult? Function(_RequiresLocalAuthentication value)?
+        requriresLocalAuthentication,
+    TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_SwitchingAccounts value)? switchingAccounts,
+  }) {
+    return switchingAccounts?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Unauthenticated value)? unauthenticated,
+    TResult Function(_RequiresLocalAuthentication value)?
+        requriresLocalAuthentication,
+    TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_SwitchingAccounts value)? switchingAccounts,
+    required TResult orElse(),
+  }) {
+    if (switchingAccounts != null) {
+      return switchingAccounts(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _SwitchingAccounts implements AuthenticationState {
+  const factory _SwitchingAccounts() = _$_SwitchingAccounts;
 }

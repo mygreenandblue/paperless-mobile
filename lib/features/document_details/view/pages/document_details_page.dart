@@ -233,15 +233,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ],
                           ),
-                          CustomScrollView(
-                            controller: _pagingScrollController,
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              const DocumentPermissionsWidget(),
-                            ],
-                          ),
+                          if (apiVersion.hasMultiUserSupport)
+                            CustomScrollView(
+                              controller: _pagingScrollController,
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                const DocumentPermissionsWidget(),
+                              ],
+                            ),
                         ],
                       ),
                     ),

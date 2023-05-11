@@ -8,4 +8,5 @@ class AuthenticationState with _$AuthenticationState {
     required String localUserId,
     required int apiVersion,
   }) = _Authenticated;
+  const factory AuthenticationState.switchingAccounts() = _SwitchingAccounts;
 }
