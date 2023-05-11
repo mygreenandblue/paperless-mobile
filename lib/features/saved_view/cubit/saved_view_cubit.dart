@@ -11,38 +11,14 @@ part 'saved_view_cubit.freezed.dart';
 
 class SavedViewCubit extends Cubit<SavedViewState> {
   final SavedViewRepository _savedViewRepository;
-  final LabelRepository _labelRepository;
 
-  SavedViewCubit(this._savedViewRepository, this._labelRepository)
-      : super(
-          SavedViewState.initial(
-            correspondents: _labelRepository.state.correspondents,
-            documentTypes: _labelRepository.state.documentTypes,
-            storagePaths: _labelRepository.state.storagePaths,
-            tags: _labelRepository.state.tags,
-          ),
-        ) {
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        emit(
-          state.copyWith(
-            correspondents: labels.correspondents,
-            documentTypes: labels.documentTypes,
-            tags: labels.tags,
-            storagePaths: labels.storagePaths,
-          ),
-        );
-      },
-    );
-
+  SavedViewCubit(this._savedViewRepository) : super(const SavedViewState.initial()) {
     _savedViewRepository.addListener(
       this,
       onChanged: (views) {
         emit(
           state.maybeWhen(
-            loaded: (savedViews, correspondents, documentTypes, tags, storagePaths) =>
-                (state as _SavedViewLoadedState).copyWith(
+            loaded: (savedViews) => (state as _SavedViewLoadedState).copyWith(
               savedViews: views.savedViews,
             ),
             orElse: () => state,
@@ -64,13 +40,11 @@ class SavedViewCubit extends Cubit<SavedViewState> {
     final views = await _savedViewRepository.findAll();
     final values = {for (var element in views) element.id!: element};
     if (!isClosed) {
-      emit(SavedViewState.loaded(
-        savedViews: values,
-        correspondents: state.correspondents,
-        documentTypes: state.documentTypes,
-        storagePaths: state.storagePaths,
-        tags: state.tags,
-      ));
+      emit(
+        SavedViewState.loaded(
+          savedViews: values,
+        ),
+      );
     }
   }
 
@@ -79,7 +53,6 @@ class SavedViewCubit extends Cubit<SavedViewState> {
   @override
   Future<void> close() {
     _savedViewRepository.removeListener(this);
-    _labelRepository.removeListener(this);
     return super.close();
   }
 }

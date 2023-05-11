@@ -78,7 +78,6 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentUpdateFailed);
       }
     } on DioError catch (err) {
-      //TODO: Handle 403 permission errors for 1.14.0
       throw err.error!;
     }
   }

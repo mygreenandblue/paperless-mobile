@@ -5,6 +5,7 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
@@ -21,17 +22,13 @@ class SavedViewList extends StatelessWidget {
         return BlocBuilder<SavedViewCubit, SavedViewState>(
           builder: (context, state) {
             return state.when(
-              initial: (correspondents, documentTypes, tags, storagePaths) => Container(),
-              loading: (correspondents, documentTypes, tags, storagePaths) => Center(
-                child: Text("Saved views loading..."), //TODO: INTL
+              initial: () => SliverToBoxAdapter(child: Container()),
+              loading: () => SliverToBoxAdapter(
+                child: Center(
+                  child: Text("Saved views loading..."), //TODO: INTL
+                ),
               ),
-              loaded: (
-                savedViews,
-                correspondents,
-                documentTypes,
-                tags,
-                storagePaths,
-              ) {
+              loaded: (savedViews) {
                 if (savedViews.isEmpty) {
                   return SliverToBoxAdapter(
                     child: HintCard(
@@ -50,30 +47,7 @@ class SavedViewList extends StatelessWidget {
                           S.of(context)!.nFiltersSet(view.filterRules.length),
                         ),
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctxt) => MultiBlocProvider(
-                                providers: [
-                                  BlocProvider(
-                                    create: (context) => SavedViewDetailsCubit(
-                                      ctxt.read(),
-                                      ctxt.read(),
-                                      context.read(),
-                                      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(
-                                        Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
-                                            .getValue()!
-                                            .currentLoggedInUser!,
-                                      )!,
-                                      savedView: view,
-                                    ),
-                                  ),
-                                ],
-                                child: SavedViewDetailsPage(
-                                  onDelete: context.read<SavedViewCubit>().remove,
-                                ),
-                              ),
-                            ),
-                          );
+                          pushSavedViewDetailsRoute(context, savedView: view);
                         },
                       );
                     },
@@ -81,13 +55,7 @@ class SavedViewList extends StatelessWidget {
                   ),
                 );
               },
-              error: (
-                correspondents,
-                documentTypes,
-                tags,
-                storagePaths,
-              ) =>
-                  Center(
+              error: () => Center(
                 child: Text(
                   "An error occurred while trying to load the saved views.",
                 ),

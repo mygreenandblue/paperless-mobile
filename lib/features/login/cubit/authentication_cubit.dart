@@ -3,25 +3,24 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
+import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-part 'authentication_state.dart';
 part 'authentication_cubit.freezed.dart';
+part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LocalAuthenticationService _localAuthService;
@@ -111,6 +110,12 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     final apiVersion = await _getApiVersion(_sessionManager.client);
 
+    await _updateRemoteUser(
+      _sessionManager,
+      Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(localUserId)!,
+      apiVersion,
+    );
+
     emit(AuthenticationState.authenticated(
       localUserId: localUserId,
       apiVersion: apiVersion,
@@ -163,10 +168,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       // If there is nothing to restore, we can quit here.
       return;
     }
+    final localUserAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
+    final localUserAccount = localUserAccountBox.get(localUserId)!;
 
-    final userAccount = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(localUserId)!;
-
-    if (userAccount.settings.isBiometricAuthenticationEnabled) {
+    if (localUserAccount.settings.isBiometricAuthenticationEnabled) {
       final localAuthSuccess =
           await _localAuthService.authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
       if (!localAuthSuccess) {
@@ -176,18 +181,23 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
     final userCredentialsBox = await _getUserCredentialsBox();
     final authentication = userCredentialsBox.get(globalSettings.currentLoggedInUser!);
-
     await userCredentialsBox.close();
 
     if (authentication == null) {
-      throw Exception("User should be authenticated but no authentication information was found.");
+      throw Exception(
+          "User should be authenticated but no authentication information was found."); //TODO: INTL
     }
     _sessionManager.updateSettings(
       clientCertificate: authentication.clientCertificate,
       authToken: authentication.token,
-      baseUrl: userAccount.serverUrl,
+      baseUrl: localUserAccount.serverUrl,
     );
     final apiVersion = await _getApiVersion(_sessionManager.client);
+    await _updateRemoteUser(
+      _sessionManager,
+      localUserAccount,
+      apiVersion,
+    );
     emit(
       AuthenticationState.authenticated(
         apiVersion: apiVersion,
@@ -258,7 +268,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       clientCertificate: clientCert,
       authToken: token,
     );
-    
+
     final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
 
@@ -307,5 +317,21 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<int> _getApiVersion(Dio dio) async {
     final response = await dio.get("/api/");
     return int.parse(response.headers.value('x-api-version') ?? "3");
+  }
+
+  /// Fetches possibly updated (permissions, name, updated server version and thus new user model, ...) remote user data.
+  Future<void> _updateRemoteUser(
+    SessionManager sessionManager,
+    LocalUserAccount localUserAccount,
+    int apiVersion,
+  ) async {
+    final updatedPaperlessUser = await _apiFactory
+        .createUserApi(
+          sessionManager.client,
+          apiVersion: apiVersion,
+        )
+        .findCurrentUser();
+    localUserAccount.paperlessUser = updatedPaperlessUser;
+    await localUserAccount.save();
   }
 }

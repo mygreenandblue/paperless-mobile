@@ -5,6 +5,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
@@ -13,6 +14,7 @@ import 'package:paperless_mobile/features/settings/view/pages/switching_accounts
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class ManageAccountsPage extends StatelessWidget {
   const ManageAccountsPage({super.key});
@@ -67,6 +69,17 @@ class ManageAccountsPage extends StatelessWidget {
                     _onAddAccount(context, globalSettings.currentLoggedInUser!);
                   },
                 ),
+                Consumer<ApiVersion>(
+                  builder: (context, value, child) {
+                    if (value.version >= 3) {
+                      return const ListTile(
+                        leading: Icon(Icons.admin_panel_settings),
+                        title: Text("Manage permissions"), //TODO : INTL
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                )
               ],
             );
           },

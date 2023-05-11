@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
-import 'package:paperless_mobile/core/bloc/server_information_state.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/settings/view/pages/application_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
@@ -26,13 +24,21 @@ class SettingsPage extends StatelessWidget {
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),
-            subtitle: BlocBuilder<ServerInformationCubit, ServerInformationState>(
-              builder: (context, state) {
+            subtitle: FutureBuilder<PaperlessServerInformationModel>(
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text(
+                    "Loading server information...",
+                    style: Theme.of(context).textTheme.labelSmall,
+                    textAlign: TextAlign.center,
+                  );
+                }
+                final serverData = snapshot.data!;
                 return Text(
                   S.of(context)!.paperlessServerVersion +
                       ' ' +
-                      state.information!.version.toString() +
-                      ' (API v${state.information!.apiVersion})',
+                      serverData.version.toString() +
+                      ' (API v${serverData.apiVersion})',
                   style: Theme.of(context).textTheme.labelSmall,
                   textAlign: TextAlign.center,
                 );

@@ -130,7 +130,9 @@ enum InheritedPermissions {
   @HiveField(60)
   documentsChangeSavedviewfilterrule("documents.change_savedviewfilterrule"),
   @HiveField(61)
-  documentsChangeStoragepathdocuments("documents.change_storagepathdocuments.change_tag"),
+  documentsChangeStoragepath("documents.change_storagepath"),
+  @HiveField(111)
+  documentsChangeTag("documents.change_tag"),
   @HiveField(62)
   documentsChangeUisettings("documents.change_uisettings"),
   @HiveField(63)

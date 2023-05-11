@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -375,10 +376,10 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
           builder: (context, state) {
             return AddSavedViewPage(
               currentFilter: filter,
-              correspondents: state.correspondents,
-              documentTypes: state.documentTypes,
-              storagePaths: state.storagePaths,
-              tags: state.tags,
+              correspondents: context.read<LabelRepository>().state.correspondents,
+              documentTypes: context.read<LabelRepository>().state.documentTypes,
+              storagePaths: context.read<LabelRepository>().state.storagePaths,
+              tags: context.read<LabelRepository>().state.tags,
             );
           },
         ),

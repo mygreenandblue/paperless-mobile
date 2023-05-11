@@ -3,18 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
+import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/home/view/home_page.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
@@ -46,6 +47,7 @@ class HomeRoute extends StatelessWidget {
         final currentLocalUserId = settings.currentLoggedInUser!;
         return MultiProvider(
           providers: [
+            Provider.value(value: ApiVersion(paperlessApiVersion)),
             Provider<CacheManager>(
               create: (context) => CacheManager(
                 Config(
@@ -85,6 +87,12 @@ class HomeRoute extends StatelessWidget {
                 apiVersion: paperlessApiVersion,
               ),
             ),
+            if (paperlessApiVersion >= 3)
+              ProxyProvider<SessionManager, PaperlessUserApiV3>(
+                update: (context, value, previous) => PaperlessUserApiV3Impl(
+                  value.client,
+                ),
+              ),
           ],
           builder: (context, child) {
             return MultiProvider(
@@ -97,7 +105,7 @@ class HomeRoute extends StatelessWidget {
                 ),
               ],
               builder: (context, child) {
-                return MultiBlocProvider(
+                return MultiProvider(
                   providers: [
                     ProxyProvider3<PaperlessDocumentsApi, DocumentChangedNotifier, LabelRepository,
                         DocumentsCubit>(
@@ -120,15 +128,10 @@ class HomeRoute extends StatelessWidget {
                         notifier,
                       )..initialize(),
                     ),
-                    ProxyProvider2<SavedViewRepository, LabelRepository, SavedViewCubit>(
-                      update: (context, savedViewRepo, labelRepo, previous) => SavedViewCubit(
+                    ProxyProvider<SavedViewRepository, SavedViewCubit>(
+                      update: (context, savedViewRepo, previous) => SavedViewCubit(
                         savedViewRepo,
-                        labelRepo,
                       )..initialize(),
-                    ),
-                    ProxyProvider<PaperlessServerStatsApi, ServerInformationCubit>(
-                      update: (context, value, previous) =>
-                          ServerInformationCubit(value)..updateInformation(),
                     ),
                     ProxyProvider<LabelRepository, LabelCubit>(
                       update: (context, value, previous) => LabelCubit(value),
@@ -136,8 +139,12 @@ class HomeRoute extends StatelessWidget {
                     ProxyProvider<PaperlessTasksApi, TaskStatusCubit>(
                       update: (context, value, previous) => TaskStatusCubit(value),
                     ),
+                    if (paperlessApiVersion >= 3)
+                      ProxyProvider<PaperlessUserApiV3, UserRepository>(
+                        update: (context, value, previous) => UserRepository(value)..initialize(),
+                      ),
                   ],
-                  child: const HomePage(),
+                  child: HomePage(paperlessApiVersion: paperlessApiVersion),
                 );
               },
             );

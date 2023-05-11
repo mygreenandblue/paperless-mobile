@@ -52,7 +52,7 @@ class PaperlessUserApiV3Impl implements PaperlessUserApi, PaperlessUserApiV3 {
     if (response.statusCode == 200) {
       return PagedSearchResult<UserModelV3>.fromJson(
         response.data,
-        UserModelV3.fromJson as UserModelV3 Function(Object?),
+        (json) => UserModelV3.fromJson(json as dynamic),
       ).results;
     }
     throw const PaperlessServerException.unknown();

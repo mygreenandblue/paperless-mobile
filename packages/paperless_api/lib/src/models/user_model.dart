@@ -64,7 +64,7 @@ class UserModel with _$UserModel {
         return value.userPermissions.contains(permission);
       },
       v2: (value) {
-        // In previous versions, all users have access to all
+        // In previous versions, all users have all permissions.
         return true;
       },
     );

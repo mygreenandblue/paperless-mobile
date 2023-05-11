@@ -41,7 +41,6 @@ import 'package:paperless_mobile/features/settings/view/widgets/global_settings_
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -122,7 +121,6 @@ void main() async {
   });
 
   final apiFactory = PaperlessApiFactoryImpl(sessionManager);
-
   runApp(
     MultiProvider(
       providers: [
@@ -220,10 +218,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context
-        .read<AuthenticationCubit>()
-        .restoreSessionState()
-        .then((value) => FlutterNativeSplash.remove());
+    context.read<AuthenticationCubit>().restoreSessionState().then((value) {
+      FlutterNativeSplash.remove();
+    });
   }
 
   @override

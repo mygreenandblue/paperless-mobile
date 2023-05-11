@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/material/search/m3_search_bar.dart' as s;
-import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class SliverSearchBar extends StatelessWidget {
   final bool floating;
@@ -34,7 +35,7 @@ class SliverSearchBar extends StatelessWidget {
           child: s.SearchBar(
             height: kToolbarHeight,
             supportingText: S.of(context)!.searchDocuments,
-            onTap: () => showDocumentSearchPage(context),
+            onTap: () => pushDocumentSearchPage(context),
             leadingIcon: IconButton(
               icon: const Icon(Icons.menu),
               onPressed: Scaffold.of(context).openDrawer,
@@ -58,8 +59,8 @@ class SliverSearchBar extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<ServerInformationCubit>(),
+                  builder: (_) => Provider.value(
+                    value: context.read<ApiVersion>(),
                     child: const ManageAccountsPage(),
                   ),
                 );

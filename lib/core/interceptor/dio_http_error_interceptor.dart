@@ -15,6 +15,15 @@ class DioHttpErrorInterceptor extends Interceptor {
       } else if (data is String) {
         return _handlePlainError(data, handler, err);
       }
+    } else if (err.response?.statusCode == 403) {
+      handler.reject(
+        DioError(
+          requestOptions: err.requestOptions,
+          error: const PaperlessServerException(ErrorCode.notAuthorized),
+          response: err.response,
+        ),
+      );
+      return;
     } else if (err.error is SocketException) {
       final ex = err.error as SocketException;
       if (ex.osError?.errorCode == _OsErrorCodes.serverUnreachable.code) {
@@ -67,8 +76,7 @@ class DioHttpErrorInterceptor extends Interceptor {
         DioError(
           requestOptions: err.requestOptions,
           type: DioErrorType.badResponse,
-          error: const PaperlessServerException(
-              ErrorCode.missingClientCertificate),
+          error: const PaperlessServerException(ErrorCode.missingClientCertificate),
         ),
       );
     }

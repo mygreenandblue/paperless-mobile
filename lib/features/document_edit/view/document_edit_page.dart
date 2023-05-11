@@ -264,9 +264,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       var mergedDocument = document.copyWith(
         title: values[fkTitle],
         created: values[fkCreatedDate],
-        documentType: () => (values[fkDocumentType] as SetIdQueryParameter).id,
-        correspondent: () => (values[fkCorrespondent] as SetIdQueryParameter).id,
-        storagePath: () => (values[fkStoragePath] as SetIdQueryParameter).id,
+        documentType: () =>
+            (values[fkDocumentType] as IdQueryParameter).whenOrNull(fromId: (id) => id),
+        correspondent: () =>
+            (values[fkCorrespondent] as IdQueryParameter).whenOrNull(fromId: (id) => id),
+        storagePath: () =>
+            (values[fkStoragePath] as IdQueryParameter).whenOrNull(fromId: (id) => id),
         tags: (values[fkTags] as IdsTagsQuery).include,
         content: values[fkContent],
       );

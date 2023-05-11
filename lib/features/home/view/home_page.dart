@@ -9,13 +9,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
+import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
@@ -44,7 +44,8 @@ import 'package:responsive_builder/responsive_builder.dart';
 /// Wrapper around all functionality for a logged in user.
 /// Performs initialization logic.
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final int paperlessApiVersion;
+  const HomePage({Key? key, required this.paperlessApiVersion}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -186,8 +187,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final userId =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser!;
     final destinations = [
       RouteDescription(
         icon: const Icon(Icons.description_outlined),
@@ -235,6 +234,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     final routes = <Widget>[
       const DocumentsPage(),
+      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.changeDocument))
       const ScannerPage(),
       const LabelsPage(),
       const InboxPage(),
@@ -303,7 +303,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Future.wait([
       context.read<LabelRepository>().initialize(),
       context.read<SavedViewRepository>().findAll(),
-      context.read<ServerInformationCubit>().updateInformation(),
     ]).onError<PaperlessServerException>((error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
       throw error;

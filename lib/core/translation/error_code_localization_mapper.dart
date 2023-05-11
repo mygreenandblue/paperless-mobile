@@ -72,5 +72,7 @@ String translateError(BuildContext context, ErrorCode code) {
       return S.of(context)!.couldNotLoadSuggestions;
     case ErrorCode.acknowledgeTasksError:
       return S.of(context)!.couldNotAcknowledgeTasks;
+    case ErrorCode.notAuthorized:
+      return "You do not have the permission to perform this action."; //TODO: INTL
   }
 }
