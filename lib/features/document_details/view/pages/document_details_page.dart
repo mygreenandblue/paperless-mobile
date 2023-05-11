@@ -304,10 +304,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     document: state.document,
                     enabled: isConnected,
                   ),
+                  //TODO: Enable again, need new pdf viewer package...
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,
                     icon: const Icon(Icons.visibility),
-                    onPressed: isConnected ? () => _onOpen(state.document) : null,
+                    onPressed: (isConnected && false) ? () => _onOpen(state.document) : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
