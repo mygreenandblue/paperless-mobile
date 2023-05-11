@@ -19,6 +19,8 @@ abstract class Label extends Equatable implements Comparable {
   final MatchingAlgorithm matchingAlgorithm;
   final bool? isInsensitive;
   final int? documentCount;
+  final int? owner;
+  final bool? userCanChange;
 
   const Label({
     this.id,
@@ -28,6 +30,8 @@ abstract class Label extends Equatable implements Comparable {
     this.isInsensitive = true,
     this.documentCount,
     this.slug,
+    this.owner,
+    this.userCanChange,
   });
 
   Label copyWith({

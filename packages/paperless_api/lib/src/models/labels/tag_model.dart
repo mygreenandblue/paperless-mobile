@@ -11,71 +11,33 @@ part 'tag_model.g.dart';
 
 @HexColorJsonConverter()
 @JsonSerializable(
-    fieldRename: FieldRename.snake, explicitToJson: true, constructor: "_")
+  fieldRename: FieldRename.snake,
+  explicitToJson: true,
+)
 class Tag extends Label {
   static const colorKey = 'color';
   static const isInboxTagKey = 'is_inbox_tag';
   static const textColorKey = 'text_color';
   static const legacyColourKey = 'colour';
-
   final Color? textColor;
+  final Color? color;
 
   final bool isInboxTag;
 
-  @protected
-  @JsonKey(name: colorKey)
-  Color? colorv2;
-
-  @protected
-  @Deprecated(
-    "Alias for the field color. Deprecated since Paperless API v2. Please use the color getter to access the background color of this tag.",
-  )
-  @JsonKey(name: legacyColourKey)
-  Color? colorv1;
-
-  Color? get color => colorv2 ?? colorv1;
-
-  /// Constructor to use for serialization.
-  Tag._({
+  Tag({
     super.id,
     required super.name,
     super.documentCount,
-    super.isInsensitive = true,
+    super.isInsensitive,
     super.match,
-    super.matchingAlgorithm,
+    super.matchingAlgorithm = MatchingAlgorithm.defaultValue,
     super.slug,
-    this.colorv1,
-    this.colorv2,
+    this.color,
     this.textColor,
     this.isInboxTag = false,
-  }) {
-    colorv1 ??= colorv2;
-    colorv2 ??= colorv1;
-  }
-
-  Tag({
-    int? id,
-    required String name,
-    int? documentCount,
-    bool? isInsensitive,
-    String? match,
-    MatchingAlgorithm matchingAlgorithm = MatchingAlgorithm.defaultValue,
-    String? slug,
-    Color? color,
-    Color? textColor,
-    bool? isInboxTag,
-  }) : this._(
-          id: id,
-          name: name,
-          documentCount: documentCount,
-          isInsensitive: isInsensitive,
-          match: match,
-          matchingAlgorithm: matchingAlgorithm,
-          slug: slug,
-          textColor: textColor,
-          colorv1: color,
-          colorv2: color,
-        );
+    super.owner,
+    super.userCanChange,
+  });
 
   @override
   String toString() => name;

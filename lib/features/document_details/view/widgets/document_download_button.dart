@@ -79,7 +79,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
           break;
       }
 
-      if (Platform.isAndroid && androidInfo!.version.sdkInt! <= 29) {
+      if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
         final isGranted = await askForPermission(Permission.storage);
         if (!isGranted) {
           return;

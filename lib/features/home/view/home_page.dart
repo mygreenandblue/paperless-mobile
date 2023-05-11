@@ -196,14 +196,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.documents,
       ),
-      RouteDescription(
-        icon: const Icon(Icons.document_scanner_outlined),
-        selectedIcon: Icon(
-          Icons.document_scanner,
-          color: Theme.of(context).colorScheme.primary,
+      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.addDocument))
+        RouteDescription(
+          icon: const Icon(Icons.document_scanner_outlined),
+          selectedIcon: Icon(
+            Icons.document_scanner,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context)!.scanner,
         ),
-        label: S.of(context)!.scanner,
-      ),
       RouteDescription(
         icon: const Icon(Icons.sell_outlined),
         selectedIcon: Icon(
@@ -234,8 +235,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     final routes = <Widget>[
       const DocumentsPage(),
-      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.changeDocument))
-      const ScannerPage(),
+      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.addDocument))
+        const ScannerPage(),
       const LabelsPage(),
       const InboxPage(),
     ];
