@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -56,10 +57,8 @@ String get defaultPreferredLocaleSubtag {
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
-  // //TODO: REMOVE!
-  // await getApplicationDocumentsDirectory().then((value) => value.delete(recursive: true));
-
   registerHiveAdapters();
+  // await getApplicationDocumentsDirectory().then((value) => value.deleteSync(recursive: true));
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
   final globalSettingsBox = await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
@@ -126,9 +125,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider.value(value: sessionManager),
         Provider<LocalAuthenticationService>.value(value: localAuthService),
-        Provider<ConnectivityStatusService>.value(
-          value: connectivityStatusService,
-        ),
+        Provider<ConnectivityStatusService>.value(value: connectivityStatusService),
         Provider<LocalNotificationService>.value(value: localNotificationService),
         Provider.value(value: DocumentChangedNotifier()),
       ],
@@ -136,12 +133,7 @@ void main() async {
         providers: [
           BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
           BlocProvider(
-            create: (context) => AuthenticationCubit(
-              localAuthService,
-              apiFactory,
-              sessionManager,
-            ),
-            child: Container(),
+            create: (context) => AuthenticationCubit(localAuthService, apiFactory, sessionManager),
           )
         ],
         child: PaperlessMobileEntrypoint(
@@ -215,12 +207,19 @@ class AuthenticationWrapper extends StatefulWidget {
 }
 
 class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
+  late final StreamSubscription _shareMediaSubscription;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     context.read<AuthenticationCubit>().restoreSessionState().then((value) {
       FlutterNativeSplash.remove();
     });
+  }
+
+  @override
+  void dispose() {
+    _shareMediaSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -233,7 +232,8 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     }
     initializeDateFormatting();
     // For sharing files coming from outside the app while the app is still opened
-    ReceiveSharingIntent.getMediaStream().listen(ShareIntentQueue.instance.addAll);
+    _shareMediaSubscription =
+        ReceiveSharingIntent.getMediaStream().listen(ShareIntentQueue.instance.addAll);
     // For sharing files coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then(ShareIntentQueue.instance.addAll);
   }

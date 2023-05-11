@@ -16,6 +16,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
   final String? addNewLabelText;
   final bool autofocus;
   final bool allowSelectUnassigned;
+  final bool canCreateNewLabel;
 
   FullscreenLabelForm({
     super.key,
@@ -29,6 +30,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
     this.addNewLabelText,
     this.autofocus = true,
     this.allowSelectUnassigned = true,
+    required this.canCreateNewLabel,
   })  : assert(
           !(initialValue?.isOnlyAssigned() ?? false) || showAnyAssignedOption,
         ),

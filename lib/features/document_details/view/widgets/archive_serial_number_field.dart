@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
@@ -17,8 +18,7 @@ class ArchiveSerialNumberField extends StatefulWidget {
   });
 
   @override
-  State<ArchiveSerialNumberField> createState() =>
-      _ArchiveSerialNumberFieldState();
+  State<ArchiveSerialNumberField> createState() => _ArchiveSerialNumberFieldState();
 }
 
 class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
@@ -39,20 +39,21 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
   void _clearButtonListener() {
     setState(() {
       _showClearButton = _asnEditingController.text.isNotEmpty;
-      _canUpdate = int.tryParse(_asnEditingController.text) !=
-          widget.document.archiveSerialNumber;
+      _canUpdate = int.tryParse(_asnEditingController.text) != widget.document.archiveSerialNumber;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final userCanEditDocument = LocalUserAccount.current.paperlessUser.hasPermission(
+      PermissionAction.change,
+      PermissionTarget.document,
+    );
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
-          previous.document.archiveSerialNumber !=
-          current.document.archiveSerialNumber,
+          previous.document.archiveSerialNumber != current.document.archiveSerialNumber,
       listener: (context, state) {
-        _asnEditingController.text =
-            state.document.archiveSerialNumber?.toString() ?? '';
+        _asnEditingController.text = state.document.archiveSerialNumber?.toString() ?? '';
         setState(() {
           _canUpdate = false;
         });
@@ -61,6 +62,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
+            enabled: userCanEditDocument,
             controller: _asnEditingController,
             keyboardType: TextInputType.number,
             onChanged: (value) {
@@ -78,15 +80,13 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
                     IconButton(
                       icon: const Icon(Icons.clear),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: _asnEditingController.clear,
+                      onPressed: userCanEditDocument ? _asnEditingController.clear : null,
                     ),
                   IconButton(
                     icon: const Icon(Icons.plus_one_rounded),
                     color: Theme.of(context).colorScheme.primary,
                     onPressed:
-                        context.watchInternetConnection && !_showClearButton
-                            ? _onAutoAssign
-                            : null,
+                        context.watchInternetConnection && !_showClearButton ? _onAutoAssign : null,
                   ).paddedOnly(right: 8),
                 ],
               ),
@@ -97,9 +97,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
           ),
           TextButton.icon(
             icon: const Icon(Icons.done),
-            onPressed: context.watchInternetConnection && _canUpdate
-                ? _onSubmitted
-                : null,
+            onPressed: context.watchInternetConnection && _canUpdate ? _onSubmitted : null,
             label: Text(S.of(context)!.save),
           ).padded(),
         ],

@@ -9,7 +9,6 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/confi
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SavedViewDetailsPage extends StatefulWidget {
   final Future<void> Function(SavedView savedView) onDelete;

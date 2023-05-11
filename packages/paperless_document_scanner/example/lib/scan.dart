@@ -80,7 +80,7 @@ class _ScanState extends State<Scan> {
       return Align(
         alignment: Alignment.bottomCenter,
         child: FloatingActionButton(
-          child: Icon(Icons.check),
+          child: const Icon(Icons.check),
           onPressed: () async {
             if (croppedImagePath == null) {
               return _processImage(imagePath!, edgeDetectionResult!);
@@ -101,8 +101,8 @@ class _ScanState extends State<Scan> {
       children: [
         FloatingActionButton(
           foregroundColor: Colors.white,
-          child: Icon(Icons.camera_alt),
           onPressed: onTakePictureButtonPressed,
+          child: const Icon(Icons.camera_alt),
         ),
       ],
     );
@@ -167,7 +167,7 @@ class _ScanState extends State<Scan> {
 
   Padding _getBottomBar() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 32),
+      padding: const EdgeInsets.only(bottom: 32),
       child: Align(alignment: Alignment.bottomCenter, child: _getButtonRow()),
     );
   }

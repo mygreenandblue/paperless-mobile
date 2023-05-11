@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
@@ -10,7 +11,6 @@ import 'package:paperless_mobile/extensions/dart_extensions.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/documents_list_loading_widget.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
@@ -26,10 +26,8 @@ class InboxPage extends StatefulWidget {
   State<InboxPage> createState() => _InboxPageState();
 }
 
-class _InboxPageState extends State<InboxPage>
-    with DocumentPagingViewMixin<InboxPage, InboxCubit> {
-  final SliverOverlapAbsorberHandle searchBarHandle =
-      SliverOverlapAbsorberHandle();
+class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin<InboxPage, InboxCubit> {
+  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
 
   @override
   final pagingScrollController = ScrollController();
@@ -80,8 +78,7 @@ class _InboxPageState extends State<InboxPage>
                   } else if (state.documents.isEmpty) {
                     return Center(
                       child: InboxEmptyWidget(
-                        emptyStateRefreshIndicatorKey:
-                            _emptyStateRefreshIndicatorKey,
+                        emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
                       ),
                     );
                   } else {
@@ -92,8 +89,7 @@ class _InboxPageState extends State<InboxPage>
                           SliverToBoxAdapter(
                             child: HintCard(
                               show: !state.isHintAcknowledged,
-                              hintText:
-                                  S.of(context)!.swipeLeftToMarkADocumentAsSeen,
+                              hintText: S.of(context)!.swipeLeftToMarkADocumentAsSeen,
                               onHintAcknowledged: () =>
                                   context.read<InboxCubit>().acknowledgeHint(),
                             ),
@@ -108,13 +104,10 @@ class _InboxPageState extends State<InboxPage>
                                     child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(32.0),
+                                        borderRadius: BorderRadius.circular(32.0),
                                         child: Text(
                                           entry.key,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
+                                          style: Theme.of(context).textTheme.bodySmall,
                                           textAlign: TextAlign.center,
                                         ).padded(),
                                       ),
@@ -182,7 +175,7 @@ class _InboxPageState extends State<InboxPage>
         ],
       ).padded(),
       confirmDismiss: (_) => _onItemDismissed(doc),
-      key: UniqueKey(),
+      key: ValueKey(doc.id),
       child: InboxItem(document: doc),
     );
   }
@@ -227,14 +220,15 @@ class _InboxPageState extends State<InboxPage>
       return true;
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
-      return false;
+    } on ServerMessageException catch (error) {
+      showGenericError(context, error.message);
     } catch (error) {
       showErrorMessage(
         context,
         const PaperlessServerException.unknown(),
       );
-      return false;
     }
+    return false;
   }
 
   Future<void> _onUndoMarkAsSeen(
@@ -242,9 +236,7 @@ class _InboxPageState extends State<InboxPage>
     Iterable<int> removedTags,
   ) async {
     try {
-      await context
-          .read<InboxCubit>()
-          .undoRemoveFromInbox(document, removedTags);
+      await context.read<InboxCubit>().undoRemoveFromInbox(document, removedTags);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

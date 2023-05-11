@@ -19,7 +19,7 @@ class MagnifierPainter extends CustomPainter {
       ..color = color;
 
     canvas.drawCircle(
-        size.center(Offset(0, 0)), size.longestSide / 2, paintObject);
+        size.center(const Offset(0, 0)), size.longestSide / 2, paintObject);
   }
 
   void _drawCrosshair(Canvas canvas, Size size) {

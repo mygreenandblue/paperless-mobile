@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
@@ -16,7 +17,6 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_typ
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit_mixin.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -148,6 +148,10 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                     correspondent: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
+                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.change, PermissionTarget.correspondent),
+                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.add, PermissionTarget.correspondent),
                                   onEdit: _openEditCorrespondentPage,
                                   emptyStateActionButtonLabel: S.of(context)!.addNewCorrespondent,
                                   emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
@@ -169,6 +173,10 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                     documentType: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
+                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.change, PermissionTarget.documentType),
+                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.add, PermissionTarget.documentType),
                                   onEdit: _openEditDocumentTypePage,
                                   emptyStateActionButtonLabel: S.of(context)!.addNewDocumentType,
                                   emptyStateDescription: S.of(context)!.noDocumentTypesSetUp,
@@ -190,6 +198,10 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                     tags: TagsQuery.ids(include: [label.id!]),
                                     pageSize: label.documentCount ?? 0,
                                   ),
+                                  canEdit: LocalUserAccount.current.paperlessUser
+                                      .hasPermission(PermissionAction.change, PermissionTarget.tag),
+                                  canAddNew: LocalUserAccount.current.paperlessUser
+                                      .hasPermission(PermissionAction.add, PermissionTarget.tag),
                                   onEdit: _openEditTagPage,
                                   leadingBuilder: (t) => CircleAvatar(
                                     backgroundColor: t.color,
@@ -221,6 +233,10 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                     storagePath: IdQueryParameter.fromId(label.id!),
                                     pageSize: label.documentCount ?? 0,
                                   ),
+                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.change, PermissionTarget.storagePath),
+                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
+                                      PermissionAction.add, PermissionTarget.storagePath),
                                   contentBuilder: (path) => Text(path.path),
                                   emptyStateActionButtonLabel: S.of(context)!.addNewStoragePath,
                                   emptyStateDescription: S.of(context)!.noStoragePathsSetUp,

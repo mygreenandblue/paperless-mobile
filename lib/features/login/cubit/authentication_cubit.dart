@@ -179,6 +179,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         return;
       }
     }
+
     final userCredentialsBox = await _getUserCredentialsBox();
     final authentication = userCredentialsBox.get(globalSettings.currentLoggedInUser!);
     await userCredentialsBox.close();

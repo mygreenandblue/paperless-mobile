@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';

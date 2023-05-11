@@ -3,7 +3,6 @@ import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
-import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 
 class InboxListLoadingWidget extends StatelessWidget {
   const InboxListLoadingWidget({super.key});
@@ -48,10 +47,10 @@ class InboxListLoadingWidget extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Flexible(
+                      const Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Spacer(),
                             TextPlaceholder(length: 200, fontSize: 14),
                             Spacer(),

@@ -1,13 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/translation/color_scheme_option_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
@@ -69,7 +65,7 @@ class ColorSchemeOptionSetting extends StatelessWidget {
 
   bool _isBelowAndroid12() {
     if (Platform.isAndroid) {
-      final int version = int.tryParse(androidInfo!.version.release ?? '0') ?? 0;
+      final int version = int.tryParse(androidInfo!.version.release) ?? 0;
       return version < 12;
     }
     return false;

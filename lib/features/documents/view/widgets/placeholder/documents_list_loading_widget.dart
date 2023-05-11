@@ -61,8 +61,8 @@ class DocumentsListLoadingWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TagsPlaceholder(count: 2, dense: true),
-              SizedBox(height: 2),
+              const TagsPlaceholder(count: 2, dense: true),
+              const SizedBox(height: 2),
               TextPlaceholder(
                 length: 250,
                 fontSize: Theme.of(context).textTheme.labelSmall!.fontSize!,

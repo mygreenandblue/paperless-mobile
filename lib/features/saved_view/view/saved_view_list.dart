@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
-import 'package:paperless_mobile/features/saved_view_details/view/saved_view_details_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SavedViewList extends StatelessWidget {
@@ -23,7 +17,7 @@ class SavedViewList extends StatelessWidget {
           builder: (context, state) {
             return state.when(
               initial: () => SliverToBoxAdapter(child: Container()),
-              loading: () => SliverToBoxAdapter(
+              loading: () => const SliverToBoxAdapter(
                 child: Center(
                   child: Text("Saved views loading..."), //TODO: INTL
                 ),
@@ -55,7 +49,7 @@ class SavedViewList extends StatelessWidget {
                   ),
                 );
               },
-              error: () => Center(
+              error: () => const Center(
                 child: Text(
                   "An error occurred while trying to load the saved views.",
                 ),

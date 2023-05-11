@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentView extends StatefulWidget {
   final Future<Uint8List> documentBytes;

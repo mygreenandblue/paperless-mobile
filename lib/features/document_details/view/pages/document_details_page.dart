@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -57,7 +53,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget build(BuildContext context) {
     final apiVersion = context.watch<ApiVersion>();
 
-    final tabLength = 4 + (apiVersion.supportsPermissions ? 1 : 0);
+    final tabLength = 4 + (apiVersion.hasMultiUserSupport ? 1 : 0);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(context.read<DocumentDetailsCubit>().state.document);
@@ -155,7 +151,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ),
                           ),
-                          if (apiVersion.supportsPermissions)
+                          if (apiVersion.hasMultiUserSupport)
                             Tab(
                               child: Text(
                                 "Permissions",
@@ -260,13 +256,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   }
 
   Widget _buildEditButton() {
-    bool canEdit = context.watchInternetConnection;
-    final apiVersion = context.watch<ApiVersion>();
-
-    if (apiVersion.supportsPermissions) {
-      canEdit =
-          LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.changeDocument);
-    }
+    bool canEdit = context.watchInternetConnection &&
+        LocalUserAccount.current.paperlessUser
+            .hasPermission(PermissionAction.change, PermissionTarget.document);
     if (!canEdit) {
       return const SizedBox.shrink();
     }
@@ -281,7 +273,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           verticalOffset: 40,
           child: FloatingActionButton(
             child: const Icon(Icons.edit),
-            onPressed: canEdit ? () => _onEdit(state.document) : null,
+            onPressed: () => _onEdit(state.document),
           ),
         );
       },
@@ -296,15 +288,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
             builder: (context, connectivityState) {
               final isConnected = connectivityState.isConnected;
 
-              final canDelete = LocalUserAccount.current.paperlessUser
-                  .hasPermission(UserPermissions.deleteDocument);
+              final canDelete = isConnected &&
+                  LocalUserAccount.current.paperlessUser
+                      .hasPermission(PermissionAction.delete, PermissionTarget.document);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
                     tooltip: S.of(context)!.deleteDocumentTooltip,
                     icon: const Icon(Icons.delete),
-                    onPressed: (isConnected && canDelete) ? () => _onDelete(state.document) : null,
+                    onPressed: canDelete ? () => _onDelete(state.document) : null,
                   ).paddedSymmetrically(horizontal: 4),
                   DocumentDownloadButton(
                     document: state.document,

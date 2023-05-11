@@ -41,7 +41,7 @@ class _SelectFileTypeDialogState extends State<SelectFileTypeDialog> {
             },
             title: Text(S.of(context)!.archivedPdf),
           ),
-          Divider(),
+          const Divider(),
           CheckboxListTile(
             controlAffinity: ListTileControlAffinity.leading,
             value: _rememberSelection,

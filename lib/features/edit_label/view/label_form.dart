@@ -8,7 +8,6 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/constants.dart';
 
 class SubmitButtonConfig<T extends Label> {
   final Widget icon;

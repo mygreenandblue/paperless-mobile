@@ -53,6 +53,5 @@ enum ErrorCode {
   requestTimedOut,
   unsupportedFileFormat,
   missingClientCertificate,
-  acknowledgeTasksError,
-  notAuthorized;
+  acknowledgeTasksError;
 }

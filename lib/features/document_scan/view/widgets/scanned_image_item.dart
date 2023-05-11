@@ -98,7 +98,7 @@ class _ScannedImageItemState extends State<ScannedImageItem> {
               alignment: Alignment.bottomCenter,
               child: TextButton(
                 onPressed: widget.onDelete,
-                child: Text("Remove"),
+                child: const Text("Remove"),
               ),
             ),
           ],

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +26,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
   final List<T> suggestions;
   final String? addLabelText;
   final bool allowSelectUnassigned;
+  final bool canCreateNewLabel;
 
   const LabelFormField({
     Key? key,
@@ -44,6 +43,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
     this.suggestions = const [],
     this.addLabelText,
     required this.allowSelectUnassigned,
+    required this.canCreateNewLabel,
   }) : super(key: key);
 
   String _buildText(BuildContext context, IdQueryParameter? value) {
@@ -103,6 +103,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
               ),
               openBuilder: (context, closeForm) => FullscreenLabelForm<T>(
                 allowSelectUnassigned: allowSelectUnassigned,
+                canCreateNewLabel: canCreateNewLabel,
                 addNewLabelText: addLabelText,
                 leadingIcon: prefixIcon,
                 onCreateNewLabel: addLabelPageBuilder != null

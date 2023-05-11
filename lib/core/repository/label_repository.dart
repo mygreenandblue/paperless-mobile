@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/core/repository/persistent_repository.dart';
@@ -9,7 +8,9 @@ import 'package:paperless_mobile/core/repository/persistent_repository.dart';
 class LabelRepository extends PersistentRepository<LabelRepositoryState> {
   final PaperlessLabelsApi _api;
 
-  LabelRepository(this._api) : super(const LabelRepositoryState());
+  LabelRepository(this._api) : super(const LabelRepositoryState()) {
+    initialize();
+  }
 
   Future<void> initialize() {
     debugPrint("Initializing labels...");

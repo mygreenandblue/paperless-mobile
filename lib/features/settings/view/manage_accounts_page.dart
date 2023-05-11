@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
@@ -49,7 +48,6 @@ class ManageAccountsPage extends StatelessWidget {
               children: [
                 _buildAccountTile(context, globalSettings.currentLoggedInUser!,
                     box.get(globalSettings.currentLoggedInUser!)!, globalSettings),
-                // if (otherAccounts.isNotEmpty) Text("Other accounts"),
                 Column(
                   children: [
                     for (int index = 0; index < otherAccounts.length; index++)
@@ -69,17 +67,11 @@ class ManageAccountsPage extends StatelessWidget {
                     _onAddAccount(context, globalSettings.currentLoggedInUser!);
                   },
                 ),
-                Consumer<ApiVersion>(
-                  builder: (context, value, child) {
-                    if (value.version >= 3) {
-                      return const ListTile(
-                        leading: Icon(Icons.admin_panel_settings),
-                        title: Text("Manage permissions"), //TODO : INTL
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                )
+                if (context.watch<ApiVersion>().hasMultiUserSupport)
+                  const ListTile(
+                    leading: Icon(Icons.admin_panel_settings),
+                    title: Text("Manage permissions"), //TODO: INTL
+                  ),
               ],
             );
           },
@@ -106,9 +98,7 @@ class ManageAccountsPage extends StatelessWidget {
             if (account.paperlessUser.fullName != null) Text(account.paperlessUser.fullName!),
             Text(
               account.serverUrl.replaceFirst(RegExp(r'https://?'), ''),
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: TextStyle(color: theme.colorScheme.primary),
             ),
           ],
         ),

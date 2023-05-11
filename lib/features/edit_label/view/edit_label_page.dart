@@ -18,6 +18,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
   final List<Widget> additionalFields;
   final Future<T> Function(BuildContext context, T label) onSubmit;
   final Future<void> Function(BuildContext context, T label) onDelete;
+  final bool canDelete;
 
   const EditLabelPage({
     super.key,
@@ -26,6 +27,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
     this.additionalFields = const [],
     required this.onSubmit,
     required this.onDelete,
+    required this.canDelete,
   });
 
   @override
@@ -40,6 +42,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
         fromJsonT: fromJsonT,
         onSubmit: onSubmit,
         onDelete: onDelete,
+        canDelete: canDelete,
       ),
     );
   }
@@ -51,6 +54,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
   final List<Widget> additionalFields;
   final Future<T> Function(BuildContext context, T label) onSubmit;
   final Future<void> Function(BuildContext context, T label) onDelete;
+  final bool canDelete;
 
   const EditLabelForm({
     super.key,
@@ -59,6 +63,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
     required this.additionalFields,
     required this.onSubmit,
     required this.onDelete,
+    required this.canDelete,
   });
 
   @override
@@ -68,7 +73,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         title: Text(S.of(context)!.edit),
         actions: [
           IconButton(
-            onPressed: () => _onDelete(context),
+            onPressed: canDelete ? () => _onDelete(context) : null,
             icon: const Icon(Icons.delete),
           ),
         ],

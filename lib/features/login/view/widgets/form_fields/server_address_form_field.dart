@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -49,6 +48,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
         if (!RegExp(r"https?://.*").hasMatch(value!)) {
           return S.of(context)!.serverAddressMustIncludeAScheme;
         }
+        return null;
       },
       decoration: InputDecoration(
         hintText: "http://192.168.1.50:8000",

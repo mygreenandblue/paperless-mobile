@@ -25,7 +25,7 @@ mixin _$GroupModel {
   @HiveField(1)
   String get name => throw _privateConstructorUsedError;
   @HiveField(2)
-  List<UserPermissions> get permissions => throw _privateConstructorUsedError;
+  List<String> get permissions => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +42,7 @@ abstract class $GroupModelCopyWith<$Res> {
   $Res call(
       {@HiveField(0) int id,
       @HiveField(1) String name,
-      @HiveField(2) List<UserPermissions> permissions});
+      @HiveField(2) List<String> permissions});
 }
 
 /// @nodoc
@@ -74,7 +74,7 @@ class _$GroupModelCopyWithImpl<$Res, $Val extends GroupModel>
       permissions: null == permissions
           ? _value.permissions
           : permissions // ignore: cast_nullable_to_non_nullable
-              as List<UserPermissions>,
+              as List<String>,
     ) as $Val);
   }
 }
@@ -90,7 +90,7 @@ abstract class _$$_GroupModelCopyWith<$Res>
   $Res call(
       {@HiveField(0) int id,
       @HiveField(1) String name,
-      @HiveField(2) List<UserPermissions> permissions});
+      @HiveField(2) List<String> permissions});
 }
 
 /// @nodoc
@@ -120,7 +120,7 @@ class __$$_GroupModelCopyWithImpl<$Res>
       permissions: null == permissions
           ? _value._permissions
           : permissions // ignore: cast_nullable_to_non_nullable
-              as List<UserPermissions>,
+              as List<String>,
     ));
   }
 }
@@ -131,7 +131,7 @@ class _$_GroupModel implements _GroupModel {
   const _$_GroupModel(
       {@HiveField(0) required this.id,
       @HiveField(1) required this.name,
-      @HiveField(2) required final List<UserPermissions> permissions})
+      @HiveField(2) required final List<String> permissions})
       : _permissions = permissions;
 
   factory _$_GroupModel.fromJson(Map<String, dynamic> json) =>
@@ -143,10 +143,10 @@ class _$_GroupModel implements _GroupModel {
   @override
   @HiveField(1)
   final String name;
-  final List<UserPermissions> _permissions;
+  final List<String> _permissions;
   @override
   @HiveField(2)
-  List<UserPermissions> get permissions {
+  List<String> get permissions {
     if (_permissions is EqualUnmodifiableListView) return _permissions;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_permissions);
@@ -189,10 +189,9 @@ class _$_GroupModel implements _GroupModel {
 
 abstract class _GroupModel implements GroupModel {
   const factory _GroupModel(
-          {@HiveField(0) required final int id,
-          @HiveField(1) required final String name,
-          @HiveField(2) required final List<UserPermissions> permissions}) =
-      _$_GroupModel;
+      {@HiveField(0) required final int id,
+      @HiveField(1) required final String name,
+      @HiveField(2) required final List<String> permissions}) = _$_GroupModel;
 
   factory _GroupModel.fromJson(Map<String, dynamic> json) =
       _$_GroupModel.fromJson;
@@ -205,7 +204,7 @@ abstract class _GroupModel implements GroupModel {
   String get name;
   @override
   @HiveField(2)
-  List<UserPermissions> get permissions;
+  List<String> get permissions;
   @override
   @JsonKey(ignore: true)
   _$$_GroupModelCopyWith<_$_GroupModel> get copyWith =>

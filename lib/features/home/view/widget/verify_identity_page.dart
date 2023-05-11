@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';

@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/models/user_model.dart';
 
 class PaperlessApiHiveTypeIds {
   PaperlessApiHiveTypeIds._();
@@ -56,7 +55,6 @@ void registerPaperlessApiHiveTypeAdapters() {
   // Users and permissions
   Hive.registerAdapter(UserModelV3Adapter());
   Hive.registerAdapter(UserModelV2Adapter());
-  Hive.registerAdapter(UserPermissionsAdapter());
   Hive.registerAdapter(InheritedPermissionsAdapter());
   Hive.registerAdapter(GroupModelAdapter());
   Hive.registerAdapter(PermissionsAdapter());

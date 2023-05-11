@@ -251,7 +251,6 @@ abstract class SearchDelegate<T> {
   ///
   /// Setting the query string programmatically moves the cursor to the end of the text field.
   set query(String value) {
-    assert(query != null);
     _queryTextController.text = value;
     if (_queryTextController.text.isNotEmpty) {
       _queryTextController.selection = TextSelection.fromPosition(

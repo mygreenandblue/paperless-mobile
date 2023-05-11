@@ -20,6 +20,5 @@ class LabelText<T extends Label> extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
-    ;
   }
 }

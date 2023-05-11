@@ -6,7 +6,6 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -19,12 +18,10 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/docum
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -370,21 +367,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   }
 
   void _onCreateSavedView(DocumentFilter filter) async {
-    final newView = await Navigator.of(context).push<SavedView?>(
-      MaterialPageRoute(
-        builder: (context) => BlocBuilder<SavedViewCubit, SavedViewState>(
-          builder: (context, state) {
-            return AddSavedViewPage(
-              currentFilter: filter,
-              correspondents: context.read<LabelRepository>().state.correspondents,
-              documentTypes: context.read<LabelRepository>().state.documentTypes,
-              storagePaths: context.read<LabelRepository>().state.storagePaths,
-              tags: context.read<LabelRepository>().state.tags,
-            );
-          },
-        ),
-      ),
-    );
+    final newView = await pushAddSavedViewRoute(context, filter: filter);
     if (newView != null) {
       try {
         await context.read<SavedViewCubit>().add(newView);

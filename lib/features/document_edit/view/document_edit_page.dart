@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -15,7 +15,6 @@ import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubi
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -117,6 +116,11 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
                                 allowSelectUnassigned: true,
+                                canCreateNewLabel:
+                                    LocalUserAccount.current.paperlessUser.hasPermission(
+                                  PermissionAction.add,
+                                  PermissionTarget.correspondent,
+                                ),
                               ),
                               if (_filteredSuggestions?.hasSuggestedCorrespondents ?? false)
                                 _buildSuggestionsSkeleton<int>(
@@ -143,6 +147,11 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                   child: AddDocumentTypePage(
                                     initialName: currentInput,
                                   ),
+                                ),
+                                canCreateNewLabel:
+                                    LocalUserAccount.current.paperlessUser.hasPermission(
+                                  PermissionAction.add,
+                                  PermissionTarget.documentType,
                                 ),
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType,
@@ -176,6 +185,11 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 addLabelPageBuilder: (initialValue) => RepositoryProvider.value(
                                   value: context.read<LabelRepository>(),
                                   child: AddStoragePathPage(initalName: initialValue),
+                                ),
+                                canCreateNewLabel:
+                                    LocalUserAccount.current.paperlessUser.hasPermission(
+                                  PermissionAction.add,
+                                  PermissionTarget.storagePath,
                                 ),
                                 addLabelText: S.of(context)!.addStoragePath,
                                 labelText: S.of(context)!.storagePath,

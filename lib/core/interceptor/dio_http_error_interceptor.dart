@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 
 class DioHttpErrorInterceptor extends Interceptor {
@@ -16,14 +17,15 @@ class DioHttpErrorInterceptor extends Interceptor {
         return _handlePlainError(data, handler, err);
       }
     } else if (err.response?.statusCode == 403) {
-      handler.reject(
-        DioError(
+      var data = err.response!.data;
+      if (data is Map && data.containsKey("detail")) {
+        handler.reject(DioError(
           requestOptions: err.requestOptions,
-          error: const PaperlessServerException(ErrorCode.notAuthorized),
+          error: ServerMessageException(data['detail']),
           response: err.response,
-        ),
-      );
-      return;
+        ));
+        return;
+      }
     } else if (err.error is SocketException) {
       final ex = err.error as SocketException;
       if (ex.osError?.errorCode == _OsErrorCodes.serverUnreachable.code) {
@@ -84,8 +86,7 @@ class DioHttpErrorInterceptor extends Interceptor {
 }
 
 enum _OsErrorCodes {
-  serverUnreachable(101),
-  hostNotFound(7);
+  serverUnreachable(101);
 
   const _OsErrorCodes(this.code);
   final int code;

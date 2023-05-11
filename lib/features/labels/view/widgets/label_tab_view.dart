@@ -11,7 +11,9 @@ class LabelTabView<T extends Label> extends StatelessWidget {
   final Map<int, T> labels;
   final DocumentFilter Function(Label) filterBuilder;
   final void Function(T) onEdit;
+  final bool canEdit;
   final void Function() onAddNew;
+  final bool canAddNew;
 
   /// Displayed as the subtitle of the [ListTile]
   final Widget Function(T)? contentBuilder;
@@ -33,6 +35,8 @@ class LabelTabView<T extends Label> extends StatelessWidget {
     required this.onAddNew,
     required this.emptyStateActionButtonLabel,
     required this.labels,
+    required this.canEdit,
+    required this.canAddNew,
   });
 
   @override
@@ -54,7 +58,7 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   TextButton(
-                    onPressed: onAddNew,
+                    onPressed: canAddNew ? onAddNew : null,
                     child: Text(emptyStateActionButtonLabel),
                   ),
                 ].padded(),
@@ -70,14 +74,11 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                 name: l.name,
                 content: contentBuilder?.call(l) ??
                     Text(
-                      translateMatchingAlgorithmName(
-                              context, l.matchingAlgorithm) +
-                          ((l.match?.isNotEmpty ?? false)
-                              ? ": ${l.match}"
-                              : ""),
+                      translateMatchingAlgorithmName(context, l.matchingAlgorithm) +
+                          ((l.match?.isNotEmpty ?? false) ? ": ${l.match}" : ""),
                       maxLines: 2,
                     ),
-                onOpenEditPage: onEdit,
+                onOpenEditPage: canEdit ? onEdit : null,
                 filterBuilder: filterBuilder,
                 leading: leadingBuilder?.call(l),
                 label: l,

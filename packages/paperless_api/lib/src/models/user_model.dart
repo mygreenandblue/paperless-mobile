@@ -16,17 +16,33 @@ class UserModel with _$UserModel {
   @JsonSerializable(fieldRename: FieldRename.snake)
   @HiveType(typeId: PaperlessApiHiveTypeIds.userModelv3)
   const factory UserModel.v3({
-    @HiveField(0) required int id,
-    @HiveField(1) required String username,
-    @HiveField(2) required String email,
-    @HiveField(3) String? firstName,
-    @HiveField(4) String? lastName,
-    @HiveField(5) DateTime? dateJoined,
-    @HiveField(6) @Default(true) bool isStaff,
-    @HiveField(7) @Default(true) bool isActive,
-    @HiveField(8) @Default(true) bool isSuperuser,
-    @HiveField(9) @Default([]) List<int> groups,
-    @HiveField(10) @Default(UserPermissions.values) List<UserPermissions> userPermissions,
+    @HiveField(0)
+        required int id,
+    @HiveField(1)
+        required String username,
+    @HiveField(2)
+        required String email,
+    @HiveField(3)
+        String? firstName,
+    @HiveField(4)
+        String? lastName,
+    @HiveField(5)
+        DateTime? dateJoined,
+    @HiveField(6)
+    @Default(true)
+        bool isStaff,
+    @HiveField(7)
+    @Default(true)
+        bool isActive,
+    @HiveField(8)
+    @Default(true)
+        bool isSuperuser,
+    @HiveField(9)
+    @Default([])
+        List<int> groups,
+    @HiveField(10)
+    @Default([])
+        List<String> userPermissions,
     @HiveField(11)
     @Default(InheritedPermissions.values)
         List<InheritedPermissions> inheritedPermissions,
@@ -55,13 +71,14 @@ class UserModel with _$UserModel {
         },
       );
 
-  bool hasPermission(UserPermissions permission) {
+  bool hasPermission(PermissionAction action, PermissionTarget target) {
     return map(
       v3: (value) {
         if (value.isSuperuser) {
           return true;
         }
-        return value.userPermissions.contains(permission);
+        final permissionIdentifier = "${action.value}_${target.value}";
+        return value.userPermissions.contains(permissionIdentifier);
       },
       v2: (value) {
         // In previous versions, all users have all permissions.

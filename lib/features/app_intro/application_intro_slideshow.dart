@@ -50,7 +50,7 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
                 image: AssetImages.organizeDocuments.image,
               ),
             ),
-            bodyWidget: Column(
+            bodyWidget: const Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -70,7 +70,7 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
               padding: const EdgeInsets.all(8.0),
               child: Image(image: AssetImages.secureDocuments.image),
             ),
-            bodyWidget: Column(
+            bodyWidget: const Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -90,8 +90,8 @@ class _ApplicationIntroSlideshowState extends State<ApplicationIntroSlideshow> {
               padding: const EdgeInsets.all(8.0),
               child: Image(image: AssetImages.success.image),
             ),
-            bodyWidget: Column(
-              children: const [
+            bodyWidget: const Column(
+              children: [
                 BiometricAuthenticationSetting(),
                 LanguageSelectionSetting(),
                 ThemeModeSetting(),

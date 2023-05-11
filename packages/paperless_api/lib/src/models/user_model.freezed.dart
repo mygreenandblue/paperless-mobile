@@ -46,7 +46,7 @@ mixin _$UserModel {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)
         v3,
     required TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -67,7 +67,7 @@ mixin _$UserModel {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult? Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -88,7 +88,7 @@ mixin _$UserModel {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -178,7 +178,7 @@ abstract class _$$UserModelV3CopyWith<$Res>
       @HiveField(7) bool isActive,
       @HiveField(8) bool isSuperuser,
       @HiveField(9) List<int> groups,
-      @HiveField(10) List<UserPermissions> userPermissions,
+      @HiveField(10) List<String> userPermissions,
       @HiveField(11) List<InheritedPermissions> inheritedPermissions});
 }
 
@@ -250,7 +250,7 @@ class __$$UserModelV3CopyWithImpl<$Res>
       userPermissions: null == userPermissions
           ? _value._userPermissions
           : userPermissions // ignore: cast_nullable_to_non_nullable
-              as List<UserPermissions>,
+              as List<String>,
       inheritedPermissions: null == inheritedPermissions
           ? _value._inheritedPermissions
           : inheritedPermissions // ignore: cast_nullable_to_non_nullable
@@ -275,8 +275,7 @@ class _$UserModelV3 extends UserModelV3 {
       @HiveField(7) this.isActive = true,
       @HiveField(8) this.isSuperuser = true,
       @HiveField(9) final List<int> groups = const [],
-      @HiveField(10) final List<UserPermissions> userPermissions =
-          UserPermissions.values,
+      @HiveField(10) final List<String> userPermissions = const [],
       @HiveField(11) final List<InheritedPermissions> inheritedPermissions =
           InheritedPermissions.values,
       final String? $type})
@@ -329,11 +328,11 @@ class _$UserModelV3 extends UserModelV3 {
     return EqualUnmodifiableListView(_groups);
   }
 
-  final List<UserPermissions> _userPermissions;
+  final List<String> _userPermissions;
   @override
   @JsonKey()
   @HiveField(10)
-  List<UserPermissions> get userPermissions {
+  List<String> get userPermissions {
     if (_userPermissions is EqualUnmodifiableListView) return _userPermissions;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_userPermissions);
@@ -422,7 +421,7 @@ class _$UserModelV3 extends UserModelV3 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)
         v3,
     required TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -447,7 +446,7 @@ class _$UserModelV3 extends UserModelV3 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult? Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -483,7 +482,7 @@ class _$UserModelV3 extends UserModelV3 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -560,7 +559,7 @@ abstract class UserModelV3 extends UserModel {
           @HiveField(9)
               final List<int> groups,
           @HiveField(10)
-              final List<UserPermissions> userPermissions,
+              final List<String> userPermissions,
           @HiveField(11)
               final List<InheritedPermissions> inheritedPermissions}) =
       _$UserModelV3;
@@ -592,7 +591,7 @@ abstract class UserModelV3 extends UserModel {
   @HiveField(9)
   List<int> get groups;
   @HiveField(10)
-  List<UserPermissions> get userPermissions;
+  List<String> get userPermissions;
   @HiveField(11)
   List<InheritedPermissions> get inheritedPermissions;
   @override
@@ -718,7 +717,7 @@ class _$UserModelV2 extends UserModelV2 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)
         v3,
     required TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -742,7 +741,7 @@ class _$UserModelV2 extends UserModelV2 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult? Function(@HiveField(0) @JsonKey(name: "user_id") int id,
@@ -766,7 +765,7 @@ class _$UserModelV2 extends UserModelV2 {
             @HiveField(7) bool isActive,
             @HiveField(8) bool isSuperuser,
             @HiveField(9) List<int> groups,
-            @HiveField(10) List<UserPermissions> userPermissions,
+            @HiveField(10) List<String> userPermissions,
             @HiveField(11) List<InheritedPermissions> inheritedPermissions)?
         v3,
     TResult Function(@HiveField(0) @JsonKey(name: "user_id") int id,

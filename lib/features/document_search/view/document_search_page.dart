@@ -3,15 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:hive/hive.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
@@ -19,10 +11,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'dart:math' as math;
 
-import 'package:provider/provider.dart';
 
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});

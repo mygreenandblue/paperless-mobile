@@ -13,9 +13,9 @@ class ClearCacheSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("Clear downloaded files"), //TODO: INTL
+      title: const Text("Clear downloaded files"), //TODO: INTL
       subtitle:
-          Text("Deletes all files downloaded from this app."), //TODO: INTL
+          const Text("Deletes all files downloaded from this app."), //TODO: INTL
       onTap: () async {
         final dir = await FileService.downloadsDirectory;
         final deletedSize = _dirSize(dir);
@@ -36,8 +36,8 @@ class ClearDownloadsSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("Clear downloads"), //TODO: INTL
-      subtitle: Text(
+      title: const Text("Clear downloads"), //TODO: INTL
+      subtitle: const Text(
           "Remove downloaded files, scans and clear the cache's content"), //TODO: INTL
       onTap: () {
         FileService.documentsDirectory;

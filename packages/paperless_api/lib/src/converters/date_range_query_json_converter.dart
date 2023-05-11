@@ -1,7 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/models/models.dart';
-import 'package:paperless_api/src/models/query_parameters/date_range_queries/absolute_date_range_query.dart';
-import 'package:paperless_api/src/models/query_parameters/date_range_queries/relative_date_range_query.dart';
 
 class DateRangeQueryJsonConverter
     extends JsonConverter<DateRangeQuery, Map<String, dynamic>> {

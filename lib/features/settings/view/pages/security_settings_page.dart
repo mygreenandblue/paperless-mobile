@@ -10,10 +10,10 @@ class SecuritySettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context)!.security),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: const Icon(Icons.person_outline),
+            padding: EdgeInsets.all(16.0),
+            child: Icon(Icons.person_outline),
           )
         ],
       ),

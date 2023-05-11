@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/models/query_parameters/text_query.dart';
 
 void main() {
   group('Validate parsing logic from [SavedView] to [DocumentFilter]:', () {
@@ -202,16 +201,16 @@ void main() {
     test('Values are correctly parsed if unset.', () {
       expect(
         SavedView.fromDocumentFilter(
-          DocumentFilter(
-            correspondent: const IdQueryParameter.unset(),
-            documentType: const IdQueryParameter.unset(),
-            storagePath: const IdQueryParameter.unset(),
-            tags: const IdsTagsQuery(),
+          const DocumentFilter(
+            correspondent: IdQueryParameter.unset(),
+            documentType: IdQueryParameter.unset(),
+            storagePath: IdQueryParameter.unset(),
+            tags: IdsTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.descending,
-            added: const UnsetDateRangeQuery(),
-            created: const UnsetDateRangeQuery(),
-            query: const TextQuery(),
+            added: UnsetDateRangeQuery(),
+            created: UnsetDateRangeQuery(),
+            query: TextQuery(),
           ),
           name: "test_name",
           showInSidebar: false,

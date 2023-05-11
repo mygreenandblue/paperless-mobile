@@ -1,10 +1,8 @@
-import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as imglib;
-import 'scan.dart';
 
 late final List<CameraDescription> cameras;
 void main() async {
@@ -58,8 +56,8 @@ class _EdgeDetectionAppState extends State<EdgeDetectionApp> {
     final int uvRowStride = image.planes[1].bytesPerRow;
     final int uvPixelStride = image.planes[1].bytesPerPixel!;
 
-    print("uvRowStride: " + uvRowStride.toString());
-    print("uvPixelStride: " + uvPixelStride.toString());
+    print("uvRowStride: $uvRowStride");
+    print("uvPixelStride: $uvPixelStride");
 
     // imgLib -> Image package from https://pub.dartlang.org/packages/image
     var img = imglib.Image(
@@ -89,7 +87,7 @@ class _EdgeDetectionAppState extends State<EdgeDetectionApp> {
       }
     }
 
-    imglib.PngEncoder pngEncoder = new imglib.PngEncoder(level: 0);
+    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
     final png = pngEncoder.encode(img);
     return Image.memory(png);
   }
@@ -105,7 +103,7 @@ class _EdgeDetectionAppState extends State<EdgeDetectionApp> {
         body: Center(
           child: _image != null
               ? convertYUV420toImageColor(_image!)
-              : Placeholder(),
+              : const Placeholder(),
         ),
       ),
     );

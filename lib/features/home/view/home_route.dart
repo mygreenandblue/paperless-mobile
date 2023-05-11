@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -45,9 +44,10 @@ class HomeRoute extends StatelessWidget {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
         final currentLocalUserId = settings.currentLoggedInUser!;
+        final apiVersion = ApiVersion(paperlessApiVersion);
         return MultiProvider(
           providers: [
-            Provider.value(value: ApiVersion(paperlessApiVersion)),
+            Provider.value(value: apiVersion),
             Provider<CacheManager>(
               create: (context) => CacheManager(
                 Config(
@@ -87,7 +87,7 @@ class HomeRoute extends StatelessWidget {
                 apiVersion: paperlessApiVersion,
               ),
             ),
-            if (paperlessApiVersion >= 3)
+            if (apiVersion.hasMultiUserSupport)
               ProxyProvider<SessionManager, PaperlessUserApiV3>(
                 update: (context, value, previous) => PaperlessUserApiV3Impl(
                   value.client,
@@ -98,7 +98,7 @@ class HomeRoute extends StatelessWidget {
             return MultiProvider(
               providers: [
                 ProxyProvider<PaperlessLabelsApi, LabelRepository>(
-                  update: (context, value, previous) => LabelRepository(value)..initialize(),
+                  update: (context, value, previous) => LabelRepository(value),
                 ),
                 ProxyProvider<PaperlessSavedViewsApi, SavedViewRepository>(
                   update: (context, value, previous) => SavedViewRepository(value)..initialize(),

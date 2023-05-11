@@ -7,7 +7,6 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 const int _kOpenViewMilliseconds = 600;
 const Duration _kOpenViewDuration =
@@ -1649,7 +1648,6 @@ class SearchBarTheme extends InheritedWidget {
     final SearchBarTheme? searchBarTheme =
         context.dependOnInheritedWidgetOfExactType<SearchBarTheme>();
     return searchBarTheme?.data ?? const SearchBarThemeData();
-    ;
   }
 
   @override

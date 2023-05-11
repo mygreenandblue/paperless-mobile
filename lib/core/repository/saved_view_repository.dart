@@ -7,7 +7,9 @@ import 'package:paperless_mobile/core/repository/saved_view_repository_state.dar
 class SavedViewRepository extends PersistentRepository<SavedViewRepositoryState> {
   final PaperlessSavedViewsApi _api;
 
-  SavedViewRepository(this._api) : super(const SavedViewRepositoryState());
+  SavedViewRepository(this._api) : super(const SavedViewRepositoryState()) {
+    initialize();
+  }
 
   Future<void> initialize() {
     return findAll();

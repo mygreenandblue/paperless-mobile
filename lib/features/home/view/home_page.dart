@@ -6,38 +6,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
-import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
-import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -196,7 +184,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.documents,
       ),
-      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.addDocument))
+      if (LocalUserAccount.current.paperlessUser
+          .hasPermission(PermissionAction.add, PermissionTarget.document))
         RouteDescription(
           icon: const Icon(Icons.document_scanner_outlined),
           selectedIcon: Icon(
@@ -222,32 +211,31 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         label: S.of(context)!.inbox,
         badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
           builder: (context, state) {
-            if (state.itemsInInboxCount > 0) {
-              return Badge.count(
-                count: state.itemsInInboxCount,
-                child: icon,
-              );
-            }
-            return icon;
+            return Badge.count(
+              isLabelVisible: state.itemsInInboxCount > 0,
+              count: state.itemsInInboxCount,
+              child: icon,
+            );
           },
         ),
       ),
     ];
     final routes = <Widget>[
       const DocumentsPage(),
-      if (LocalUserAccount.current.paperlessUser.hasPermission(UserPermissions.addDocument))
+      if (LocalUserAccount.current.paperlessUser
+          .hasPermission(PermissionAction.add, PermissionTarget.document))
         const ScannerPage(),
       const LabelsPage(),
       const InboxPage(),
     ];
-
     return MultiBlocListener(
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
-          //Only re-initialize data if the connectivity changed from not connected to connected
+          // If app was started offline, load data once it comes back online.
           listenWhen: (previous, current) => current == ConnectivityState.connected,
           listener: (context, state) {
-            _initializeData(context);
+            context.read<LabelRepository>().initialize();
+            context.read<SavedViewRepository>().initialize();
           },
         ),
         BlocListener<TaskStatusCubit, TaskStatusState>(
@@ -298,15 +286,5 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (_currentIndex != index) {
       setState(() => _currentIndex = index);
     }
-  }
-
-  void _initializeData(BuildContext context) {
-    Future.wait([
-      context.read<LabelRepository>().initialize(),
-      context.read<SavedViewRepository>().findAll(),
-    ]).onError<PaperlessServerException>((error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-      throw error;
-    });
   }
 }

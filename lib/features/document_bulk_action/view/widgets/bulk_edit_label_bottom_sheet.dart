@@ -17,6 +17,7 @@ class BulkEditLabelBottomSheet<T extends Label> extends StatefulWidget {
   final LabelOptionsSelector<T> availableOptionsSelector;
   final void Function(int? selectedId) onSubmit;
   final int? initialValue;
+  final bool canCreateNewLabel;
 
   const BulkEditLabelBottomSheet({
     super.key,
@@ -26,6 +27,7 @@ class BulkEditLabelBottomSheet<T extends Label> extends StatefulWidget {
     required this.availableOptionsSelector,
     required this.onSubmit,
     this.initialValue,
+    required this.canCreateNewLabel,
   });
 
   @override
@@ -58,6 +60,7 @@ class _BulkEditLabelBottomSheetState<T extends Label> extends State<BulkEditLabe
                       initialValue: widget.initialValue != null
                           ? IdQueryParameter.fromId(widget.initialValue!)
                           : const IdQueryParameter.unset(),
+                      canCreateNewLabel: widget.canCreateNewLabel,
                       name: "labelFormField",
                       options: widget.availableOptionsSelector(state),
                       labelText: widget.formFieldLabel,

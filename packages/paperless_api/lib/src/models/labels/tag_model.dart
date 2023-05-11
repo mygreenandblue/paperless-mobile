@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/converters/hex_color_json_converter.dart';
 import 'package:paperless_api/src/models/labels/label_model.dart';
@@ -24,7 +22,7 @@ class Tag extends Label {
 
   final bool isInboxTag;
 
-  Tag({
+  const Tag({
     super.id,
     required super.name,
     super.documentCount,
