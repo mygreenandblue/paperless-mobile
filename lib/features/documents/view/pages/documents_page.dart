@@ -150,8 +150,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                 onWillPop: () async {
                   if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
                     context.read<DocumentsCubit>().resetSelection();
+                    return false;
                   }
-                  return false;
+                  return true;
                 },
                 child: Stack(
                   children: [
