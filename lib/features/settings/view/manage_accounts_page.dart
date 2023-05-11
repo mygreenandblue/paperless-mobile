@@ -203,15 +203,8 @@ class ManageAccountsPage extends StatelessWidget {
   }
 
   _onSwitchAccount(BuildContext context, String currentUser, String newUser) async {
-    final navigator = Navigator.of(context);
     if (currentUser == newUser) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SwitchingAccountsPage(),
-      ),
-    );
-    await context.read<AuthenticationCubit>().switchAccount(newUser);
-    navigator.popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
+    context.read<AuthenticationCubit>().switchAccount(newUser);
   }
 }
