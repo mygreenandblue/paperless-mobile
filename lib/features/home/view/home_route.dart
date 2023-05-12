@@ -109,16 +109,13 @@ class HomeRoute extends StatelessWidget {
                   providers: [
                     ProxyProvider3<PaperlessDocumentsApi, DocumentChangedNotifier, LabelRepository,
                         DocumentsCubit>(
-                      update: (context, docApi, notifier, labelRepo, previous) {
-                        print("UPDATED DOCUMENT CUBIT"); //TODO: REMOVE
-                        return DocumentsCubit(
-                          docApi,
-                          notifier,
-                          labelRepo,
-                          Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
-                              .get(currentLocalUserId)!,
-                        )..reload();
-                      },
+                      update: (context, docApi, notifier, labelRepo, previous) => DocumentsCubit(
+                        docApi,
+                        notifier,
+                        labelRepo,
+                        Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
+                            .get(currentLocalUserId)!,
+                      )..reload(),
                     ),
                     Provider(create: (context) => DocumentScannerCubit()),
                     ProxyProvider4<PaperlessDocumentsApi, PaperlessServerStatsApi, LabelRepository,
