@@ -149,10 +149,10 @@ packages:
     dependency: transitive
     description:
       name: build_daemon
-      sha256: "6bc5544ea6ce4428266e7ea680e945c68806c4aae2da0eb5e9ccf38df8d6acbf"
+      sha256: "5f02d73eb2ba16483e693f80bee4f088563a820e47d1027d4cdfe62b5bb43e65"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.0"
   build_resolvers:
     dependency: transitive
     description:
@@ -165,10 +165,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: b0a8a7b8a76c493e85f1b84bffa0588859a06197863dba8c9036b15581fd9727
+      sha256: "87e06c939450b9b94e3e1bb2d46e0e9780adbff5500d3969f2ba2de6bbb860cb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.3"
+    version: "2.4.2"
   build_runner_core:
     dependency: transitive
     description:
@@ -719,10 +719,10 @@ packages:
     dependency: "direct dev"
     description:
       name: freezed
-      sha256: e819441678f1679b719008ff2ff0ef045d66eed9f9ec81166ca0d9b02a187454
+      sha256: "73b58fe836dc05594451d8f740d97d5167886962d628b9f60a1fe945aa0a891f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "2.3.3"
   freezed_annotation:
     dependency: "direct main"
     description:
@@ -1738,5 +1738,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=3.0.0-0 <4.0.0"
+  dart: ">=3.0.0-134.0.dev <4.0.0"
   flutter: ">=3.7.0"

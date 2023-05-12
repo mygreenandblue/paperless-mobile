@@ -54,7 +54,11 @@ app.*.map.json
 
 # build_runner generated files
 lib/**/*.g.dart
+lib/**/*.freezed.dart
 packages/**/*.g.dart
+packages/**/*.freezed.dart
+
+
 
 # mockito generated files
 *.mocks.dart
