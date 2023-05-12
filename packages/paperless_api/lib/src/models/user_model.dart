@@ -3,7 +3,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
-import 'package:paperless_api/src/models/permissions/inherited_permissions.dart';
 import 'package:paperless_api/src/models/permissions/user_permissions.dart';
 
 part 'user_model.freezed.dart';
@@ -16,36 +15,18 @@ class UserModel with _$UserModel {
   @JsonSerializable(fieldRename: FieldRename.snake)
   @HiveType(typeId: PaperlessApiHiveTypeIds.userModelv3)
   const factory UserModel.v3({
-    @HiveField(0)
-        required int id,
-    @HiveField(1)
-        required String username,
-    @HiveField(2)
-        required String email,
-    @HiveField(3)
-        String? firstName,
-    @HiveField(4)
-        String? lastName,
-    @HiveField(5)
-        DateTime? dateJoined,
-    @HiveField(6)
-    @Default(true)
-        bool isStaff,
-    @HiveField(7)
-    @Default(true)
-        bool isActive,
-    @HiveField(8)
-    @Default(true)
-        bool isSuperuser,
-    @HiveField(9)
-    @Default([])
-        List<int> groups,
-    @HiveField(10)
-    @Default([])
-        List<String> userPermissions,
-    @HiveField(11)
-    @Default(InheritedPermissions.values)
-        List<InheritedPermissions> inheritedPermissions,
+    @HiveField(0) required int id,
+    @HiveField(1) required String username,
+    @HiveField(2) required String email,
+    @HiveField(3) String? firstName,
+    @HiveField(4) String? lastName,
+    @HiveField(5) DateTime? dateJoined,
+    @HiveField(6) @Default(true) bool isStaff,
+    @HiveField(7) @Default(true) bool isActive,
+    @HiveField(8) @Default(true) bool isSuperuser,
+    @HiveField(9) @Default([]) List<int> groups,
+    @HiveField(10) @Default([]) List<String> userPermissions,
+    @HiveField(11) @Default([]) List<String> inheritedPermissions,
   }) = UserModelV3;
 
   @JsonSerializable(fieldRename: FieldRename.snake)

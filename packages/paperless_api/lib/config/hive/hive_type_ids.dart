@@ -55,7 +55,6 @@ void registerPaperlessApiHiveTypeAdapters() {
   // Users and permissions
   Hive.registerAdapter(UserModelV3Adapter());
   Hive.registerAdapter(UserModelV2Adapter());
-  Hive.registerAdapter(InheritedPermissionsAdapter());
   Hive.registerAdapter(GroupModelAdapter());
   Hive.registerAdapter(PermissionsAdapter());
 }
