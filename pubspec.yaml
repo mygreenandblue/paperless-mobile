@@ -95,6 +95,8 @@ dependencies:
 
 dependency_overrides:
   intl: ^0.18.0
+  graphs: 2.2.0 
+
 
 dev_dependencies:
   integration_test:

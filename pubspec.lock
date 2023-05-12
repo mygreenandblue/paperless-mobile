@@ -753,7 +753,7 @@ packages:
     source: hosted
     version: "2.1.1"
   graphs:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: graphs
       sha256: f9e130f3259f52d26f0cfc0e964513796dafed572fa52e45d2f8d6ca14db39b2
