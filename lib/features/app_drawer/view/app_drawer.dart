@@ -17,7 +17,6 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
       child: Drawer(
         child: Column(
           children: [

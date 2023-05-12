@@ -107,7 +107,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
         },
         builder: (context, connectivityState) {
           return SafeArea(
-            top: context.read<DocumentsCubit>().state.selection.isEmpty,
+            top: context.watch<DocumentsCubit>().state.selection.isEmpty,
             child: Scaffold(
               drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
