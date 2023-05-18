@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class DocumentGridItem extends DocumentItem {
   const DocumentGridItem({
@@ -20,10 +22,6 @@ class DocumentGridItem extends DocumentItem {
     super.onTagSelected,
     super.onTap,
     required super.enableHeroAnimation,
-    required super.tags,
-    required super.correspondents,
-    required super.documentTypes,
-    required super.storagePaths,
   });
 
   @override
@@ -32,9 +30,8 @@ class DocumentGridItem extends DocumentItem {
       padding: const EdgeInsets.all(8.0),
       child: Card(
         elevation: 1.0,
-        color: isSelected
-            ? Theme.of(context).colorScheme.inversePrimary
-            : Theme.of(context).cardColor,
+        color:
+            isSelected ? Theme.of(context).colorScheme.inversePrimary : Theme.of(context).cardColor,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: _onTap,
@@ -57,10 +54,16 @@ class DocumentGridItem extends DocumentItem {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CorrespondentWidget(
-                        correspondent: correspondents[document.correspondent],
+                        correspondent: context
+                            .watch<LabelRepository>()
+                            .state
+                            .correspondents[document.correspondent],
                       ),
                       DocumentTypeWidget(
-                        documentType: documentTypes[document.documentType],
+                        documentType: context
+                            .watch<LabelRepository>()
+                            .state
+                            .documentTypes[document.documentType],
                       ),
                       Text(
                         document.title,
@@ -70,7 +73,9 @@ class DocumentGridItem extends DocumentItem {
                       ),
                       const Spacer(),
                       TagsWidget(
-                        tags: document.tags.map((e) => tags[e]!).toList(),
+                        tags: document.tags
+                            .map((e) => context.watch<LabelRepository>().state.tags[e]!)
+                            .toList(),
                         isMultiLine: false,
                         onTagSelected: onTagSelected,
                       ),

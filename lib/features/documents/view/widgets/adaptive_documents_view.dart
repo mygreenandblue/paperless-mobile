@@ -24,11 +24,6 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
 
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
-
   bool get showLoadingPlaceholder => !hasLoaded && isLoading;
 
   const AdaptiveDocumentsView({
@@ -47,10 +42,6 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.isLoading,
     required this.hasLoaded,
     this.enableHeroAnimation = true,
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
   });
 
   AdaptiveDocumentsView.fromPagedState(
@@ -67,10 +58,6 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.hasInternetConnection,
     this.viewType = ViewType.list,
     this.selectedDocumentIds = const [],
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
   })  : documents = state.documents,
         isLoading = state.isLoading,
         hasLoaded = state.hasLoaded;
@@ -93,10 +80,6 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.enableHeroAnimation,
     required super.isLoading,
     required super.hasLoaded,
-    required super.correspondents,
-    required super.documentTypes,
-    required super.tags,
-    required super.storagePaths,
   });
 
   @override
@@ -132,10 +115,6 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
             onDocumentTypeSelected: onDocumentTypeSelected,
             onStoragePathSelected: onStoragePathSelected,
             enableHeroAnimation: enableHeroAnimation,
-            correspondents: correspondents,
-            documentTypes: documentTypes,
-            storagePaths: storagePaths,
-            tags: tags,
           );
         },
       ),
@@ -165,10 +144,6 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
             onStoragePathSelected: onStoragePathSelected,
             enableHeroAnimation: enableHeroAnimation,
             highlights: document.searchHit?.highlights,
-            correspondents: correspondents,
-            documentTypes: documentTypes,
-            storagePaths: storagePaths,
-            tags: tags,
           );
         },
       ),
@@ -201,10 +176,6 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
-          correspondents: correspondents,
-          documentTypes: documentTypes,
-          storagePaths: storagePaths,
-          tags: tags,
         );
       },
     );
@@ -230,10 +201,6 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
     super.selectedDocumentIds,
     super.viewType,
     super.enableHeroAnimation = true,
-    required super.correspondents,
-    required super.documentTypes,
-    required super.tags,
-    required super.storagePaths,
   });
 
   @override
@@ -272,10 +239,6 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
-          correspondents: correspondents,
-          documentTypes: documentTypes,
-          storagePaths: storagePaths,
-          tags: tags,
         );
       },
     );
@@ -306,10 +269,6 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
-          correspondents: correspondents,
-          documentTypes: documentTypes,
-          storagePaths: storagePaths,
-          tags: tags,
         );
       },
     );
@@ -344,10 +303,6 @@ class DefaultAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
-          correspondents: correspondents,
-          documentTypes: documentTypes,
-          storagePaths: storagePaths,
-          tags: tags,
         );
       },
     );

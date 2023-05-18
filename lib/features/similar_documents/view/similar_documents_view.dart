@@ -66,10 +66,6 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
                   isLabelClickable: false,
                 );
               },
-              correspondents: state.correspondents,
-              documentTypes: state.documentTypes,
-              tags: state.tags,
-              storagePaths: state.storagePaths,
             );
           },
         );

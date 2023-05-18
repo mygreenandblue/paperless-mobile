@@ -29,3 +29,4 @@ export 'permissions/user_permissions.dart';
 export 'permissions/inherited_permissions.dart';
 export 'group_model.dart';
 export 'user_model.dart';
+export 'permissions/user_permission_extension.dart';

@@ -8,6 +8,7 @@ environment:
   flutter: ">=2.5.0"
 
 dependencies:
+  camerawesome: ^1.4.0
   ffi: ^2.0.1
   flutter:
     sdk: flutter

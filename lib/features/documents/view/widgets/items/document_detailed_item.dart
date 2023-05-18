@@ -3,12 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:provider/provider.dart';
 
 class DocumentDetailedItem extends DocumentItem {
   final String? highlights;
@@ -26,10 +28,6 @@ class DocumentDetailedItem extends DocumentItem {
     super.onStoragePathSelected,
     super.onTagSelected,
     super.onTap,
-    required super.tags,
-    required super.correspondents,
-    required super.documentTypes,
-    required super.storagePaths,
   });
 
   @override
@@ -116,7 +114,8 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  correspondent: correspondents[document.correspondent],
+                  correspondent:
+                      context.watch<LabelRepository>().state.correspondents[document.correspondent],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
@@ -131,13 +130,16 @@ class DocumentDetailedItem extends DocumentItem {
                   textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                  documentType: documentTypes[document.documentType],
+                  documentType:
+                      context.watch<LabelRepository>().state.documentTypes[document.documentType],
                 ),
               ],
             ).paddedLTRB(8, 0, 8, 4),
             TagsWidget(
               isMultiLine: false,
-              tags: document.tags.map((e) => tags[e]!).toList(),
+              tags: document.tags
+                  .map((e) => context.watch<LabelRepository>().state.tags[e]!)
+                  .toList(),
             ).padded(),
             if (highlights != null)
               Html(

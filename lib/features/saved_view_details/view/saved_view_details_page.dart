@@ -83,10 +83,6 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
                       );
                     },
                     viewType: state.viewType,
-                    correspondents: state.correspondents,
-                    documentTypes: state.documentTypes,
-                    tags: state.tags,
-                    storagePaths: state.storagePaths,
                   ),
                   if (state.hasLoaded && state.isLoading)
                     const SliverToBoxAdapter(

@@ -333,10 +333,6 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                   isLabelClickable: true,
                   isLoading: state.isLoading,
                   selectedDocumentIds: state.selectedIds,
-                  correspondents: state.correspondents,
-                  documentTypes: state.documentTypes,
-                  tags: state.tags,
-                  storagePaths: state.storagePaths,
                 );
               },
             ),

@@ -3,7 +3,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
-import 'package:paperless_api/src/models/permissions/user_permissions.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -42,29 +41,17 @@ class UserModel with _$UserModel {
   String? get fullName => map(
         v2: (value) => value.displayName,
         v3: (value) {
-          if (value.firstName == null && value.lastName == null) {
+          bool hasFirstName = value.firstName?.trim().isNotEmpty ?? false;
+          bool hasLastName = value.lastName?.trim().isNotEmpty ?? false;
+          if (hasFirstName && hasLastName) {
+            return "${value.firstName!} ${value.lastName!}";
+          } else if (hasFirstName) {
+            return value.firstName!;
+          } else if (hasLastName) {
+            return value.lastName;
+          } else {
             return null;
           }
-          if (value.firstName == null) {
-            return value.lastName;
-          }
-          return "${value.firstName!} ${value.lastName ?? ''}";
         },
       );
-
-  bool hasPermission(PermissionAction action, PermissionTarget target) {
-    return map(
-      v3: (value) {
-        if (value.isSuperuser) {
-          return true;
-        }
-        final permissionIdentifier = "${action.value}_${target.value}";
-        return value.userPermissions.contains(permissionIdentifier);
-      },
-      v2: (value) {
-        // In previous versions, all users have all permissions.
-        return true;
-      },
-    );
-  }
 }

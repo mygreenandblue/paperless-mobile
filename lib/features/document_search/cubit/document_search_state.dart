@@ -7,17 +7,11 @@ enum SearchView {
 
 @JsonSerializable(ignoreUnannotated: true)
 class DocumentSearchState extends DocumentPagingState {
-  @JsonKey()
   final List<String> searchHistory;
   final SearchView view;
   final List<String> suggestions;
   @JsonKey()
   final ViewType viewType;
-
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
 
   const DocumentSearchState({
     this.view = SearchView.suggestions,
@@ -28,10 +22,6 @@ class DocumentSearchState extends DocumentPagingState {
     super.hasLoaded,
     super.isLoading,
     super.value,
-    this.correspondents = const {},
-    this.documentTypes = const {},
-    this.tags = const {},
-    this.storagePaths = const {},
   });
 
   @override
@@ -41,10 +31,6 @@ class DocumentSearchState extends DocumentPagingState {
         suggestions,
         view,
         viewType,
-        correspondents,
-        documentTypes,
-        tags,
-        storagePaths,
       ];
 
   @override
@@ -85,10 +71,6 @@ class DocumentSearchState extends DocumentPagingState {
       view: view ?? this.view,
       suggestions: suggestions ?? this.suggestions,
       viewType: viewType ?? this.viewType,
-      correspondents: correspondents ?? this.correspondents,
-      documentTypes: documentTypes ?? this.documentTypes,
-      tags: tags ?? this.tags,
-      storagePaths: storagePaths ?? this.storagePaths,
     );
   }
 

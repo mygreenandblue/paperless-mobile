@@ -13,7 +13,6 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'dart:math' as math;
 
-
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});
 
@@ -211,10 +210,6 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
                 isLabelClickable: false,
               );
             },
-            correspondents: state.correspondents,
-            documentTypes: state.documentTypes,
-            tags: state.tags,
-            storagePaths: state.storagePaths,
           )
       ],
     );

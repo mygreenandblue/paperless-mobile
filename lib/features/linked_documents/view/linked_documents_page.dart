@@ -8,7 +8,6 @@ import 'package:paperless_mobile/features/linked_documents/cubit/linked_document
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-
 class LinkedDocumentsPage extends StatefulWidget {
   const LinkedDocumentsPage({super.key});
 
@@ -58,10 +57,6 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
                         isLabelClickable: false,
                       );
                     },
-                    correspondents: state.correspondents,
-                    documentTypes: state.documentTypes,
-                    storagePaths: state.storagePaths,
-                    tags: state.tags,
                   ),
                 ],
               );
