@@ -8,14 +8,12 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
@@ -40,67 +38,140 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
     _controller.addListener(() {
       _debounceTimer?.cancel();
       _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+        print("Searching for $query");
         context.read<DocumentSearchCubit>().suggest(query);
       });
     });
   }
 
-  late final DocumentSearchCubit _searchCubit;
   String get query => _controller.text;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _searchCubit = context.watch<DocumentSearchCubit>();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SearchAnchor.bar(
-      searchController: _controller,
-      barLeading: IconButton(
-        icon: const Icon(Icons.menu),
-        onPressed: Scaffold.of(context).openDrawer,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        inputDecorationTheme: const InputDecorationTheme(),
       ),
-      barHintText: S.of(context)!.searchDocuments,
-      barTrailing: [
-        IconButton(
-          icon: GlobalSettingsBuilder(
-            builder: (context, settings) {
-              return ValueListenableBuilder(
-                valueListenable:
-                    Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
-                builder: (context, box, _) {
-                  final account = box.get(settings.currentLoggedInUser!)!;
-                  return UserAvatar(
-                    userId: settings.currentLoggedInUser!,
-                    account: account,
+      child: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: SearchAnchor(
+              searchController: _controller,
+              viewHintText: S.of(context)!.searchDocuments,
+              builder: (context, controller) {
+                return SearchBar(
+                  focusNode: FocusNode(),
+                  controller: controller,
+                  leading: IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: Scaffold.of(context).openDrawer,
+                  ),
+                  trailing: [
+                    IconButton(
+                      icon: GlobalSettingsBuilder(
+                        builder: (context, settings) {
+                          return ValueListenableBuilder(
+                            valueListenable:
+                                Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
+                            builder: (context, box, _) {
+                              final account = box.get(settings.currentLoggedInUser!)!;
+                              return UserAvatar(
+                                userId: settings.currentLoggedInUser!,
+                                account: account,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      onPressed: () {
+                        final apiVersion = context.read<ApiVersion>();
+                        showDialog(
+                          context: context,
+                          builder: (context) => Provider.value(
+                            value: apiVersion,
+                            child: const ManageAccountsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                  hintText: S.of(context)!.searchDocuments,
+                  onTap: () {
+                    controller.openView().then((value) => FocusScope.of(context).unfocus());
+                  },
+                );
+              },
+              suggestionsBuilder: (context, controller) {
+                switch (state.view) {
+                  case SearchView.suggestions:
+                    return _buildSuggestionItems(state);
+                  case SearchView.results:
+                    return _buildResultsList(state);
+                }
+              },
+            ),
+          );
+
+          return SearchAnchor.bar(
+            barPadding: MaterialStatePropertyAll(EdgeInsets.only(left: 8, right: 0)),
+            viewLeading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                // FocusManager.instance.primaryFocus?.unfocus();
+                _controller.clear();
+                _controller.closeView(null);
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                });
+              },
+            ),
+            searchController: _controller,
+            barLeading: IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: Scaffold.of(context).openDrawer,
+            ),
+            barHintText: S.of(context)!.searchDocuments,
+            barTrailing: [
+              IconButton(
+                icon: GlobalSettingsBuilder(
+                  builder: (context, settings) {
+                    return ValueListenableBuilder(
+                      valueListenable:
+                          Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
+                      builder: (context, box, _) {
+                        final account = box.get(settings.currentLoggedInUser!)!;
+                        return UserAvatar(
+                          userId: settings.currentLoggedInUser!,
+                          account: account,
+                        );
+                      },
+                    );
+                  },
+                ),
+                onPressed: () {
+                  final apiVersion = context.read<ApiVersion>();
+                  showDialog(
+                    context: context,
+                    builder: (context) => Provider.value(
+                      value: apiVersion,
+                      child: const ManageAccountsPage(),
+                    ),
                   );
                 },
-              );
-            },
-          ),
-          onPressed: () {
-            final apiVersion = context.read<ApiVersion>();
-            showDialog(
-              context: context,
-              builder: (context) => Provider.value(
-                value: apiVersion,
-                child: const ManageAccountsPage(),
               ),
-            );
-          },
-        ),
-      ],
-      suggestionsBuilder: (context, controller) {
-        switch (_searchCubit.state.view) {
-          case SearchView.suggestions:
-            return _buildSuggestionItems(_searchCubit.state);
-          case SearchView.results:
-            // TODO: Handle this case.
-            break;
-        }
-      },
+            ],
+            suggestionsBuilder: (context, controller) {
+              switch (state.view) {
+                case SearchView.suggestions:
+                  return _buildSuggestionItems(state);
+                case SearchView.results:
+                  return _buildResultsList(state);
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -152,6 +223,31 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
           );
         },
       ),
+    );
+  }
+
+  Iterable<Widget> _buildResultsList(DocumentSearchState state) sync* {
+    if (state.hasLoaded && !state.isLoading && state.documents.isEmpty) {
+      yield Center(
+        child: Text(S.of(context)!.noMatchesFound),
+      );
+      return;
+    }
+    yield DefaultAdaptiveDocumentsView(
+      viewType: state.viewType,
+      documents: state.documents,
+      hasInternetConnection: true,
+      isLabelClickable: false,
+      isLoading: state.isLoading,
+      hasLoaded: state.hasLoaded,
+      enableHeroAnimation: false,
+      onTap: (document) {
+        pushDocumentDetailsRoute(
+          context,
+          document: document,
+          isLabelClickable: false,
+        );
+      },
     );
   }
 

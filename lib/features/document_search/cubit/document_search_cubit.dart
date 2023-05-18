@@ -56,7 +56,7 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
     final searchFilter = DocumentFilter(
       query: TextQuery.extended(query),
     );
-    
+
     await updateFilter(filter: searchFilter);
     emit(
       state.copyWith(
