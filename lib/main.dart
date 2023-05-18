@@ -121,6 +121,7 @@ void main() async {
   });
 
   final apiFactory = PaperlessApiFactoryImpl(sessionManager);
+
   runApp(
     MultiProvider(
       providers: [
