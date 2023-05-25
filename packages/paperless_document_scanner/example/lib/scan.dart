@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_document_scanner/types/edge_detection_result.dart';
 
-import 'camera_view.dart';
 import 'cropping_preview.dart';
 import 'edge_detector.dart';
 import 'image_view.dart';
@@ -63,10 +62,6 @@ class _ScanState extends State<Scan> {
   Widget _getMainWidget() {
     if (croppedImagePath != null) {
       return ImageView(imagePath: croppedImagePath!);
-    }
-
-    if (imagePath == null && edgeDetectionResult == null) {
-      return CameraView(controller: controller);
     }
 
     return ImagePreview(
@@ -129,22 +124,19 @@ class _ScanState extends State<Scan> {
       imagePath = filePath;
     });
 
-    EdgeDetectionResult result =
-        await EdgeDetector().detectEdgesFromFile(filePath);
+    EdgeDetectionResult result = await EdgeDetector().detectEdgesFromFile(filePath);
 
     setState(() {
       edgeDetectionResult = result;
     });
   }
 
-  Future _processImage(
-      String filePath, EdgeDetectionResult edgeDetectionResult) async {
+  Future _processImage(String filePath, EdgeDetectionResult edgeDetectionResult) async {
     if (!mounted) {
       return;
     }
 
-    bool result = await EdgeDetector()
-        .processImageFromFile(filePath, edgeDetectionResult);
+    bool result = await EdgeDetector().processImageFromFile(filePath, edgeDetectionResult);
 
     if (result == false) {
       return;

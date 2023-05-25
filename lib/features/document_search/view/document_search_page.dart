@@ -32,38 +32,38 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.colorScheme.surfaceVariant,
         toolbarHeight: 72,
         leading: BackButton(
-          color: theme.colorScheme.onSurface,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
-        title: TextField(
-          autofocus: true,
-          style: theme.textTheme.bodyLarge?.apply(
-            color: theme.colorScheme.onSurface,
-          ),
-          focusNode: _queryFocusNode,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.zero,
-            hintStyle: theme.textTheme.bodyLarge?.apply(
-              color: theme.colorScheme.onSurfaceVariant,
+        title: Hero(
+          tag: "search_hero_tag",
+          child: TextField(
+            autofocus: true,
+            // style: theme.textTheme.bodyLarge?.apply(
+            //   color: theme.colorScheme.onSurface,
+            // ),
+            focusNode: _queryFocusNode,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.zero,
+              hintText: S.of(context)!.searchDocuments,
+              border: InputBorder.none,
             ),
-            hintText: S.of(context)!.searchDocuments,
-            border: InputBorder.none,
+            controller: _queryController,
+            onChanged: (query) {
+              _debounceTimer?.cancel();
+              _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+                context.read<DocumentSearchCubit>().suggest(query);
+              });
+            },
+            textInputAction: TextInputAction.search,
+            onSubmitted: (query) {
+              FocusScope.of(context).unfocus();
+              _debounceTimer?.cancel();
+              context.read<DocumentSearchCubit>().search(query);
+            },
           ),
-          controller: _queryController,
-          onChanged: (query) {
-            _debounceTimer?.cancel();
-            _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-              context.read<DocumentSearchCubit>().suggest(query);
-            });
-          },
-          textInputAction: TextInputAction.search,
-          onSubmitted: (query) {
-            FocusScope.of(context).unfocus();
-            _debounceTimer?.cancel();
-            context.read<DocumentSearchCubit>().search(query);
-          },
         ),
         actions: [
           IconButton(
@@ -75,22 +75,22 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             },
           ).padded(),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            color: theme.colorScheme.outline,
-          ),
-        ),
       ),
-      body: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
-        builder: (context, state) {
-          switch (state.view) {
-            case SearchView.suggestions:
-              return _buildSuggestionsView(state);
-            case SearchView.results:
-              return _buildResultsView(state);
-          }
-        },
+      body: Column(
+        children: [
+          Expanded(
+            child: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
+              builder: (context, state) {
+                switch (state.view) {
+                  case SearchView.suggestions:
+                    return _buildSuggestionsView(state);
+                  case SearchView.results:
+                    return _buildResultsView(state);
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -134,7 +134,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
               ),
               childCount: suggestions.length,
             ),
-          )
+          ),
       ],
     );
   }
