@@ -14,50 +14,41 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
+
 Logger log = Logger('LocalMockApiServer');
 
-
 class LocalMockApiServer {
-
   static final host = 'localhost';
 
   static final port = 3131;
 
   static get baseUrl => 'http://$host:$port/';
 
-
   late shelf_router.Router app;
   Future<Map<String, dynamic>> loadFixture(String name) async {
-    var fixture = await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
+    var fixture =
+        await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
     return json.decode(fixture);
   }
 
   LocalMockApiServer() {
-
     app = shelf_router.Router();
 
     Map<String, dynamic> createdTags = {};
 
-
     app.get('/api/', (Request req) async {
       log.info('Responding to /api');
-      return JsonMockResponse.ok({
-      });
+      return JsonMockResponse.ok({});
     });
 
     app.post('/api/token/', (Request req) async {
       log.info('Responding to /api/token/');
       var body = await req.bodyJsonMap();
       if (body?['username'] == 'admin' && body?['password'] == 'test') {
-        return JsonMockResponse.ok({
-          'token': 'testToken'
-        });
+        return JsonMockResponse.ok({'token': 'testToken'});
       } else {
-        return Response.unauthorized(
-          'Unauthorized'
-        );
+        return Response.unauthorized('Unauthorized');
       }
-
     });
 
     app.get('/api/ui_settings/', (Request req) async {
@@ -113,23 +104,21 @@ class LocalMockApiServer {
         "slug": body?['name'],
         "name": body?['name'],
         "color": body?['color'],
-        "text_color":"#000000",
-        "match":"",
+        "text_color": "#000000",
+        "match": "",
         "matching_algorithm": body?['matching_algorithm'],
         "is_insensitive": body?['is_insensitive'],
-        "is_inbox_tag":false,
-        "owner":1,
-        "user_can_change":true,
+        "is_inbox_tag": false,
+        "owner": 1,
+        "user_can_change": true,
         "document_count": Random().nextInt(200)
       };
       (createdTags['results'] as List<dynamic>).add(data);
-      return Response(
-        201,
-        body: jsonEncode(data),
-        headers: {'Content-Type': 'application/json'},
-        encoding: null,
-        context: null
-      );
+      return Response(201,
+          body: jsonEncode(data),
+          headers: {'Content-Type': 'application/json'},
+          encoding: null,
+          context: null);
     });
 
     app.put('/api/tags/<tagId>/', (Request req, String tagId) async {
@@ -140,36 +129,34 @@ class LocalMockApiServer {
         "slug": body?['name'],
         "name": body?['name'],
         "color": body?['color'],
-        "text_color":"#000000",
-        "match":"",
+        "text_color": "#000000",
+        "match": "",
         "matching_algorithm": body?['matching_algorithm'],
         "is_insensitive": body?['is_insensitive'],
-        "is_inbox_tag":false,
-        "owner":1,
-        "user_can_change":true,
+        "is_inbox_tag": false,
+        "owner": 1,
+        "user_can_change": true,
         "document_count": Random().nextInt(200)
       };
-      var index = (createdTags['results'] as List<dynamic>).indexWhere((element) => element['id'] == body?['id']);
+      var index = (createdTags['results'] as List<dynamic>)
+          .indexWhere((element) => element['id'] == body?['id']);
       (createdTags['results'] as List<dynamic>)[index] = data;
-      return Response(
-          200,
+      return Response(200,
           body: jsonEncode(data),
           headers: {'Content-Type': 'application/json'},
           encoding: null,
-          context: null
-      );
+          context: null);
     });
 
     app.delete('/api/tags/<tagId>/', (Request req, String tagId) async {
       log.info('Responding to PUT /api/tags/<tagId>/');
-      (createdTags['results'] as List<dynamic>).removeWhere((element) => element['id'] == tagId);
-      return Response(
-          204,
+      (createdTags['results'] as List<dynamic>)
+          .removeWhere((element) => element['id'] == tagId);
+      return Response(204,
           body: null,
           headers: {'Content-Type': 'application/json'},
           encoding: null,
-          context: null
-      );
+          context: null);
     });
 
     app.get('/api/storage_paths/', (Request req) async {
@@ -198,7 +185,8 @@ class LocalMockApiServer {
 
     app.get('/api/documents/<docId>/thumb/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/thumb/');
-      var thumb = await rootBundle.load('packages/mock_server/fixtures/lorem-ipsum.png');
+      var thumb = await rootBundle
+          .load('packages/mock_server/fixtures/lorem-ipsum.png');
       try {
         var resp = Response.ok(
           http.ByteStream.fromBytes(thumb.buffer.asInt8List()),
@@ -210,14 +198,16 @@ class LocalMockApiServer {
       }
     });
 
-    app.get('/api/documents/<docId>/metadata/', (Request req, String docId) async {
+    app.get('/api/documents/<docId>/metadata/',
+        (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/metadata/');
       var data = await loadFixture('metadata');
       return JsonMockResponse.ok(data);
     });
 
     //This is not yet used in the app
-    app.get('/api/documents/<docId>/suggestions/', (Request req, String docId) async {
+    app.get('/api/documents/<docId>/suggestions/',
+        (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/suggestions/');
       var data = await loadFixture('suggestions');
       return JsonMockResponse.ok(data);
@@ -247,80 +237,48 @@ class LocalMockApiServer {
       var data = await loadFixture('statistics');
       return JsonMockResponse.ok(data);
     });
-
   }
 
-
   Future<void> start() async {
-
     log.info('starting...');
 
-
     var handler = const Pipeline().addMiddleware(
-
       logRequests(logger: (message, isError) {
-
         if (isError)
-
           log.severe(message);
-
         else
-
           log.info(message);
-
       }),
-
     ).addHandler(app);
-
 
     var server = await shelf_io.serve(handler, host, port);
 
     server.autoCompress = true;
 
-
     log.info('serving on: $baseUrl');
-
   }
-
 }
 
-
 extension on Request {
-
   Future<String?> bodyJsonValue(String param) async {
-
     return jsonDecode(await this.readAsString())?[param];
-
   }
 
   Future<Map?> bodyJsonMap() async {
-
     return jsonDecode(await this.readAsString());
-
   }
 
-
   String? get accessToken =>
-
       this.headers['Authorization']?.split('Bearer ').last;
-
 }
 
-
 extension JsonMockResponse on Response {
-
   static ok<T>(T json, {int delay = 800}) async {
-
     await Future.delayed(Duration(milliseconds: delay)); // Emulate lag
 
     return Response.ok(
-
       jsonEncode(json),
-
       headers: {'Content-Type': 'application/json'},
-
     );
-
   }
-
 }
