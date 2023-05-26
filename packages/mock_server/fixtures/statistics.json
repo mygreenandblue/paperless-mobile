@@ -1,0 +1,16 @@
+{
+  "documents_total": 64,
+  "documents_inbox": null,
+  "inbox_tag": null,
+  "document_file_type_counts": [
+    {
+      "mime_type": "application/pdf",
+      "mime_type_count": 35
+    },
+    {
+      "mime_type": "image/jpeg",
+      "mime_type_count": 29
+    }
+  ],
+  "character_count": 309035
+}
