@@ -11,6 +11,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -189,19 +190,10 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
     final file = await _assembleFileBytes(
       context.read<DocumentScannerCubit>().state,
     );
-    final uploadResult = await Navigator.of(context).push<DocumentUploadResult>(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (_) => DocumentUploadCubit(
-            context.read(),
-            context.read(),
-          ),
-          child: DocumentUploadPreparationPage(
-            fileBytes: file.bytes,
-            fileExtension: file.extension,
-          ),
-        ),
-      ),
+    final uploadResult = await pushDocumentUploadPreparationPage(
+      context,
+      bytes: file.bytes,
+      fileExtension: file.extension,
     );
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
@@ -299,21 +291,12 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
         );
         return;
       }
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => DocumentUploadCubit(
-              context.read(),
-              context.read(),
-            ),
-            child: DocumentUploadPreparationPage(
-              fileBytes: file.readAsBytesSync(),
-              filename: fileDescription.filename,
-              title: fileDescription.filename,
-              fileExtension: fileDescription.extension,
-            ),
-          ),
-        ),
+      pushDocumentUploadPreparationPage(
+        context,
+        bytes: file.readAsBytesSync(),
+        filename: fileDescription.filename,
+        title: fileDescription.filename,
+        fileExtension: fileDescription.extension,
       );
     }
   }

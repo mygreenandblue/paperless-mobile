@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -105,6 +106,8 @@ class AppDrawer extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     showAboutDialog(
       context: context,
       applicationIcon: const ImageIcon(
@@ -117,10 +120,11 @@ class AppDrawer extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           "Source Code",
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium,
         ),
         RichText(
           text: TextSpan(
+            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             children: [
               TextSpan(
                 text: S.of(context)!.findTheSourceCodeOn,
@@ -143,9 +147,30 @@ class AppDrawer extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           'Credits',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
-        _buildOnboardingImageCredits(),
+        RichText(
+          text: TextSpan(
+            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+            children: [
+              const TextSpan(
+                text: 'Onboarding images by ',
+              ),
+              TextSpan(
+                text: 'pch.vector',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    launchUrlString(
+                        'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
+                  },
+              ),
+              const TextSpan(
+                text: ' on Freepik.',
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -13,8 +15,11 @@ import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
+import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
+import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
+import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
@@ -315,6 +320,39 @@ Future<void> pushBulkEditDocumentTypeRoute(BuildContext context,
                 },
               );
             },
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<DocumentUploadResult?> pushDocumentUploadPreparationPage(
+  BuildContext context, {
+  required Uint8List bytes,
+  String? filename,
+  String? fileExtension,
+  String? title,
+}) {
+  final labelRepo = context.read<LabelRepository>();
+  final docsApi = context.read<PaperlessDocumentsApi>();
+  return Navigator.of(context).push<DocumentUploadResult>(
+    MaterialPageRoute(
+      builder: (_) => MultiProvider(
+        providers: [
+          Provider.value(value: labelRepo),
+          Provider.value(value: docsApi),
+        ],
+        builder: (_, child) => BlocProvider(
+          create: (_) => DocumentUploadCubit(
+            context.read(),
+            context.read(),
+          ),
+          child: DocumentUploadPreparationPage(
+            fileBytes: bytes,
+            fileExtension: fileExtension,
+            filename: filename,
+            title: title,
           ),
         ),
       ),

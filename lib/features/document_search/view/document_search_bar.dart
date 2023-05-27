@@ -28,6 +28,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
+      transitionDuration: const Duration(milliseconds: 200),
       transitionType: ContainerTransitionType.fadeThrough,
       closedElevation: 1,
       middleColor: Theme.of(context).colorScheme.surfaceVariant,
