@@ -21,6 +21,7 @@ class SliverSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
+
     return SliverPersistentHeader(
       floating: floating,
       pinned: pinned,

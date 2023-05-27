@@ -4,6 +4,7 @@ import 'package:paperless_mobile/features/settings/view/pages/application_settin
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -25,10 +26,21 @@ class SettingsPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             subtitle: FutureBuilder<PaperlessServerInformationModel>(
+              future: context.read<PaperlessServerStatsApi>().getServerInformation(),
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text(
+                    "Something went wrong while retrieving server data.", //TODO: INTL
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelSmall
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
+                    textAlign: TextAlign.center,
+                  );
+                }
                 if (!snapshot.hasData) {
                   return Text(
-                    "Loading server information...",
+                    "Loading server information...", //TODO: INTL
                     style: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   );
@@ -39,7 +51,9 @@ class SettingsPage extends StatelessWidget {
                       ' ' +
                       serverData.version.toString() +
                       ' (API v${serverData.apiVersion})',
-                  style: Theme.of(context).textTheme.labelSmall,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                   textAlign: TextAlign.center,
                 );
               },

@@ -27,88 +27,89 @@ class DocumentSearchBar extends StatefulWidget {
 class _DocumentSearchBarState extends State<DocumentSearchBar> {
   @override
   Widget build(BuildContext context) {
-    return OpenContainer(
-      transitionDuration: const Duration(milliseconds: 200),
-      transitionType: ContainerTransitionType.fadeThrough,
-      closedElevation: 1,
-      middleColor: Theme.of(context).colorScheme.surfaceVariant,
-      openColor: Theme.of(context).colorScheme.background,
-      closedColor: Theme.of(context).colorScheme.surfaceVariant,
-      closedShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(56),
-      ),
-      closedBuilder: (_, action) {
-        return InkWell(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 720,
-              minWidth: 360,
-              maxHeight: 56,
-              minHeight: 48,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.menu),
-                          onPressed: Scaffold.of(context).openDrawer,
-                        ),
-                        Expanded(
-                          child: Hero(
-                            tag: "search_hero_tag",
-                            child: TextField(
-                              enabled: false,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: S.of(context)!.searchDocuments,
-                                hintStyle: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
+    return Container(
+      margin: EdgeInsets.only(top: 8),
+      child: OpenContainer(
+        transitionDuration: const Duration(milliseconds: 200),
+        transitionType: ContainerTransitionType.fadeThrough,
+        closedElevation: 1,
+        middleColor: Theme.of(context).colorScheme.surfaceVariant,
+        openColor: Theme.of(context).colorScheme.background,
+        closedColor: Theme.of(context).colorScheme.surfaceVariant,
+        closedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(56),
+        ),
+        closedBuilder: (_, action) {
+          return InkWell(
+            onTap: action,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 720,
+                minWidth: 360,
+                maxHeight: 56,
+                minHeight: 48,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.menu),
+                            onPressed: Scaffold.of(context).openDrawer,
+                          ),
+                          Flexible(
+                            child: Text(
+                              S.of(context)!.searchDocuments,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: Theme.of(context).hintColor,
+                                  ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                _buildUserAvatar(context),
-              ],
+                  _buildUserAvatar(context),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-      openBuilder: (_, action) {
-        return MultiProvider(
-          providers: [
-            Provider.value(value: context.read<LabelRepository>()),
-            Provider.value(value: context.read<PaperlessDocumentsApi>()),
-            Provider.value(value: context.read<CacheManager>()),
-            Provider.value(value: context.read<ApiVersion>()),
-            Provider.value(value: context.read<UserRepository>()),
-          ],
-          child: Provider(
-            create: (_) => DocumentSearchCubit(
-              context.read(),
-              context.read(),
-              context.read(),
-              Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
-                  .get(LocalUserAccount.current.id)!,
+          );
+        },
+        openBuilder: (_, action) {
+          return MultiProvider(
+            providers: [
+              Provider.value(value: context.read<LabelRepository>()),
+              Provider.value(value: context.read<PaperlessDocumentsApi>()),
+              Provider.value(value: context.read<CacheManager>()),
+              Provider.value(value: context.read<ApiVersion>()),
+              if (context.read<ApiVersion>().hasMultiUserSupport)
+                Provider.value(value: context.read<UserRepository>()),
+            ],
+            child: Provider(
+              create: (_) => DocumentSearchCubit(
+                context.read(),
+                context.read(),
+                context.read(),
+                Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
+                    .get(LocalUserAccount.current.id)!,
+              ),
+              builder: (_, __) => const DocumentSearchPage(),
             ),
-            builder: (_, __) => const DocumentSearchPage(),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   IconButton _buildUserAvatar(BuildContext context) {
     return IconButton(
+      padding: const EdgeInsets.all(6),
       icon: GlobalSettingsBuilder(
         builder: (context, settings) {
           return ValueListenableBuilder(

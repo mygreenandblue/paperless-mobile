@@ -240,7 +240,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 SliverOverlapInjector(
                                   handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                const DocumentPermissionsWidget(),
+                                DocumentPermissionsWidget(
+                                  document: state.document,
+                                ),
                               ],
                             ),
                         ],

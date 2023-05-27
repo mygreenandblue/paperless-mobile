@@ -146,7 +146,6 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                   labels: context.watch<LabelCubit>().state.correspondents,
                                   filterBuilder: (label) => DocumentFilter(
                                     correspondent: IdQueryParameter.fromId(label.id!),
-                                    pageSize: label.documentCount ?? 0,
                                   ),
                                   canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
                                       PermissionAction.change, PermissionTarget.correspondent),
@@ -171,7 +170,6 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                   labels: context.watch<LabelCubit>().state.documentTypes,
                                   filterBuilder: (label) => DocumentFilter(
                                     documentType: IdQueryParameter.fromId(label.id!),
-                                    pageSize: label.documentCount ?? 0,
                                   ),
                                   canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
                                       PermissionAction.change, PermissionTarget.documentType),
@@ -196,7 +194,6 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                   labels: context.watch<LabelCubit>().state.tags,
                                   filterBuilder: (label) => DocumentFilter(
                                     tags: TagsQuery.ids(include: [label.id!]),
-                                    pageSize: label.documentCount ?? 0,
                                   ),
                                   canEdit: LocalUserAccount.current.paperlessUser
                                       .hasPermission(PermissionAction.change, PermissionTarget.tag),
@@ -231,7 +228,6 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                                   onEdit: _openEditStoragePathPage,
                                   filterBuilder: (label) => DocumentFilter(
                                     storagePath: IdQueryParameter.fromId(label.id!),
-                                    pageSize: label.documentCount ?? 0,
                                   ),
                                   canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
                                       PermissionAction.change, PermissionTarget.storagePath),

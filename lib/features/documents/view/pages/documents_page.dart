@@ -22,6 +22,7 @@ import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -107,7 +108,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
         },
         builder: (context, connectivityState) {
           return SafeArea(
-            top: context.watch<DocumentsCubit>().state.selection.isEmpty,
+            top: true,
             child: Scaffold(
               drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
@@ -160,13 +161,18 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                           handle: searchBarHandle,
                           sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
                             builder: (context, state) {
-                              if (state.selection.isNotEmpty) {
-                                // Show selection app bar when selection mode is active
-                                return DocumentSelectionSliverAppBar(
-                                  state: state,
-                                );
-                              }
-                              return const SliverSearchBar(floating: true);
+                              return AnimatedSwitcher(
+                                layoutBuilder: SliverAnimatedSwitcher.defaultLayoutBuilder,
+                                transitionBuilder: SliverAnimatedSwitcher.defaultTransitionBuilder,
+                                child: state.selection.isEmpty
+                                    ? const SliverSearchBar(floating: true)
+                                    : DocumentSelectionSliverAppBar(
+                                        state: state,
+                                      ),
+                                duration: const Duration(
+                                  milliseconds: 250,
+                                ),
+                              );
                             },
                           ),
                         ),

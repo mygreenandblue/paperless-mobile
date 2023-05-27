@@ -92,6 +92,8 @@ dependencies:
   animations: ^2.0.7
   hive_flutter: ^1.1.0
   flutter_secure_storage: ^8.0.0
+  sliver_tools: ^0.2.10
+  webview_flutter: ^4.2.1
 
 dependency_overrides:
   intl: ^0.18.0

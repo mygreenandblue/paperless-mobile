@@ -15,7 +15,6 @@ import 'package:paperless_mobile/core/repository/user_repository.dart';
 import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
-import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
@@ -38,6 +37,7 @@ import 'package:provider/provider.dart';
 Future<void> pushDocumentSearchPage(BuildContext context) {
   final currentUser =
       Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
+  final userRepo = context.read<UserRepository>();
   return Navigator.of(context).push(
     MaterialPageRoute(
       builder: (_) => MultiProvider(
@@ -46,6 +46,7 @@ Future<void> pushDocumentSearchPage(BuildContext context) {
           Provider.value(value: context.read<PaperlessDocumentsApi>()),
           Provider.value(value: context.read<DocumentChangedNotifier>()),
           Provider.value(value: context.read<CacheManager>()),
+          Provider.value(value: userRepo),
         ],
         builder: (context, _) {
           return BlocProvider(

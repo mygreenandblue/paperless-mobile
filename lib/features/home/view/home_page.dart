@@ -10,13 +10,12 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
-import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
@@ -139,25 +138,23 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
       return;
     }
+
+    if (!LocalUserAccount.current.paperlessUser
+        .hasPermission(PermissionAction.add, PermissionTarget.document)) {
+      Fluttertoast.showToast(
+        msg: "You do not have the permissions to upload documents.",
+      );
+      return;
+    }
     final fileDescription = FileDescription.fromPath(mediaFile.path);
     if (await File(mediaFile.path).exists()) {
       final bytes = File(mediaFile.path).readAsBytesSync();
-      final result = await Navigator.push<DocumentUploadResult>(
+      final result = await pushDocumentUploadPreparationPage(
         context,
-        MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-            value: DocumentUploadCubit(
-              context.read(),
-              context.read(),
-            ),
-            child: DocumentUploadPreparationPage(
-              fileBytes: bytes,
-              filename: fileDescription.filename,
-              title: fileDescription.filename,
-              fileExtension: fileDescription.extension,
-            ),
-          ),
-        ),
+        bytes: bytes,
+        filename: fileDescription.filename,
+        title: fileDescription.filename,
+        fileExtension: fileDescription.extension,
       );
       if (result?.success ?? false) {
         await Fluttertoast.showToast(

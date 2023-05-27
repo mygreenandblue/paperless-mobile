@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -92,8 +93,11 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => Provider.value(
-                    value: context.read<ApiVersion>(),
+                  builder: (_) => MultiProvider(
+                    providers: [
+                      Provider.value(value: context.read<PaperlessServerStatsApi>()),
+                      Provider.value(value: context.read<ApiVersion>()),
+                    ],
                     child: const SettingsPage(),
                   ),
                 ),

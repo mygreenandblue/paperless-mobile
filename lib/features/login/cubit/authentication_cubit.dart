@@ -1,13 +1,10 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/config/hive/hive_extensions.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
@@ -88,39 +85,38 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         return;
       }
     }
+    await withEncryptedBox<UserCredentials, void>(HiveBoxes.localUserCredentials,
+        (credentialsBox) async {
+      if (!credentialsBox.containsKey(localUserId)) {
+        await credentialsBox.close();
+        debugPrint("Invalid authentication for $localUserId");
+        return;
+      }
+      final credentials = credentialsBox.get(localUserId);
+      await _resetExternalState();
 
-    final credentialsBox = await _getUserCredentialsBox();
-    if (!credentialsBox.containsKey(localUserId)) {
-      await credentialsBox.close();
-      debugPrint("Invalid authentication for $localUserId");
-      return;
-    }
-    final credentials = credentialsBox.get(localUserId);
-    await credentialsBox.close();
+      _sessionManager.updateSettings(
+        authToken: credentials!.token,
+        clientCertificate: credentials.clientCertificate,
+        baseUrl: account.serverUrl,
+      );
 
-    await _resetExternalState();
+      globalSettings.currentLoggedInUser = localUserId;
+      await globalSettings.save();
 
-    _sessionManager.updateSettings(
-      authToken: credentials!.token,
-      clientCertificate: credentials.clientCertificate,
-      baseUrl: account.serverUrl,
-    );
+      final apiVersion = await _getApiVersion(_sessionManager.client);
 
-    globalSettings.currentLoggedInUser = localUserId;
-    await globalSettings.save();
+      await _updateRemoteUser(
+        _sessionManager,
+        Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(localUserId)!,
+        apiVersion,
+      );
 
-    final apiVersion = await _getApiVersion(_sessionManager.client);
-
-    await _updateRemoteUser(
-      _sessionManager,
-      Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(localUserId)!,
-      apiVersion,
-    );
-
-    emit(AuthenticationState.authenticated(
-      localUserId: localUserId,
-      apiVersion: apiVersion,
-    ));
+      emit(AuthenticationState.authenticated(
+        localUserId: localUserId,
+        apiVersion: apiVersion,
+      ));
+    });
   }
 
   Future<String> addAccount({
@@ -146,14 +142,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> removeAccount(String userId) async {
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
-    final userCredentialsBox = await _getUserCredentialsBox();
     final userAppStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
     final currentUser = globalSettings.currentLoggedInUser;
 
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
-    await userCredentialsBox.delete(userId);
-    await userCredentialsBox.close();
+    await withEncryptedBox(HiveBoxes.localUserCredentials, (box) {
+      box.delete(userId);
+    });
 
     if (currentUser == userId) {
       return logout();
@@ -182,9 +178,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       }
     }
 
-    final userCredentialsBox = await _getUserCredentialsBox();
-    final authentication = userCredentialsBox.get(globalSettings.currentLoggedInUser!);
-    await userCredentialsBox.close();
+    final authentication = await withEncryptedBox<UserCredentials, UserCredentials>(
+        HiveBoxes.localUserCredentials, (box) {
+      return box.get(globalSettings.currentLoggedInUser!);
+    });
 
     if (authentication == null) {
       throw Exception(
@@ -216,28 +213,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       ..currentLoggedInUser = null
       ..save();
     emit(const AuthenticationState.unauthenticated());
-  }
-
-  Future<Uint8List> _getEncryptedBoxKey() async {
-    const secureStorage = FlutterSecureStorage();
-    if (!await secureStorage.containsKey(key: 'key')) {
-      final key = Hive.generateSecureKey();
-
-      await secureStorage.write(
-        key: 'key',
-        value: base64UrlEncode(key),
-      );
-    }
-    final key = (await secureStorage.read(key: 'key'))!;
-    return base64Decode(key);
-  }
-
-  Future<Box<UserCredentials>> _getUserCredentialsBox() async {
-    final keyBytes = await _getEncryptedBoxKey();
-    return Hive.openBox<UserCredentials>(
-      HiveBoxes.localUserCredentials,
-      encryptionCipher: HiveAesCipher(keyBytes),
-    );
   }
 
   Future<void> _resetExternalState() async {
@@ -305,15 +280,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
 
     // Save credentials in encrypted box
-    final userCredentialsBox = await _getUserCredentialsBox();
-    await userCredentialsBox.put(
-      localUserId,
-      UserCredentials(
-        token: token,
-        clientCertificate: clientCert,
-      ),
-    );
-    userCredentialsBox.close();
+    await withEncryptedBox(HiveBoxes.localUserCredentials, (box) async {
+      await box.put(
+        localUserId,
+        UserCredentials(
+          token: token,
+          clientCertificate: clientCert,
+        ),
+      );
+    });
     return serverUser.id;
   }
 

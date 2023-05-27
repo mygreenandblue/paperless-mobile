@@ -114,8 +114,9 @@ class DocumentsCubit extends HydratedCubit<DocumentsState> with DocumentPagingBl
 
   void setViewType(ViewType viewType) {
     emit(state.copyWith(viewType: viewType));
-    _userState.documentsPageViewType = viewType;
-    _userState.save();
+    _userState
+      ..documentsPageViewType = viewType
+      ..save();
   }
 
   @override
