@@ -6,45 +6,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
-import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/home/view/route_description.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/share_intent_queue.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
-import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 /// Wrapper around all functionality for a logged in user.
 /// Performs initialization logic.
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final int paperlessApiVersion;
+  const HomePage({Key? key, required this.paperlessApiVersion}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -52,35 +40,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _currentIndex = 0;
-  final DocumentScannerCubit _scannerCubit = DocumentScannerCubit();
-  late final DocumentsCubit _documentsCubit;
-  late final InboxCubit _inboxCubit;
-  late final SavedViewCubit _savedViewCubit;
   late Timer _inboxTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeData(context);
-    final userId =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
-    _documentsCubit = DocumentsCubit(
-      context.read(),
-      context.read(),
-      context.read(),
-      Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(userId)!,
-    )..reload();
-    _savedViewCubit = SavedViewCubit(
-      context.read(),
-      context.read(),
-    )..reload();
-    _inboxCubit = InboxCubit(
-      context.read(),
-      context.read(),
-      context.read(),
-      context.read(),
-    );
     _listenToInboxChanges();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _listenForReceivedFiles();
@@ -97,7 +62,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       if (!mounted) {
         timer.cancel();
       } else {
-        _inboxCubit.refreshItemsInInboxCount();
+        context.read<InboxCubit>().refreshItemsInInboxCount();
       }
     });
   }
@@ -127,9 +92,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _inboxTimer.cancel();
-    _inboxCubit.close();
-    _documentsCubit.close();
-    _savedViewCubit.close();
     super.dispose();
   }
 
@@ -176,25 +138,23 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       }
       return;
     }
+
+    if (!LocalUserAccount.current.paperlessUser
+        .hasPermission(PermissionAction.add, PermissionTarget.document)) {
+      Fluttertoast.showToast(
+        msg: "You do not have the permissions to upload documents.",
+      );
+      return;
+    }
     final fileDescription = FileDescription.fromPath(mediaFile.path);
     if (await File(mediaFile.path).exists()) {
       final bytes = File(mediaFile.path).readAsBytesSync();
-      final result = await Navigator.push<DocumentUploadResult>(
+      final result = await pushDocumentUploadPreparationPage(
         context,
-        MaterialPageRoute(
-          builder: (context) => BlocProvider.value(
-            value: DocumentUploadCubit(
-              context.read(),
-              context.read(),
-            ),
-            child: DocumentUploadPreparationPage(
-              fileBytes: bytes,
-              filename: fileDescription.filename,
-              title: fileDescription.filename,
-              fileExtension: fileDescription.extension,
-            ),
-          ),
-        ),
+        bytes: bytes,
+        filename: fileDescription.filename,
+        title: fileDescription.filename,
+        fileExtension: fileDescription.extension,
       );
       if (result?.success ?? false) {
         await Fluttertoast.showToast(
@@ -212,8 +172,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final userId =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser!;
     final destinations = [
       RouteDescription(
         icon: const Icon(Icons.description_outlined),
@@ -223,14 +181,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.documents,
       ),
-      RouteDescription(
-        icon: const Icon(Icons.document_scanner_outlined),
-        selectedIcon: Icon(
-          Icons.document_scanner,
-          color: Theme.of(context).colorScheme.primary,
+      if (LocalUserAccount.current.paperlessUser
+          .hasPermission(PermissionAction.add, PermissionTarget.document))
+        RouteDescription(
+          icon: const Icon(Icons.document_scanner_outlined),
+          selectedIcon: Icon(
+            Icons.document_scanner,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context)!.scanner,
         ),
-        label: S.of(context)!.scanner,
-      ),
       RouteDescription(
         icon: const Icon(Icons.sell_outlined),
         selectedIcon: Icon(
@@ -247,54 +207,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.inbox,
         badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
-          bloc: _inboxCubit,
           builder: (context, state) {
-            if (state.itemsInInboxCount > 0) {
-              return Badge.count(
-                count: state.itemsInInboxCount,
-                child: icon,
-              );
-            }
-            return icon;
+            return Badge.count(
+              isLabelVisible: state.itemsInInboxCount > 0,
+              count: state.itemsInInboxCount,
+              child: icon,
+            );
           },
         ),
       ),
     ];
     final routes = <Widget>[
-      MultiBlocProvider(
-        // key: ValueKey(userId),
-        providers: [
-          BlocProvider.value(value: _documentsCubit),
-          BlocProvider.value(value: _savedViewCubit),
-        ],
-        child: const DocumentsPage(),
-      ),
-      BlocProvider.value(
-        value: _scannerCubit,
-        child: const ScannerPage(),
-      ),
-      MultiBlocProvider(
-        // key: ValueKey(userId),
-        providers: [
-          BlocProvider(
-            create: (context) => LabelCubit(context.read()),
-          )
-        ],
-        child: const LabelsPage(),
-      ),
-      BlocProvider<InboxCubit>.value(
-        value: _inboxCubit,
-        child: const InboxPage(),
-      ),
+      const DocumentsPage(),
+      if (LocalUserAccount.current.paperlessUser
+          .hasPermission(PermissionAction.add, PermissionTarget.document))
+        const ScannerPage(),
+      const LabelsPage(),
+      const InboxPage(),
     ];
-
     return MultiBlocListener(
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
-          //Only re-initialize data if the connectivity changed from not connected to connected
+          // If app was started offline, load data once it comes back online.
           listenWhen: (previous, current) => current == ConnectivityState.connected,
           listener: (context, state) {
-            _initializeData(context);
+            context.read<LabelRepository>().initialize();
+            context.read<SavedViewRepository>().initialize();
           },
         ),
         BlocListener<TaskStatusCubit, TaskStatusState>(
@@ -345,16 +283,5 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (_currentIndex != index) {
       setState(() => _currentIndex = index);
     }
-  }
-
-  void _initializeData(BuildContext context) {
-    Future.wait([
-      context.read<LabelRepository>().initialize(),
-      context.read<SavedViewRepository>().findAll(),
-      context.read<ServerInformationCubit>().updateInformation(),
-    ]).onError<PaperlessServerException>((error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-      throw error;
-    });
   }
 }

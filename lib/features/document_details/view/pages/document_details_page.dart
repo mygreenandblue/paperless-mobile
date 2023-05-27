@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -11,19 +12,20 @@ import 'package:paperless_mobile/features/document_details/view/widgets/document
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
-  final bool allowEdit;
   final bool isLabelClickable;
   final String? titleAndContentQueryString;
 
@@ -31,7 +33,6 @@ class DocumentDetailsPage extends StatefulWidget {
     Key? key,
     this.isLabelClickable = true,
     this.titleAndContentQueryString,
-    this.allowEdit = true,
   }) : super(key: key);
 
   @override
@@ -39,41 +40,36 @@ class DocumentDetailsPage extends StatefulWidget {
 }
 
 class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
-  late Future<DocumentMetaData> _metaData;
   static const double _itemSpacing = 24;
 
   final _pagingScrollController = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-    _loadMetaData();
-  }
 
-  void _loadMetaData() {
-    _metaData = context
-        .read<PaperlessDocumentsApi>()
-        .getMetaData(context.read<DocumentDetailsCubit>().state.document);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    final apiVersion = context.watch<ApiVersion>();
+
+    final tabLength = 4 + (apiVersion.hasMultiUserSupport ? 1 : 0);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(context.read<DocumentDetailsCubit>().state.document);
         return false;
       },
       child: DefaultTabController(
-        length: 4,
+        length: tabLength,
         child: BlocListener<ConnectivityCubit, ConnectivityState>(
           listenWhen: (previous, current) => !previous.isConnected && current.isConnected,
           listener: (context, state) {
-            _loadMetaData();
-            setState(() {});
+            context.read<DocumentDetailsCubit>().loadMetaData();
           },
           child: Scaffold(
             extendBodyBehindAppBar: false,
             floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-            floatingActionButton: widget.allowEdit ? _buildEditButton() : null,
+            floatingActionButton: _buildEditButton(),
             bottomNavigationBar: _buildBottomAppBar(),
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -155,6 +151,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ),
                           ),
+                          if (apiVersion.hasMultiUserSupport)
+                            Tab(
+                              child: Text(
+                                "Permissions",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -228,6 +233,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ],
                           ),
+                          if (apiVersion.hasMultiUserSupport)
+                            CustomScrollView(
+                              controller: _pagingScrollController,
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                DocumentPermissionsWidget(
+                                  document: state.document,
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -242,25 +259,25 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   }
 
   Widget _buildEditButton() {
+    bool canEdit = context.watchInternetConnection &&
+        LocalUserAccount.current.paperlessUser
+            .hasPermission(PermissionAction.change, PermissionTarget.document);
+    if (!canEdit) {
+      return const SizedBox.shrink();
+    }
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
         // final _filteredSuggestions =
         //     state.suggestions?.documentDifference(state.document);
-        return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-          builder: (context, connectivityState) {
-            if (!connectivityState.isConnected) {
-              return const SizedBox.shrink();
-            }
-            return Tooltip(
-              message: S.of(context)!.editDocumentTooltip,
-              preferBelow: false,
-              verticalOffset: 40,
-              child: FloatingActionButton(
-                child: const Icon(Icons.edit),
-                onPressed: () => _onEdit(state.document),
-              ),
-            );
-          },
+
+        return Tooltip(
+          message: S.of(context)!.editDocumentTooltip,
+          preferBelow: false,
+          verticalOffset: 40,
+          child: FloatingActionButton(
+            child: const Icon(Icons.edit),
+            onPressed: () => _onEdit(state.document),
+          ),
         );
       },
     );
@@ -273,24 +290,27 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectivityState) {
               final isConnected = connectivityState.isConnected;
+
+              final canDelete = isConnected &&
+                  LocalUserAccount.current.paperlessUser
+                      .hasPermission(PermissionAction.delete, PermissionTarget.document);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   IconButton(
                     tooltip: S.of(context)!.deleteDocumentTooltip,
                     icon: const Icon(Icons.delete),
-                    onPressed:
-                        widget.allowEdit && isConnected ? () => _onDelete(state.document) : null,
+                    onPressed: canDelete ? () => _onDelete(state.document) : null,
                   ).paddedSymmetrically(horizontal: 4),
                   DocumentDownloadButton(
                     document: state.document,
                     enabled: isConnected,
-                    metaData: _metaData,
                   ),
+                  //TODO: Enable again, need new pdf viewer package...
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,
                     icon: const Icon(Icons.visibility),
-                    onPressed: isConnected ? () => _onOpen(state.document) : null,
+                    onPressed: (isConnected && false) ? () => _onOpen(state.document) : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
@@ -383,7 +403,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Future<void> _onOpen(DocumentModel document) async {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => DocumentView(
+        builder: (_) => DocumentView(
           documentBytes: context.read<PaperlessDocumentsApi>().getPreview(document.id),
         ),
       ),

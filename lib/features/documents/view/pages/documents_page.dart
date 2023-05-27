@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -17,12 +18,11 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/docum
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -108,7 +108,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
         },
         builder: (context, connectivityState) {
           return SafeArea(
-            top: context.read<DocumentsCubit>().state.selection.isEmpty,
+            top: true,
             child: Scaffold(
               drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
@@ -148,8 +148,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                 onWillPop: () async {
                   if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
                     context.read<DocumentsCubit>().resetSelection();
+                    return false;
                   }
-                  return false;
+                  return true;
                 },
                 child: Stack(
                   children: [
@@ -160,13 +161,18 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                           handle: searchBarHandle,
                           sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
                             builder: (context, state) {
-                              if (state.selection.isNotEmpty) {
-                                // Show selection app bar when selection mode is active
-                                return DocumentSelectionSliverAppBar(
-                                  state: state,
-                                );
-                              }
-                              return const SliverSearchBar(floating: true);
+                              return AnimatedSwitcher(
+                                layoutBuilder: SliverAnimatedSwitcher.defaultLayoutBuilder,
+                                transitionBuilder: SliverAnimatedSwitcher.defaultTransitionBuilder,
+                                child: state.selection.isEmpty
+                                    ? const SliverSearchBar(floating: true)
+                                    : DocumentSelectionSliverAppBar(
+                                        state: state,
+                                      ),
+                                duration: const Duration(
+                                  milliseconds: 250,
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -333,10 +339,6 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                   isLabelClickable: true,
                   isLoading: state.isLoading,
                   selectedDocumentIds: state.selectedIds,
-                  correspondents: state.correspondents,
-                  documentTypes: state.documentTypes,
-                  tags: state.tags,
-                  storagePaths: state.storagePaths,
                 );
               },
             ),
@@ -368,21 +370,7 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   }
 
   void _onCreateSavedView(DocumentFilter filter) async {
-    final newView = await Navigator.of(context).push<SavedView?>(
-      MaterialPageRoute(
-        builder: (context) => BlocBuilder<SavedViewCubit, SavedViewState>(
-          builder: (context, state) {
-            return AddSavedViewPage(
-              currentFilter: filter,
-              correspondents: state.correspondents,
-              documentTypes: state.documentTypes,
-              storagePaths: state.storagePaths,
-              tags: state.tags,
-            );
-          },
-        ),
-      ),
-    );
+    final newView = await pushAddSavedViewRoute(context, filter: filter);
     if (newView != null) {
       try {
         await context.read<SavedViewCubit>().add(newView);
@@ -443,12 +431,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   }
 
   void _openDetails(DocumentModel document) {
-    Navigator.pushNamed(
+    pushDocumentDetailsRoute(
       context,
-      DocumentDetailsRoute.routeName,
-      arguments: DocumentDetailsRouteArguments(
-        document: document,
-      ),
+      document: document,
     );
   }
 

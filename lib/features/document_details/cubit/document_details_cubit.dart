@@ -12,6 +12,7 @@ import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 part 'document_details_cubit.freezed.dart';
 part 'document_details_state.dart';

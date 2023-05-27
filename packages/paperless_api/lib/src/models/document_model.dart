@@ -2,6 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/models/search_hit.dart';
 
@@ -44,6 +45,12 @@ class DocumentModel extends Equatable {
   )
   final SearchHit? searchHit;
 
+  final int? owner;
+  final bool? userCanChange;
+
+  // Only present if full_perms=true
+  final Permissions? permissions;
+
   const DocumentModel({
     required this.id,
     required this.title,
@@ -59,6 +66,9 @@ class DocumentModel extends Equatable {
     this.archivedFileName,
     this.storagePath,
     this.searchHit,
+    this.owner,
+    this.userCanChange,
+    this.permissions,
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) => _$DocumentModelFromJson(json);

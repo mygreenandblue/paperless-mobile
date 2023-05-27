@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
@@ -10,12 +9,10 @@ class TagsQuery with _$TagsQuery {
   const TagsQuery._();
   @HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedTagsQuery)
   const factory TagsQuery.notAssigned() = NotAssignedTagsQuery;
-
   @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedTagsQuery)
   const factory TagsQuery.anyAssigned({
     @Default([]) List<int> tagIds,
   }) = AnyAssignedTagsQuery;
-
   @HiveType(typeId: PaperlessApiHiveTypeIds.idsTagsQuery)
   const factory TagsQuery.ids({
     @Default([]) List<int> include,

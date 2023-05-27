@@ -17,10 +17,11 @@ class StoragePath extends Label {
     super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
+    super.owner,
+    super.userCanChange,
   });
 
-  factory StoragePath.fromJson(Map<String, dynamic> json) =>
-      _$StoragePathFromJson(json);
+  factory StoragePath.fromJson(Map<String, dynamic> json) => _$StoragePathFromJson(json);
 
   @override
   String toString() {

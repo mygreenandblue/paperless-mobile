@@ -20,6 +20,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     int? documentType,
     int? correspondent,
     Iterable<int> tags = const [],
+    int? asn,
   }) async {
     final formData = FormData();
     formData.files.add(
@@ -40,6 +41,9 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     }
     if (documentType != null) {
       formData.fields.add(MapEntry('document_type', jsonEncode(documentType)));
+    }
+    if (asn != null) {
+      formData.fields.add(MapEntry('archive_serial_number', jsonEncode(asn)));
     }
     for (final tag in tags) {
       formData.fields.add(MapEntry('tags', tag.toString()));
@@ -78,7 +82,6 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentUpdateFailed);
       }
     } on DioError catch (err) {
-      //TODO: Handle 403 permission errors for 1.14.0
       throw err.error!;
     }
   }
@@ -151,10 +154,10 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
 
   @override
   Future<int> findNextAsn() async {
-    final DocumentFilter asnQueryFilter = DocumentFilter(
+    const DocumentFilter asnQueryFilter = DocumentFilter(
       sortField: SortField.archiveSerialNumber,
       sortOrder: SortOrder.descending,
-      asnQuery: const IdQueryParameter.anyAssigned(),
+      asnQuery: IdQueryParameter.anyAssigned(),
       page: 1,
       pageSize: 1,
     );

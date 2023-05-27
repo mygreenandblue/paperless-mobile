@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/sort_field_selection_bottom_sheet.dart';
@@ -21,6 +20,7 @@ class SortDocumentsButton extends StatelessWidget {
         if (state.filter.sortField == null) {
           return const SizedBox.shrink();
         }
+        print(state.filter.sortField);
         return TextButton.icon(
           icon: Icon(state.filter.sortOrder == SortOrder.ascending
               ? Icons.arrow_upward
@@ -49,14 +49,14 @@ class SortDocumentsButton extends StatelessWidget {
                         child: SortFieldSelectionBottomSheet(
                           initialSortField: state.filter.sortField,
                           initialSortOrder: state.filter.sortOrder,
-                          onSubmit: (field, order) => context
-                              .read<DocumentsCubit>()
-                              .updateCurrentFilter(
-                                (filter) => filter.copyWith(
-                                  sortField: field,
-                                  sortOrder: order,
-                                ),
-                              ),
+                          onSubmit: (field, order) {
+                            return context.read<DocumentsCubit>().updateCurrentFilter(
+                                  (filter) => filter.copyWith(
+                                    sortField: field,
+                                    sortOrder: order,
+                                  ),
+                                );
+                          },
                           correspondents: state.correspondents,
                           documentTypes: state.documentTypes,
                           storagePaths: state.storagePaths,

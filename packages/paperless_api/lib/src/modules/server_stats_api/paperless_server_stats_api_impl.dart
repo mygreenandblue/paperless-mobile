@@ -18,15 +18,17 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
 
   @override
   Future<PaperlessServerInformationModel> getServerInformation() async {
-    final response = await client.get("/api/");
-    final version =
-        response.headers[PaperlessServerInformationModel.versionHeader]?.first ?? 'unknown';
-    final apiVersion = int.tryParse(
-        response.headers[PaperlessServerInformationModel.apiVersionHeader]?.first ?? '1');
-    return PaperlessServerInformationModel(
-      version: version,
-      apiVersion: apiVersion,
-    );
+    final response = await client.get("/api/remote_version/");
+    if (response.statusCode == 200) {
+      final version = response.data["version"] as String;
+      final updateAvailable = response.data["update_available"] as bool;
+      return PaperlessServerInformationModel(
+        apiVersion: int.parse(response.headers.value('x-api-version')!),
+        version: version,
+        isUpdateAvailable: updateAvailable,
+      );
+    }
+    throw const PaperlessServerException.unknown();
   }
 
   @override

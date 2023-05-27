@@ -1,16 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
-import 'package:url_launcher/link.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -19,7 +19,6 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: true,
       child: Drawer(
         child: Column(
           children: [
@@ -42,7 +41,16 @@ class AppDrawer extends StatelessWidget {
             ListTile(
               dense: true,
               leading: const Icon(Icons.bug_report_outlined),
-              title: Text(S.of(context)!.reportABug),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(S.of(context)!.reportABug),
+                  const Icon(
+                    Icons.open_in_new,
+                    size: 16,
+                  )
+                ],
+              ),
               onTap: () {
                 launchUrlString(
                   'https://github.com/astubenbord/paperless-mobile/issues/new',
@@ -64,7 +72,7 @@ class AppDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(S.of(context)!.donateCoffee),
-                  Icon(
+                  const Icon(
                     Icons.open_in_new,
                     size: 16,
                   )
@@ -85,8 +93,11 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<ServerInformationCubit>(),
+                  builder: (_) => MultiProvider(
+                    providers: [
+                      Provider.value(value: context.read<PaperlessServerStatsApi>()),
+                      Provider.value(value: context.read<ApiVersion>()),
+                    ],
                     child: const SettingsPage(),
                   ),
                 ),
@@ -99,6 +110,8 @@ class AppDrawer extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     showAboutDialog(
       context: context,
       applicationIcon: const ImageIcon(
@@ -111,10 +124,11 @@ class AppDrawer extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           "Source Code",
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium,
         ),
         RichText(
           text: TextSpan(
+            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             children: [
               TextSpan(
                 text: S.of(context)!.findTheSourceCodeOn,
@@ -137,9 +151,30 @@ class AppDrawer extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           'Credits',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
-        _buildOnboardingImageCredits(),
+        RichText(
+          text: TextSpan(
+            style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+            children: [
+              const TextSpan(
+                text: 'Onboarding images by ',
+              ),
+              TextSpan(
+                text: 'pch.vector',
+                style: const TextStyle(color: Colors.blue),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    launchUrlString(
+                        'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
+                  },
+              ),
+              const TextSpan(
+                text: ' on Freepik.',
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -148,19 +183,19 @@ class AppDrawer extends StatelessWidget {
     return RichText(
       text: TextSpan(
         children: [
-          TextSpan(
+          const TextSpan(
             text: 'Onboarding images by ',
           ),
           TextSpan(
             text: 'pch.vector',
-            style: TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.blue),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 launchUrlString(
                     'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
               },
           ),
-          TextSpan(
+          const TextSpan(
             text: ' on Freepik.',
           ),
         ],

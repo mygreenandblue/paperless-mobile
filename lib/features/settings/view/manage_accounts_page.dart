@@ -1,22 +1,19 @@
-import 'dart:ui';
-
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class ManageAccountsPage extends StatelessWidget {
   const ManageAccountsPage({super.key});
@@ -33,25 +30,24 @@ class ManageAccountsPage extends StatelessWidget {
                 .whereNot((element) => element == globalSettings.currentLoggedInUser)
                 .toList();
             return SimpleDialog(
-              insetPadding: EdgeInsets.all(24),
-              contentPadding: EdgeInsets.all(8),
+              insetPadding: const EdgeInsets.all(24),
+              contentPadding: const EdgeInsets.all(8),
               title: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Align(
+                  const Align(
                     alignment: Alignment.centerLeft,
                     child: CloseButton(),
                   ),
                   Center(child: Text(S.of(context)!.accounts)),
                 ],
-              ), //TODO: INTL
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
               children: [
                 _buildAccountTile(context, globalSettings.currentLoggedInUser!,
                     box.get(globalSettings.currentLoggedInUser!)!, globalSettings),
-                // if (otherAccounts.isNotEmpty) Text("Other accounts"),
                 Column(
                   children: [
                     for (int index = 0; index < otherAccounts.length; index++)
@@ -71,6 +67,11 @@ class ManageAccountsPage extends StatelessWidget {
                     _onAddAccount(context, globalSettings.currentLoggedInUser!);
                   },
                 ),
+                if (context.watch<ApiVersion>().hasMultiUserSupport)
+                  const ListTile(
+                    leading: Icon(Icons.admin_panel_settings),
+                    title: Text("Manage permissions"), //TODO: INTL
+                  ),
               ],
             );
           },
@@ -90,20 +91,18 @@ class ManageAccountsPage extends StatelessWidget {
     final child = SizedBox(
       width: double.maxFinite,
       child: ListTile(
-        title: Text(account.username),
+        title: Text(account.paperlessUser.username),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (account.fullName != null) Text(account.fullName!),
+            if (account.paperlessUser.fullName != null) Text(account.paperlessUser.fullName!),
             Text(
               account.serverUrl.replaceFirst(RegExp(r'https://?'), ''),
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: TextStyle(color: theme.colorScheme.primary),
             ),
           ],
         ),
-        isThreeLine: true,
+        isThreeLine: account.paperlessUser.fullName != null,
         leading: UserAvatar(
           account: account,
           userId: userId,
@@ -116,7 +115,7 @@ class ManageAccountsPage extends StatelessWidget {
                 PopupMenuItem(
                   child: ListTile(
                     title: Text(S.of(context)!.switchAccount),
-                    leading: Icon(Icons.switch_account_rounded),
+                    leading: const Icon(Icons.switch_account_rounded),
                   ),
                   value: 0,
                 ),
@@ -124,7 +123,7 @@ class ManageAccountsPage extends StatelessWidget {
                 PopupMenuItem(
                   child: ListTile(
                     title: Text(S.of(context)!.remove),
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.person_remove,
                       color: Colors.red,
                     ),
@@ -135,7 +134,7 @@ class ManageAccountsPage extends StatelessWidget {
                 PopupMenuItem(
                   child: ListTile(
                     title: Text(S.of(context)!.logout),
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.person_remove,
                       color: Colors.red,
                     ),
@@ -204,15 +203,8 @@ class ManageAccountsPage extends StatelessWidget {
   }
 
   _onSwitchAccount(BuildContext context, String currentUser, String newUser) async {
-    final navigator = Navigator.of(context);
     if (currentUser == newUser) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SwitchingAccountsPage(),
-      ),
-    );
-    await context.read<AuthenticationCubit>().switchAccount(newUser);
-    navigator.popUntil((route) => route.isFirst);
+    Navigator.of(context).pop();
+    context.read<AuthenticationCubit>().switchAccount(newUser);
   }
 }

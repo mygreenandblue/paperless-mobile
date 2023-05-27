@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -35,15 +33,12 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
           onPressed: () async {
             final shouldDelete = await showDialog<bool>(
                   context: context,
-                  builder: (context) =>
-                      BulkDeleteConfirmationDialog(state: state),
+                  builder: (context) => BulkDeleteConfirmationDialog(state: state),
                 ) ??
                 false;
             if (shouldDelete) {
               try {
-                await context
-                    .read<DocumentsCubit>()
-                    .bulkDelete(state.selection);
+                await context.read<DocumentsCubit>().bulkDelete(state.selection);
                 showSnackBar(
                   context,
                   S.of(context)!.documentsSuccessfullyDeleted,
@@ -66,140 +61,22 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
               ActionChip(
                 label: Text(S.of(context)!.correspondent),
                 avatar: const Icon(Icons.edit),
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => DocumentBulkActionCubit(
-                          context.read(),
-                          context.read(),
-                          context.read(),
-                          selection: state.selection,
-                        ),
-                        child: BlocBuilder<DocumentBulkActionCubit,
-                            DocumentBulkActionState>(
-                          builder: (context, state) {
-                            return FullscreenBulkEditLabelPage(
-                              options: state.correspondents,
-                              selection: state.selection,
-                              labelMapper: (document) => document.correspondent,
-                              leadingIcon: const Icon(Icons.person_outline),
-                              hintText: S.of(context)!.startTyping,
-                              onSubmit: context
-                                  .read<DocumentBulkActionCubit>()
-                                  .bulkModifyCorrespondent,
-                              assignMessageBuilder: (int count, String name) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditCorrespondentAssignMessage(
-                                      name,
-                                      count,
-                                    );
-                              },
-                              removeMessageBuilder: (int count) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditCorrespondentRemoveMessage(count);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
+                onPressed: () {
+                  pushBulkEditCorrespondentRoute(context, selection: state.selection);
                 },
               ).paddedOnly(left: 8, right: 4),
               ActionChip(
                 label: Text(S.of(context)!.documentType),
                 avatar: const Icon(Icons.edit),
                 onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => DocumentBulkActionCubit(
-                          context.read(),
-                          context.read(),
-                          context.read(),
-                          selection: state.selection,
-                        ),
-                        child: BlocBuilder<DocumentBulkActionCubit,
-                            DocumentBulkActionState>(
-                          builder: (context, state) {
-                            return FullscreenBulkEditLabelPage(
-                              options: state.documentTypes,
-                              selection: state.selection,
-                              labelMapper: (document) => document.documentType,
-                              leadingIcon:
-                                  const Icon(Icons.description_outlined),
-                              hintText: S.of(context)!.startTyping,
-                              onSubmit: context
-                                  .read<DocumentBulkActionCubit>()
-                                  .bulkModifyDocumentType,
-                              assignMessageBuilder: (int count, String name) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditDocumentTypeAssignMessage(
-                                      count,
-                                      name,
-                                    );
-                              },
-                              removeMessageBuilder: (int count) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditDocumentTypeRemoveMessage(count);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
+                  pushBulkEditDocumentTypeRoute(context, selection: state.selection);
                 },
               ).paddedOnly(left: 8, right: 4),
               ActionChip(
                 label: Text(S.of(context)!.storagePath),
                 avatar: const Icon(Icons.edit),
                 onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => DocumentBulkActionCubit(
-                          context.read(),
-                          context.read(),
-                          context.read(),
-                          selection: state.selection,
-                        ),
-                        child: BlocBuilder<DocumentBulkActionCubit,
-                            DocumentBulkActionState>(
-                          builder: (context, state) {
-                            return FullscreenBulkEditLabelPage(
-                              options: state.storagePaths,
-                              selection: state.selection,
-                              labelMapper: (document) => document.storagePath,
-                              leadingIcon: const Icon(Icons.folder_outlined),
-                              hintText: S.of(context)!.startTyping,
-                              onSubmit: context
-                                  .read<DocumentBulkActionCubit>()
-                                  .bulkModifyStoragePath,
-                              assignMessageBuilder: (int count, String name) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditStoragePathAssignMessage(
-                                      count,
-                                      name,
-                                    );
-                              },
-                              removeMessageBuilder: (int count) {
-                                return S
-                                    .of(context)!
-                                    .bulkEditStoragePathRemoveMessage(count);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
+                  pushBulkEditStoragePathRoute(context, selection: state.selection);
                 },
               ).paddedOnly(left: 8, right: 4),
               _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
@@ -215,21 +92,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
       label: Text(S.of(context)!.tags),
       avatar: const Icon(Icons.edit),
       onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) => DocumentBulkActionCubit(
-                context.read(),
-                context.read(),
-                context.read(),
-                selection: state.selection,
-              ),
-              child: Builder(builder: (context) {
-                return const FullscreenBulkEditTagsWidget();
-              }),
-            ),
-          ),
-        );
+        pushBulkEditTagsRoute(context, selection: state.selection);
       },
     );
   }

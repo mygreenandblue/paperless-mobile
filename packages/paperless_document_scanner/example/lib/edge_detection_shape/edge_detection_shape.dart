@@ -1,8 +1,6 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_document_scanner/paperless_document_scanner.dart';
 import 'package:paperless_document_scanner/types/edge_detection_result.dart';
 
 import 'edge_painter.dart';

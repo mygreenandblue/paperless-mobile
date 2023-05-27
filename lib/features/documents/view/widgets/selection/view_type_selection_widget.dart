@@ -35,7 +35,7 @@ class ViewTypeSelectionWidget extends StatelessWidget {
       ), // Ensures text is not split into two lines
       position: PopupMenuPosition.under,
       initialValue: viewType,
-      icon: Icon(icon),
+      icon: Icon(icon, color: Theme.of(context).colorScheme.primary),
       itemBuilder: (context) => [
         _buildViewTypeOption(
           context,

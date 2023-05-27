@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/model/github_error_report.model.dart';

@@ -5,12 +5,14 @@ class RouteDescription {
   final Icon icon;
   final Icon selectedIcon;
   final Widget Function(Widget icon)? badgeBuilder;
+  final bool enabled;
 
   RouteDescription({
     required this.label,
     required this.icon,
     required this.selectedIcon,
     this.badgeBuilder,
+    this.enabled = true,
   });
 
   NavigationDestination toNavigationDestination() {

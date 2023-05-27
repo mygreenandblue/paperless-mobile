@@ -11,14 +11,16 @@ class Correspondent extends Label {
   final DateTime? lastCorrespondence;
 
   const Correspondent({
-    super.id,
+    this.lastCorrespondence,
     required super.name,
+    super.id,
     super.slug,
     super.match,
     super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
-    this.lastCorrespondence,
+    super.owner, 
+    super.userCanChange,
   });
 
   factory Correspondent.fromJson(Map<String, dynamic> json) =>

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:provider/provider.dart';
 
 class DocumentListItem extends DocumentItem {
   static const _a4AspectRatio = 1 / 1.4142;
@@ -21,14 +23,11 @@ class DocumentListItem extends DocumentItem {
     super.onTagSelected,
     super.onTap,
     super.enableHeroAnimation = true,
-    required super.tags,
-    required super.correspondents,
-    required super.documentTypes,
-    required super.storagePaths,
   });
 
   @override
   Widget build(BuildContext context) {
+    final labels = context.watch<LabelRepository>().state;
     return Material(
       child: ListTile(
         dense: true,
@@ -46,7 +45,10 @@ class DocumentListItem extends DocumentItem {
                   absorbing: isSelectionActive,
                   child: CorrespondentWidget(
                     isClickable: isLabelClickable,
-                    correspondent: correspondents[document.correspondent],
+                    correspondent: context
+                        .watch<LabelRepository>()
+                        .state
+                        .correspondents[document.correspondent],
                     onSelected: onCorrespondentSelected,
                   ),
                 ),
@@ -62,8 +64,8 @@ class DocumentListItem extends DocumentItem {
               child: TagsWidget(
                 isClickable: isLabelClickable,
                 tags: document.tags
-                    .where((e) => tags.containsKey(e))
-                    .map((e) => tags[e]!)
+                    .where((e) => labels.tags.containsKey(e))
+                    .map((e) => labels.tags[e]!)
                     .toList(),
                 isMultiLine: false,
                 onTagSelected: (id) => onTagSelected?.call(id),
@@ -78,15 +80,12 @@ class DocumentListItem extends DocumentItem {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: DateFormat.yMMMd().format(document.created),
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.apply(color: Colors.grey),
+              style: Theme.of(context).textTheme.labelSmall?.apply(color: Colors.grey),
               children: document.documentType != null
                   ? [
                       const TextSpan(text: '\u30FB'),
                       TextSpan(
-                        text: documentTypes[document.documentType]?.name,
+                        text: labels.documentTypes[document.documentType]?.name,
                       ),
                     ]
                   : null,

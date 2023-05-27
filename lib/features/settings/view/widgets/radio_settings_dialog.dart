@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class RadioSettingsDialog<T> extends StatefulWidget {
   final List<RadioOption<T>> options;

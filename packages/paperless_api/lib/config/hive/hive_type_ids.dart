@@ -24,6 +24,12 @@ class PaperlessApiHiveTypeIds {
   static const int anyAssignedIdQueryParameter = 118;
   static const int setIdQueryParameter = 119;
   static const int notAssignedTagsQuery = 120;
+  static const int userModelv3 = 121;
+  static const int userPermissions = 122;
+  static const int inheritedPermissions = 123;
+  static const int groupModel = 124;
+  static const int permissions = 125;
+  static const int userModelv2 = 126;
 }
 
 void registerPaperlessApiHiveTypeAdapters() {
@@ -46,4 +52,9 @@ void registerPaperlessApiHiveTypeAdapters() {
   Hive.registerAdapter(UnsetIdQueryParameterAdapter());
   Hive.registerAdapter(AnyAssignedIdQueryParameterAdapter());
   Hive.registerAdapter(NotAssignedIdQueryParameterAdapter());
+  // Users and permissions
+  Hive.registerAdapter(UserModelV3Adapter());
+  Hive.registerAdapter(UserModelV2Adapter());
+  Hive.registerAdapter(GroupModelAdapter());
+  Hive.registerAdapter(PermissionsAdapter());
 }

@@ -1,29 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
+import 'package:paperless_mobile/core/repository/persistent_repository.dart';
 
-class LabelRepository extends HydratedCubit<LabelRepositoryState> {
+class LabelRepository extends PersistentRepository<LabelRepositoryState> {
   final PaperlessLabelsApi _api;
-  final Map<Object, StreamSubscription> _subscribers = {};
 
-  LabelRepository(this._api) : super(const LabelRepositoryState());
-
-  void addListener(
-    Object source, {
-    required void Function(LabelRepositoryState) onChanged,
-  }) {
-    onChanged(state);
-    _subscribers.putIfAbsent(source, () {
-      return stream.listen((event) => onChanged(event));
-    });
-  }
-
-  void removeListener(Object source) async {
-    await _subscribers[source]?.cancel();
-    _subscribers.remove(source);
+  LabelRepository(this._api) : super(const LabelRepositoryState()) {
+    initialize();
   }
 
   Future<void> initialize() {
@@ -193,14 +179,6 @@ class LabelRepository extends HydratedCubit<LabelRepositoryState> {
     final updatedState = {...state.storagePaths}..update(updated.id!, (_) => updated);
     emit(state.copyWith(storagePaths: updatedState));
     return updated;
-  }
-
-  @override
-  Future<void> close() {
-    _subscribers.forEach((key, subscription) {
-      subscription.cancel();
-    });
-    return super.close();
   }
 
   @override

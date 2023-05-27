@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';

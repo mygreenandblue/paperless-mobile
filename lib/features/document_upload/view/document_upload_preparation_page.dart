@@ -7,6 +7,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -192,6 +193,10 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
                   options: state.correspondents,
                   prefixIcon: const Icon(Icons.person_outline),
                   allowSelectUnassigned: true,
+                  canCreateNewLabel: LocalUserAccount.current.paperlessUser.hasPermission(
+                    PermissionAction.add,
+                    PermissionTarget.correspondent,
+                  ),
                 ),
                 // Document type
                 LabelFormField<DocumentType>(
@@ -207,6 +212,10 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
                   options: state.documentTypes,
                   prefixIcon: const Icon(Icons.description_outlined),
                   allowSelectUnassigned: true,
+                  canCreateNewLabel: LocalUserAccount.current.paperlessUser.hasPermission(
+                    PermissionAction.add,
+                    PermissionTarget.documentType,
+                  ),
                 ),
                 TagsFormField(
                   name: DocumentModel.tagsKey,
@@ -238,10 +247,14 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
 
         final createdAt = fv[DocumentModel.createdKey] as DateTime?;
         final title = fv[DocumentModel.titleKey] as String;
-        final docType = fv[DocumentModel.documentTypeKey] as SetIdQueryParameter;
-        final tags = fv[DocumentModel.tagsKey] as IdsTagsQuery;
-        final correspondent = fv[DocumentModel.correspondentKey] as SetIdQueryParameter;
-
+        final docType = (fv[DocumentModel.documentTypeKey] as IdQueryParameter?)
+            ?.whenOrNull(fromId: (id) => id);
+        final tags = (fv[DocumentModel.tagsKey] as TagsQuery?)
+                ?.whenOrNull(ids: (include, exclude) => include) ??
+            [];
+        final correspondent = (fv[DocumentModel.correspondentKey] as IdQueryParameter?)
+            ?.whenOrNull(fromId: (id) => id);
+        final asn = fv[DocumentModel.asnKey] as int?;
         final taskId = await cubit.upload(
           widget.fileBytes,
           filename: _padWithExtension(
@@ -249,10 +262,11 @@ class _DocumentUploadPreparationPageState extends State<DocumentUploadPreparatio
             widget.fileExtension,
           ),
           title: title,
-          documentType: docType.id,
-          correspondent: correspondent.id,
-          tags: tags.include,
+          documentType: docType,
+          correspondent: correspondent,
+          tags: tags,
           createdAt: createdAt,
+          asn: asn,
         );
         showSnackBar(
           context,

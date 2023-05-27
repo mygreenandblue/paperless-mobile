@@ -20,12 +20,10 @@ import 'package:permission_handler/permission_handler.dart';
 class DocumentDownloadButton extends StatefulWidget {
   final DocumentModel? document;
   final bool enabled;
-  final Future<DocumentMetaData> metaData;
   const DocumentDownloadButton({
     super.key,
     required this.document,
     this.enabled = true,
-    required this.metaData,
   });
 
   @override
@@ -81,7 +79,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
           break;
       }
 
-      if (Platform.isAndroid && androidInfo!.version.sdkInt! <= 29) {
+      if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
         final isGranted = await askForPermission(Permission.storage);
         if (!isGranted) {
           return;

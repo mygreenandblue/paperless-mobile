@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AnimatedTouchBubblePart extends StatefulWidget {
-  AnimatedTouchBubblePart({
+  const AnimatedTouchBubblePart({super.key, 
     required this.dragging,
     required this.size,
   });
@@ -35,7 +35,7 @@ class _AnimatedTouchBubblePartState extends State<AnimatedTouchBubblePart>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(0.5, 1.0),
+        curve: const Interval(0.5, 1.0),
       ),
     );
 

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SimilarDocumentsView extends StatefulWidget {
   final ScrollController pagingScrollController;
@@ -36,10 +35,8 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ConnectivityCubit, ConnectivityState>(
-      listenWhen: (previous, current) =>
-          !previous.isConnected && current.isConnected,
-      listener: (context, state) =>
-          context.read<SimilarDocumentsCubit>().initialize(),
+      listenWhen: (previous, current) => !previous.isConnected && current.isConnected,
+      listener: (context, state) => context.read<SimilarDocumentsCubit>().initialize(),
       builder: (context, connectivity) {
         return BlocBuilder<SimilarDocumentsCubit, SimilarDocumentsState>(
           builder: (context, state) {
@@ -48,9 +45,7 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
                 child: OfflineWidget(),
               );
             }
-            if (state.hasLoaded &&
-                !state.isLoading &&
-                state.documents.isEmpty) {
+            if (state.hasLoaded && !state.isLoading && state.documents.isEmpty) {
               return SliverToBoxAdapter(
                 child: Center(
                   child: Text(S.of(context)!.noItemsFound),
@@ -65,19 +60,12 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
               hasLoaded: state.hasLoaded,
               enableHeroAnimation: false,
               onTap: (document) {
-                Navigator.pushNamed(
+                pushDocumentDetailsRoute(
                   context,
-                  DocumentDetailsRoute.routeName,
-                  arguments: DocumentDetailsRouteArguments(
-                    document: document,
-                    isLabelClickable: false,
-                  ),
+                  document: document,
+                  isLabelClickable: false,
                 );
               },
-              correspondents: state.correspondents,
-              documentTypes: state.documentTypes,
-              tags: state.tags,
-              storagePaths: state.storagePaths,
             );
           },
         );

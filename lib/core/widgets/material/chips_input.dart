@@ -27,8 +27,7 @@ import 'package:flutter/services.dart';
 
 typedef ChipsInputSuggestions<T> = Future<List<T>> Function(String query);
 typedef ChipSelected<T> = void Function(T data, bool selected);
-typedef ChipsBuilder<T> = Widget Function(
-    BuildContext context, ChipsInputState<T> state, T data);
+typedef ChipsBuilder<T> = Widget Function(BuildContext context, ChipsInputState<T> state, T data);
 
 class ChipsInput<T> extends StatefulWidget {
   const ChipsInput({
@@ -71,8 +70,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
 
   TextEditingValue get currentTextEditingValue => _value;
 
-  bool get _hasInputConnection =>
-      _connection != null && (_connection?.attached ?? false);
+  bool get _hasInputConnection => _connection != null && (_connection?.attached ?? false);
 
   void requestKeyboard() {
     if (_focusNode.hasFocus) {
@@ -191,8 +189,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
           child: ListView.builder(
             itemCount: _suggestions.length,
             itemBuilder: (BuildContext context, int index) {
-              return widget.suggestionBuilder(
-                  context, this, _suggestions[index]);
+              return widget.suggestionBuilder(context, this, _suggestions[index]);
             },
           ),
         ),
@@ -213,14 +210,11 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
   }
 
   int _countReplacements(TextEditingValue value) {
-    return value.text.codeUnits
-        .where((ch) => ch == kObjectReplacementChar)
-        .length;
+    return value.text.codeUnits.where((ch) => ch == kObjectReplacementChar).length;
   }
 
   void _updateTextInputState() {
-    final text =
-        String.fromCharCodes(_chips.map((_) => kObjectReplacementChar));
+    final text = String.fromCharCodes(_chips.map((_) => kObjectReplacementChar));
     _value = TextEditingValue(
       text: text,
       selection: TextSelection.collapsed(offset: text.length),
@@ -233,35 +227,30 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
     final localId = ++_searchId;
     final results = await widget.findSuggestions(value);
     if (_searchId == localId && mounted) {
-      setState(() => _suggestions = results
-          .where((profile) => !_chips.contains(profile))
-          .toList(growable: false));
+      setState(() => _suggestions =
+          results.where((profile) => !_chips.contains(profile)).toList(growable: false));
     }
   }
 }
 
 class _TextCaret extends StatefulWidget {
   const _TextCaret({
-    this.duration = const Duration(milliseconds: 500),
     this.resumed = false,
   });
 
-  final Duration duration;
   final bool resumed;
 
   @override
   _TextCursorState createState() => _TextCursorState();
 }
 
-class _TextCursorState extends State<_TextCaret>
-    with SingleTickerProviderStateMixin {
+class _TextCursorState extends State<_TextCaret> with SingleTickerProviderStateMixin {
   bool _displayed = false;
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(widget.duration, _onTimer);
   }
 
   void _onTimer(Timer timer) {

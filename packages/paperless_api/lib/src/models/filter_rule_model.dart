@@ -1,9 +1,10 @@
+// ignore_for_file: unused_field
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/constants.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
-import 'package:paperless_api/src/models/query_parameters/tags_query/tags_query.dart';
 
 part 'filter_rule_model.g.dart';
 

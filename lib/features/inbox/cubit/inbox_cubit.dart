@@ -52,16 +52,18 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
         emit(state.copyWith(labels: labels));
       },
     );
-
-    refreshItemsInInboxCount(false);
-    loadInbox();
   }
 
-  void refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
+  Future<void> initialize() async {
+    await refreshItemsInInboxCount(false);
+    await loadInbox();
+  }
+
+  Future<void> refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
     final stats = await _statsApi.getServerStatistics();
 
     if (stats.documentsInInbox != state.itemsInInboxCount && shouldLoadInbox) {
-      loadInbox();
+      await loadInbox();
     }
     emit(
       state.copyWith(

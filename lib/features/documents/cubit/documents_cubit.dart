@@ -14,7 +14,7 @@ import 'package:paperless_mobile/features/settings/model/view_type.dart';
 part 'documents_cubit.g.dart';
 part 'documents_state.dart';
 
-class DocumentsCubit extends Cubit<DocumentsState> with DocumentPagingBlocMixin {
+class DocumentsCubit extends HydratedCubit<DocumentsState> with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
 
@@ -114,13 +114,24 @@ class DocumentsCubit extends Cubit<DocumentsState> with DocumentPagingBlocMixin 
 
   void setViewType(ViewType viewType) {
     emit(state.copyWith(viewType: viewType));
-    _userState.documentsPageViewType = viewType;
-    _userState.save();
+    _userState
+      ..documentsPageViewType = viewType
+      ..save();
   }
 
   @override
   Future<void> onFilterUpdated(DocumentFilter filter) async {
     _userState.currentDocumentFilter = filter;
     await _userState.save();
+  }
+
+  @override
+  DocumentsState? fromJson(Map<String, dynamic> json) {
+    return DocumentsState.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(DocumentsState state) {
+    return state.toJson();
   }
 }

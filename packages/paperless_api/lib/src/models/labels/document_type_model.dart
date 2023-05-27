@@ -13,10 +13,11 @@ class DocumentType extends Label {
     super.matchingAlgorithm,
     super.isInsensitive,
     super.documentCount,
+    super.owner,
+    super.userCanChange,
   });
 
-  factory DocumentType.fromJson(Map<String, dynamic> json) =>
-      _$DocumentTypeFromJson(json);
+  factory DocumentType.fromJson(Map<String, dynamic> json) => _$DocumentTypeFromJson(json);
 
   @override
   String get queryEndpoint => 'document_types';

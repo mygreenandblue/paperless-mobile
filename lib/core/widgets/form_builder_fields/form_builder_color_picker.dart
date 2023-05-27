@@ -181,8 +181,7 @@ class FormBuilderColorPickerField extends FormBuilderField<Color> {
         );
 
   @override
-  FormBuilderColorPickerFieldState createState() =>
-      FormBuilderColorPickerFieldState();
+  FormBuilderColorPickerFieldState createState() => FormBuilderColorPickerFieldState();
 }
 
 class FormBuilderColorPickerFieldState
@@ -217,8 +216,6 @@ class FormBuilderColorPickerFieldState
       final selected = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
-          final materialLocalizations = S.of(context)!;
-
           return AlertDialog(
             // title: null, //const Text('Pick a color!'),
             content: _buildColorPicker(),

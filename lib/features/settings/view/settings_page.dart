@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/core/bloc/server_information_cubit.dart';
-import 'package:paperless_mobile/core/bloc/server_information_state.dart';
+import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/settings/view/pages/application_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/pages/security_settings_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -22,18 +21,39 @@ class SettingsPage extends StatelessWidget {
           final host = user!.serverUrl.replaceFirst(RegExp(r"https?://"), "");
           return ListTile(
             title: Text(
-              S.of(context)!.loggedInAs(user.username) + "@$host",
+              S.of(context)!.loggedInAs(user.paperlessUser.username) + "@$host",
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),
-            subtitle: BlocBuilder<ServerInformationCubit, ServerInformationState>(
-              builder: (context, state) {
+            subtitle: FutureBuilder<PaperlessServerInformationModel>(
+              future: context.read<PaperlessServerStatsApi>().getServerInformation(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text(
+                    "Something went wrong while retrieving server data.", //TODO: INTL
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelSmall
+                        ?.copyWith(color: Theme.of(context).colorScheme.error),
+                    textAlign: TextAlign.center,
+                  );
+                }
+                if (!snapshot.hasData) {
+                  return Text(
+                    "Loading server information...", //TODO: INTL
+                    style: Theme.of(context).textTheme.labelSmall,
+                    textAlign: TextAlign.center,
+                  );
+                }
+                final serverData = snapshot.data!;
                 return Text(
                   S.of(context)!.paperlessServerVersion +
                       ' ' +
-                      state.information!.version.toString() +
-                      ' (API v${state.information!.apiVersion})',
-                  style: Theme.of(context).textTheme.labelSmall,
+                      serverData.version.toString() +
+                      ' (API v${serverData.apiVersion})',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                   textAlign: TextAlign.center,
                 );
               },

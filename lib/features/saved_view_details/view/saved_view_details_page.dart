@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/confirm_delete_saved_view_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
-import 'package:paperless_mobile/routes/document_details_route.dart';
 
 class SavedViewDetailsPage extends StatefulWidget {
   final Future<void> Function(SavedView savedView) onDelete;
@@ -76,20 +76,13 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
                     isLoading: state.isLoading,
                     hasLoaded: state.hasLoaded,
                     onTap: (document) {
-                      Navigator.pushNamed(
+                      pushDocumentDetailsRoute(
                         context,
-                        DocumentDetailsRoute.routeName,
-                        arguments: DocumentDetailsRouteArguments(
-                          document: document,
-                          isLabelClickable: false,
-                        ),
+                        document: document,
+                        isLabelClickable: false,
                       );
                     },
                     viewType: state.viewType,
-                    correspondents: state.correspondents,
-                    documentTypes: state.documentTypes,
-                    tags: state.tags,
-                    storagePaths: state.storagePaths,
                   ),
                   if (state.hasLoaded && state.isLoading)
                     const SliverToBoxAdapter(

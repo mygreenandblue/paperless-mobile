@@ -56,7 +56,7 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
     final searchFilter = DocumentFilter(
       query: TextQuery.extended(query),
     );
-    
+
     await updateFilter(filter: searchFilter);
     emit(
       state.copyWith(
@@ -87,6 +87,10 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
   }
 
   Future<void> suggest(String query) async {
+    final normalizedQuery = query.trim();
+    if (normalizedQuery.isEmpty) {
+      return;
+    }
     emit(
       state.copyWith(
         isLoading: true,
@@ -96,10 +100,13 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState> with DocumentPaging
       ),
     );
     final suggestions = await api.autocomplete(query);
-    emit(state.copyWith(
-      suggestions: suggestions,
-      isLoading: false,
-    ));
+    print("Suggestions found: $suggestions");
+    emit(
+      state.copyWith(
+        suggestions: suggestions,
+        isLoading: false,
+      ),
+    );
   }
 
   void reset() {

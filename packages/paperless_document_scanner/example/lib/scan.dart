@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_document_scanner/types/edge_detection_result.dart';
 
-import 'camera_view.dart';
 import 'cropping_preview.dart';
 import 'edge_detector.dart';
 import 'image_view.dart';
@@ -65,10 +64,6 @@ class _ScanState extends State<Scan> {
       return ImageView(imagePath: croppedImagePath!);
     }
 
-    if (imagePath == null && edgeDetectionResult == null) {
-      return CameraView(controller: controller);
-    }
-
     return ImagePreview(
       imagePath: imagePath!,
       edgeDetectionResult: edgeDetectionResult,
@@ -80,7 +75,7 @@ class _ScanState extends State<Scan> {
       return Align(
         alignment: Alignment.bottomCenter,
         child: FloatingActionButton(
-          child: Icon(Icons.check),
+          child: const Icon(Icons.check),
           onPressed: () async {
             if (croppedImagePath == null) {
               return _processImage(imagePath!, edgeDetectionResult!);
@@ -101,8 +96,8 @@ class _ScanState extends State<Scan> {
       children: [
         FloatingActionButton(
           foregroundColor: Colors.white,
-          child: Icon(Icons.camera_alt),
           onPressed: onTakePictureButtonPressed,
+          child: const Icon(Icons.camera_alt),
         ),
       ],
     );
@@ -129,22 +124,19 @@ class _ScanState extends State<Scan> {
       imagePath = filePath;
     });
 
-    EdgeDetectionResult result =
-        await EdgeDetector().detectEdgesFromFile(filePath);
+    EdgeDetectionResult result = await EdgeDetector().detectEdgesFromFile(filePath);
 
     setState(() {
       edgeDetectionResult = result;
     });
   }
 
-  Future _processImage(
-      String filePath, EdgeDetectionResult edgeDetectionResult) async {
+  Future _processImage(String filePath, EdgeDetectionResult edgeDetectionResult) async {
     if (!mounted) {
       return;
     }
 
-    bool result = await EdgeDetector()
-        .processImageFromFile(filePath, edgeDetectionResult);
+    bool result = await EdgeDetector().processImageFromFile(filePath, edgeDetectionResult);
 
     if (result == false) {
       return;
@@ -167,7 +159,7 @@ class _ScanState extends State<Scan> {
 
   Padding _getBottomBar() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 32),
+      padding: const EdgeInsets.only(bottom: 32),
       child: Align(alignment: Alignment.bottomCenter, child: _getButtonRow()),
     );
   }

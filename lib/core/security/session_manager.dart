@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -10,15 +10,10 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 /// Manages the security context, authentication and base request URL for
 /// an underlying [Dio] client which is injected into all services
 /// requiring authenticated access to the Paperless HTTP API.
-class SessionManager {
-  final Dio _client;
-  PaperlessServerInformationModel _serverInformation;
+class SessionManager extends ValueNotifier<Dio> {
+  Dio get client => value;
 
-  Dio get client => _client;
-
-  SessionManager([List<Interceptor> interceptors = const []])
-      : _client = _initDio(interceptors),
-        _serverInformation = PaperlessServerInformationModel();
+  SessionManager([List<Interceptor> interceptors = const []]) : super(_initDio(interceptors));
 
   static Dio _initDio(List<Interceptor> interceptors) {
     //en- and decoded by utf8 by default
@@ -48,7 +43,6 @@ class SessionManager {
     String? baseUrl,
     String? authToken,
     ClientCertificate? clientCertificate,
-    PaperlessServerInformationModel? serverInformation,
   }) {
     if (clientCertificate != null) {
       final context = SecurityContext()
@@ -81,15 +75,13 @@ class SessionManager {
       });
     }
 
-    if (serverInformation != null) {
-      _serverInformation = serverInformation;
-    }
+    notifyListeners();
   }
 
   void resetSettings() {
     client.httpClientAdapter = IOHttpClientAdapter();
     client.options.baseUrl = '';
     client.options.headers.remove(HttpHeaders.authorizationHeader);
-    _serverInformation = PaperlessServerInformationModel();
+    notifyListeners();
   }
 }

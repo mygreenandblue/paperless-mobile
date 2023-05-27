@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -44,9 +43,7 @@ class DocumentPreview extends StatelessWidget {
           fit: fit,
           alignment: alignment,
           cacheKey: "thumb_${document.id}",
-          imageUrl: context
-              .read<PaperlessDocumentsApi>()
-              .getThumbnailUrl(document.id),
+          imageUrl: context.read<PaperlessDocumentsApi>().getThumbnailUrl(document.id),
           errorWidget: (ctxt, msg, __) => Text(msg),
           placeholder: (context, value) => Shimmer.fromColors(
             baseColor: Colors.grey[300]!,

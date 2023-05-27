@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SortFieldSelectionBottomSheet extends StatefulWidget {
@@ -29,12 +27,10 @@ class SortFieldSelectionBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<SortFieldSelectionBottomSheet> createState() =>
-      _SortFieldSelectionBottomSheetState();
+  State<SortFieldSelectionBottomSheet> createState() => _SortFieldSelectionBottomSheetState();
 }
 
-class _SortFieldSelectionBottomSheetState
-    extends State<SortFieldSelectionBottomSheet> {
+class _SortFieldSelectionBottomSheetState extends State<SortFieldSelectionBottomSheet> {
   late SortField? _currentSortField;
   late SortOrder _currentSortOrder;
 
@@ -62,8 +58,8 @@ class _SortFieldSelectionBottomSheetState
                 ),
                 TextButton(
                   child: Text(S.of(context)!.apply),
-                  onPressed: () {
-                    widget.onSubmit(
+                  onPressed: () async {
+                    await widget.onSubmit(
                       _currentSortField,
                       _currentSortOrder,
                     );
@@ -131,7 +127,9 @@ class _SortFieldSelectionBottomSheetState
       contentPadding: const EdgeInsets.only(left: 32, right: 16),
       title: Text(translateSortField(context, field)),
       trailing: _currentSortField == field ? const Icon(Icons.done) : null,
-      onTap: () => setState(() => _currentSortField = field),
+      onTap: () {
+        setState(() => _currentSortField = field);
+      },
     );
   }
 }

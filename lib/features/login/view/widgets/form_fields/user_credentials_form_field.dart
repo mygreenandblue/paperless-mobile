@@ -39,6 +39,7 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
                 if (value?.trim().isEmpty ?? true) {
                   return S.of(context)!.usernameMustNotBeEmpty;
                 }
+                return null;
               },
               autofillHints: const [AutofillHints.username],
               decoration: InputDecoration(
@@ -56,6 +57,7 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
                 if (value?.trim().isEmpty ?? true) {
                   return S.of(context)!.passwordMustNotBeEmpty;
                 }
+                return null;
               },
             ),
           ].map((child) => child.padded()).toList(),

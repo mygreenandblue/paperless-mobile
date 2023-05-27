@@ -1,6 +1,7 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
 part 'local_user_app_state.g.dart';
@@ -37,4 +38,10 @@ class LocalUserAppState extends HiveObject {
     this.documentSearchViewType = ViewType.list,
     this.savedViewsViewType = ViewType.list,
   });
+
+  static LocalUserAppState get current {
+    final currentLocalUserId =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser!;
+    return Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(currentLocalUserId)!;
+  }
 }

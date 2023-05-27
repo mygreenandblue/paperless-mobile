@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
@@ -14,26 +11,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/adaptive_docume
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-import 'package:paperless_mobile/routes/document_details_route.dart';
 import 'dart:math' as math;
-
-Future<void> showDocumentSearchPage(BuildContext context) {
-  final currentUser =
-      Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
-  return Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => BlocProvider(
-        create: (context) => DocumentSearchCubit(
-          context.read(),
-          context.read(),
-          context.read(),
-          Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(currentUser)!,
-        ),
-        child: const DocumentSearchPage(),
-      ),
-    ),
-  );
-}
 
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});
@@ -54,38 +32,38 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.colorScheme.surfaceVariant,
         toolbarHeight: 72,
         leading: BackButton(
-          color: theme.colorScheme.onSurface,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
-        title: TextField(
-          autofocus: true,
-          style: theme.textTheme.bodyLarge?.apply(
-            color: theme.colorScheme.onSurface,
-          ),
-          focusNode: _queryFocusNode,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.zero,
-            hintStyle: theme.textTheme.bodyLarge?.apply(
-              color: theme.colorScheme.onSurfaceVariant,
+        title: Hero(
+          tag: "search_hero_tag",
+          child: TextField(
+            autofocus: true,
+            // style: theme.textTheme.bodyLarge?.apply(
+            //   color: theme.colorScheme.onSurface,
+            // ),
+            focusNode: _queryFocusNode,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.zero,
+              hintText: S.of(context)!.searchDocuments,
+              border: InputBorder.none,
             ),
-            hintText: S.of(context)!.searchDocuments,
-            border: InputBorder.none,
+            controller: _queryController,
+            onChanged: (query) {
+              _debounceTimer?.cancel();
+              _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+                context.read<DocumentSearchCubit>().suggest(query);
+              });
+            },
+            textInputAction: TextInputAction.search,
+            onSubmitted: (query) {
+              FocusScope.of(context).unfocus();
+              _debounceTimer?.cancel();
+              context.read<DocumentSearchCubit>().search(query);
+            },
           ),
-          controller: _queryController,
-          onChanged: (query) {
-            _debounceTimer?.cancel();
-            _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-              context.read<DocumentSearchCubit>().suggest(query);
-            });
-          },
-          textInputAction: TextInputAction.search,
-          onSubmitted: (query) {
-            FocusScope.of(context).unfocus();
-            _debounceTimer?.cancel();
-            context.read<DocumentSearchCubit>().search(query);
-          },
         ),
         actions: [
           IconButton(
@@ -97,22 +75,22 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             },
           ).padded(),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            color: theme.colorScheme.outline,
-          ),
-        ),
       ),
-      body: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
-        builder: (context, state) {
-          switch (state.view) {
-            case SearchView.suggestions:
-              return _buildSuggestionsView(state);
-            case SearchView.results:
-              return _buildResultsView(state);
-          }
-        },
+      body: Column(
+        children: [
+          Expanded(
+            child: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
+              builder: (context, state) {
+                switch (state.view) {
+                  case SearchView.suggestions:
+                    return _buildSuggestionsView(state);
+                  case SearchView.results:
+                    return _buildResultsView(state);
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -156,7 +134,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
               ),
               childCount: suggestions.length,
             ),
-          )
+          ),
       ],
     );
   }
@@ -226,19 +204,12 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hasLoaded: state.hasLoaded,
             enableHeroAnimation: false,
             onTap: (document) {
-              Navigator.pushNamed(
+              pushDocumentDetailsRoute(
                 context,
-                DocumentDetailsRoute.routeName,
-                arguments: DocumentDetailsRouteArguments(
-                  document: document,
-                  isLabelClickable: false,
-                ),
+                document: document,
+                isLabelClickable: false,
               );
             },
-            correspondents: state.correspondents,
-            documentTypes: state.documentTypes,
-            tags: state.tags,
-            storagePaths: state.storagePaths,
           )
       ],
     );

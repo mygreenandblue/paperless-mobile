@@ -11,19 +11,16 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/file_helpers.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:path/path.dart' as p;
@@ -38,12 +35,9 @@ class ScannerPage extends StatefulWidget {
   State<ScannerPage> createState() => _ScannerPageState();
 }
 
-class _ScannerPageState extends State<ScannerPage>
-    with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle =
-      SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle actionsHandle =
-      SliverOverlapAbsorberHandle();
+class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle actionsHandle = SliverOverlapAbsorberHandle();
 
   @override
   Widget build(BuildContext context) {
@@ -180,8 +174,7 @@ class _ScannerPageState extends State<ScannerPage>
     final success = await EdgeDetection.detectEdge(file.path);
     if (!success) {
       if (kDebugMode) {
-        dev.log(
-            '[ScannerPage] Scan either not successful or canceled by user.');
+        dev.log('[ScannerPage] Scan either not successful or canceled by user.');
       }
       return;
     }
@@ -195,26 +188,15 @@ class _ScannerPageState extends State<ScannerPage>
     final file = await _assembleFileBytes(
       context.read<DocumentScannerCubit>().state,
     );
-    final uploadResult = await Navigator.of(context).push<DocumentUploadResult>(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (context) => DocumentUploadCubit(
-            context.read(),
-            context.read(),
-          ),
-          child: DocumentUploadPreparationPage(
-            fileBytes: file.bytes,
-            fileExtension: file.extension,
-          ),
-        ),
-      ),
+    final uploadResult = await pushDocumentUploadPreparationPage(
+      context,
+      bytes: file.bytes,
+      fileExtension: file.extension,
     );
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context
-          .read<TaskStatusCubit>()
-          .listenToTaskChanges(uploadResult!.taskId!);
+      context.read<TaskStatusCubit>().listenToTaskChanges(uploadResult!.taskId!);
     }
   }
 
@@ -307,21 +289,12 @@ class _ScannerPageState extends State<ScannerPage>
         );
         return;
       }
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => DocumentUploadCubit(
-              context.read(),
-              context.read(),
-            ),
-            child: DocumentUploadPreparationPage(
-              fileBytes: file.readAsBytesSync(),
-              filename: fileDescription.filename,
-              title: fileDescription.filename,
-              fileExtension: fileDescription.extension,
-            ),
-          ),
-        ),
+      pushDocumentUploadPreparationPage(
+        context,
+        bytes: file.readAsBytesSync(),
+        filename: fileDescription.filename,
+        title: fileDescription.filename,
+        fileExtension: fileDescription.extension,
       );
     }
   }

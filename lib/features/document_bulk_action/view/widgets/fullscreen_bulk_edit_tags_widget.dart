@@ -26,8 +26,8 @@ class _FullscreenBulkEditTagsWidgetState
   /// Tags not assigned to at least one document in the selection
   late final List<int> _nonSharedTags;
 
-  List<int> _addTags = [];
-  List<int> _removeTags = [];
+  final List<int> _addTags = [];
+  final List<int> _removeTags = [];
   late List<int> _filteredTags;
 
   @override

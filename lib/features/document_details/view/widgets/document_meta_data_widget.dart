@@ -29,7 +29,11 @@ class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
       builder: (context, state) {
         debugPrint("Building state...");
         if (state.metaData == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const SliverToBoxAdapter(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         return SliverList(
           delegate: SliverChildListDelegate(

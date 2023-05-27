@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_color_picker.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
@@ -21,10 +22,12 @@ class EditTagPage extends StatelessWidget {
       child: EditLabelPage<Tag>(
         label: tag,
         fromJsonT: Tag.fromJson,
-        onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().replaceTag(label),
-        onDelete: (context, label) =>
-            context.read<EditLabelCubit>().removeTag(label),
+        onSubmit: (context, label) => context.read<EditLabelCubit>().replaceTag(label),
+        onDelete: (context, label) => context.read<EditLabelCubit>().removeTag(label),
+        canDelete: LocalUserAccount.current.paperlessUser.hasPermission(
+          PermissionAction.delete,
+          PermissionTarget.tag,
+        ),
         additionalFields: [
           FormBuilderColorPickerField(
             initialValue: tag.color,

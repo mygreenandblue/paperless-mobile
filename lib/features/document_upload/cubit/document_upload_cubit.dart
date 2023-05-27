@@ -35,6 +35,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     int? correspondent,
     Iterable<int> tags = const [],
     DateTime? createdAt,
+    int? asn,
   }) async {
     return await _documentApi.create(
       bytes,
@@ -44,6 +45,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       documentType: documentType,
       tags: tags,
       createdAt: createdAt,
+      asn: asn,
     );
   }
 

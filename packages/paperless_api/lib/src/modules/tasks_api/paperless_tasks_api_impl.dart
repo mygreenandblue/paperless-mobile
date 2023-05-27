@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/request_utils.dart';
 
 class PaperlessTasksApiImpl implements PaperlessTasksApi {
   final Dio _client;

@@ -47,18 +47,11 @@ class _MagnifierState extends State<Magnifier> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
-        widget.child,
-        if (widget.visible && widget.position != null) _getMagnifier(context)
-      ],
+      children: [widget.child, if (widget.visible) _getMagnifier(context)],
     );
   }
 
   void _calculateMatrix() {
-    if (widget.position == null) {
-      return;
-    }
-
     setState(() {
       double newX = widget.position.dx - (_magnifierSize.width / 2 / _scale);
       double newY = widget.position.dy - (_magnifierSize.height / 2 / _scale);
@@ -78,8 +71,7 @@ class _MagnifierState extends State<Magnifier> {
         child: BackdropFilter(
           filter: ImageFilter.matrix(_matrix.storage),
           child: CustomPaint(
-            painter: MagnifierPainter(
-                color: Theme.of(context).colorScheme.secondary),
+            painter: MagnifierPainter(color: Theme.of(context).colorScheme.secondary),
             size: _magnifierSize,
           ),
         ),
@@ -96,6 +88,5 @@ class _MagnifierState extends State<Magnifier> {
   }
 
   bool _bubbleCrossesMagnifier() =>
-      widget.position.dx < widget.size.width &&
-      widget.position.dy < widget.size.height;
+      widget.position.dx < widget.size.width && widget.position.dy < widget.size.height;
 }

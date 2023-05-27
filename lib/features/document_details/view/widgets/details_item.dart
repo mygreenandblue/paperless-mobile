@@ -24,7 +24,7 @@ class DetailsItem extends StatelessWidget {
   }
 
   DetailsItem.text(
-    String text, {
+    String text, {super.key, 
     required this.label,
     required BuildContext context,
   }) : content = Text(
