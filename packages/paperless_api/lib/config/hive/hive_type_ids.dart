@@ -30,6 +30,7 @@ class PaperlessApiHiveTypeIds {
   static const int groupModel = 124;
   static const int permissions = 125;
   static const int userModelv2 = 126;
+  static const int usersAndGroupsPermissions = 127;
 }
 
 void registerPaperlessApiHiveTypeAdapters() {

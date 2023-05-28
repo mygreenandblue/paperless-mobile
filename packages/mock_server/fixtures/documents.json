@@ -22,7 +22,16 @@
             "archived_file_name": "2022-03-22 no latin title.pdf",
             "owner": null,
             "user_can_change": true,
-
+            "permissions": {
+                "view": {
+                    "users": [],
+                    "groups": []
+                },
+                "change": {
+                    "users": [],
+                    "groups": []
+                }
+            },
             "notes": [
                 {
                     "id": 9,
@@ -61,7 +70,16 @@
             "archived_file_name": "2022-03-23 llorem ipsum dolor sit amet.pdf",
             "owner": null,
             "user_can_change": true,
-
+            "permissions": {
+                "view": {
+                    "users": [],
+                    "groups": []
+                },
+                "change": {
+                    "users": [],
+                    "groups": []
+                }
+            },
             "notes": []
         },
         {
@@ -83,7 +101,16 @@
             "archived_file_name": "2022-03-24 dolor.pdf",
             "owner": null,
             "user_can_change": true,
-
+            "permissions": {
+                "view": {
+                    "users": [],
+                    "groups": []
+                },
+                "change": {
+                    "users": [],
+                    "groups": []
+                }
+            },
             "notes": []
         },
         {
@@ -105,7 +132,16 @@
             "archived_file_name": "2022-06-01 sit amet.pdf",
             "owner": null,
             "user_can_change": true,
-
+            "permissions": {
+                "view": {
+                    "users": [],
+                    "groups": []
+                },
+                "change": {
+                    "users": [],
+                    "groups": []
+                }
+            },
             "notes": []
         },
         {
@@ -125,7 +161,16 @@
             "archived_file_name": "doc5.pdf",
             "owner": 15,
             "user_can_change": true,
-
+            "permissions": {
+                "view": {
+                    "users": [],
+                    "groups": []
+                },
+                "change": {
+                    "users": [],
+                    "groups": []
+                }
+            },
             "notes": []
         },
         {
