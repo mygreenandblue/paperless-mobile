@@ -16,7 +16,7 @@ class UserModel with _$UserModel {
   const factory UserModel.v3({
     @HiveField(0) required int id,
     @HiveField(1) required String username,
-    @HiveField(2) required String email,
+    @HiveField(2) String? email,
     @HiveField(3) String? firstName,
     @HiveField(4) String? lastName,
     @HiveField(5) DateTime? dateJoined,

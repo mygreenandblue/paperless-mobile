@@ -154,7 +154,6 @@
         {
             "id": 15,
             "username": "test",
-            "email": "test2@test.com",
             "password": "**********",
             "first_name": "",
             "last_name": "",
