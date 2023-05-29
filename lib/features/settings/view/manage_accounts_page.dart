@@ -12,6 +12,7 @@ import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_d
 import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
+import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,11 @@ class ManageAccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlobalSettingsBuilder(
       builder: (context, globalSettings) {
+        // This is one of the few places where the currentLoggedInUser can be null
+        // (exactly after loggin out as the current user to be precise).
+        if (globalSettings.currentLoggedInUser == null) {
+          return SizedBox.shrink();
+        }
         return ValueListenableBuilder(
           valueListenable: Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
           builder: (context, box, _) {
@@ -46,16 +52,78 @@ class ManageAccountsPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
               ),
               children: [
-                _buildAccountTile(context, globalSettings.currentLoggedInUser!,
-                    box.get(globalSettings.currentLoggedInUser!)!, globalSettings),
+                Card(
+                  child: UserAccountListTile(
+                    account: box.get(globalSettings.currentLoggedInUser!)!,
+                    trailing: PopupMenuButton(
+                      icon: const Icon(Icons.more_vert),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: ListTile(
+                            title: Text(S.of(context)!.logout),
+                            leading: const Icon(
+                              Icons.person_remove,
+                              color: Colors.red,
+                            ),
+                          ),
+                          value: 0,
+                        ),
+                      ],
+                      onSelected: (value) async {
+                        if (value == 0) {
+                          await context
+                              .read<AuthenticationCubit>()
+                              .removeAccount(globalSettings.currentLoggedInUser!);
+                          Navigator.of(context).pop();
+                          context.read<AuthenticationCubit>().logout();
+                        }
+                      },
+                    ),
+                  ),
+                ),
                 Column(
                   children: [
                     for (int index = 0; index < otherAccounts.length; index++)
-                      _buildAccountTile(
-                        context,
-                        otherAccounts[index],
-                        box.get(otherAccounts[index])!,
-                        globalSettings,
+                      UserAccountListTile(
+                        account: box.get(otherAccounts[index])!,
+                        trailing: PopupMenuButton(
+                          icon: const Icon(Icons.more_vert),
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                child: ListTile(
+                                  title: Text(S.of(context)!.switchAccount),
+                                  leading: const Icon(Icons.switch_account_rounded),
+                                ),
+                                value: 0,
+                              ),
+                              PopupMenuItem(
+                                child: ListTile(
+                                  title: Text(S.of(context)!.remove),
+                                  leading: const Icon(
+                                    Icons.person_remove,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                                value: 1,
+                              )
+                            ];
+                          },
+                          onSelected: (value) async {
+                            if (value == 0) {
+                              // Switch
+                              _onSwitchAccount(
+                                context,
+                                globalSettings.currentLoggedInUser!,
+                                otherAccounts[index],
+                              );
+                            } else if (value == 1) {
+                              await context
+                                  .read<AuthenticationCubit>()
+                                  .removeAccount(otherAccounts[index]);
+                            }
+                          },
+                        ),
                       ),
                   ],
                 ),
@@ -68,9 +136,9 @@ class ManageAccountsPage extends StatelessWidget {
                   },
                 ),
                 if (context.watch<ApiVersion>().hasMultiUserSupport)
-                  const ListTile(
-                    leading: Icon(Icons.admin_panel_settings),
-                    title: Text("Manage permissions"), //TODO: INTL
+                  ListTile(
+                    leading: const Icon(Icons.admin_panel_settings),
+                    title: Text(S.of(context)!.managePermissions),
                   ),
               ],
             );
@@ -78,93 +146,6 @@ class ManageAccountsPage extends StatelessWidget {
         );
       },
     );
-  }
-
-  Widget _buildAccountTile(
-    BuildContext context,
-    String userId,
-    LocalUserAccount account,
-    GlobalSettings settings,
-  ) {
-    final isLoggedIn = userId == settings.currentLoggedInUser;
-    final theme = Theme.of(context);
-    final child = SizedBox(
-      width: double.maxFinite,
-      child: ListTile(
-        title: Text(account.paperlessUser.username),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (account.paperlessUser.fullName != null) Text(account.paperlessUser.fullName!),
-            Text(
-              account.serverUrl.replaceFirst(RegExp(r'https://?'), ''),
-              style: TextStyle(color: theme.colorScheme.primary),
-            ),
-          ],
-        ),
-        isThreeLine: account.paperlessUser.fullName != null,
-        leading: UserAvatar(
-          account: account,
-          userId: userId,
-        ),
-        trailing: PopupMenuButton(
-          icon: const Icon(Icons.more_vert),
-          itemBuilder: (context) {
-            return [
-              if (!isLoggedIn)
-                PopupMenuItem(
-                  child: ListTile(
-                    title: Text(S.of(context)!.switchAccount),
-                    leading: const Icon(Icons.switch_account_rounded),
-                  ),
-                  value: 0,
-                ),
-              if (!isLoggedIn)
-                PopupMenuItem(
-                  child: ListTile(
-                    title: Text(S.of(context)!.remove),
-                    leading: const Icon(
-                      Icons.person_remove,
-                      color: Colors.red,
-                    ),
-                  ),
-                  value: 1,
-                )
-              else
-                PopupMenuItem(
-                  child: ListTile(
-                    title: Text(S.of(context)!.logout),
-                    leading: const Icon(
-                      Icons.person_remove,
-                      color: Colors.red,
-                    ),
-                  ),
-                  value: 1,
-                ),
-            ];
-          },
-          onSelected: (value) async {
-            if (value == 0) {
-              // Switch
-              _onSwitchAccount(context, settings.currentLoggedInUser!, userId);
-            } else if (value == 1) {
-              // Remove
-              final shouldPop = userId == settings.currentLoggedInUser;
-              await context.read<AuthenticationCubit>().removeAccount(userId);
-              if (shouldPop) {
-                Navigator.pop(context);
-              }
-            }
-          },
-        ),
-      ),
-    );
-    if (isLoggedIn) {
-      return Card(
-        child: child,
-      );
-    }
-    return child;
   }
 
   Future<void> _onAddAccount(BuildContext context, String currentUser) async {
@@ -202,9 +183,10 @@ class ManageAccountsPage extends StatelessWidget {
     }
   }
 
-  _onSwitchAccount(BuildContext context, String currentUser, String newUser) async {
+  void _onSwitchAccount(BuildContext context, String currentUser, String newUser) async {
     if (currentUser == newUser) return;
+
     Navigator.of(context).pop();
-    context.read<AuthenticationCubit>().switchAccount(newUser);
+    await context.read<AuthenticationCubit>().switchAccount(newUser);
   }
 }

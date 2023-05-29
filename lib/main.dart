@@ -278,6 +278,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
             titleString: S.of(context)!.connectToPaperless,
             submitText: S.of(context)!.signIn,
             onSubmit: _onLogin,
+            showLocalAccounts: true,
           ),
           requriresLocalAuthentication: () => const VerifyIdentityPage(),
           authenticated: (localUserId, apiVersion) => HomeRoute(

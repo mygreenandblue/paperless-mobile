@@ -316,7 +316,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   ).paddedOnly(right: 4.0),
                   DocumentShareButton(document: state.document),
                   IconButton(
-                    tooltip: "Print", //TODO: INTL
+                    tooltip: S.of(context)!.print, //TODO: INTL
                     onPressed: () => context.read<DocumentDetailsCubit>().printDocument(),
                     icon: const Icon(Icons.print),
                   ),
