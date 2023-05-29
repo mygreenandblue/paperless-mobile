@@ -57,10 +57,6 @@ class DocumentSearchState extends DocumentPagingState {
     List<String>? suggestions,
     SearchView? view,
     ViewType? viewType,
-    Map<int, Correspondent>? correspondents,
-    Map<int, DocumentType>? documentTypes,
-    Map<int, Tag>? tags,
-    Map<int, StoragePath>? storagePaths,
   }) {
     return DocumentSearchState(
       value: value ?? this.value,
@@ -79,3 +75,31 @@ class DocumentSearchState extends DocumentPagingState {
 
   Map<String, dynamic> toJson() => _$DocumentSearchStateToJson(this);
 }
+
+// sealed class DocumentSearchState1 {}
+
+// class DocumentSearchStateInitial {}
+
+// class SuggestionsLoadingState extends DocumentSearchState1 {
+//   final List<String> history;
+
+//   SuggestionsLoadingState({required this.history});
+// }
+
+// class SuggestionsLoadedState extends DocumentSearchState1 {
+//   final List<String> history;
+//   final List<String> suggestions;
+
+//   SuggestionsLoadedState({
+//     required this.history,
+//     required this.suggestions,
+//   });
+// }
+
+// class SuggestionsErrorState extends DocumentSearchState1 {}
+
+// class ResultsLoadingState extends DocumentSearchState1 {}
+
+// class ResultsLoadedState extends DocumentSearchState1 {}
+
+// class ResultsErrorState extends DocumentSearchState1 {}

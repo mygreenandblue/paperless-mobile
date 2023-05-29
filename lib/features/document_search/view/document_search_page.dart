@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
@@ -11,8 +11,6 @@ import 'package:paperless_mobile/features/document_search/view/remove_history_en
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
-import 'dart:math' as math;
 
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});
@@ -28,13 +26,15 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
   Timer? _debounceTimer;
 
   String get query => _queryController.text;
+
   @override
   Widget build(BuildContext context) {
+    const double progressIndicatorHeight = 4;
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surfaceVariant,
-        toolbarHeight: 72,
+        toolbarHeight: 72 - progressIndicatorHeight,
         leading: BackButton(
           color: theme.colorScheme.onSurfaceVariant,
         ),
@@ -77,13 +77,13 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           ).padded(),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
+          preferredSize: const Size.fromHeight(progressIndicatorHeight),
           child: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
             builder: (context, state) {
               if (state.isLoading) {
                 return const LinearProgressIndicator();
               }
-              return const SizedBox.shrink();
+              return ColoredBox(color: Theme.of(context).colorScheme.surface);
             },
           ),
         ),
@@ -140,6 +140,13 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             childCount: suggestions.length,
           ),
         ),
+        if (suggestions.isEmpty && historyMatches.isEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverToBoxAdapter(
+              child: Center(child: Text(S.of(context)!.noMatchesFound)),
+            ),
+          ),
       ],
     );
   }

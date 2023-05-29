@@ -6,3 +6,5 @@ files: [
  }
 ]
 # Add your credentials here
+"project_id": "568557"
+"api_token_env": "CROWDIN_PAPERLESS_MOBILE_API_TOKEN"

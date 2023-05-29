@@ -95,7 +95,6 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
               create: (_) => DocumentSearchCubit(
                 context.read(),
                 context.read(),
-                context.read(),
                 Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
                     .get(LocalUserAccount.current.id)!,
               ),

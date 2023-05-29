@@ -20,7 +20,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 2.3.0+35
 
 environment:
-  sdk: ">=2.19.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -51,14 +51,14 @@ dependencies:
   url_launcher: ^6.1.2
   file_picker: ^5.2.4
   web_socket_channel: ^2.2.0
-  http: ^0.13.4
+  http: ^1.0.0
   flutter_cache_manager: ^3.3.0
   cached_network_image: ^3.2.1
   shimmer: ^2.0.0
   flutter_bloc: ^8.1.1
   equatable: ^2.0.3
   flutter_form_builder: ^8.0.0 
-  package_info_plus: ^4.0.0
+  package_info_plus: ^4.0.1
   font_awesome_flutter: ^10.1.0
   local_auth: ^2.1.2
   connectivity_plus: ^4.0.0
@@ -98,6 +98,7 @@ dependencies:
 dependency_overrides:
   intl: ^0.18.0
   graphs: 2.2.0 
+  http: ^1.0.0
 
 
 dev_dependencies:

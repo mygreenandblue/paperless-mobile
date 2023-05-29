@@ -78,11 +78,12 @@ void main() async {
     // URL: http://localhost:3131
     // Login: admin:test
     await LocalMockApiServer(
-      RandomDelayGenerator(
-        const Duration(milliseconds: 100),
-        const Duration(milliseconds: 800),
-      ),
-    ).start();
+            // RandomDelayGenerator(
+            //   const Duration(milliseconds: 100),
+            //   const Duration(milliseconds: 800),
+            // ),
+            )
+        .start();
   }
   await _initHive();
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

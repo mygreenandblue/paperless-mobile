@@ -53,7 +53,6 @@ Future<void> pushDocumentSearchPage(BuildContext context) {
             create: (context) => DocumentSearchCubit(
               context.read(),
               context.read(),
-              context.read(),
               Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState).get(currentUser)!,
             ),
             child: const DocumentSearchPage(),

@@ -65,7 +65,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         );
       }
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -82,7 +82,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentUpdateFailed);
       }
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -108,7 +108,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         throw const PaperlessServerException(ErrorCode.documentLoadFailed);
       }
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -122,7 +122,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.documentDeleteFailed);
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -148,7 +148,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.documentPreviewFailed);
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -170,7 +170,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     } on PaperlessServerException {
       throw const PaperlessServerException(ErrorCode.documentAsnQueryFailed);
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -189,7 +189,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         );
       }
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -206,7 +206,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       );
       return response.data;
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -226,7 +226,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       );
       return response.data;
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -239,7 +239,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         response.data as Map<String, dynamic>,
       );
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -258,7 +258,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.autocompleteQueryError);
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -271,7 +271,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       }
       throw const PaperlessServerException(ErrorCode.suggestionsQueryError);
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 
@@ -285,7 +285,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         return null;
       }
     } on DioError catch (err) {
-      throw err.error!;
+      throw err.error ?? const PaperlessServerException.unknown();
     }
   }
 }

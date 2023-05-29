@@ -5,16 +5,12 @@ export 'response_delay_generator.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
-
 import 'package:logging/logging.dart';
+import 'package:mock_server/english_words.dart';
 import 'package:mock_server/response_delay_generator.dart';
-
 import 'package:shelf/shelf.dart';
-
 import 'package:shelf/shelf_io.dart' as shelf_io;
-
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
-
 import 'package:flutter/services.dart' show rootBundle;
 
 Logger log = Logger('LocalMockApiServer');
@@ -232,6 +228,23 @@ class LocalMockApiServer {
       log.info('Responding to /api/statistics/');
       var data = await loadFixture('statistics');
       return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
+    });
+
+    app.get('/api/search/autocomplete/', (Request req) async {
+      log.info("Responding to /api/search/autocomplete");
+      final term = req.url.queryParameters["term"] ?? '';
+      final limit = int.parse(req.url.queryParameters["limit"] ?? '5');
+      return JsonMockResponse.ok(
+        mostFrequentWords.where((element) => element.startsWith(term)).take(limit).toList(),
+        _delayGenerator.nextDelay(),
+      );
+    });
+
+    app.get('/api/remote_version/', (Request req) async {
+      return JsonMockResponse.ok({
+        'version': 'v1.14.5',
+        'update_available': false,
+      }, _delayGenerator.nextDelay());
     });
   }
 
