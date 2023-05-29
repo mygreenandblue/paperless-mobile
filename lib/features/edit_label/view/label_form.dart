@@ -147,13 +147,6 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           ...widget.initialValue?.toJson() ?? {},
           ..._formKey.currentState!.value
         };
-        if (mergedJson[Label.matchingAlgorithmKey] ==
-                MatchingAlgorithm.auto.value ||
-            mergedJson[Label.matchingAlgorithmKey] ==
-                MatchingAlgorithm.none.value) {
-          // If auto is selected, the match will be removed.
-          mergedJson[Label.matchKey] = '';
-        }
         final parsed = widget.fromJsonT(mergedJson);
         final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
         Navigator.pop(context, createdLabel);
