@@ -108,143 +108,153 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
                     ),
                   ),
                 ],
-                body: NotificationListener<ScrollNotification>(
-                  onNotification: (notification) {
-                    final metrics = notification.metrics;
-                    if (metrics.maxScrollExtent == 0) {
-                      return true;
-                    }
-                    final desiredTab =
-                        ((metrics.pixels / metrics.maxScrollExtent) * (_tabController.length - 1))
+                body: BlocBuilder<LabelCubit, LabelState>(
+                  builder: (context, state) {
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        final metrics = notification.metrics;
+                        if (metrics.maxScrollExtent == 0) {
+                          return true;
+                        }
+                        final desiredTab = ((metrics.pixels / metrics.maxScrollExtent) *
+                                (_tabController.length - 1))
                             .round();
 
-                    if (metrics.axis == Axis.horizontal && _currentIndex != desiredTab) {
-                      setState(() => _currentIndex = desiredTab);
-                    }
-                    return true;
+                        if (metrics.axis == Axis.horizontal && _currentIndex != desiredTab) {
+                          setState(() => _currentIndex = desiredTab);
+                        }
+                        return true;
+                      },
+                      child: RefreshIndicator(
+                        edgeOffset: kTextTabBarHeight,
+                        notificationPredicate: (notification) => connectedState.isConnected,
+                        onRefresh: () => [
+                          context.read<LabelCubit>().reloadCorrespondents,
+                          context.read<LabelCubit>().reloadDocumentTypes,
+                          context.read<LabelCubit>().reloadTags,
+                          context.read<LabelCubit>().reloadStoragePaths,
+                        ][_currentIndex]
+                            .call(),
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            Builder(
+                              builder: (context) {
+                                return CustomScrollView(
+                                  slivers: [
+                                    SliverOverlapInjector(handle: searchBarHandle),
+                                    SliverOverlapInjector(handle: tabBarHandle),
+                                    LabelTabView<Correspondent>(
+                                      labels: state.correspondents,
+                                      filterBuilder: (label) => DocumentFilter(
+                                        correspondent: IdQueryParameter.fromId(label.id!),
+                                      ),
+                                      canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                          PermissionAction.change, PermissionTarget.correspondent),
+                                      canAddNew: LocalUserAccount.current.paperlessUser
+                                          .hasPermission(
+                                              PermissionAction.add, PermissionTarget.correspondent),
+                                      onEdit: _openEditCorrespondentPage,
+                                      emptyStateActionButtonLabel:
+                                          S.of(context)!.addNewCorrespondent,
+                                      emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
+                                      onAddNew: _openAddCorrespondentPage,
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            Builder(
+                              builder: (context) {
+                                return CustomScrollView(
+                                  slivers: [
+                                    SliverOverlapInjector(handle: searchBarHandle),
+                                    SliverOverlapInjector(handle: tabBarHandle),
+                                    LabelTabView<DocumentType>(
+                                      labels: state.documentTypes,
+                                      filterBuilder: (label) => DocumentFilter(
+                                        documentType: IdQueryParameter.fromId(label.id!),
+                                      ),
+                                      canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                          PermissionAction.change, PermissionTarget.documentType),
+                                      canAddNew: LocalUserAccount.current.paperlessUser
+                                          .hasPermission(
+                                              PermissionAction.add, PermissionTarget.documentType),
+                                      onEdit: _openEditDocumentTypePage,
+                                      emptyStateActionButtonLabel:
+                                          S.of(context)!.addNewDocumentType,
+                                      emptyStateDescription: S.of(context)!.noDocumentTypesSetUp,
+                                      onAddNew: _openAddDocumentTypePage,
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            Builder(
+                              builder: (context) {
+                                return CustomScrollView(
+                                  slivers: [
+                                    SliverOverlapInjector(handle: searchBarHandle),
+                                    SliverOverlapInjector(handle: tabBarHandle),
+                                    LabelTabView<Tag>(
+                                      labels: state.tags,
+                                      filterBuilder: (label) => DocumentFilter(
+                                        tags: TagsQuery.ids(include: [label.id!]),
+                                      ),
+                                      canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                          PermissionAction.change, PermissionTarget.tag),
+                                      canAddNew: LocalUserAccount.current.paperlessUser
+                                          .hasPermission(
+                                              PermissionAction.add, PermissionTarget.tag),
+                                      onEdit: _openEditTagPage,
+                                      leadingBuilder: (t) => CircleAvatar(
+                                        backgroundColor: t.color,
+                                        child: t.isInboxTag
+                                            ? Icon(
+                                                Icons.inbox,
+                                                color: t.textColor,
+                                              )
+                                            : null,
+                                      ),
+                                      emptyStateActionButtonLabel: S.of(context)!.addNewTag,
+                                      emptyStateDescription: S.of(context)!.noTagsSetUp,
+                                      onAddNew: _openAddTagPage,
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            Builder(
+                              builder: (context) {
+                                return CustomScrollView(
+                                  slivers: [
+                                    SliverOverlapInjector(handle: searchBarHandle),
+                                    SliverOverlapInjector(handle: tabBarHandle),
+                                    LabelTabView<StoragePath>(
+                                      labels: state.storagePaths,
+                                      onEdit: _openEditStoragePathPage,
+                                      filterBuilder: (label) => DocumentFilter(
+                                        storagePath: IdQueryParameter.fromId(label.id!),
+                                      ),
+                                      canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
+                                          PermissionAction.change, PermissionTarget.storagePath),
+                                      canAddNew: LocalUserAccount.current.paperlessUser
+                                          .hasPermission(
+                                              PermissionAction.add, PermissionTarget.storagePath),
+                                      contentBuilder: (path) => Text(path.path),
+                                      emptyStateActionButtonLabel: S.of(context)!.addNewStoragePath,
+                                      emptyStateDescription: S.of(context)!.noStoragePathsSetUp,
+                                      onAddNew: _openAddStoragePathPage,
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
-                  child: RefreshIndicator(
-                    edgeOffset: kTextTabBarHeight,
-                    notificationPredicate: (notification) => connectedState.isConnected,
-                    onRefresh: () => [
-                      context.read<LabelCubit>().reloadCorrespondents,
-                      context.read<LabelCubit>().reloadDocumentTypes,
-                      context.read<LabelCubit>().reloadTags,
-                      context.read<LabelCubit>().reloadStoragePaths,
-                    ][_currentIndex]
-                        .call(),
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(handle: searchBarHandle),
-                                SliverOverlapInjector(handle: tabBarHandle),
-                                LabelTabView<Correspondent>(
-                                  labels: context.watch<LabelCubit>().state.correspondents,
-                                  filterBuilder: (label) => DocumentFilter(
-                                    correspondent: IdQueryParameter.fromId(label.id!),
-                                  ),
-                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.change, PermissionTarget.correspondent),
-                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.add, PermissionTarget.correspondent),
-                                  onEdit: _openEditCorrespondentPage,
-                                  emptyStateActionButtonLabel: S.of(context)!.addNewCorrespondent,
-                                  emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
-                                  onAddNew: _openAddCorrespondentPage,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(handle: searchBarHandle),
-                                SliverOverlapInjector(handle: tabBarHandle),
-                                LabelTabView<DocumentType>(
-                                  labels: context.watch<LabelCubit>().state.documentTypes,
-                                  filterBuilder: (label) => DocumentFilter(
-                                    documentType: IdQueryParameter.fromId(label.id!),
-                                  ),
-                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.change, PermissionTarget.documentType),
-                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.add, PermissionTarget.documentType),
-                                  onEdit: _openEditDocumentTypePage,
-                                  emptyStateActionButtonLabel: S.of(context)!.addNewDocumentType,
-                                  emptyStateDescription: S.of(context)!.noDocumentTypesSetUp,
-                                  onAddNew: _openAddDocumentTypePage,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(handle: searchBarHandle),
-                                SliverOverlapInjector(handle: tabBarHandle),
-                                LabelTabView<Tag>(
-                                  labels: context.watch<LabelCubit>().state.tags,
-                                  filterBuilder: (label) => DocumentFilter(
-                                    tags: TagsQuery.ids(include: [label.id!]),
-                                  ),
-                                  canEdit: LocalUserAccount.current.paperlessUser
-                                      .hasPermission(PermissionAction.change, PermissionTarget.tag),
-                                  canAddNew: LocalUserAccount.current.paperlessUser
-                                      .hasPermission(PermissionAction.add, PermissionTarget.tag),
-                                  onEdit: _openEditTagPage,
-                                  leadingBuilder: (t) => CircleAvatar(
-                                    backgroundColor: t.color,
-                                    child: t.isInboxTag
-                                        ? Icon(
-                                            Icons.inbox,
-                                            color: t.textColor,
-                                          )
-                                        : null,
-                                  ),
-                                  emptyStateActionButtonLabel: S.of(context)!.addNewTag,
-                                  emptyStateDescription: S.of(context)!.noTagsSetUp,
-                                  onAddNew: _openAddTagPage,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                        Builder(
-                          builder: (context) {
-                            return CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(handle: searchBarHandle),
-                                SliverOverlapInjector(handle: tabBarHandle),
-                                LabelTabView<StoragePath>(
-                                  labels: context.watch<LabelCubit>().state.storagePaths,
-                                  onEdit: _openEditStoragePathPage,
-                                  filterBuilder: (label) => DocumentFilter(
-                                    storagePath: IdQueryParameter.fromId(label.id!),
-                                  ),
-                                  canEdit: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.change, PermissionTarget.storagePath),
-                                  canAddNew: LocalUserAccount.current.paperlessUser.hasPermission(
-                                      PermissionAction.add, PermissionTarget.storagePath),
-                                  contentBuilder: (path) => Text(path.path),
-                                  emptyStateActionButtonLabel: S.of(context)!.addNewStoragePath,
-                                  emptyStateDescription: S.of(context)!.noStoragePathsSetUp,
-                                  onAddNew: _openAddStoragePathPage,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
