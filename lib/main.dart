@@ -74,6 +74,7 @@ Future<void> _initHive() async {
 }
 
 void main() async {
+  Paint.enableDithering = true;
   if (kDebugMode) {
     // URL: http://localhost:3131
     // Login: admin:test

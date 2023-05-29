@@ -45,11 +45,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   final _pagingScrollController = ScrollController();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final apiVersion = context.watch<ApiVersion>();
 
@@ -87,22 +82,24 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         alignment: Alignment.topCenter,
                         children: [
                           BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                            builder: (context, state) => Positioned.fill(
-                              child: DocumentPreview(
-                                document: state.document,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                            builder: (context, state) {
+                              return Positioned.fill(
+                                child: DocumentPreview(
+                                  document: state.document,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
                           ),
                           Positioned.fill(
                             top: 0,
-                            child: Container(
-                              height: 100,
+                            child: DecoratedBox(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.black.withOpacity(0.7),
-                                    Colors.black.withOpacity(0.2),
+                                    Theme.of(context).colorScheme.background.withOpacity(0.8),
+                                    Theme.of(context).colorScheme.background.withOpacity(0.5),
+                                    Colors.transparent,
                                     Colors.transparent,
                                     Colors.transparent,
                                   ],
@@ -310,7 +307,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   IconButton(
                     tooltip: S.of(context)!.previewTooltip,
                     icon: const Icon(Icons.visibility),
-                    onPressed: (isConnected && false) ? () => _onOpen(state.document) : null,
+                    onPressed: (isConnected) ? () => _onOpen(state.document) : null,
                   ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
@@ -318,6 +315,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     onPressed: isConnected ? _onOpenFileInSystemViewer : null,
                   ).paddedOnly(right: 4.0),
                   DocumentShareButton(document: state.document),
+                  IconButton(
+                    tooltip: "Print", //TODO: INTL
+                    onPressed: () => context.read<DocumentDetailsCubit>().printDocument(),
+                    icon: const Icon(Icons.print),
+                  ),
                 ],
               );
             },
@@ -404,7 +406,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => DocumentView(
-          documentBytes: context.read<PaperlessDocumentsApi>().getPreview(document.id),
+          documentBytes: context.read<PaperlessDocumentsApi>().download(document),
+          title: document.title,
         ),
       ),
     );
