@@ -588,7 +588,7 @@
   "@createsASavedViewBasedOnTheCurrentFilterCriteria": {},
   "createViewsToQuicklyFilterYourDocuments": "Create views to quickly filter your documents.",
   "@createViewsToQuicklyFilterYourDocuments": {},
-  "nFiltersSet": "{count, plural, zero{{count} filters set} one{{count} filter set} other{{count} filters set}}",
+  "nFiltersSet": "{count, plural, one{{count} filter set} other{{count} filters set}}",
   "@nFiltersSet": {
     "placeholders": {
       "count": {}
