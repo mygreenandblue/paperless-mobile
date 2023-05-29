@@ -4,7 +4,7 @@ Das Benutzen der App setzt den Zugang zu einer laufenden Paperless-ng*x Instanz 
 
 * Betrachte und suche Dokumente
 * Bearbeite, lösche, oder füge neue Dokumente hinzu
-* Teile Dokumente, lade sie herunter oder betrachte deine Dateien
+* Teile, Betrachte, Drucke, oder lade deine Dokumente herunter
 * Verwalte Korrespondenten, Dokumenttypen, Tags oder Speicherpfade
 * Scanne und lade Dokumente mit bereits zugewiesenen Werten hoch
 * Überprüfe und verarbeite neue Dokumente im Posteingang
@@ -14,4 +14,4 @@ Das Benutzen der App setzt den Zugang zu einer laufenden Paperless-ng*x Instanz 
 * Moderne, intuitive Nutzeroberfläche  basierend auf der Material Design 3 Spezifikation
 * Heller und dunkler Modus 
 * Unterstützung von dynamischer Farbgebung (nur Android 12+)
-* Verfügbar in Deutsch, Englisch, Französisch, Katalan, Tschechisch und Türkisch 
+* Verfügbar in Deutsch, Englisch, Französisch, Katalan, Polnisch, Tschechisch und Türkisch 

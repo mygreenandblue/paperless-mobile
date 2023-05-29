@@ -1,7 +1,5 @@
 name: paperless_mobile
-description:
-  Application to conveniently scan and share documents with a paperless-ng
-  server.
+description: An (almost) fully fledged mobile paperless-ng*x client.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -17,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.3.0+35
+version: 2.3.1+36
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -35,10 +33,6 @@ dependencies:
     sdk: flutter
   permission_handler: ^10.2.0
   pdf: ^3.10.2
-  # pdfx:
-  #   git:
-  #     url: "https://github.com/ScerIO/packages.flutter"
-  #     path: packages/pdfx
   edge_detection:
     git:
       url: https://github.com/sawankumarbundelkhandi/edge_detection
