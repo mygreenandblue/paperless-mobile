@@ -348,49 +348,49 @@
   "@after": {},
   "before": "Before",
   "@before": {},
-  "days": "{count, plural, zero{days} one{day} other{days}}",
+  "days": "{count, plural, one{day} other{days}}",
   "@days": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNDays": "{count, plural, zero{} one{Yesterday} other{Last {count} days}}",
+  "lastNDays": "{count, plural, one{Yesterday} other{Last {count} days}}",
   "@lastNDays": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNMonths": "{count, plural, zero{} one{Last month} other{Last {count} months}}",
+  "lastNMonths": "{count, plural, one{Last month} other{Last {count} months}}",
   "@lastNMonths": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNWeeks": "{count, plural, zero{} one{Last week} other{Last {count} weeks}}",
+  "lastNWeeks": "{count, plural, one{Last week} other{Last {count} weeks}}",
   "@lastNWeeks": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNYears": "{count, plural, zero{} one{Last year} other{Last {count} years}}",
+  "lastNYears": "{count, plural, one{Last year} other{Last {count} years}}",
   "@lastNYears": {
     "placeholders": {
       "count": {}
     }
   },
-  "months": "{count, plural, zero{} one{month} other{months}}",
+  "months": "{count, plural, one{month} other{months}}",
   "@months": {
     "placeholders": {
       "count": {}
     }
   },
-  "weeks": "{count, plural, zero{} one{week} other{weeks}}",
+  "weeks": "{count, plural, one{week} other{weeks}}",
   "@weeks": {
     "placeholders": {
       "count": {}
     }
   },
-  "years": "{count, plural, zero{} one{year} other{years}}",
+  "years": "{count, plural, one{year} other{years}}",
   "@years": {
     "placeholders": {
       "count": {}
