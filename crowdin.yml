@@ -5,4 +5,7 @@ files: [
   "type" : "arb",
  }
 ]
-# Add your credentials here
+"project_id": "568557"
+"api_token": "382c40ea7995b4778d45971a0d00ce6717e79f280f4d2afa4652a69eeea687035f5668ceb6e7c61c"
+
+"preserve_hierarchy": true
