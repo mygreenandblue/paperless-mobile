@@ -779,5 +779,13 @@
   "alwaysAsk": "Immer fragen",
   "@alwaysAsk": {
     "description": "Option to choose when the app should always ask the user which filetype to use"
+  },
+  "disableMatching": "Deaktiviere automatische Zuweisung",
+  "@disableMatching": {
+    "description": "One of the options for automatic tagging of documents"
+  },
+  "none": "Keine",
+  "@none": {
+    "description": "One of available enum values of matching algorithm for tags"
   }
 }
