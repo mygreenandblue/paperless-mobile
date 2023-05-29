@@ -1,10 +1,13 @@
 library mock_server;
 
+export 'response_delay_generator.dart';
+
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
 import 'package:logging/logging.dart';
+import 'package:mock_server/response_delay_generator.dart';
 
 import 'package:shelf/shelf.dart';
 
@@ -23,27 +26,29 @@ class LocalMockApiServer {
 
   static get baseUrl => 'http://$host:$port/';
 
+  final DelayGenerator _delayGenerator;
+
   late shelf_router.Router app;
   Future<Map<String, dynamic>> loadFixture(String name) async {
     var fixture = await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
     return json.decode(fixture);
   }
 
-  LocalMockApiServer() {
+  LocalMockApiServer([this._delayGenerator = const ZeroDelayGenerator()]) {
     app = shelf_router.Router();
 
     Map<String, dynamic> createdTags = {};
 
     app.get('/api/', (Request req) async {
       log.info('Responding to /api');
-      return JsonMockResponse.ok({});
+      return JsonMockResponse.ok({}, _delayGenerator.nextDelay());
     });
 
     app.post('/api/token/', (Request req) async {
       log.info('Responding to /api/token/');
       var body = await req.bodyJsonMap();
       if (body?['username'] == 'admin' && body?['password'] == 'test') {
-        return JsonMockResponse.ok({'token': 'testToken'});
+        return JsonMockResponse.ok({'token': 'testToken'}, _delayGenerator.nextDelay());
       } else {
         return Response.unauthorized('Unauthorized');
       }
@@ -52,37 +57,37 @@ class LocalMockApiServer {
     app.get('/api/ui_settings/', (Request req) async {
       log.info('Responding to /api/ui_settings/');
       var data = await loadFixture('ui_settings');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/users/<userId>/', (Request req, String userId) async {
       log.info('Responding to /api/users/<userId>/');
       var data = await loadFixture('user-1');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/users/', (Request req, String userId) async {
       log.info('Responding to /api/users/');
       var data = await loadFixture('users');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/groups/', (Request req, String userId) async {
       log.info('Responding to /api/groups/');
       var data = await loadFixture('groups');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/correspondents/', (Request req) async {
       log.info('Responding to /api/correspondents/');
       var data = await loadFixture('correspondents');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/document_types/', (Request req) async {
       log.info('Responding to /api/document_types/');
       var data = await loadFixture('doc_types');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/tags/', (Request req) async {
@@ -91,7 +96,7 @@ class LocalMockApiServer {
         var data = await loadFixture("tags");
         createdTags = data;
       }
-      return JsonMockResponse.ok(createdTags);
+      return JsonMockResponse.ok(createdTags, _delayGenerator.nextDelay());
     });
 
     app.post('/api/tags/', (Request req) async {
@@ -156,25 +161,25 @@ class LocalMockApiServer {
     app.get('/api/storage_paths/', (Request req) async {
       log.info('Responding to /api/storage_paths/');
       var data = await loadFixture('storage_paths');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/storage_paths/', (Request req) async {
       log.info('Responding to /api/storage_paths/');
       var data = await loadFixture('storage_paths');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/saved_views/', (Request req) async {
       log.info('Responding to /api/saved_views/');
       var data = await loadFixture('saved_views');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/documents/', (Request req) async {
       log.info('Responding to /api/documents/');
       var data = await loadFixture('documents');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/documents/<docId>/thumb/', (Request req, String docId) async {
@@ -194,39 +199,39 @@ class LocalMockApiServer {
     app.get('/api/documents/<docId>/metadata/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/metadata/');
       var data = await loadFixture('metadata');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     //This is not yet used in the app
     app.get('/api/documents/<docId>/suggestions/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/suggestions/');
       var data = await loadFixture('suggestions');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     //This is not yet used in the app
     app.get('/api/documents/<docId>/notes/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/notes/');
       var data = await loadFixture('notes');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/tasks/', (Request req) async {
       log.info('Responding to /api/tasks/');
       var data = await loadFixture('tasks');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/statistics/', (Request req) async {
       log.info('Responding to /api/statistics/');
       var data = await loadFixture('statistics');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     app.get('/api/statistics/', (Request req) async {
       log.info('Responding to /api/statistics/');
       var data = await loadFixture('statistics');
-      return JsonMockResponse.ok(data);
+      return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
   }
 
@@ -264,8 +269,8 @@ extension on Request {
 }
 
 extension JsonMockResponse on Response {
-  static ok<T>(T json, {int delay = 800}) async {
-    await Future.delayed(Duration(milliseconds: delay)); // Emulate lag
+  static ok<T>(T json, Duration delay) async {
+    await Future.delayed(delay); // Emulate lag
 
     return Response.ok(
       jsonEncode(json),

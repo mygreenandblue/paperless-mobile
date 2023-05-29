@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
@@ -75,6 +76,17 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             },
           ).padded(),
         ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const LinearProgressIndicator();
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -117,24 +129,17 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             childCount: historyMatches.length,
           ),
         ),
-        if (state.isLoading)
-          const SliverToBoxAdapter(
-            child: Center(
-              child: CircularProgressIndicator(),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => ListTile(
+              title: Text(suggestions[index]),
+              leading: const Icon(Icons.search),
+              onTap: () => _selectSuggestion(suggestions[index]),
+              trailing: _buildInsertSuggestionButton(suggestions[index]),
             ),
-          )
-        else
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => ListTile(
-                title: Text(suggestions[index]),
-                leading: const Icon(Icons.search),
-                onTap: () => _selectSuggestion(suggestions[index]),
-                trailing: _buildInsertSuggestionButton(suggestions[index]),
-              ),
-              childCount: suggestions.length,
-            ),
+            childCount: suggestions.length,
           ),
+        ),
       ],
     );
   }
