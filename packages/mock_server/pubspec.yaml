@@ -13,6 +13,7 @@ dependencies:
   logging: ^1.1.1
   flutter:
     sdk: flutter
+  http: ^1.0.0
 
 dev_dependencies:
   flutter_test:

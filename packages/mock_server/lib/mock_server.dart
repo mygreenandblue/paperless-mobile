@@ -13,21 +13,19 @@ import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
 
 Logger log = Logger('LocalMockApiServer');
 
 class LocalMockApiServer {
-  static final host = 'localhost';
+  static const host = 'localhost';
 
-  static final port = 3131;
+  static const port = 3131;
 
   static get baseUrl => 'http://$host:$port/';
 
   late shelf_router.Router app;
   Future<Map<String, dynamic>> loadFixture(String name) async {
-    var fixture =
-        await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
+    var fixture = await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
     return json.decode(fixture);
   }
 
@@ -150,13 +148,9 @@ class LocalMockApiServer {
 
     app.delete('/api/tags/<tagId>/', (Request req, String tagId) async {
       log.info('Responding to PUT /api/tags/<tagId>/');
-      (createdTags['results'] as List<dynamic>)
-          .removeWhere((element) => element['id'] == tagId);
+      (createdTags['results'] as List<dynamic>).removeWhere((element) => element['id'] == tagId);
       return Response(204,
-          body: null,
-          headers: {'Content-Type': 'application/json'},
-          encoding: null,
-          context: null);
+          body: null, headers: {'Content-Type': 'application/json'}, encoding: null, context: null);
     });
 
     app.get('/api/storage_paths/', (Request req) async {
@@ -185,8 +179,7 @@ class LocalMockApiServer {
 
     app.get('/api/documents/<docId>/thumb/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/thumb/');
-      var thumb = await rootBundle
-          .load('packages/mock_server/fixtures/lorem-ipsum.png');
+      var thumb = await rootBundle.load('packages/mock_server/fixtures/lorem-ipsum.png');
       try {
         var resp = Response.ok(
           http.ByteStream.fromBytes(thumb.buffer.asInt8List()),
@@ -198,16 +191,14 @@ class LocalMockApiServer {
       }
     });
 
-    app.get('/api/documents/<docId>/metadata/',
-        (Request req, String docId) async {
+    app.get('/api/documents/<docId>/metadata/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/metadata/');
       var data = await loadFixture('metadata');
       return JsonMockResponse.ok(data);
     });
 
     //This is not yet used in the app
-    app.get('/api/documents/<docId>/suggestions/',
-        (Request req, String docId) async {
+    app.get('/api/documents/<docId>/suggestions/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/suggestions/');
       var data = await loadFixture('suggestions');
       return JsonMockResponse.ok(data);
@@ -244,10 +235,11 @@ class LocalMockApiServer {
 
     var handler = const Pipeline().addMiddleware(
       logRequests(logger: (message, isError) {
-        if (isError)
+        if (isError) {
           log.severe(message);
-        else
+        } else {
           log.info(message);
+        }
       }),
     ).addHandler(app);
 
@@ -261,15 +253,14 @@ class LocalMockApiServer {
 
 extension on Request {
   Future<String?> bodyJsonValue(String param) async {
-    return jsonDecode(await this.readAsString())?[param];
+    return jsonDecode(await readAsString())?[param];
   }
 
   Future<Map?> bodyJsonMap() async {
-    return jsonDecode(await this.readAsString());
+    return jsonDecode(await readAsString());
   }
 
-  String? get accessToken =>
-      this.headers['Authorization']?.split('Bearer ').last;
+  String? get accessToken => headers['Authorization']?.split('Bearer ').last;
 }
 
 extension JsonMockResponse on Response {
