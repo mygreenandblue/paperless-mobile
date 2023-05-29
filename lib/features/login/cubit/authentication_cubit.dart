@@ -203,10 +203,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> logout() async {
     await _resetExternalState();
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    globalSettings.currentLoggedInUser = null;
+    await globalSettings.save();
     emit(const AuthenticationState.unauthenticated());
-    globalSettings
-      ..currentLoggedInUser = null
-      ..save();
   }
 
   Future<void> _resetExternalState() async {

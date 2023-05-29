@@ -71,11 +71,10 @@ class ManageAccountsPage extends StatelessWidget {
                       ],
                       onSelected: (value) async {
                         if (value == 0) {
-                          await context
-                              .read<AuthenticationCubit>()
-                              .removeAccount(globalSettings.currentLoggedInUser!);
+                          final currentUser = globalSettings.currentLoggedInUser!;
+                          await context.read<AuthenticationCubit>().logout();
                           Navigator.of(context).pop();
-                          context.read<AuthenticationCubit>().logout();
+                          await context.read<AuthenticationCubit>().removeAccount(currentUser);
                         }
                       },
                     ),
