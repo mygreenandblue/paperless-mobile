@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -47,6 +48,7 @@ import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:mock_server/mock_server.dart';
 
 String get defaultPreferredLocaleSubtag {
   String preferredLocale = Platform.localeName.split("_").first;
@@ -72,6 +74,9 @@ Future<void> _initHive() async {
 }
 
 void main() async {
+  if (kDebugMode) {
+    await LocalMockApiServer().start();
+  }
   await _initHive();
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   final globalSettingsBox = Hive.box<GlobalSettings>(HiveBoxes.globalSettings);
