@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 @JsonEnum(valueField: 'value')
 enum MatchingAlgorithm {
+  none(0, "None: Disable matching"),
   anyWord(1, "Any: Match one of the following words"),
   allWords(2, "All: Match all of the following words"),
   exactMatch(3, "Exact: Match the following string"),

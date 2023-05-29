@@ -103,7 +103,8 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
               onChanged: (val) {
                 setState(() {
                   _errors = {};
-                  _enableMatchFormField = val != MatchingAlgorithm.auto.value;
+                  _enableMatchFormField = val != MatchingAlgorithm.auto.value &&
+                      val != MatchingAlgorithm.none.value;
                 });
               },
               items: MatchingAlgorithm.values
@@ -147,7 +148,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           ..._formKey.currentState!.value
         };
         if (mergedJson[Label.matchingAlgorithmKey] ==
-            MatchingAlgorithm.auto.value) {
+                MatchingAlgorithm.auto.value ||
+            mergedJson[Label.matchingAlgorithmKey] ==
+                MatchingAlgorithm.none.value) {
           // If auto is selected, the match will be removed.
           mergedJson[Label.matchKey] = '';
         }
