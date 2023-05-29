@@ -120,6 +120,7 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
                       ? () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DocumentView(
+
                                 documentBytes: _assembleFileBytes(
                                   state,
                                   forcePdf: true,

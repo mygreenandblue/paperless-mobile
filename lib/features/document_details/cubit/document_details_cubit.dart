@@ -11,6 +11,7 @@ import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 
@@ -98,6 +99,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   Future<ResultType> openDocumentInSystemViewer() async {
     final cacheDir = await FileService.temporaryDirectory;
+    //TODO: Why is this cleared here?
     await FileService.clearDirectoryContent(PaperlessDirectoryType.temporary);
     if (state.metaData == null) {
       await loadMetaData();
@@ -196,6 +198,26 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         ),
       ],
       subject: state.document.title,
+    );
+  }
+
+  Future<void> printDocument() async {
+    if (state.metaData == null) {
+      await loadMetaData();
+    }
+    final filePath = _buildDownloadFilePath(false, await FileService.temporaryDirectory);
+    await _api.downloadToFile(
+      state.document,
+      filePath,
+      original: false,
+    );
+    final file = File(filePath);
+    if (!file.existsSync()) {
+      throw Exception("An error occurred while downloading the document.");
+    }
+    Printing.layoutPdf(
+      name: state.document.title,
+      onLayout: (format) => file.readAsBytesSync(),
     );
   }
 
