@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -57,13 +59,17 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   @override
   void initState() {
     super.initState();
-    _enableMatchFormField = (widget.initialValue?.matchingAlgorithm ??
-            MatchingAlgorithm.defaultValue) !=
-        MatchingAlgorithm.auto;
+    var matchingAlgorithm = (widget.initialValue?.matchingAlgorithm ??
+        MatchingAlgorithm.defaultValue);
+    _enableMatchFormField = matchingAlgorithm != MatchingAlgorithm.auto &&
+        matchingAlgorithm != MatchingAlgorithm.none;
   }
 
   @override
   Widget build(BuildContext context) {
+    List<MatchingAlgorithm> selectableMatchingAlgorithmValues =
+        getSelectableMatchingAlgorithmValues(
+            context.watch<ApiVersion>().hasMultiUserSupport);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
@@ -107,7 +113,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                       val != MatchingAlgorithm.none.value;
                 });
               },
-              items: MatchingAlgorithm.values
+              items: selectableMatchingAlgorithmValues
                   .map(
                     (algo) => DropdownMenuItem<int?>(
                       child: Text(
@@ -138,6 +144,18 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         ),
       ),
     );
+  }
+
+  List<MatchingAlgorithm> getSelectableMatchingAlgorithmValues(
+      bool hasMultiUserSupport) {
+    var selectableMatchingAlgorithmValues = MatchingAlgorithm.values;
+    if (!hasMultiUserSupport) {
+      selectableMatchingAlgorithmValues = selectableMatchingAlgorithmValues
+          .where((matchingAlgorithm) =>
+              matchingAlgorithm != MatchingAlgorithm.none)
+          .toList();
+    }
+    return selectableMatchingAlgorithmValues;
   }
 
   void _onSubmit() async {

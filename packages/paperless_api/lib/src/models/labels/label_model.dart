@@ -37,7 +37,7 @@ abstract class Label extends Equatable implements Comparable {
   Label copyWith({
     int? id,
     String? name,
-    String match,
+    String? match,
     MatchingAlgorithm? matchingAlgorithm,
     bool? isInsensitive,
     int? documentCount,
