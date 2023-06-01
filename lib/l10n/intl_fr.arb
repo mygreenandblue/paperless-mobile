@@ -678,106 +678,138 @@
   "@dynamicColorScheme": {},
   "classicColorScheme": "Classique",
   "@classicColorScheme": {},
-  "notificationDownloadComplete": "Download complete",
+  "notificationDownloadComplete": "Téléchargement terminé",
   "@notificationDownloadComplete": {
     "description": "Notification title when a download has been completed."
   },
-  "notificationDownloadingDocument": "Downloading document",
+  "notificationDownloadingDocument": "Téléchargement du document",
   "@notificationDownloadingDocument": {
     "description": "Notification title shown when a document download is pending"
   },
-  "archiveSerialNumberUpdated": "Archive Serial Number updated.",
+  "archiveSerialNumberUpdated": "Numéro de série de l’archive mis à jour.",
   "@archiveSerialNumberUpdated": {
     "description": "Message shown when the ASN has been updated."
   },
-  "donateCoffee": "Buy me a coffee",
+  "donateCoffee": "Soutenez-moi",
   "@donateCoffee": {
     "description": "Label displayed in the app drawer"
   },
-  "thisFieldIsRequired": "This field is required!",
+  "thisFieldIsRequired": "Ce champ est obligatoire !",
   "@thisFieldIsRequired": {
     "description": "Message shown below the form field when a required field has not been filled out."
   },
-  "confirm": "Confirm",
-  "confirmAction": "Confirm action",
+  "confirm": "Confirmer",
+  "confirmAction": "Confirmer l’action",
   "@confirmAction": {
     "description": "Typically used as a title to confirm a previously selected action"
   },
-  "areYouSureYouWantToContinue": "Are you sure you want to continue?",
-  "bulkEditTagsAddMessage": "{count, plural, one{This operation will add the tags {tags} to the selected document.} other{This operation will add the tags {tags} to {count} selected documents.}}",
+  "areYouSureYouWantToContinue": "Etes-vous sûr(e) de vouloir continuer?",
+  "bulkEditTagsAddMessage": "{count, plural, one{Cette opération va ajouter les balises {tags} au document sélectionné} other{Cette opération va ajouter les balises {tags} à {count} documents sélectionnés!}}",
   "@bulkEditTagsAddMessage": {
     "description": "Message of the confirmation dialog when bulk adding tags."
   },
-  "bulkEditTagsRemoveMessage": "{count, plural, one{This operation will remove the tags {tags} from the selected document.} other{This operation will remove the tags {tags} from {count} selected documents.}}",
+  "bulkEditTagsRemoveMessage": "{count, plural, one{Cette opération supprimera les balises {tags} du document sélectionné.} other{Cette opération supprimera les balises {tags} de {count} documents sélectionnés!}}",
   "@bulkEditTagsRemoveMessage": {
     "description": "Message of the confirmation dialog when bulk removing tags."
   },
-  "bulkEditTagsModifyMessage": "{count, plural, one{This operation will add the tags {addTags} and remove the tags {removeTags} from the selected document.} other{This operation will add the tags {addTags} and remove the tags {removeTags} from {count} selected documents.}}",
+  "bulkEditTagsModifyMessage": "{count, plural, one{Cette opération va ajouter les balises {addTags} et supprimer les balises {removeTags} du document sélectionné} other{Cette opération va ajouter les balises {addTags} et supprimer les balises {removeTags} de {count} documents sélectionnés.}}",
   "@bulkEditTagsModifyMessage": {
     "description": "Message of the confirmation dialog when both adding and removing tags."
   },
-  "bulkEditCorrespondentAssignMessage": "{count, plural, one{This operation will assign the correspondent {correspondent} to the selected document.} other{This operation will assign the correspondent {correspondent} to {count} selected documents.}}",
-  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{This operation will assign the document type {docType} to the selected document.} other{This operation will assign the documentType {docType} to {count} selected documents.}}",
-  "bulkEditStoragePathAssignMessage": "{count, plural, one{This operation will assign the storage path {path} to the selected document.} other{This operation will assign the storage path {path} to {count} selected documents.}}",
-  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{This operation will remove the correspondent from the selected document.} other{This operation will remove the correspondent from {count} selected documents.}}",
-  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{This operation will remove the document type from the selected document.} other{This operation will remove the document type from {count} selected documents.}}",
-  "bulkEditStoragePathRemoveMessage": "{count, plural, one{This operation will remove the storage path from the selected document.} other{This operation will remove the storage path from {count} selected documents.}}",
-  "anyTag": "Any",
+  "bulkEditCorrespondentAssignMessage": "{count, plural, one{Cette opération assignera le correspondant {correspondent} au document sélectionné} other{Cette opération va assigner le correspondant {correspondent} à {count} documents sélectionnés!}}",
+  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Cette opération assignera le type de document {docType} au document sélectionné.} other{Cette opération va assigner le documentType {docType} à {count} documents sélectionnés.}}",
+  "bulkEditStoragePathAssignMessage": "{count, plural, one{Cette opération assignera le chemin de stockage {path} au document sélectionné.} other{Cette opération va assigner le chemin de stockage {path} à {count} documents sélectionnés.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Cette opération va supprimer le correspondant du document sélectionné.} other{Cette opération va supprimer le correspondant de {count} documents sélectionnés.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Cette opération va supprimer le type de document du document sélectionné.} other{Cette opération va supprimer le type de document de {count} documents sélectionnés.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{Cette opération supprimera le chemin de stockage du document sélectionné.} other{Cette opération supprimera le chemin de stockage de {count} documents sélectionnés.}}",
+  "anyTag": "Tous",
   "@anyTag": {
     "description": "Label shown when any tag should be filtered"
   },
-  "allTags": "All",
+  "allTags": "Tous",
   "@allTags": {
     "description": "Label shown when a document has to be assigned to all selected tags"
   },
-  "switchingAccountsPleaseWait": "Switching accounts. Please wait...",
+  "switchingAccountsPleaseWait": "Changement de compte. Veuillez patienter...",
   "@switchingAccountsPleaseWait": {
     "description": "Message shown while switching accounts is in progress."
   },
-  "testConnection": "Test connection",
+  "testConnection": "Vérifier la connexion",
   "@testConnection": {
     "description": "Button label shown on login page. Allows user to test whether the server is reachable or not."
   },
-  "accounts": "Accounts",
+  "accounts": "Comptes",
   "@accounts": {
     "description": "Title of the account management dialog"
   },
-  "addAccount": "Add account",
+  "addAccount": "Ajouter un compte",
   "@addAccount": {
     "description": "Label of add account action"
   },
-  "switchAccount": "Switch",
+  "switchAccount": "Basculer",
   "@switchAccount": {
     "description": "Label for switch account action"
   },
-  "logout": "Logout",
+  "logout": "Déconnexion",
   "@logout": {
     "description": "Generic Logout label"
   },
-  "switchAccountTitle": "Switch account",
+  "switchAccountTitle": "Changer de compte",
   "@switchAccountTitle": {
     "description": "Title of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   },
-  "switchToNewAccount": "Do you want to switch to the new account? You can switch back at any time.",
+  "switchToNewAccount": "Voulez-vous basculer vers le nouveau compte ? Vous pouvez revenir à tout moment.",
   "@switchToNewAccount": {
     "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   },
-  "sourceCode": "Source Code",
-  "findTheSourceCodeOn": "Find the source code on",
+  "sourceCode": "Code source",
+  "findTheSourceCodeOn": "Trouvez le code source sur",
   "@findTheSourceCodeOn": {
     "description": "Text before link to Paperless Mobile GitHub"
   },
-  "rememberDecision": "Remember my decision",
-  "defaultDownloadFileType": "Default Download File Type",
+  "rememberDecision": "Se souvenir de mon choix",
+  "defaultDownloadFileType": "Type de fichier par défaut",
   "@defaultDownloadFileType": {
     "description": "Label indicating the default filetype to download (one of archived, original and always ask)"
   },
-  "defaultShareFileType": "Default Share File Type",
+  "defaultShareFileType": "Type de fichier par défaut de partage",
   "@defaultShareFileType": {
     "description": "Label indicating the default filetype to share (one of archived, original and always ask)"
   },
-  "alwaysAsk": "Always ask",
+  "alwaysAsk": "Toujours demander",
   "@alwaysAsk": {
     "description": "Option to choose when the app should always ask the user which filetype to use"
+  },
+  "disableMatching": "Do not tag documents automatically",
+  "@disableMatching": {
+    "description": "One of the options for automatic tagging of documents"
+  },
+  "none": "None",
+  "@none": {
+    "description": "One of available enum values of matching algorithm for tags"
+  },
+  "logInToExistingAccount": "Log in to existing account",
+  "@logInToExistingAccount": {
+    "description": "Title shown on login page if at least one user is already known to the app."
+  },
+  "print": "Print",
+  "@print": {
+    "description": "Tooltip for print button"
+  },
+  "managePermissions": "Manage permissions",
+  "@managePermissions": {
+    "description": "Button which leads user to manage permissions page"
+  },
+  "errorRetrievingServerVersion": "An error occurred trying to resolve the server version.",
+  "@errorRetrievingServerVersion": {
+    "description": "Message shown at the bottom of the settings page when the remote server version could not be resolved."
+  },
+  "resolvingServerVersion": "Resolving server version...",
+  "@resolvingServerVersion": {
+    "description": "Message shown while the app is loading the remote server version."
+  },
+  "goToLogin": "Go to login",
+  "@goToLogin": {
+    "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   }
 }

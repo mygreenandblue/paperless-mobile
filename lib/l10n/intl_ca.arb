@@ -762,22 +762,54 @@
   "@switchToNewAccount": {
     "description": "Content of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   },
-  "sourceCode": "Source Code",
-  "findTheSourceCodeOn": "Find the source code on",
+  "sourceCode": "Codi Font",
+  "findTheSourceCodeOn": "Troba el codi font a",
   "@findTheSourceCodeOn": {
     "description": "Text before link to Paperless Mobile GitHub"
   },
-  "rememberDecision": "Remember my decision",
-  "defaultDownloadFileType": "Default Download File Type",
+  "rememberDecision": "Recorda la selecció",
+  "defaultDownloadFileType": "Tipus de Fitxer a descarregar per defecte",
   "@defaultDownloadFileType": {
     "description": "Label indicating the default filetype to download (one of archived, original and always ask)"
   },
-  "defaultShareFileType": "Default Share File Type",
+  "defaultShareFileType": "Tipus compartició de fitxer per defecte",
   "@defaultShareFileType": {
     "description": "Label indicating the default filetype to share (one of archived, original and always ask)"
   },
-  "alwaysAsk": "Always ask",
+  "alwaysAsk": "Pregunta sempre",
   "@alwaysAsk": {
     "description": "Option to choose when the app should always ask the user which filetype to use"
+  },
+  "disableMatching": "Do not tag documents automatically",
+  "@disableMatching": {
+    "description": "One of the options for automatic tagging of documents"
+  },
+  "none": "None",
+  "@none": {
+    "description": "One of available enum values of matching algorithm for tags"
+  },
+  "logInToExistingAccount": "Log in to existing account",
+  "@logInToExistingAccount": {
+    "description": "Title shown on login page if at least one user is already known to the app."
+  },
+  "print": "Print",
+  "@print": {
+    "description": "Tooltip for print button"
+  },
+  "managePermissions": "Manage permissions",
+  "@managePermissions": {
+    "description": "Button which leads user to manage permissions page"
+  },
+  "errorRetrievingServerVersion": "An error occurred trying to resolve the server version.",
+  "@errorRetrievingServerVersion": {
+    "description": "Message shown at the bottom of the settings page when the remote server version could not be resolved."
+  },
+  "resolvingServerVersion": "Resolving server version...",
+  "@resolvingServerVersion": {
+    "description": "Message shown while the app is loading the remote server version."
+  },
+  "goToLogin": "Go to login",
+  "@goToLogin": {
+    "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   }
 }

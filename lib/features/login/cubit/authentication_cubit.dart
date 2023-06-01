@@ -140,20 +140,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> removeAccount(String userId) async {
-    final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final userAccountBox = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     final userAppStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
-    final currentUser = globalSettings.currentLoggedInUser;
 
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
-    await withEncryptedBox(HiveBoxes.localUserCredentials, (box) {
+    await withEncryptedBox<UserCredentials, void>(HiveBoxes.localUserCredentials, (box) {
       box.delete(userId);
     });
-
-    if (currentUser == userId) {
-      return logout();
-    }
   }
 
   ///
@@ -209,9 +203,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> logout() async {
     await _resetExternalState();
     final globalSettings = Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings
-      ..currentLoggedInUser = null
-      ..save();
+    globalSettings.currentLoggedInUser = null;
+    await globalSettings.save();
     emit(const AuthenticationState.unauthenticated());
   }
 

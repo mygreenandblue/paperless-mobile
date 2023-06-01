@@ -47,9 +47,9 @@ class _SelectFileTypeDialogState extends State<SelectFileTypeDialog> {
             value: _rememberSelection,
             onChanged: (value) => setState(() => _rememberSelection = value ?? false),
             title: Text(
-              "Remember my decision",
+              S.of(context)!.rememberDecision,
               style: Theme.of(context).textTheme.labelMedium,
-            ), //TODO: INTL
+            ),
           ),
         ],
       ),

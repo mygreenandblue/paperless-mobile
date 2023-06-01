@@ -30,7 +30,7 @@ class SettingsPage extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Text(
-                    "Something went wrong while retrieving server data.", //TODO: INTL
+                    S.of(context)!.errorRetrievingServerVersion,
                     style: Theme.of(context)
                         .textTheme
                         .labelSmall
@@ -40,7 +40,7 @@ class SettingsPage extends StatelessWidget {
                 }
                 if (!snapshot.hasData) {
                   return Text(
-                    "Loading server information...", //TODO: INTL
+                    S.of(context)!.resolvingServerVersion,
                     style: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   );

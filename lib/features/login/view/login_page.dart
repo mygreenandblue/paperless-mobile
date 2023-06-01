@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
@@ -7,6 +12,8 @@ import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/login_pages/server_connection_page.dart';
+import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'widgets/login_pages/server_login_page.dart';
 import 'widgets/never_scrollable_scroll_behavior.dart';
@@ -23,11 +30,14 @@ class LoginPage extends StatefulWidget {
   final String submitText;
   final String titleString;
 
+  final bool showLocalAccounts;
+
   const LoginPage({
     Key? key,
     required this.onSubmit,
     required this.submitText,
     required this.titleString,
+    this.showLocalAccounts = false,
   }) : super(key: key);
 
   @override
@@ -41,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localAccounts = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: FormBuilder(
@@ -49,6 +60,42 @@ class _LoginPageState extends State<LoginPage> {
           controller: _pageController,
           scrollBehavior: NeverScrollableScrollBehavior(),
           children: [
+            if (widget.showLocalAccounts && localAccounts.isNotEmpty)
+              Scaffold(
+                appBar: AppBar(
+                  title: Text(S.of(context)!.logInToExistingAccount),
+                ),
+                bottomNavigationBar: BottomAppBar(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FilledButton(
+                        child: Text(S.of(context)!.goToLogin),
+                        onPressed: () {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                body: ListView.builder(
+                  itemBuilder: (context, index) {
+                    final account = localAccounts.values.elementAt(index);
+                    return Card(
+                      child: UserAccountListTile(
+                        account: account,
+                        onTap: () {
+                          context.read<AuthenticationCubit>().switchAccount(account.id);
+                        },
+                      ),
+                    );
+                  },
+                  itemCount: localAccounts.length,
+                ),
+              ),
             ServerConnectionPage(
               titleString: widget.titleString,
               formBuilderKey: _formKey,
