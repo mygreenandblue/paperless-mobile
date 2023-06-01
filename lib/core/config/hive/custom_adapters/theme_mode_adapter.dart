@@ -12,9 +12,9 @@ class ThemeModeAdapter extends TypeAdapter<ThemeMode> {
       case 0:
         return ThemeMode.system;
       case 1:
-        return ThemeMode.dark;
-      case 2:
         return ThemeMode.light;
+      case 2:
+        return ThemeMode.dark;
       default:
         return ThemeMode.system;
     }
@@ -41,7 +41,5 @@ class ThemeModeAdapter extends TypeAdapter<ThemeMode> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ThemeModeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is ThemeModeAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
