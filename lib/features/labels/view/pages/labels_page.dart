@@ -259,28 +259,28 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
   void _openEditCorrespondentPage(Correspondent correspondent) {
     Navigator.push(
       context,
-      buildLabelPageRoute(EditCorrespondentPage(correspondent: correspondent)),
+      _buildLabelPageRoute(EditCorrespondentPage(correspondent: correspondent)),
     );
   }
 
   void _openEditDocumentTypePage(DocumentType docType) {
     Navigator.push(
       context,
-      buildLabelPageRoute(EditDocumentTypePage(documentType: docType)),
+      _buildLabelPageRoute(EditDocumentTypePage(documentType: docType)),
     );
   }
 
   void _openEditTagPage(Tag tag) {
     Navigator.push(
       context,
-      buildLabelPageRoute(EditTagPage(tag: tag)),
+      _buildLabelPageRoute(EditTagPage(tag: tag)),
     );
   }
 
   void _openEditStoragePathPage(StoragePath path) {
     Navigator.push(
       context,
-      buildLabelPageRoute(EditStoragePathPage(
+      _buildLabelPageRoute(EditStoragePathPage(
         storagePath: path,
       )),
     );
@@ -289,34 +289,34 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
   void _openAddCorrespondentPage() {
     Navigator.push(
       context,
-      buildLabelPageRoute(const AddCorrespondentPage()),
+      _buildLabelPageRoute(const AddCorrespondentPage()),
     );
   }
 
   void _openAddDocumentTypePage() {
     Navigator.push(
       context,
-      buildLabelPageRoute(const AddDocumentTypePage()),
+      _buildLabelPageRoute(const AddDocumentTypePage()),
     );
   }
 
   void _openAddTagPage() {
     Navigator.push(
       context,
-      buildLabelPageRoute(const AddTagPage()),
+      _buildLabelPageRoute(const AddTagPage()),
     );
   }
 
   void _openAddStoragePathPage() {
     Navigator.push(
       context,
-      buildLabelPageRoute(const AddStoragePathPage()),
+      _buildLabelPageRoute(const AddStoragePathPage()),
     );
   }
 
-  MaterialPageRoute<dynamic> buildLabelPageRoute(Widget page) {
+  MaterialPageRoute<dynamic> _buildLabelPageRoute(Widget page) {
     return MaterialPageRoute(
-        builder: (_) => MultiBlocProvider(
+        builder: (_) => MultiProvider(
             providers: [
               Provider.value(value: context.read<LabelRepository>()),
               Provider.value(value: context.read<ApiVersion>())
