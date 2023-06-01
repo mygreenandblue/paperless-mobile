@@ -20,8 +20,10 @@ class SessionManager extends ValueNotifier<Dio> {
     final Dio dio = Dio(
       BaseOptions(contentType: Headers.jsonContentType),
     );
-    dio.options.receiveTimeout = const Duration(seconds: 25);
-    dio.options.responseType = ResponseType.json;
+    dio.options
+      ..receiveTimeout = const Duration(seconds: 15)
+      ..sendTimeout = const Duration(seconds: 10)
+      ..responseType = ResponseType.json;
     (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (client) => client..badCertificateCallback = (cert, host, port) => true;
     dio.interceptors.addAll([
