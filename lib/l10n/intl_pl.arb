@@ -308,7 +308,7 @@
   "@requestTimedOut": {},
   "anErrorOccurredRemovingTheScans": "Wystąpił błąd podczas usuwania skanów.",
   "@anErrorOccurredRemovingTheScans": {},
-  "couldNotReachYourPaperlessServer": "Nie można połączyć się z Twoim serwerem Paperless, czy jest on uruchomiony i dostępny?",
+  "couldNotReachYourPaperlessServer": "Nie można połączyć się z Twoim serwerem Paperless, czy jest uruchomiony i dostępny?",
   "@couldNotReachYourPaperlessServer": {},
   "couldNotLoadSimilarDocuments": "Nie udało się wczytać podobnych dokumentów.",
   "@couldNotLoadSimilarDocuments": {},
@@ -378,7 +378,7 @@
       "count": {}
     }
   },
-  "months": "{count, plural,  one{Miesiąc} other{Miesiące}}",
+  "months": "{count, plural,  one{miesiąc} other{miesiące}}",
   "@months": {
     "placeholders": {
       "count": {}
@@ -586,7 +586,7 @@
   "@newView": {},
   "createsASavedViewBasedOnTheCurrentFilterCriteria": "Tworzy nowy widok oparty na aktualnych kryteriach filtrowania.",
   "@createsASavedViewBasedOnTheCurrentFilterCriteria": {},
-  "createViewsToQuicklyFilterYourDocuments": "Utwórz widoki aby szybko filtrować dokumenty.",
+  "createViewsToQuicklyFilterYourDocuments": "Utwórz widoki by szybko filtrować dokumenty.",
   "@createViewsToQuicklyFilterYourDocuments": {},
   "nFiltersSet": "{count, plural, one{{count} filtr ustawiony} few {{count} filtry ustawione} many {{count} filtry ustawione} other{{count} filtry ustawione}}",
   "@nFiltersSet": {
@@ -704,7 +704,7 @@
     "description": "Typically used as a title to confirm a previously selected action"
   },
   "areYouSureYouWantToContinue": "Czy na pewno chcesz kontynuować?",
-  "bulkEditTagsAddMessage": "{count, plural, one{Ta operacja doda tagi {tags} do wybranego dokumentu} few {Ta operacja doda tagi {tags} do {count} wybranych dokumentów} many {Ta operacja doda tagi {tags} do {count} wybranych dokumentów} other{Ta operacja doda tagi {tags} do {count} wybranych dokumentów}}",
+  "bulkEditTagsAddMessage": "{count, plural, one{Ta operacja doda tagi {tags} do wybranego dokumentu.} few {Ta operacja doda tagi {tags} do {count} wybranych dokumentów.} many {Ta operacja doda tagi {tags} do {count} wybranych dokumentów.} other{Ta operacja doda tagi {tags} do {count} wybranych dokumentów.}}",
   "@bulkEditTagsAddMessage": {
     "description": "Message of the confirmation dialog when bulk adding tags."
   },
@@ -716,10 +716,10 @@
   "@bulkEditTagsModifyMessage": {
     "description": "Message of the confirmation dialog when both adding and removing tags."
   },
-  "bulkEditCorrespondentAssignMessage": "{count, plural, one{Ta operacja przypisze korespondenta {correspondent} do wybranego dokumentu.}  other{Ta operacja przypisze korespondenta {correspondent} do {count} wybranych dokumentów}}",
-  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Ta operacja przypisze typ dokumentu {docType} do wybranego dokumentu.}  other{Ta operacja przypisze typ dokumentu {docType} do {count} wybranych dokumentów}}",
-  "bulkEditStoragePathAssignMessage": "{count, plural, one{Ta operacja przypisze ścieżkę zapisu {path} do wybranego dokumentu.} other{Ta operacja przypisze ścieżkę zapisu {path} do {count} wybranych dokumentów}}",
-  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Ta operacja usunie korespondenta z wybranego dokumentu.}  other{Ta operacja usunie korespondenta z {count} wybranych dokumentów}}",
+  "bulkEditCorrespondentAssignMessage": "{count, plural, one{Ta operacja przypisze korespondenta {correspondent} do wybranego dokumentu.}  other{Ta operacja przypisze korespondenta {correspondent} do {count} wybranych dokumentów.}}",
+  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Ta operacja przypisze typ dokumentu {docType} do wybranego dokumentu.}  other{Ta operacja przypisze typ dokumentu {docType} do {count} wybranych dokumentów.}}",
+  "bulkEditStoragePathAssignMessage": "{count, plural, one{Ta operacja przypisze ścieżkę zapisu {path} do wybranego dokumentu.} other{Ta operacja przypisze ścieżkę zapisu {path} do {count} wybranych dokumentów.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Ta operacja usunie korespondenta z wybranego dokumentu.}  other{Ta operacja usunie korespondenta z {count} wybranych dokumentów.}}",
   "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Ta operacja usunie typ dokumentu z wybranego dokumentu.}  other{Ta operacja usunie typ dokumentu z {count} wybranych dokumentów.}}",
   "bulkEditStoragePathRemoveMessage": "{count, plural, one{Ta operacja usunie tagi z wybranego dokumentu.}  other{Ta operacja usunie tagi z {count} wybranych dokumentów.}}",
   "anyTag": "Dowolny",
@@ -780,35 +780,35 @@
   "@alwaysAsk": {
     "description": "Option to choose when the app should always ask the user which filetype to use"
   },
-  "disableMatching": "Do not tag documents automatically",
+  "disableMatching": "Nie oznaczaj dokumentów automatycznie",
   "@disableMatching": {
     "description": "One of the options for automatic tagging of documents"
   },
-  "none": "None",
+  "none": "Nie oznaczaj automatycznie",
   "@none": {
     "description": "One of available enum values of matching algorithm for tags"
   },
-  "logInToExistingAccount": "Log in to existing account",
+  "logInToExistingAccount": "Zaloguj się do istniejącego konta",
   "@logInToExistingAccount": {
     "description": "Title shown on login page if at least one user is already known to the app."
   },
-  "print": "Print",
+  "print": "Wydrukuj",
   "@print": {
     "description": "Tooltip for print button"
   },
-  "managePermissions": "Manage permissions",
+  "managePermissions": "Zarządzaj uprawnieniami",
   "@managePermissions": {
     "description": "Button which leads user to manage permissions page"
   },
-  "errorRetrievingServerVersion": "An error occurred trying to resolve the server version.",
+  "errorRetrievingServerVersion": "Wystąpił błąd w trakcie sprawdzania wersji serwera.",
   "@errorRetrievingServerVersion": {
     "description": "Message shown at the bottom of the settings page when the remote server version could not be resolved."
   },
-  "resolvingServerVersion": "Resolving server version...",
+  "resolvingServerVersion": "Sprawdzanie wersji serwera...",
   "@resolvingServerVersion": {
     "description": "Message shown while the app is loading the remote server version."
   },
-  "goToLogin": "Go to login",
+  "goToLogin": "Przejdź do logowania",
   "@goToLogin": {
     "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   }

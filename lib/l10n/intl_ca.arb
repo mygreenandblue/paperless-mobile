@@ -780,35 +780,35 @@
   "@alwaysAsk": {
     "description": "Option to choose when the app should always ask the user which filetype to use"
   },
-  "disableMatching": "Do not tag documents automatically",
+  "disableMatching": "No etiquetar documents automaticament",
   "@disableMatching": {
     "description": "One of the options for automatic tagging of documents"
   },
-  "none": "None",
+  "none": "Cap",
   "@none": {
     "description": "One of available enum values of matching algorithm for tags"
   },
-  "logInToExistingAccount": "Log in to existing account",
+  "logInToExistingAccount": "Entrar en compte existent",
   "@logInToExistingAccount": {
     "description": "Title shown on login page if at least one user is already known to the app."
   },
-  "print": "Print",
+  "print": "Imprimir",
   "@print": {
     "description": "Tooltip for print button"
   },
-  "managePermissions": "Manage permissions",
+  "managePermissions": "Gestionar permisos",
   "@managePermissions": {
     "description": "Button which leads user to manage permissions page"
   },
-  "errorRetrievingServerVersion": "An error occurred trying to resolve the server version.",
+  "errorRetrievingServerVersion": "Error en determinar la versió del servidor.",
   "@errorRetrievingServerVersion": {
     "description": "Message shown at the bottom of the settings page when the remote server version could not be resolved."
   },
-  "resolvingServerVersion": "Resolving server version...",
+  "resolvingServerVersion": "Determinant versió del servidor...",
   "@resolvingServerVersion": {
     "description": "Message shown while the app is loading the remote server version."
   },
-  "goToLogin": "Go to login",
+  "goToLogin": "Anar al login",
   "@goToLogin": {
     "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   }
