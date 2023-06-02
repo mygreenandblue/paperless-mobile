@@ -64,6 +64,7 @@ Future<void> _initHive() async {
   // await getApplicationDocumentsDirectory().then((value) => value.deleteSync(recursive: true));
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
+  await Hive.openBox<String>(HiveBoxes.hosts);
   final globalSettingsBox = await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
 
   if (!globalSettingsBox.hasValue) {

@@ -20,6 +20,7 @@ class HiveBoxes {
   static const localUserAccount = 'localUserAccount';
   static const localUserAppState = 'localUserAppState';
   static const localUserSettings = 'localUserSettings';
+  static const hosts = 'hosts';
 }
 
 class HiveTypeIds {

@@ -48,7 +48,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
         child: Column(
           children: [
             ServerAddressFormField(
-              onDone: (address) {
+              onSubmit: (address) {
                 _updateReachability(address);
               },
             ).padded(),
