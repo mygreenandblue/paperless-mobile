@@ -27,7 +27,6 @@ class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
-        debugPrint("Building state...");
         if (state.metaData == null) {
           return const SliverToBoxAdapter(
             child: Center(

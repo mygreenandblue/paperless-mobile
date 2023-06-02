@@ -65,7 +65,10 @@ class DocumentsState extends DocumentPagingState {
         documentTypes,
         tags,
         storagePaths,
-        ...super.props,
+        super.filter,
+        super.hasLoaded,
+        super.isLoading,
+        super.value,
       ];
 
   @override

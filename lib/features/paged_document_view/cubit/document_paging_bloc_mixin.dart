@@ -44,13 +44,15 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<Sta
       emit(state.copyWithPaged(isLoading: true));
       final result = await api.findAll(filter.copyWith(page: 1));
 
-      emit(state.copyWithPaged(
-        filter: filter,
-        value: [result],
-        hasLoaded: true,
-      ));
+      emit(
+        state.copyWithPaged(
+          filter: filter,
+          value: [result],
+          hasLoaded: true,
+        ),
+      );
     } finally {
-      await onFilterUpdated(filter);
+      // await onFilterUpdated(filter);
       emit(state.copyWithPaged(isLoading: false));
     }
   }

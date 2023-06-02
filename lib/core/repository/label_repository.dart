@@ -8,9 +8,7 @@ import 'package:paperless_mobile/core/repository/persistent_repository.dart';
 class LabelRepository extends PersistentRepository<LabelRepositoryState> {
   final PaperlessLabelsApi _api;
 
-  LabelRepository(this._api) : super(const LabelRepositoryState()) {
-    initialize();
-  }
+  LabelRepository(this._api) : super(const LabelRepositoryState());
 
   Future<void> initialize() {
     debugPrint("Initializing labels...");
@@ -19,7 +17,9 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
       findAllDocumentTypes(),
       findAllStoragePaths(),
       findAllTags(),
-    ]);
+    ]).catchError((error) {
+      debugPrint(error.toString());
+    }, test: (error) => false);
   }
 
   Future<Tag> createTag(Tag object) async {
@@ -87,11 +87,15 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
   }
 
   Future<Iterable<Correspondent>> findAllCorrespondents([Iterable<int>? ids]) async {
+    debugPrint("Loading correspondents...");
     final correspondents = await _api.getCorrespondents(ids);
-    final updatedState = {...state.correspondents}
-      ..addEntries(correspondents.map((e) => MapEntry(e.id!, e)));
+    debugPrint("${correspondents.length} correspondents successfully loaded.");
+    final updatedState = {
+      ...state.correspondents,
+    }..addAll({for (var element in correspondents) element.id!: element});
+    debugPrint("Pushing new correspondents state.");
     emit(state.copyWith(correspondents: updatedState));
-
+    debugPrint("New correspondents state pushed.");
     return correspondents;
   }
 

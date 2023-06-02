@@ -438,85 +438,122 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   }
 
   void _addTagToFilter(int tagId) {
+    final cubit = context.read<DocumentsCubit>();
+
     try {
-      final tagsQuery = context.read<DocumentsCubit>().state.filter.tags is IdsTagsQuery
-          ? context.read<DocumentsCubit>().state.filter.tags as IdsTagsQuery
-          : const IdsTagsQuery();
-      if (tagsQuery.include.contains(tagId)) {
-        context.read<DocumentsCubit>().updateCurrentFilter(
+      cubit.state.filter.tags.maybeMap(
+        ids: (state) {
+          if (state.include.contains(tagId)) {
+            cubit.updateCurrentFilter(
               (filter) => filter.copyWith(
-                tags: tagsQuery.copyWith(
-                    include: tagsQuery.include.whereNot((id) => id == tagId).toList(),
-                    exclude: tagsQuery.exclude.whereNot((id) => id == tagId).toList()),
+                tags: state.copyWith(
+                  include: state.include.whereNot((element) => element == tagId).toList(),
+                ),
               ),
             );
-      } else {
-        context.read<DocumentsCubit>().updateCurrentFilter(
+          } else if (state.exclude.contains(tagId)) {
+            cubit.updateCurrentFilter(
               (filter) => filter.copyWith(
-                tags: tagsQuery.copyWith(include: [...tagsQuery.include, tagId]),
+                tags: state.copyWith(
+                  exclude: state.exclude.whereNot((element) => element == tagId).toList(),
+                ),
               ),
             );
-      }
+          } else {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(
+                tags: state.copyWith(include: [...state.include, tagId]),
+              ),
+            );
+          }
+        },
+        orElse: () {
+          cubit.updateCurrentFilter(
+            (filter) => filter.copyWith(tags: TagsQuery.ids(include: [tagId])),
+          );
+        },
+      );
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
 
   void _addCorrespondentToFilter(int? correspondentId) {
+    if (correspondentId == null) return;
     final cubit = context.read<DocumentsCubit>();
     try {
-      final correspondent = cubit.state.filter.correspondent;
-      if (correspondent is SetIdQueryParameter) {
-        if (correspondentId == null || correspondent.id == correspondentId) {
-          cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(correspondent: const IdQueryParameter.unset()),
-          );
-        } else {
+      cubit.state.filter.correspondent.maybeWhen(
+        fromId: (id) {
+          if (id == correspondentId) {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(correspondent: const IdQueryParameter.unset()),
+            );
+          } else {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(correspondent: IdQueryParameter.fromId(correspondentId)),
+            );
+          }
+        },
+        orElse: () {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(correspondent: IdQueryParameter.fromId(correspondentId)),
           );
-        }
-      }
+        },
+      );
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
 
   void _addDocumentTypeToFilter(int? documentTypeId) {
+    if (documentTypeId == null) return;
     final cubit = context.read<DocumentsCubit>();
     try {
-      final documentType = cubit.state.filter.documentType;
-      if (documentType is SetIdQueryParameter) {
-        if (documentTypeId == null || documentType.id == documentTypeId) {
-          cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(documentType: const IdQueryParameter.unset()),
-          );
-        } else {
+      cubit.state.filter.documentType.maybeWhen(
+        fromId: (id) {
+          if (id == documentTypeId) {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(documentType: const IdQueryParameter.unset()),
+            );
+          } else {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(documentType: IdQueryParameter.fromId(documentTypeId)),
+            );
+          }
+        },
+        orElse: () {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(documentType: IdQueryParameter.fromId(documentTypeId)),
           );
-        }
-      }
+        },
+      );
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
 
   void _addStoragePathToFilter(int? pathId) {
+    if (pathId == null) return;
     final cubit = context.read<DocumentsCubit>();
     try {
-      final path = cubit.state.filter.documentType;
-      if (path is SetIdQueryParameter) {
-        if (pathId == null || path.id == pathId) {
-          cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(storagePath: const IdQueryParameter.unset()),
-          );
-        } else {
+      cubit.state.filter.storagePath.maybeWhen(
+        fromId: (id) {
+          if (id == pathId) {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(storagePath: const IdQueryParameter.unset()),
+            );
+          } else {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
+            );
+          }
+        },
+        orElse: () {
           cubit.updateCurrentFilter(
             (filter) => filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
           );
-        }
-      }
+        },
+      );
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

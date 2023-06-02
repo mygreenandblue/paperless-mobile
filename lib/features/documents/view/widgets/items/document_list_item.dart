@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
@@ -86,6 +87,8 @@ class DocumentListItem extends DocumentItem {
                       const TextSpan(text: '\u30FB'),
                       TextSpan(
                         text: labels.documentTypes[document.documentType]?.name,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => onDocumentTypeSelected?.call(document.documentType),
                       ),
                     ]
                   : null,

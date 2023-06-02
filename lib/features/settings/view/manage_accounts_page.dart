@@ -2,16 +2,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
-import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +23,7 @@ class ManageAccountsPage extends StatelessWidget {
         // This is one of the few places where the currentLoggedInUser can be null
         // (exactly after loggin out as the current user to be precise).
         if (globalSettings.currentLoggedInUser == null) {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
         return ValueListenableBuilder(
           valueListenable: Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),

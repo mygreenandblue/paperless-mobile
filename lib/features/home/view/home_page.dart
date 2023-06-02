@@ -219,8 +219,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ];
     final routes = <Widget>[
       const DocumentsPage(),
-      if (LocalUserAccount.current.paperlessUser
-          .hasPermission(PermissionAction.add, PermissionTarget.document))
+      if (LocalUserAccount.current.paperlessUser.hasPermission(
+        PermissionAction.add,
+        PermissionTarget.document,
+      ))
         const ScannerPage(),
       const LabelsPage(),
       const InboxPage(),

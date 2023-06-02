@@ -98,7 +98,7 @@ class HomeRoute extends StatelessWidget {
             return MultiProvider(
               providers: [
                 ProxyProvider<PaperlessLabelsApi, LabelRepository>(
-                  update: (context, value, previous) => LabelRepository(value),
+                  update: (context, value, previous) => LabelRepository(value)..initialize(),
                 ),
                 ProxyProvider<PaperlessSavedViewsApi, SavedViewRepository>(
                   update: (context, value, previous) => SavedViewRepository(value)..initialize(),
