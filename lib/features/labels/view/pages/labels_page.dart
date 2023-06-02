@@ -16,9 +16,11 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_corresponden
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 class LabelsPage extends StatefulWidget {
   const LabelsPage({Key? key}) : super(key: key);
@@ -267,98 +269,70 @@ class _LabelsPageState extends State<LabelsPage> with SingleTickerProviderStateM
   void _openEditCorrespondentPage(Correspondent correspondent) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: EditCorrespondentPage(correspondent: correspondent),
-        ),
-      ),
+      _buildLabelPageRoute(EditCorrespondentPage(correspondent: correspondent)),
     );
   }
 
   void _openEditDocumentTypePage(DocumentType docType) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: EditDocumentTypePage(documentType: docType),
-        ),
-      ),
+      _buildLabelPageRoute(EditDocumentTypePage(documentType: docType)),
     );
   }
 
   void _openEditTagPage(Tag tag) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: EditTagPage(tag: tag),
-        ),
-      ),
+      _buildLabelPageRoute(EditTagPage(tag: tag)),
     );
   }
 
   void _openEditStoragePathPage(StoragePath path) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: EditStoragePathPage(
-            storagePath: path,
-          ),
-        ),
-      ),
+      _buildLabelPageRoute(EditStoragePathPage(
+        storagePath: path,
+      )),
     );
   }
 
   void _openAddCorrespondentPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: const AddCorrespondentPage(),
-        ),
-      ),
+      _buildLabelPageRoute(const AddCorrespondentPage()),
     );
   }
 
   void _openAddDocumentTypePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: const AddDocumentTypePage(),
-        ),
-      ),
+      _buildLabelPageRoute(const AddDocumentTypePage()),
     );
   }
 
   void _openAddTagPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: const AddTagPage(),
-        ),
-      ),
+      _buildLabelPageRoute(const AddTagPage()),
     );
   }
 
   void _openAddStoragePathPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => RepositoryProvider.value(
-          value: context.read<LabelRepository>(),
-          child: const AddStoragePathPage(),
-        ),
-      ),
+      _buildLabelPageRoute(const AddStoragePathPage()),
+    );
+  }
+
+  MaterialPageRoute<dynamic> _buildLabelPageRoute(Widget page) {
+    return MaterialPageRoute(
+        builder: (_) => MultiProvider(
+            providers: [
+              Provider.value(value: context.read<LabelRepository>()),
+              Provider.value(value: context.read<ApiVersion>())
+            ],
+            child: page
+        )
     );
   }
 }

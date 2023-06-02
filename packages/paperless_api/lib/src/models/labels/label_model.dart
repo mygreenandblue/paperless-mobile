@@ -15,7 +15,7 @@ abstract class Label extends Equatable implements Comparable {
   final int? id;
   final String name;
   final String? slug;
-  final String? match;
+  final String match;
   final MatchingAlgorithm matchingAlgorithm;
   final bool? isInsensitive;
   final int? documentCount;
@@ -26,7 +26,7 @@ abstract class Label extends Equatable implements Comparable {
     this.id,
     required this.name,
     this.matchingAlgorithm = MatchingAlgorithm.defaultValue,
-    this.match,
+    this.match = "",
     this.isInsensitive = true,
     this.documentCount,
     this.slug,

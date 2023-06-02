@@ -19,6 +19,8 @@ String translateMatchingAlgorithmDescription(
       return S.of(context)!.documentContainsAWordSimilarToThisWord;
     case MatchingAlgorithm.auto:
       return S.of(context)!.learnMatchingAutomatically;
+    case MatchingAlgorithm.none:
+      return S.of(context)!.disableMatching;
   }
 }
 
@@ -39,5 +41,7 @@ String translateMatchingAlgorithmName(
       return S.of(context)!.fuzzy;
     case MatchingAlgorithm.auto:
       return S.of(context)!.auto;
+    case MatchingAlgorithm.none:
+      return S.of(context)!.none;
   }
 }
