@@ -787,5 +787,29 @@
   "none": "Keine",
   "@none": {
     "description": "One of available enum values of matching algorithm for tags"
+  },
+  "logInToExistingAccount": "Mit bestehendem Account anmelden",
+  "@logInToExistingAccount": {
+    "description": "Title shown on login page if at least one user is already known to the app."
+  },
+  "print": "Drucken",
+  "@print": {
+    "description": "Tooltip for print button"
+  },
+  "managePermissions": "Berechtigungen verwalten",
+  "@managePermissions": {
+    "description": "Button which leads user to manage permissions page"
+  },
+  "errorRetrievingServerVersion": "Beim Laden der Server-Version ist ein Fehler aufgetreten.",
+  "@errorRetrievingServerVersion": {
+    "description": "Message shown at the bottom of the settings page when the remote server version could not be resolved."
+  },
+  "resolvingServerVersion": "Lade Server-Version...",
+  "@resolvingServerVersion": {
+    "description": "Message shown while the app is loading the remote server version."
+  },
+  "goToLogin": "Gehe zur Anmeldung",
+  "@goToLogin": {
+    "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   }
 }
