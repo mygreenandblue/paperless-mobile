@@ -89,7 +89,6 @@ class _InboxPageState extends State<InboxPage>
                 return RefreshIndicator(
                   onRefresh: context.read<InboxCubit>().reload,
                   child: CustomScrollView(
-                    controller: _scrollController,
                     slivers: [
                       SliverToBoxAdapter(
                         child: HintCard(
