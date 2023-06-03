@@ -15,7 +15,6 @@ import 'package:paperless_mobile/features/document_search/view/sliver_search_bar
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
-import 'package:paperless_mobile/features/inbox/view/widgets/inbox_list_loading_widget.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -27,18 +26,15 @@ class InboxPage extends StatefulWidget {
   State<InboxPage> createState() => _InboxPageState();
 }
 
-class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin<InboxPage, InboxCubit> {
-  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
+class _InboxPageState extends State<InboxPage>
+    with DocumentPagingViewMixin<InboxPage, InboxCubit> {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
 
   @override
   final pagingScrollController = ScrollController();
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<InboxCubit>().reloadInbox();
-  }
+  final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,98 +59,104 @@ class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin<Inbo
           );
         },
       ),
-      body: BlocBuilder<InboxCubit, InboxState>(
-        builder: (context, state) {
-          return SafeArea(
-            top: true,
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverOverlapAbsorber(
-                  handle: searchBarHandle,
-                  sliver: const SliverSearchBar(),
-                )
-              ],
-              body: Builder(
-                builder: (context) {
-                  if (!state.hasLoaded) {
-                    return const InboxListLoadingWidget();
-                  } else if (state.documents.isEmpty) {
-                    return Center(
-                      child: InboxEmptyWidget(
-                        emptyStateRefreshIndicatorKey: _emptyStateRefreshIndicatorKey,
+      body: SafeArea(
+        top: true,
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            SliverOverlapAbsorber(
+              handle: searchBarHandle,
+              sliver: const SliverSearchBar(),
+            )
+          ],
+          body: BlocBuilder<InboxCubit, InboxState>(
+            builder: (_, state) {
+              if (state.documents.isEmpty && state.hasLoaded) {
+                return Center(
+                  child: InboxEmptyWidget(
+                    emptyStateRefreshIndicatorKey:
+                        _emptyStateRefreshIndicatorKey,
+                  ),
+                );
+              } else if (state.isLoading) {
+                return ListView.builder(
+                  padding: const EdgeInsets.only(top: 16, left: 16),
+                  controller: _scrollController,
+                  itemBuilder: (context, index) {
+                    return const InboxItemPlaceholder();
+                  },
+                );
+              } else {
+                return RefreshIndicator(
+                  onRefresh: context.read<InboxCubit>().reload,
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: HintCard(
+                          show: !state.isHintAcknowledged,
+                          hintText:
+                              S.of(context)!.swipeLeftToMarkADocumentAsSeen,
+                          onHintAcknowledged: () =>
+                              context.read<InboxCubit>().acknowledgeHint(),
+                        ),
                       ),
-                    );
-                  } else {
-                    return RefreshIndicator(
-                      onRefresh: context.read<InboxCubit>().reload,
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: HintCard(
-                              show: !state.isHintAcknowledged,
-                              hintText: S.of(context)!.swipeLeftToMarkADocumentAsSeen,
-                              onHintAcknowledged: () =>
-                                  context.read<InboxCubit>().acknowledgeHint(),
-                            ),
-                          ),
-                          // Build a list of slivers alternating between SliverToBoxAdapter
-                          // (group header) and a SliverList (inbox items).
-                          ..._groupByDate(state.documents)
-                              .entries
-                              .map(
-                                (entry) => [
-                                  SliverToBoxAdapter(
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(32.0),
-                                        child: Text(
-                                          entry.key,
-                                          style: Theme.of(context).textTheme.bodySmall,
-                                          textAlign: TextAlign.center,
-                                        ).padded(),
-                                      ),
-                                    ).paddedOnly(top: 8.0),
+                      // Build a list of slivers alternating between SliverToBoxAdapter
+                      // (group header) and a SliverList (inbox items).
+                      ..._groupByDate(state.documents)
+                          .entries
+                          .map(
+                            (entry) => [
+                              SliverToBoxAdapter(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(32.0),
+                                    child: Text(
+                                      entry.key,
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                      textAlign: TextAlign.center,
+                                    ).padded(),
                                   ),
-                                  SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                      childCount: entry.value.length,
-                                      (context, index) {
-                                        if (index < entry.value.length - 1) {
-                                          return Column(
-                                            children: [
-                                              _buildListItem(
-                                                entry.value[index],
-                                              ),
-                                              const Divider(
-                                                indent: 16,
-                                                endIndent: 16,
-                                              ),
-                                            ],
-                                          );
-                                        }
-                                        return _buildListItem(
-                                          entry.value[index],
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              )
-                              .flattened
-                              .toList(),
-                          const SliverToBoxAdapter(
-                            child: SizedBox(height: 78),
-                          ),
-                        ],
+                                ).paddedOnly(top: 8.0),
+                              ),
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  childCount: entry.value.length,
+                                  (context, index) {
+                                    if (index < entry.value.length - 1) {
+                                      return Column(
+                                        children: [
+                                          _buildListItem(
+                                            entry.value[index],
+                                          ),
+                                          const Divider(
+                                            indent: 16,
+                                            endIndent: 16,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return _buildListItem(
+                                      entry.value[index],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                          .flattened
+                          .toList(),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(height: 78),
                       ),
-                    );
-                  }
-                },
-              ),
-            ),
-          );
-        },
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+        ),
       ),
     );
   }
@@ -239,7 +241,9 @@ class _InboxPageState extends State<InboxPage> with DocumentPagingViewMixin<Inbo
     Iterable<int> removedTags,
   ) async {
     try {
-      await context.read<InboxCubit>().undoRemoveFromInbox(document, removedTags);
+      await context
+          .read<InboxCubit>()
+          .undoRemoveFromInbox(document, removedTags);
     } on PaperlessServerException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
