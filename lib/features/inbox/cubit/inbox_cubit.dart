@@ -13,7 +13,8 @@ import 'package:paperless_mobile/features/paged_document_view/cubit/document_pag
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
 
-class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin {
+class InboxCubit extends HydratedCubit<InboxState>
+    with DocumentPagingBlocMixin {
   final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
@@ -38,7 +39,10 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
       this,
       onDeleted: remove,
       onUpdated: (document) {
-        if (document.tags.toSet().intersection(state.inboxTags.toSet()).isEmpty) {
+        if (document.tags
+            .toSet()
+            .intersection(state.inboxTags.toSet())
+            .isEmpty) {
           remove(document);
           emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
         } else {
@@ -139,7 +143,8 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
   /// from the inbox.
   ///
   Future<Iterable<int>> removeFromInbox(DocumentModel document) async {
-    final tagsToRemove = document.tags.toSet().intersection(state.inboxTags.toSet());
+    final tagsToRemove =
+        document.tags.toSet().intersection(state.inboxTags.toSet());
 
     final updatedTags = {...document.tags}..removeAll(tagsToRemove);
     final updatedDocument = await api.update(
@@ -193,8 +198,8 @@ class InboxCubit extends HydratedCubit<InboxState> with DocumentPagingBlocMixin 
   Future<void> assignAsn(DocumentModel document) async {
     if (document.archiveSerialNumber == null) {
       final int asn = await _documentsApi.findNextAsn();
-      final updatedDocument =
-          await _documentsApi.update(document.copyWith(archiveSerialNumber: () => asn));
+      final updatedDocument = await _documentsApi
+          .update(document.copyWith(archiveSerialNumber: () => asn));
 
       replace(updatedDocument);
     }

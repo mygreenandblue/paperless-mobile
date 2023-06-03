@@ -32,7 +32,8 @@ import 'package:responsive_builder/responsive_builder.dart';
 /// Performs initialization logic.
 class HomePage extends StatefulWidget {
   final int paperlessApiVersion;
-  const HomePage({Key? key, required this.paperlessApiVersion}) : super(key: key);
+  const HomePage({Key? key, required this.paperlessApiVersion})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -231,17 +232,38 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       listeners: [
         BlocListener<ConnectivityCubit, ConnectivityState>(
           // If app was started offline, load data once it comes back online.
-          listenWhen: (previous, current) => current == ConnectivityState.connected,
-          listener: (context, state) {
-            context.read<LabelRepository>().initialize();
-            context.read<SavedViewRepository>().initialize();
+          listenWhen: (previous, current) =>
+              previous != ConnectivityState.connected &&
+              current == ConnectivityState.connected,
+          listener: (context, state) async {
+            try {
+              debugPrint(
+                "[HomePage] BlocListener#listener: "
+                "Loading saved views and labels...",
+              );
+              await Future.wait([
+                context.read<LabelRepository>().initialize(),
+                context.read<SavedViewRepository>().initialize(),
+              ]);
+              debugPrint("[HomePage] BlocListener#listener: "
+                  "Saved views and labels successfully loaded.");
+            } catch (error, stackTrace) {
+              debugPrint(
+                '[HomePage] BlocListener.listener: '
+                'An error occurred while loading saved views and labels.\n'
+                '${error.toString()}',
+              );
+              debugPrintStack(stackTrace: stackTrace);
+            }
           },
         ),
         BlocListener<TaskStatusCubit, TaskStatusState>(
           listener: (context, state) {
             if (state.task != null) {
               // Handle local notifications on task change (only when app is running for now).
-              context.read<LocalNotificationService>().notifyTaskChanged(state.task!);
+              context
+                  .read<LocalNotificationService>()
+                  .notifyTaskChanged(state.task!);
             }
           },
         ),
@@ -254,7 +276,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   NavigationRail(
                     labelType: NavigationRailLabelType.all,
-                    destinations: destinations.map((e) => e.toNavigationRailDestination()).toList(),
+                    destinations: destinations
+                        .map((e) => e.toNavigationRailDestination())
+                        .toList(),
                     selectedIndex: _currentIndex,
                     onDestinationSelected: _onNavigationChanged,
                   ),
@@ -272,7 +296,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               elevation: 4.0,
               selectedIndex: _currentIndex,
               onDestinationSelected: _onNavigationChanged,
-              destinations: destinations.map((e) => e.toNavigationDestination()).toList(),
+              destinations:
+                  destinations.map((e) => e.toNavigationDestination()).toList(),
             ),
             body: routes[_currentIndex],
           );

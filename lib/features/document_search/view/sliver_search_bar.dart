@@ -16,18 +16,22 @@ class SliverSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!.currentLoggedInUser;
+    final currentUser = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+        .getValue()!
+        .currentLoggedInUser;
 
-    return SliverPersistentHeader(
-      floating: floating,
-      pinned: pinned,
-      delegate: CustomizableSliverPersistentHeaderDelegate(
-        minExtent: kToolbarHeight,
-        maxExtent: kToolbarHeight,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: const DocumentSearchBar(),
+    return SliverPadding(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      sliver: SliverPersistentHeader(
+        floating: floating,
+        pinned: pinned,
+        delegate: CustomizableSliverPersistentHeaderDelegate(
+          minExtent: kToolbarHeight,
+          maxExtent: kToolbarHeight,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: const DocumentSearchBar(),
+          ),
         ),
       ),
     );

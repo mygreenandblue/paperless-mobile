@@ -108,8 +108,9 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
   }
 
   Widget _buildSuggestionsView(DocumentSearchState state) {
-    final suggestions =
-        state.suggestions.whereNot((element) => state.searchHistory.contains(element)).toList();
+    final suggestions = state.suggestions
+        .whereNot((element) => state.searchHistory.contains(element))
+        .toList();
     final historyMatches = state.searchHistory
         .where(
           (element) => element.startsWith(query),
@@ -140,7 +141,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             childCount: suggestions.length,
           ),
         ),
-        if (suggestions.isEmpty && historyMatches.isEmpty)
+        if (suggestions.isEmpty && historyMatches.isEmpty && state.hasLoaded)
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(
@@ -191,7 +192,8 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           builder: (context, state) {
             return ViewTypeSelectionWidget(
               viewType: state.viewType,
-              onChanged: (type) => context.read<DocumentSearchCubit>().updateViewType(type),
+              onChanged: (type) =>
+                  context.read<DocumentSearchCubit>().updateViewType(type),
             );
           },
         )

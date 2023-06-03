@@ -9,7 +9,8 @@ import 'paged_documents_state.dart';
 /// Mixin which can be used on cubits that handle documents.
 /// This implements all paging and filtering logic.
 ///
-mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<State> {
+mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
+    on BlocBase<State> {
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;
 
@@ -74,7 +75,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<Sta
   }
 
   Future<void> reload() async {
-    emit(state.copyWithPaged(isLoading: true));
+    // emit(state.copyWithPaged(isLoading: true));
     final filter = state.filter.copyWith(page: 1);
     try {
       final result = await api.findAll(filter);
@@ -128,7 +129,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<Sta
     if (index != -1) {
       final foundPage = state.value[index];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results..removeWhere((element) => element.id == document.id),
+        results: foundPage.results
+          ..removeWhere((element) => element.id == document.id),
       );
       final newCount = foundPage.count - 1;
       emit(
@@ -136,7 +138,8 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<Sta
           value: state.value
               .mapIndexed(
                 (currIndex, element) =>
-                    (currIndex == index ? replacementPage : element).copyWith(count: newCount),
+                    (currIndex == index ? replacementPage : element)
+                        .copyWith(count: newCount),
               )
               .toList(),
         ),
@@ -159,11 +162,14 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState> on BlocBase<Sta
     if (pageIndex != -1) {
       final foundPage = state.value[pageIndex];
       final replacementPage = foundPage.copyWith(
-        results: foundPage.results.map((doc) => doc.id == document.id ? document : doc).toList(),
+        results: foundPage.results
+            .map((doc) => doc.id == document.id ? document : doc)
+            .toList(),
       );
       final newState = state.copyWithPaged(
         value: state.value
-            .mapIndexed((currIndex, element) => currIndex == pageIndex ? replacementPage : element)
+            .mapIndexed((currIndex, element) =>
+                currIndex == pageIndex ? replacementPage : element)
             .toList(),
       );
       emit(newState);

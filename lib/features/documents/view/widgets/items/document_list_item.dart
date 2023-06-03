@@ -81,40 +81,25 @@ class DocumentListItem extends DocumentItem {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: DateFormat.yMMMd().format(document.created),
-              style: Theme.of(context).textTheme.labelSmall?.apply(color: Colors.grey),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.apply(color: Colors.grey),
               children: document.documentType != null
                   ? [
                       const TextSpan(text: '\u30FB'),
                       TextSpan(
                         text: labels.documentTypes[document.documentType]?.name,
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => onDocumentTypeSelected?.call(document.documentType),
+                        recognizer: onDocumentTypeSelected != null
+                            ? (TapGestureRecognizer()
+                              ..onTap = () => onDocumentTypeSelected!(
+                                  document.documentType))
+                            : null,
                       ),
                     ]
                   : null,
             ),
           ),
-          // Row(
-          //   children: [
-          //     Text(
-          //       DateFormat.yMMMd().format(document.created),
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .bodySmall
-          //           ?.apply(color: Colors.grey),
-          //     ),
-          //     if (document.documentType != null) ...[
-          //       Text("\u30FB"),
-          //       DocumentTypeWidget(
-          //         documentTypeId: document.documentType,
-          //         textStyle: Theme.of(context).textTheme.bodySmall?.apply(
-          //               color: Colors.grey,
-          //               overflow: TextOverflow.ellipsis,
-          //             ),
-          //       ),
-          //     ],
-          //   ],
-          // ),
         ),
         isThreeLine: document.tags.isNotEmpty,
         leading: AspectRatio(

@@ -334,8 +334,7 @@ class FormBuilderTypeAhead<T> extends FormBuilderField<T> {
               // TODO HACK to satisfy strictness
               suggestionsCallback: suggestionsCallback,
               itemBuilder: itemBuilder,
-              transitionBuilder: (context, suggestionsBox, controller) =>
-                  suggestionsBox,
+              transitionBuilder: (context, suggestionsBox, controller) => suggestionsBox,
               onSuggestionSelected: (T suggestion) {
                 state.didChange(suggestion);
                 onSuggestionSelected?.call(suggestion);
@@ -357,8 +356,7 @@ class FormBuilderTypeAhead<T> extends FormBuilderField<T> {
               keepSuggestionsOnLoading: keepSuggestionsOnLoading,
               autoFlipDirection: autoFlipDirection,
               suggestionsBoxController: suggestionsBoxController,
-              keepSuggestionsOnSuggestionSelected:
-                  keepSuggestionsOnSuggestionSelected,
+              keepSuggestionsOnSuggestionSelected: keepSuggestionsOnSuggestionSelected,
               hideKeyboard: hideKeyboard,
               scrollController: scrollController,
             );
@@ -369,15 +367,14 @@ class FormBuilderTypeAhead<T> extends FormBuilderField<T> {
   FormBuilderTypeAheadState<T> createState() => FormBuilderTypeAheadState<T>();
 }
 
-class FormBuilderTypeAheadState<T>
-    extends FormBuilderFieldState<FormBuilderTypeAhead<T>, T> {
+class FormBuilderTypeAheadState<T> extends FormBuilderFieldState<FormBuilderTypeAhead<T>, T> {
   late TextEditingController _typeAheadController;
 
   @override
   void initState() {
     super.initState();
-    _typeAheadController = widget.controller ??
-        TextEditingController(text: _getTextString(initialValue));
+    _typeAheadController =
+        widget.controller ?? TextEditingController(text: _getTextString(initialValue));
     // _typeAheadController.addListener(_handleControllerChanged);
   }
 

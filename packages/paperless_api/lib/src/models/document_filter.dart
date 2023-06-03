@@ -115,7 +115,9 @@ class DocumentFilter extends Equatable {
     final queryParams = groupBy(params, (e) => e.key).map(
       (key, entries) => MapEntry(
         key,
-        entries.length == 1 ? entries.first.value : entries.map((e) => e.value).join(","),
+        entries.length == 1
+            ? entries.first.value
+            : entries.map((e) => e.value).join(","),
       ),
     );
     return queryParams;
@@ -156,7 +158,8 @@ class DocumentFilter extends Equatable {
       modified: modified ?? this.modified,
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
     );
-    if (query?.queryType != QueryType.extended && newFilter.forceExtendedQuery) {
+    if (query?.queryType != QueryType.extended &&
+        newFilter.forceExtendedQuery) {
       //Prevents infinite recursion
       return newFilter.copyWith(
         query: newFilter.query.copyWith(queryType: QueryType.extended),
@@ -212,7 +215,8 @@ class DocumentFilter extends Equatable {
         query,
       ];
 
-  factory DocumentFilter.fromJson(Map<String, dynamic> json) => _$DocumentFilterFromJson(json);
+  factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
+      _$DocumentFilterFromJson(json);
 
   Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
 }

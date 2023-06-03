@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -14,12 +16,13 @@ import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_cr
 import 'package:paperless_mobile/features/login/view/widgets/login_pages/server_connection_page.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 import 'widgets/login_pages/server_login_page.dart';
 import 'widgets/never_scrollable_scroll_behavior.dart';
 
 class LoginPage extends StatefulWidget {
-  final void Function(
+  final FutureOr<void> Function(
     BuildContext context,
     String username,
     String password,
@@ -131,13 +134,17 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
       final credentials = form[UserCredentialsFormField.fkCredentials] as LoginFormCredentials;
-      widget.onSubmit(
-        context,
-        credentials.username!,
-        credentials.password!,
-        form[ServerAddressFormField.fkServerAddress],
-        clientCert,
-      );
+      try {
+        await widget.onSubmit(
+          context,
+          credentials.username!,
+          credentials.password!,
+          form[ServerAddressFormField.fkServerAddress],
+          clientCert,
+        );
+      } on Exception catch (error) {
+        showGenericError(context, error);
+      }
     }
   }
 }

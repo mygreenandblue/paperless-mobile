@@ -42,9 +42,12 @@ class DocumentsPage extends StatefulWidget {
   State<DocumentsPage> createState() => _DocumentsPageState();
 }
 
-class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle tabBarHandle = SliverOverlapAbsorberHandle();
+class _DocumentsPageState extends State<DocumentsPage>
+    with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle tabBarHandle =
+      SliverOverlapAbsorberHandle();
   late final TabController _tabController;
 
   int _currentTab = 0;
@@ -81,7 +84,8 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return BlocListener<TaskStatusCubit, TaskStatusState>(
-      listenWhen: (previous, current) => !previous.isSuccess && current.isSuccess,
+      listenWhen: (previous, current) =>
+          !previous.isSuccess && current.isSuccess,
       listener: (context, state) {
         showSnackBar(
           context,
@@ -98,7 +102,8 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
       },
       child: BlocConsumer<ConnectivityCubit, ConnectivityState>(
         listenWhen: (previous, current) =>
-            previous != ConnectivityState.connected && current == ConnectivityState.connected,
+            previous != ConnectivityState.connected &&
+            current == ConnectivityState.connected,
         listener: (context, state) {
           try {
             context.read<DocumentsCubit>().reload();
@@ -146,7 +151,11 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
               resizeToAvoidBottomInset: true,
               body: WillPopScope(
                 onWillPop: () async {
-                  if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
+                  if (context
+                      .read<DocumentsCubit>()
+                      .state
+                      .selection
+                      .isNotEmpty) {
                     context.read<DocumentsCubit>().resetSelection();
                     return false;
                   }
@@ -161,18 +170,13 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                           handle: searchBarHandle,
                           sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
                             builder: (context, state) {
-                              return AnimatedSwitcher(
-                                layoutBuilder: SliverAnimatedSwitcher.defaultLayoutBuilder,
-                                transitionBuilder: SliverAnimatedSwitcher.defaultTransitionBuilder,
-                                child: state.selection.isEmpty
-                                    ? const SliverSearchBar(floating: true)
-                                    : DocumentSelectionSliverAppBar(
-                                        state: state,
-                                      ),
-                                duration: const Duration(
-                                  milliseconds: 250,
-                                ),
-                              );
+                              if (state.selection.isEmpty) {
+                                return const SliverSearchBar(floating: true);
+                              } else {
+                                return DocumentSelectionSliverAppBar(
+                                  state: state,
+                                );
+                              }
                             },
                           ),
                         ),
@@ -187,7 +191,8 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                               }
                               return SliverPersistentHeader(
                                 pinned: true,
-                                delegate: CustomizableSliverPersistentHeaderDelegate(
+                                delegate:
+                                    CustomizableSliverPersistentHeaderDelegate(
                                   minExtent: kTextTabBarHeight,
                                   maxExtent: kTextTabBarHeight,
                                   child: ColoredTabBar(
@@ -211,15 +216,22 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                           if (metrics.maxScrollExtent == 0) {
                             return true;
                           }
-                          final desiredTab = (metrics.pixels / metrics.maxScrollExtent).round();
-                          if (metrics.axis == Axis.horizontal && _currentTab != desiredTab) {
+                          final desiredTab =
+                              (metrics.pixels / metrics.maxScrollExtent)
+                                  .round();
+                          if (metrics.axis == Axis.horizontal &&
+                              _currentTab != desiredTab) {
                             setState(() => _currentTab = desiredTab);
                           }
                           return false;
                         },
                         child: TabBarView(
                           controller: _tabController,
-                          physics: context.watch<DocumentsCubit>().state.selection.isNotEmpty
+                          physics: context
+                                  .watch<DocumentsCubit>()
+                                  .state
+                                  .selection
+                                  .isNotEmpty
                               ? const NeverScrollableScrollPhysics()
                               : null,
                           children: [
@@ -287,13 +299,19 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
 
         final currState = context.read<DocumentsCubit>().state;
         final max = notification.metrics.maxScrollExtent;
-        if (max == 0 || _currentTab != 0 || currState.isLoading || currState.isLastPageLoaded) {
+        if (max == 0 ||
+            _currentTab != 0 ||
+            currState.isLoading ||
+            currState.isLastPageLoaded) {
           return false;
         }
 
         final offset = notification.metrics.pixels;
         if (offset >= max * 0.7) {
-          context.read<DocumentsCubit>().loadMore().onError<PaperlessServerException>(
+          context
+              .read<DocumentsCubit>()
+              .loadMore()
+              .onError<PaperlessServerException>(
                 (error, stackTrace) => showErrorMessage(
                   context,
                   error,
@@ -324,16 +342,20 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
                     ),
                   );
                 }
-
+                final allowToggleFilter = state.selection.isEmpty;
                 return SliverAdaptiveDocumentsView(
                   viewType: state.viewType,
                   onTap: _openDetails,
-                  onSelected: context.read<DocumentsCubit>().toggleDocumentSelection,
+                  onSelected:
+                      context.read<DocumentsCubit>().toggleDocumentSelection,
                   hasInternetConnection: connectivityState.isConnected,
-                  onTagSelected: _addTagToFilter,
-                  onCorrespondentSelected: _addCorrespondentToFilter,
-                  onDocumentTypeSelected: _addDocumentTypeToFilter,
-                  onStoragePathSelected: _addStoragePathToFilter,
+                  onTagSelected: allowToggleFilter ? _addTagToFilter : null,
+                  onCorrespondentSelected:
+                      allowToggleFilter ? _addCorrespondentToFilter : null,
+                  onDocumentTypeSelected:
+                      allowToggleFilter ? _addDocumentTypeToFilter : null,
+                  onStoragePathSelected:
+                      allowToggleFilter ? _addStoragePathToFilter : null,
                   documents: state.documents,
                   hasLoaded: state.hasLoaded,
                   isLabelClickable: true,
@@ -401,7 +423,8 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
           snapSizes: const [0.9, 1],
           initialChildSize: .9,
           maxChildSize: 1,
-          builder: (context, controller) => BlocBuilder<DocumentsCubit, DocumentsState>(
+          builder: (context, controller) =>
+              BlocBuilder<DocumentsCubit, DocumentsState>(
             builder: (context, state) {
               return DocumentFilterPanel(
                 initialFilter: context.read<DocumentsCubit>().state.filter,
@@ -422,7 +445,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
         if (filterIntent.shouldReset) {
           await context.read<DocumentsCubit>().resetFilter();
         } else {
-          await context.read<DocumentsCubit>().updateFilter(filter: filterIntent.filter!);
+          await context
+              .read<DocumentsCubit>()
+              .updateFilter(filter: filterIntent.filter!);
         }
       } on PaperlessServerException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
@@ -439,7 +464,6 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
 
   void _addTagToFilter(int tagId) {
     final cubit = context.read<DocumentsCubit>();
-
     try {
       cubit.state.filter.tags.maybeMap(
         ids: (state) {
@@ -447,7 +471,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
             cubit.updateCurrentFilter(
               (filter) => filter.copyWith(
                 tags: state.copyWith(
-                  include: state.include.whereNot((element) => element == tagId).toList(),
+                  include: state.include
+                      .whereNot((element) => element == tagId)
+                      .toList(),
                 ),
               ),
             );
@@ -455,7 +481,9 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
             cubit.updateCurrentFilter(
               (filter) => filter.copyWith(
                 tags: state.copyWith(
-                  exclude: state.exclude.whereNot((element) => element == tagId).toList(),
+                  exclude: state.exclude
+                      .whereNot((element) => element == tagId)
+                      .toList(),
                 ),
               ),
             );
@@ -481,22 +509,26 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   void _addCorrespondentToFilter(int? correspondentId) {
     if (correspondentId == null) return;
     final cubit = context.read<DocumentsCubit>();
+
     try {
       cubit.state.filter.correspondent.maybeWhen(
         fromId: (id) {
           if (id == correspondentId) {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(correspondent: const IdQueryParameter.unset()),
+              (filter) => filter.copyWith(
+                  correspondent: const IdQueryParameter.unset()),
             );
           } else {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(correspondent: IdQueryParameter.fromId(correspondentId)),
+              (filter) => filter.copyWith(
+                  correspondent: IdQueryParameter.fromId(correspondentId)),
             );
           }
         },
         orElse: () {
           cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(correspondent: IdQueryParameter.fromId(correspondentId)),
+            (filter) => filter.copyWith(
+                correspondent: IdQueryParameter.fromId(correspondentId)),
           );
         },
       );
@@ -508,22 +540,26 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   void _addDocumentTypeToFilter(int? documentTypeId) {
     if (documentTypeId == null) return;
     final cubit = context.read<DocumentsCubit>();
+
     try {
       cubit.state.filter.documentType.maybeWhen(
         fromId: (id) {
           if (id == documentTypeId) {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(documentType: const IdQueryParameter.unset()),
+              (filter) =>
+                  filter.copyWith(documentType: const IdQueryParameter.unset()),
             );
           } else {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(documentType: IdQueryParameter.fromId(documentTypeId)),
+              (filter) => filter.copyWith(
+                  documentType: IdQueryParameter.fromId(documentTypeId)),
             );
           }
         },
         orElse: () {
           cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(documentType: IdQueryParameter.fromId(documentTypeId)),
+            (filter) => filter.copyWith(
+                documentType: IdQueryParameter.fromId(documentTypeId)),
           );
         },
       );
@@ -535,22 +571,26 @@ class _DocumentsPageState extends State<DocumentsPage> with SingleTickerProvider
   void _addStoragePathToFilter(int? pathId) {
     if (pathId == null) return;
     final cubit = context.read<DocumentsCubit>();
+
     try {
       cubit.state.filter.storagePath.maybeWhen(
         fromId: (id) {
           if (id == pathId) {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(storagePath: const IdQueryParameter.unset()),
+              (filter) =>
+                  filter.copyWith(storagePath: const IdQueryParameter.unset()),
             );
           } else {
             cubit.updateCurrentFilter(
-              (filter) => filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
+              (filter) =>
+                  filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
             );
           }
         },
         orElse: () {
           cubit.updateCurrentFilter(
-            (filter) => filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
+            (filter) =>
+                filter.copyWith(storagePath: IdQueryParameter.fromId(pathId)),
           );
         },
       );

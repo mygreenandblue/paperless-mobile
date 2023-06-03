@@ -244,7 +244,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final userStateBox = Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
 
     if (userAccountBox.containsKey(localUserId)) {
-      throw Exception("User with id $localUserId already exists!");
+      throw Exception("User already exists!");
     }
     final apiVersion = await _getApiVersion(sessionManager.client);
 
@@ -282,6 +282,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         ),
       );
     });
+    final hostsBox = Hive.box<String>(HiveBoxes.hosts);
+    if (!hostsBox.values.contains(serverUrl)) {
+      await hostsBox.add(serverUrl);
+    }
     return serverUser.id;
   }
 
