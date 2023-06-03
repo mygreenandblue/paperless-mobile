@@ -233,10 +233,28 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         BlocListener<ConnectivityCubit, ConnectivityState>(
           // If app was started offline, load data once it comes back online.
           listenWhen: (previous, current) =>
+              previous != ConnectivityState.connected &&
               current == ConnectivityState.connected,
-          listener: (context, state) {
-            context.read<LabelRepository>().initialize();
-            context.read<SavedViewRepository>().initialize();
+          listener: (context, state) async {
+            try {
+              debugPrint(
+                "[HomePage] BlocListener#listener: "
+                "Loading saved views and labels...",
+              );
+              await Future.wait([
+                context.read<LabelRepository>().initialize(),
+                context.read<SavedViewRepository>().initialize(),
+              ]);
+              debugPrint("[HomePage] BlocListener#listener: "
+                  "Saved views and labels successfully loaded.");
+            } catch (error, stackTrace) {
+              debugPrint(
+                '[HomePage] BlocListener.listener: '
+                'An error occurred while loading saved views and labels.\n'
+                '${error.toString()}',
+              );
+              debugPrintStack(stackTrace: stackTrace);
+            }
           },
         ),
         BlocListener<TaskStatusCubit, TaskStatusState>(

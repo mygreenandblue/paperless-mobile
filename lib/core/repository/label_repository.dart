@@ -10,21 +10,26 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   LabelRepository(this._api) : super(const LabelRepositoryState());
 
-  Future<void> initialize() {
-    debugPrint("Initializing labels...");
-    return Future.wait([
-      findAllCorrespondents(),
-      findAllDocumentTypes(),
-      findAllStoragePaths(),
-      findAllTags(),
-    ]).catchError((error) {
-      debugPrint(error.toString());
-    }, test: (error) => false);
+  Future<void> initialize() async {
+    debugPrint("[LabelRepository] initialize() called.");
+    try {
+      await Future.wait([
+        findAllCorrespondents(),
+        findAllDocumentTypes(),
+        findAllStoragePaths(),
+        findAllTags(),
+      ]);
+    } catch (error, stackTrace) {
+      debugPrint(
+          "[LabelRepository] An error occurred in initialize(): ${error.toString()}");
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 
   Future<Tag> createTag(Tag object) async {
     final created = await _api.saveTag(object);
-    final updatedState = {...state.tags}..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.tags}
+      ..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(tags: updatedState));
     return created;
   }
@@ -48,7 +53,8 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<Iterable<Tag>> findAllTags([Iterable<int>? ids]) async {
     final tags = await _api.getTags(ids);
-    final updatedState = {...state.tags}..addEntries(tags.map((e) => MapEntry(e.id!, e)));
+    final updatedState = {...state.tags}
+      ..addEntries(tags.map((e) => MapEntry(e.id!, e)));
     emit(state.copyWith(tags: updatedState));
     return tags;
   }
@@ -62,14 +68,16 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<Correspondent> createCorrespondent(Correspondent correspondent) async {
     final created = await _api.saveCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.correspondents}
+      ..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(correspondents: updatedState));
     return created;
   }
 
   Future<int> deleteCorrespondent(Correspondent correspondent) async {
     await _api.deleteCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}..removeWhere((k, v) => k == correspondent.id);
+    final updatedState = {...state.correspondents}
+      ..removeWhere((k, v) => k == correspondent.id);
     emit(state.copyWith(correspondents: updatedState));
 
     return correspondent.id!;
@@ -86,22 +94,22 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<Correspondent>> findAllCorrespondents([Iterable<int>? ids]) async {
+  Future<Iterable<Correspondent>> findAllCorrespondents(
+      [Iterable<int>? ids]) async {
     debugPrint("Loading correspondents...");
     final correspondents = await _api.getCorrespondents(ids);
     debugPrint("${correspondents.length} correspondents successfully loaded.");
     final updatedState = {
       ...state.correspondents,
     }..addAll({for (var element in correspondents) element.id!: element});
-    debugPrint("Pushing new correspondents state.");
     emit(state.copyWith(correspondents: updatedState));
-    debugPrint("New correspondents state pushed.");
     return correspondents;
   }
 
   Future<Correspondent> updateCorrespondent(Correspondent correspondent) async {
     final updated = await _api.updateCorrespondent(correspondent);
-    final updatedState = {...state.correspondents}..update(updated.id!, (_) => updated);
+    final updatedState = {...state.correspondents}
+      ..update(updated.id!, (_) => updated);
     emit(state.copyWith(correspondents: updatedState));
 
     return updated;
@@ -109,14 +117,16 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<DocumentType> createDocumentType(DocumentType documentType) async {
     final created = await _api.saveDocumentType(documentType);
-    final updatedState = {...state.documentTypes}..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.documentTypes}
+      ..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(documentTypes: updatedState));
     return created;
   }
 
   Future<int> deleteDocumentType(DocumentType documentType) async {
     await _api.deleteDocumentType(documentType);
-    final updatedState = {...state.documentTypes}..removeWhere((k, v) => k == documentType.id);
+    final updatedState = {...state.documentTypes}
+      ..removeWhere((k, v) => k == documentType.id);
     emit(state.copyWith(documentTypes: updatedState));
     return documentType.id!;
   }
@@ -131,7 +141,8 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<DocumentType>> findAllDocumentTypes([Iterable<int>? ids]) async {
+  Future<Iterable<DocumentType>> findAllDocumentTypes(
+      [Iterable<int>? ids]) async {
     final documentTypes = await _api.getDocumentTypes(ids);
     final updatedState = {...state.documentTypes}
       ..addEntries(documentTypes.map((e) => MapEntry(e.id!, e)));
@@ -141,21 +152,24 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<DocumentType> updateDocumentType(DocumentType documentType) async {
     final updated = await _api.updateDocumentType(documentType);
-    final updatedState = {...state.documentTypes}..update(updated.id!, (_) => updated);
+    final updatedState = {...state.documentTypes}
+      ..update(updated.id!, (_) => updated);
     emit(state.copyWith(documentTypes: updatedState));
     return updated;
   }
 
   Future<StoragePath> createStoragePath(StoragePath storagePath) async {
     final created = await _api.saveStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}..putIfAbsent(created.id!, () => created);
+    final updatedState = {...state.storagePaths}
+      ..putIfAbsent(created.id!, () => created);
     emit(state.copyWith(storagePaths: updatedState));
     return created;
   }
 
   Future<int> deleteStoragePath(StoragePath storagePath) async {
     await _api.deleteStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}..removeWhere((k, v) => k == storagePath.id);
+    final updatedState = {...state.storagePaths}
+      ..removeWhere((k, v) => k == storagePath.id);
     emit(state.copyWith(storagePaths: updatedState));
     return storagePath.id!;
   }
@@ -170,7 +184,8 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
     return null;
   }
 
-  Future<Iterable<StoragePath>> findAllStoragePaths([Iterable<int>? ids]) async {
+  Future<Iterable<StoragePath>> findAllStoragePaths(
+      [Iterable<int>? ids]) async {
     final storagePaths = await _api.getStoragePaths(ids);
     final updatedState = {...state.storagePaths}
       ..addEntries(storagePaths.map((e) => MapEntry(e.id!, e)));
@@ -180,7 +195,8 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<StoragePath> updateStoragePath(StoragePath storagePath) async {
     final updated = await _api.updateStoragePath(storagePath);
-    final updatedState = {...state.storagePaths}..update(updated.id!, (_) => updated);
+    final updatedState = {...state.storagePaths}
+      ..update(updated.id!, (_) => updated);
     emit(state.copyWith(storagePaths: updatedState));
     return updated;
   }
