@@ -7,8 +7,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
@@ -35,9 +40,13 @@ class ScannerPage extends StatefulWidget {
   State<ScannerPage> createState() => _ScannerPageState();
 }
 
-class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle actionsHandle = SliverOverlapAbsorberHandle();
+class _ScannerPageState extends State<ScannerPage>
+    with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle actionsHandle =
+      SliverOverlapAbsorberHandle();
+  final _downloadFormKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -116,11 +125,13 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
               builder: (context, state) {
                 return TextButton.icon(
                   label: Text(S.of(context)!.previewScan),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  ),
                   onPressed: state.isNotEmpty
                       ? () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DocumentView(
-
                                 documentBytes: _assembleFileBytes(
                                   state,
                                   forcePdf: true,
@@ -136,7 +147,79 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
             BlocBuilder<DocumentScannerCubit, List<File>>(
               builder: (context, state) {
                 return TextButton.icon(
+                  label: Text("Export"),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  ),
+                  onPressed: state.isEmpty
+                      ? null
+                      : () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Stack(
+                                    children: [
+                                      FormBuilder(
+                                        key: _downloadFormKey,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: FormBuilderTextField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode.always,
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please enter some text';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  decoration: InputDecoration(
+                                                    labelText:
+                                                        S.of(context)!.fileName,
+                                                  ),
+                                                  initialValue: "test",
+                                                  name: 'filename',
+                                                )),
+                                            TextButton.icon(
+                                              label: const Text(
+                                                  "Save a local copy"),
+                                              icon: const Icon(Icons.download),
+                                              onPressed: () => {
+                                                if (_downloadFormKey
+                                                    .currentState!
+                                                    .validate())
+                                                  {
+                                                    _onLocalSave().then(
+                                                        (value) => Navigator.of(
+                                                                context)
+                                                            .pop())
+                                                  }
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
+                        },
+                  icon: const Icon(Icons.download),
+                );
+              },
+            ),
+            BlocBuilder<DocumentScannerCubit, List<File>>(
+              builder: (context, state) {
+                return TextButton.icon(
                   label: Text(S.of(context)!.clearAll),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  ),
                   onPressed: state.isEmpty ? null : () => _reset(context),
                   icon: const Icon(Icons.delete_sweep_outlined),
                 );
@@ -146,6 +229,9 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
               builder: (context, state) {
                 return TextButton.icon(
                   label: Text(S.of(context)!.upload),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  ),
                   onPressed: state.isEmpty || !isConnected
                       ? null
                       : () => _onPrepareDocumentUpload(context),
@@ -175,7 +261,8 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
     final success = await EdgeDetection.detectEdge(file.path);
     if (!success) {
       if (kDebugMode) {
-        dev.log('[ScannerPage] Scan either not successful or canceled by user.');
+        dev.log(
+            '[ScannerPage] Scan either not successful or canceled by user.');
       }
       return;
     }
@@ -197,7 +284,38 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context.read<TaskStatusCubit>().listenToTaskChanges(uploadResult!.taskId!);
+      context
+          .read<TaskStatusCubit>()
+          .listenToTaskChanges(uploadResult!.taskId!);
+    }
+  }
+
+  Future<void> _onLocalSave() async {
+    final cubit = context.read<DocumentScannerCubit>();
+    final file = await _assembleFileBytes(
+      forcePdf: true,
+      context.read<DocumentScannerCubit>().state,
+    );
+    try {
+      final globalSettings =
+          Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+      if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
+        final isGranted = await askForPermission(Permission.storage);
+        if (!isGranted) {
+          return;
+          //TODO: Ask user to grant permissions
+        }
+      }
+      final name = (_downloadFormKey.currentState?.fields['filename']?.value ??
+          "") as String;
+
+      var fileName = "$name.pdf";
+
+      await cubit.saveLocally(
+          file.bytes, fileName, globalSettings.preferredLocaleSubtag);
+      _downloadFormKey.currentState!.save();
+    } catch (error) {
+      showGenericError(context, error);
     }
   }
 
