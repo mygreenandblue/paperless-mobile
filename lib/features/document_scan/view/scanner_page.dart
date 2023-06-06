@@ -42,6 +42,8 @@ class ScannerPage extends StatefulWidget {
 
 class _ScannerPageState extends State<ScannerPage>
     with SingleTickerProviderStateMixin {
+  static const fkFileName = "filename";
+
   final SliverOverlapAbsorberHandle searchBarHandle =
       SliverOverlapAbsorberHandle();
   final SliverOverlapAbsorberHandle actionsHandle =
@@ -147,7 +149,7 @@ class _ScannerPageState extends State<ScannerPage>
             BlocBuilder<DocumentScannerCubit, List<File>>(
               builder: (context, state) {
                 return TextButton.icon(
-                  label: Text("Export"),
+                  label: Text(S.of(context)!.export),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
                   ),
@@ -172,9 +174,11 @@ class _ScannerPageState extends State<ScannerPage>
                                                   autovalidateMode:
                                                       AutovalidateMode.always,
                                                   validator: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
-                                                      return 'Please enter some text';
+                                                    if (value?.trim().isEmpty ??
+                                                        true) {
+                                                      return S
+                                                          .of(context)!
+                                                          .thisFieldIsRequired;
                                                     }
                                                     return null;
                                                   },
@@ -182,12 +186,11 @@ class _ScannerPageState extends State<ScannerPage>
                                                     labelText:
                                                         S.of(context)!.fileName,
                                                   ),
-                                                  initialValue: "test",
-                                                  name: 'filename',
+                                                  name: fkFileName,
                                                 )),
                                             TextButton.icon(
-                                              label: const Text(
-                                                  "Save a local copy"),
+                                              label:
+                                                  Text(S.of(context)!.export),
                                               icon: const Icon(Icons.download),
                                               onPressed: () => {
                                                 if (_downloadFormKey
@@ -306,8 +309,8 @@ class _ScannerPageState extends State<ScannerPage>
           //TODO: Ask user to grant permissions
         }
       }
-      final name = (_downloadFormKey.currentState?.fields['filename']?.value ??
-          "") as String;
+      final name =
+          _downloadFormKey.currentState?.fields[fkFileName]!.value as String;
 
       var fileName = "$name.pdf";
 

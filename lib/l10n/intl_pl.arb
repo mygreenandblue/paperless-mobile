@@ -811,5 +811,9 @@
   "goToLogin": "Przejdź do logowania",
   "@goToLogin": {
     "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
+  },
+  "export": "Eksport",
+  "@export": {
+    "description": "Label for button that exports scanned images to pdf (before upload)"
   }
 }
