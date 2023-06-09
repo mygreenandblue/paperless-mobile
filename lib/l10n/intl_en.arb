@@ -815,5 +815,9 @@
   "export": "Export",
   "@export": {
     "description": "Label for button that exports scanned images to pdf (before upload)"
+  },
+  "invalidFilenameCharacter": "Invalid filename character found",
+  "@invalidFilenameCharacter": {
+    "description": "For validating filename in export dialogue"
   }
 }

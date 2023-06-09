@@ -815,5 +815,9 @@
   "export": "Eksport",
   "@export": {
     "description": "Label for button that exports scanned images to pdf (before upload)"
+  },
+  "invalidFilenameCharacter": "Znaleziono niedozwolony znak w nazwie pliku",
+  "@invalidFilenameCharacter": {
+    "description": "For validating filename in export dialogue"
   }
 }

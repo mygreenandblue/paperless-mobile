@@ -180,6 +180,14 @@ class _ScannerPageState extends State<ScannerPage>
                                                       .of(context)!
                                                       .thisFieldIsRequired;
                                                 }
+                                                if (value?.trim().contains(
+                                                        RegExp(
+                                                            r'[<>:"/|?*]')) ??
+                                                    true) {
+                                                  return S
+                                                      .of(context)!
+                                                      .invalidFilenameCharacter;
+                                                }
                                                 return null;
                                               },
                                               decoration: InputDecoration(
@@ -326,7 +334,6 @@ class _ScannerPageState extends State<ScannerPage>
 
       await cubit.saveLocally(
           file.bytes, fileName, globalSettings.preferredLocaleSubtag);
-      _downloadFormKey.currentState!.save();
     } catch (error) {
       showGenericError(context, error);
     }
