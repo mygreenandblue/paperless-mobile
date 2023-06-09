@@ -19,6 +19,8 @@ import 'package:paperless_mobile/core/global/constants.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
@@ -160,59 +162,67 @@ class _ScannerPageState extends State<ScannerPage>
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  content: Stack(
-                                    children: [
-                                      FormBuilder(
-                                        key: _downloadFormKey,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: FormBuilderTextField(
-                                                  autovalidateMode:
-                                                      AutovalidateMode.always,
-                                                  validator: (value) {
-                                                    if (value?.trim().isEmpty ??
-                                                        true) {
-                                                      return S
-                                                          .of(context)!
-                                                          .thisFieldIsRequired;
-                                                    }
-                                                    return null;
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    labelText:
-                                                        S.of(context)!.fileName,
-                                                  ),
-                                                  name: fkFileName,
-                                                )),
-                                            TextButton.icon(
-                                              label:
-                                                  Text(S.of(context)!.export),
-                                              icon: const Icon(Icons.download),
-                                              onPressed: () => {
-                                                if (_downloadFormKey
-                                                    .currentState!
-                                                    .validate())
-                                                  {
-                                                    _onLocalSave().then(
-                                                        (value) => Navigator.of(
-                                                                context)
-                                                            .pop())
-                                                  }
+                                  title: Text(S.of(context)!.export),
+                                  content: FormBuilder(
+                                    key: _downloadFormKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: FormBuilderTextField(
+                                              autovalidateMode:
+                                                  AutovalidateMode.always,
+                                              validator: (value) {
+                                                if (value?.trim().isEmpty ??
+                                                    true) {
+                                                  return S
+                                                      .of(context)!
+                                                      .thisFieldIsRequired;
+                                                }
+                                                return null;
                                               },
-                                            )
-                                          ],
+                                              decoration: InputDecoration(
+                                                labelText:
+                                                    S.of(context)!.fileName,
+                                              ),
+                                              name: fkFileName,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    const DialogCancelButton(),
+                                    ElevatedButton(
+                                      child: Text(S.of(context)!.export),
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll(
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .primaryContainer,
+                                        ),
+                                        foregroundColor:
+                                            MaterialStatePropertyAll(
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                      onPressed: () => {
+                                        if (_downloadFormKey.currentState!
+                                            .validate())
+                                          {
+                                            _onLocalSave().then((value) =>
+                                                Navigator.of(context).pop())
+                                          }
+                                      },
+                                    ),
+                                  ],
                                 );
                               });
                         },
-                  icon: const Icon(Icons.download),
+                  icon: const Icon(Icons.download_outlined),
                 );
               },
             ),
