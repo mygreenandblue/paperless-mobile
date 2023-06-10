@@ -35,9 +35,12 @@ class ScannerPage extends StatefulWidget {
   State<ScannerPage> createState() => _ScannerPageState();
 }
 
-class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStateMixin {
-  final SliverOverlapAbsorberHandle searchBarHandle = SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle actionsHandle = SliverOverlapAbsorberHandle();
+class _ScannerPageState extends State<ScannerPage>
+    with SingleTickerProviderStateMixin {
+  final SliverOverlapAbsorberHandle searchBarHandle =
+      SliverOverlapAbsorberHandle();
+  final SliverOverlapAbsorberHandle actionsHandle =
+      SliverOverlapAbsorberHandle();
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +123,6 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
                       ? () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DocumentView(
-
                                 documentBytes: _assembleFileBytes(
                                   state,
                                   forcePdf: true,
@@ -175,7 +177,8 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
     final success = await EdgeDetection.detectEdge(file.path);
     if (!success) {
       if (kDebugMode) {
-        dev.log('[ScannerPage] Scan either not successful or canceled by user.');
+        dev.log(
+            '[ScannerPage] Scan either not successful or canceled by user.');
       }
       return;
     }
@@ -197,7 +200,9 @@ class _ScannerPageState extends State<ScannerPage> with SingleTickerProviderStat
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context.read<TaskStatusCubit>().listenToTaskChanges(uploadResult!.taskId!);
+      context
+          .read<TaskStatusCubit>()
+          .listenToTaskChanges(uploadResult!.taskId!);
     }
   }
 
