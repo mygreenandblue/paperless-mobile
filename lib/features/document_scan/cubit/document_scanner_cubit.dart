@@ -44,14 +44,14 @@ class DocumentScannerCubit extends Cubit<List<File>> {
   Future<void> saveToFile(
     Uint8List bytes,
     String fileName,
-    String preferredLocaleSubtag,
+    String locale,
   ) async {
     var file = await FileService.saveToFile(bytes, fileName);
     _notificationService.notifyFileSaved(
       filename: fileName,
       filePath: file.path,
       finished: true,
-      locale: preferredLocaleSubtag,
+      locale: locale,
     );
   }
 }

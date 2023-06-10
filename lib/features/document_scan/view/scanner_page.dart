@@ -204,9 +204,9 @@ class _ScannerPageState extends State<ScannerPage>
           if (!isGranted) {
             showSnackBar(
               context,
-              "Please grant permissions for Paperless Mobile to access your filesystem.",
+              "Please grant Paperless Mobile permissions to access your filesystem.",
               action: SnackBarActionConfig(
-                label: "GO",
+                label: "OK",
                 onPressed: openAppSettings,
               ),
             );
