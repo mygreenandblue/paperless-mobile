@@ -819,5 +819,10 @@
   "invalidFilenameCharacter": "Znaleziono niedozwolony znak w nazwie pliku",
   "@invalidFilenameCharacter": {
     "description": "For validating filename in export dialogue"
-  }
+  },
+  "exportScansToPdf": "Export scans to PDF",
+  "@exportScansToPdf": {
+    "description": "title of the alert dialog when exporting scans to pdf"
+  },
+  "allScansWillBeMerged": "All scans will be merged into a single PDF file."
 }

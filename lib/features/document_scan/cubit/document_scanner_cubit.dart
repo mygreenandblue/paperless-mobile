@@ -41,8 +41,11 @@ class DocumentScannerCubit extends Cubit<List<File>> {
     }
   }
 
-  Future<void> saveLocally(
-      Uint8List bytes, String fileName, String preferredLocaleSubtag) async {
+  Future<void> saveToFile(
+    Uint8List bytes,
+    String fileName,
+    String preferredLocaleSubtag,
+  ) async {
     var file = await FileService.saveToFile(bytes, fileName);
     _notificationService.notifyFileSaved(
       filename: fileName,
