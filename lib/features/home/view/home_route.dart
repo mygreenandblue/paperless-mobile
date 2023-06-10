@@ -130,15 +130,10 @@ class HomeRoute extends StatelessWidget {
                             .get(currentLocalUserId)!,
                       )..initialize(),
                     ),
-                    Provider(create: (context) => DocumentScannerCubit()),
-                    ProxyProvider4<
-                        PaperlessDocumentsApi,
-                        PaperlessServerStatsApi,
-                        LabelRepository,
-                        DocumentChangedNotifier,
-                        InboxCubit>(
-                      update: (context, docApi, statsApi, labelRepo, notifier,
-                              previous) =>
+                    Provider(create: (context) => DocumentScannerCubit(context.read())),
+                    ProxyProvider4<PaperlessDocumentsApi, PaperlessServerStatsApi, LabelRepository,
+                        DocumentChangedNotifier, InboxCubit>(
+                      update: (context, docApi, statsApi, labelRepo, notifier, previous) =>
                           InboxCubit(
                         docApi,
                         statsApi,
