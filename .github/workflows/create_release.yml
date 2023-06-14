@@ -1,6 +1,6 @@
 ## See https://github.com/flutter/gallery/blob/main/.github/workflows/release_deploy_play_store.yml
 
-name: Release on Play Store
+name: Create new release
 on:
   # Enable manual run
   workflow_dispatch:
