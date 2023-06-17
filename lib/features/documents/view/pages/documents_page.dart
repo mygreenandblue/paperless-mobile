@@ -33,7 +33,6 @@ class DocumentFilterIntent {
   });
 }
 
-//TODO: Refactor this
 class DocumentsPage extends StatefulWidget {
   const DocumentsPage({Key? key}) : super(key: key);
 

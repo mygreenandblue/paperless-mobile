@@ -164,7 +164,7 @@ class UnsetDateRangeQueryAdapter extends TypeAdapter<UnsetDateRangeQuery> {
 
   @override
   UnsetDateRangeQuery read(BinaryReader reader) {
-    // reader.readByte();
+    reader.readByte();
     return const UnsetDateRangeQuery();
   }
 
