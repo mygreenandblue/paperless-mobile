@@ -108,12 +108,12 @@ class DocumentGridItem extends DocumentItem {
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
                           document.title,
-                          maxLines: document.tags.isEmpty ? 3 : 2,
+                          maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Text(
                         DateFormat.yMMMd().format(document.created),
                         style: Theme.of(context).textTheme.bodySmall,
