@@ -9,6 +9,7 @@ class ServerLoginPage extends StatefulWidget {
   final String submitText;
   final Future<void> Function() onSubmit;
   final GlobalKey<FormBuilderState> formBuilderKey;
+
   const ServerLoginPage({
     super.key,
     required this.onSubmit,
@@ -49,7 +50,7 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
             onFieldsSubmitted: widget.onSubmit,
           ),
           Text(
-            "Please make sure that the user has the permission to view users ('Users -> View') and view UI settings ('UISettings -> View).",
+            S.of(context)!.loginRequiredPermissionsHint,
             style: Theme.of(context).textTheme.bodySmall?.apply(
                 color: Theme.of(context)
                     .colorScheme
