@@ -216,5 +216,5 @@ Made with [contrib.rocks](https://contrib.rocks).
 ## Troubleshooting
 #### Suggestions are not selectable in any of the label form fields
 This is a known issue and it has to do with accessibility features of Android. Password managers such as Bitwarden often caused this issue. Luckily, this can be resolved by turning off the accessibility features in these apps. This could also be observed with apps that are allowed to display over other apps, such as emulations of the dynamic island on android.
-## I cannot log in since the update to paperless-ngx 1.14.0 (and above).
+#### I cannot log in since the update to paperless-ngx 1.14.0 (and above).
 The app has to somehow get information about it's user from the paperless API. Therefore, the `Users -> View` and the `UISettings -> View` permissions are required for each user trying to log into the app. Otherwise, the app has no way of obtaining your user id and other information required for the usage of most features.
