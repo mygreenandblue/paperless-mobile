@@ -45,7 +45,7 @@ class DefaultShareFileTypeSetting extends StatelessWidget {
             );
             if (selectedValue != null) {
               settings
-                ..defaultDownloadType = selectedValue
+                ..defaultShareType = selectedValue
                 ..save();
             }
           },
