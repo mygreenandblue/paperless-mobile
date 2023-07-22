@@ -123,12 +123,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
                                 allowSelectUnassigned: true,
-                                canCreateNewLabel: LocalUserAccount
-                                    .current.paperlessUser
-                                    .hasPermission(
-                                  PermissionAction.add,
-                                  PermissionTarget.correspondent,
-                                ),
+                                canCreateNewLabel: LocalUserAccount.current
+                                    .paperlessUser.canCreateCorrespondents,
                               ),
                               if (_filteredSuggestions
                                       ?.hasSuggestedCorrespondents ??
@@ -164,12 +160,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     initialName: currentInput,
                                   ),
                                 ),
-                                canCreateNewLabel: LocalUserAccount
-                                    .current.paperlessUser
-                                    .hasPermission(
-                                  PermissionAction.add,
-                                  PermissionTarget.documentType,
-                                ),
+                                canCreateNewLabel: LocalUserAccount.current
+                                    .paperlessUser.canCreateDocumentTypes,
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType,
                                 initialValue:
@@ -214,12 +206,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                   child: AddStoragePathPage(
                                       initalName: initialValue),
                                 ),
-                                canCreateNewLabel: LocalUserAccount
-                                    .current.paperlessUser
-                                    .hasPermission(
-                                  PermissionAction.add,
-                                  PermissionTarget.storagePath,
-                                ),
+                                canCreateNewLabel: LocalUserAccount.current
+                                    .paperlessUser.canCreateStoragePaths,
                                 addLabelText: S.of(context)!.addStoragePath,
                                 labelText: S.of(context)!.storagePath,
                                 options: state.storagePaths,
@@ -328,7 +316,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       try {
         await context.read<DocumentEditCubit>().updateDocument(mergedDocument);
         showSnackBar(context, S.of(context)!.documentSuccessfullyUpdated);
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
         setState(() {

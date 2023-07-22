@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:paperless_api/src/models/paperless_server_exception.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 
 Future<T?> getSingleResult<T>(
   String url,
@@ -16,20 +17,15 @@ Future<T?> getSingleResult<T>(
       url,
       options: Options(
         headers: {'accept': 'application/json; version=$minRequiredApiVersion'},
+        validateStatus: (status) => status == 200,
       ),
     );
-    if (response.statusCode == HttpStatus.ok) {
-      return compute(
-        fromJson,
-        response.data as Map<String, dynamic>,
-      );
-    }
-    throw PaperlessServerException(
-      errorCode,
-      httpStatusCode: response.statusCode,
+    return compute(
+      fromJson,
+      response.data as Map<String, dynamic>,
     );
-  } on DioError catch (err) {
-    throw err.error!;
+  } on DioException catch (exception) {
+    throw exception.unravel(orElse: PaperlessApiException(errorCode));
   }
 }
 
@@ -43,30 +39,25 @@ Future<List<T>> getCollection<T>(
   try {
     final response = await client.get(
       url,
-      options: Options(headers: {
-        'accept': 'application/json; version=$minRequiredApiVersion'
-      }),
+      options: Options(
+        headers: {'accept': 'application/json; version=$minRequiredApiVersion'},
+        validateStatus: (status) => status == 200,
+      ),
     );
-    if (response.statusCode == HttpStatus.ok) {
-      final Map<String, dynamic> body = response.data;
-      if (body.containsKey('count')) {
-        if (body['count'] == 0) {
-          return <T>[];
-        } else {
-          return compute(
-            _collectionFromJson,
-            _CollectionFromJsonSerializationParams(fromJson,
-                (body['results'] as List).cast<Map<String, dynamic>>()),
-          );
-        }
-      }
+    final Map<String, dynamic> body = response.data;
+    if (body['count'] == 0) {
+      return <T>[];
+    } else {
+      return compute(
+        _collectionFromJson,
+        _CollectionFromJsonSerializationParams(
+          fromJson,
+          (body['results'] as List).cast<Map<String, dynamic>>(),
+        ),
+      );
     }
-    throw PaperlessServerException(
-      errorCode,
-      httpStatusCode: response.statusCode,
-    );
-  } on DioError catch (err) {
-    throw err.error!;
+  } on DioException catch (exception) {
+    throw exception.unravel(orElse: PaperlessApiException(errorCode));
   }
 }
 

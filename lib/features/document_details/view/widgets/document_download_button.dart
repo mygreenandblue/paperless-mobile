@@ -95,7 +95,7 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
             locale: globalSettings.preferredLocaleSubtag,
           );
       // showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {
       showGenericError(context, error);

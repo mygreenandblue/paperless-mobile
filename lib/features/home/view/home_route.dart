@@ -3,6 +3,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -43,7 +44,14 @@ class HomeRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
-        final currentLocalUserId = settings.currentLoggedInUser!;
+        final currentLocalUserId = settings.currentLoggedInUser;
+        if (currentLocalUserId == null) {
+          // This is the case when the current user logs out of the app.
+          return SizedBox.shrink();
+        }
+        final currentUser =
+            Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
+                .get(currentLocalUserId)!;
         final apiVersion = ApiVersion(paperlessApiVersion);
         return MultiProvider(
           providers: [
@@ -104,12 +112,31 @@ class HomeRoute extends StatelessWidget {
             return MultiProvider(
               providers: [
                 ProxyProvider<PaperlessLabelsApi, LabelRepository>(
-                  update: (context, value, previous) =>
-                      LabelRepository(value)..initialize(),
+                  update: (context, value, previous) {
+                    final repo = LabelRepository(value);
+                    if (currentUser.paperlessUser.canViewCorrespondents) {
+                      repo.findAllCorrespondents();
+                    }
+                    if (currentUser.paperlessUser.canViewDocumentTypes) {
+                      repo.findAllDocumentTypes();
+                    }
+                    if (currentUser.paperlessUser.canViewTags) {
+                      repo.findAllTags();
+                    }
+                    if (currentUser.paperlessUser.canViewStoragePaths) {
+                      repo.findAllStoragePaths();
+                    }
+                    return repo;
+                  },
                 ),
                 ProxyProvider<PaperlessSavedViewsApi, SavedViewRepository>(
-                  update: (context, value, previous) =>
-                      SavedViewRepository(value)..initialize(),
+                  update: (context, value, previous) {
+                    final repo = SavedViewRepository(value);
+                    if (currentUser.paperlessUser.canViewSavedViews) {
+                      repo.initialize();
+                    }
+                    return repo;
+                  },
                 ),
               ],
               builder: (context, child) {

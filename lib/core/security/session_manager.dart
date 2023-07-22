@@ -4,13 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/interceptor/dio_http_error_interceptor.dart';
+import 'package:paperless_mobile/core/interceptor/dio_unauthorized_interceptor.dart';
 import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 /// Manages the security context, authentication and base request URL for
 /// an underlying [Dio] client which is injected into all services
-/// requiring authenticated access to the Paperless HTTP API.
+/// requiring authenticated access to the Paperless REST API.
 class SessionManager extends ValueNotifier<Dio> {
   Dio get client => value;
 
@@ -20,16 +21,21 @@ class SessionManager extends ValueNotifier<Dio> {
   static Dio _initDio(List<Interceptor> interceptors) {
     //en- and decoded by utf8 by default
     final Dio dio = Dio(
-      BaseOptions(contentType: Headers.jsonContentType),
+      BaseOptions(
+        contentType: Headers.jsonContentType,
+        followRedirects: true,
+        maxRedirects: 10,
+      ),
     );
     dio.options
       ..receiveTimeout = const Duration(seconds: 30)
       ..sendTimeout = const Duration(seconds: 60)
       ..responseType = ResponseType.json;
-    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-        (client) => client..badCertificateCallback = (cert, host, port) => true;
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient =
+        () => HttpClient()..badCertificateCallback = (cert, host, port) => true;
     dio.interceptors.addAll([
       ...interceptors,
+      DioUnauthorizedInterceptor(),
       DioHttpErrorInterceptor(),
       PrettyDioLogger(
         compact: true,
@@ -64,7 +70,7 @@ class SessionManager extends ValueNotifier<Dio> {
           password: clientCertificate.passphrase,
         );
       final adapter = IOHttpClientAdapter()
-        ..onHttpClientCreate = (client) => HttpClient(context: context)
+        ..createHttpClient = () => HttpClient(context: context)
           ..badCertificateCallback =
               (X509Certificate cert, String host, int port) => true;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
@@ -45,38 +46,35 @@ class DocumentOverviewWidget extends StatelessWidget {
             context: context,
             label: S.of(context)!.createdAt,
           ).paddedOnly(bottom: itemSpacing),
-          Visibility(
-            visible: document.documentType != null,
-            child: DetailsItem(
+          if (document.documentType != null &&
+              LocalUserAccount.current.paperlessUser.canViewDocumentTypes)
+            DetailsItem(
               label: S.of(context)!.documentType,
               content: LabelText<DocumentType>(
                 style: Theme.of(context).textTheme.bodyLarge,
                 label: availableDocumentTypes[document.documentType],
               ),
             ).paddedOnly(bottom: itemSpacing),
-          ),
-          Visibility(
-            visible: document.correspondent != null,
-            child: DetailsItem(
+          if (document.correspondent != null &&
+              LocalUserAccount.current.paperlessUser.canViewCorrespondents)
+            DetailsItem(
               label: S.of(context)!.correspondent,
               content: LabelText<Correspondent>(
                 style: Theme.of(context).textTheme.bodyLarge,
                 label: availableCorrespondents[document.correspondent],
               ),
             ).paddedOnly(bottom: itemSpacing),
-          ),
-          Visibility(
-            visible: document.storagePath != null,
-            child: DetailsItem(
+          if (document.storagePath != null &&
+              LocalUserAccount.current.paperlessUser.canViewStoragePaths)
+            DetailsItem(
               label: S.of(context)!.storagePath,
               content: LabelText<StoragePath>(
                 label: availableStoragePaths[document.storagePath],
               ),
             ).paddedOnly(bottom: itemSpacing),
-          ),
-          Visibility(
-            visible: document.tags.isNotEmpty,
-            child: DetailsItem(
+          if (document.tags.isNotEmpty &&
+              LocalUserAccount.current.paperlessUser.canViewTags)
+            DetailsItem(
               label: S.of(context)!.tags,
               content: Padding(
                 padding: const EdgeInsets.only(top: 8.0),
@@ -86,7 +84,6 @@ class DocumentOverviewWidget extends StatelessWidget {
                 ),
               ),
             ).paddedOnly(bottom: itemSpacing),
-          ),
         ],
       ),
     );

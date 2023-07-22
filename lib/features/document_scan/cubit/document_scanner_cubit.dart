@@ -22,7 +22,7 @@ class DocumentScannerCubit extends Cubit<List<File>> {
       scans.removeAt(fileIndex);
       emit(scans);
     } catch (_) {
-      throw const PaperlessServerException(ErrorCode.scanRemoveFailed);
+      throw const PaperlessApiException(ErrorCode.scanRemoveFailed);
     }
   }
 
@@ -37,7 +37,7 @@ class DocumentScannerCubit extends Cubit<List<File>> {
       imageCache.clear();
       emit([]);
     } catch (_) {
-      throw const PaperlessServerException(ErrorCode.scanRemoveFailed);
+      throw const PaperlessApiException(ErrorCode.scanRemoveFailed);
     }
   }
 

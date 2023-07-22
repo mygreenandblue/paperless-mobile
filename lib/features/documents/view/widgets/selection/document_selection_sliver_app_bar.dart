@@ -47,7 +47,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                   S.of(context)!.documentsSuccessfullyDeleted,
                 );
                 context.read<DocumentsCubit>().resetSelection();
-              } on PaperlessServerException catch (error, stackTrace) {
+              } on PaperlessApiException catch (error, stackTrace) {
                 showErrorMessage(context, error, stackTrace);
               }
             }

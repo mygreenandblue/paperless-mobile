@@ -30,7 +30,6 @@ import 'package:paperless_mobile/core/interceptor/language_header.interceptor.da
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/home/view/home_route.dart';
 import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
@@ -168,7 +167,7 @@ void main() async {
     );
   }, (error, stack) {
     String message = switch (error) {
-      PaperlessServerException e => e.details ?? error.toString(),
+      PaperlessApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
       _ => error.toString()
     };
@@ -315,8 +314,10 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   ) async {
     try {
       await context.read<AuthenticationCubit>().login(
-            credentials:
-                LoginFormCredentials(username: username, password: password),
+            credentials: LoginFormCredentials(
+              username: username,
+              password: password,
+            ),
             serverUrl: serverUrl,
             clientCertificate: clientCertificate,
           );
@@ -335,13 +336,17 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
           globalSettings.save();
         });
       }
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
-    } on PaperlessValidationErrors catch (error, stackTrace) {
-      if (error.hasFieldUnspecificError) {
-        showLocalizedError(context, error.fieldUnspecificError!);
+    } on PaperlessFormValidationException catch (exception, stackTrace) {
+      if (exception.hasUnspecificErrorMessage()) {
+        showLocalizedError(context, exception.unspecificErrorMessage()!);
       } else {
-        showGenericError(context, error.values.first, stackTrace);
+        showGenericError(
+          context,
+          exception.validationMessages.values.first,
+          stackTrace,
+        ); //TODO: Check if we can show error message directly on field here.
       }
     } catch (unknownError, stackTrace) {
       showGenericError(context, unknownError.toString(), stackTrace);

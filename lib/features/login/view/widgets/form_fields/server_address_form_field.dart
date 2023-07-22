@@ -66,7 +66,10 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
                 .values
                 .where((element) => element.contains(textEditingValue.text));
           },
-          onSelected: (option) => _formatInput(),
+          onSelected: (option) {
+            _formatInput();
+            field.didChange(_textEditingController.text);
+          },
           fieldViewBuilder:
               (context, textEditingController, focusNode, onFieldSubmitted) {
             return TextField(
@@ -111,6 +114,10 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
     String address = _textEditingController.text.trim();
     address = address.replaceAll(RegExp(r'^\/+|\/+$'), '');
     _textEditingController.text = address;
+    _textEditingController.selection = TextSelection(
+      baseOffset: address.length,
+      extentOffset: address.length,
+    );
     widget.onSubmit(address);
   }
 }

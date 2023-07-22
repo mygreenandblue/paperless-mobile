@@ -70,13 +70,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   Future<void> loadFullContent() async {
     final doc = await _api.find(state.document.id);
-    if (doc == null) {
-      return;
-    }
-    emit(state.copyWith(
-      isFullContentLoaded: true,
-      fullContent: doc.content,
-    ));
+    emit(
+      state.copyWith(
+        isFullContentLoaded: true,
+        fullContent: doc.content,
+      ),
+    );
   }
 
   Future<void> assignAsn(
@@ -99,13 +98,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
 
   Future<ResultType> openDocumentInSystemViewer() async {
     final cacheDir = await FileService.temporaryDirectory;
-    //TODO: Why is this cleared here?
-    await FileService.clearDirectoryContent(PaperlessDirectoryType.temporary);
     if (state.metaData == null) {
       await loadMetaData();
     }
     final desc = FileDescription.fromPath(
-        state.metaData!.mediaFilename.replaceAll("/", " "));
+      state.metaData!.mediaFilename.replaceAll("/", " "),
+    );
 
     final fileName = "${desc.filename}.pdf";
     final file = File("${cacheDir.path}/$fileName");

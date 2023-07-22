@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 
 class PaperlessTasksApiImpl implements PaperlessTasksApi {
   final Dio _client;
@@ -41,11 +43,17 @@ class PaperlessTasksApiImpl implements PaperlessTasksApi {
 
   @override
   Future<Iterable<Task>> findAll([Iterable<int>? ids]) async {
-    final response = await _client.get("/api/tasks/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await _client.get(
+        "/api/tasks/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return (response.data as List).map((e) => Task.fromJson(e));
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.loadTasksError),
+      );
     }
-    return [];
   }
 
   @override
@@ -74,15 +82,22 @@ class PaperlessTasksApiImpl implements PaperlessTasksApi {
 
   @override
   Future<Iterable<Task>> acknowledgeTasks(Iterable<Task> tasks) async {
-    final response = await _client.post("/api/acknowledge_tasks/", data: {
-      'tasks': tasks.map((e) => e.id).toList(),
-    });
-    if (response.statusCode == 200) {
+    try {
+      final response = await _client.post(
+        "/api/acknowledge_tasks/",
+        data: {
+          'tasks': tasks.map((e) => e.id).toList(),
+        },
+        options: Options(validateStatus: (status) => status == 200),
+      );
       if (response.data['result'] != tasks.length) {
-        throw const PaperlessServerException(ErrorCode.acknowledgeTasksError);
+        throw const PaperlessApiException(ErrorCode.acknowledgeTasksError);
       }
       return tasks.map((e) => e.copyWith(acknowledged: true)).toList();
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.acknowledgeTasksError),
+      );
     }
-    throw const PaperlessServerException(ErrorCode.acknowledgeTasksError);
   }
 }

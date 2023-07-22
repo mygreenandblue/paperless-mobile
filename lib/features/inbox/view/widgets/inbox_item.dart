@@ -238,10 +238,8 @@ class _InboxItemState extends State<InboxItem> {
   }
 
   Widget _buildActions(BuildContext context) {
-    final canEdit = LocalUserAccount.current.paperlessUser
-        .hasPermission(PermissionAction.change, PermissionTarget.document);
-    final canDelete = LocalUserAccount.current.paperlessUser
-        .hasPermission(PermissionAction.delete, PermissionTarget.document);
+    final canEdit = LocalUserAccount.current.paperlessUser.canEditDocuments;
+    final canDelete = LocalUserAccount.current.paperlessUser.canDeleteDocuments;
     final chipShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(32),
     );

@@ -92,7 +92,7 @@ void showLocalizedError(
 
 void showErrorMessage(
   BuildContext context,
-  PaperlessServerException error, [
+  PaperlessApiException error, [
   StackTrace? stackTrace,
 ]) {
   showSnackBar(

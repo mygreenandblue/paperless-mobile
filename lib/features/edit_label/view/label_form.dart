@@ -4,7 +4,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
-import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -54,7 +53,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
 
   late bool _enableMatchFormField;
 
-  PaperlessValidationErrors _errors = {};
+  Map<String, String> _errors = {};
 
   @override
   void initState() {
@@ -69,7 +68,8 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   Widget build(BuildContext context) {
     List<MatchingAlgorithm> selectableMatchingAlgorithmValues =
         getSelectableMatchingAlgorithmValues(
-            context.watch<ApiVersion>().hasMultiUserSupport);
+      context.watch<ApiVersion>().hasMultiUserSupport,
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
@@ -168,10 +168,10 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         final parsed = widget.fromJsonT(mergedJson);
         final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
         Navigator.pop(context, createdLabel);
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
-      } on PaperlessValidationErrors catch (errors) {
-        setState(() => _errors = errors);
+      } on PaperlessFormValidationException catch (exception) {
+        setState(() => _errors = exception.validationMessages);
       }
     }
   }

@@ -73,10 +73,7 @@ class TagsFormField extends StatelessWidget {
             initialValue: field.value,
             allowOnlySelection: allowOnlySelection,
             allowCreation: allowCreation &&
-                LocalUserAccount.current.paperlessUser.hasPermission(
-                  PermissionAction.add,
-                  PermissionTarget.tag,
-                ),
+                LocalUserAccount.current.paperlessUser.canCreateTags,
             allowExclude: allowExclude,
           ),
           onClosed: (data) {

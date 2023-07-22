@@ -13,14 +13,14 @@ import 'package:provider/provider.dart';
 
 class ServerConnectionPage extends StatefulWidget {
   final GlobalKey<FormBuilderState> formBuilderKey;
-  final void Function() onContinue;
-  final String titleString;
+  final VoidCallback onContinue;
+  final String titleText;
 
   const ServerConnectionPage({
     super.key,
     required this.formBuilderKey,
     required this.onContinue,
-    required this.titleString,
+    required this.titleText,
   });
 
   @override
@@ -36,7 +36,7 @@ class _ServerConnectionPageState extends State<ServerConnectionPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight - 4,
-        title: Text(widget.titleString),
+        title: Text(widget.titleText),
         bottom: PreferredSize(
           child: _isCheckingConnection
               ? const LinearProgressIndicator()

@@ -88,7 +88,6 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
     if (correspondent != null) {
       final updatedState = {...state.correspondents}..[id] = correspondent;
       emit(state.copyWith(correspondents: updatedState));
-
       return correspondent;
     }
     return null;

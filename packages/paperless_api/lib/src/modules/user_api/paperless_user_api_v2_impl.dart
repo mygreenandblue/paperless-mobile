@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 
 class PaperlessUserApiV2Impl implements PaperlessUserApi {
   final Dio client;
@@ -8,19 +10,33 @@ class PaperlessUserApiV2Impl implements PaperlessUserApi {
 
   @override
   Future<int> findCurrentUserId() async {
-    final response = await client.get("/api/ui_settings/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await client.get(
+        "/api/ui_settings/",
+        options: Options(
+          validateStatus: (status) => status == 200,
+        ),
+      );
       return response.data['user_id'];
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
   Future<UserModel> findCurrentUser() async {
-    final response = await client.get("/api/ui_settings/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await client.get(
+        "/api/ui_settings/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return UserModelV2.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 }
