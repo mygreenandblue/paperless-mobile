@@ -12,16 +12,17 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
+import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:provider/provider.dart';
 
 class DocumentUploadResult {
   final bool success;
@@ -56,7 +57,7 @@ class _DocumentUploadPreparationPageState
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
 
-  PaperlessValidationErrors _errors = {};
+  Map<String, String> _errors = {};
   bool _isUploadLoading = false;
   late bool _syncTitleAndFilename;
   bool _showDatePickerDeleteIcon = false;
@@ -197,54 +198,64 @@ class _DocumentUploadPreparationPageState
                   ),
                 ),
                 // Correspondent
-                LabelFormField<Correspondent>(
-                  showAnyAssignedOption: false,
-                  showNotAssignedOption: false,
-                  addLabelPageBuilder: (initialName) =>
-                      RepositoryProvider.value(
-                    value: context.read<LabelRepository>(),
-                    child: AddCorrespondentPage(initialName: initialName),
+                if (LocalUserAccount
+                    .current.paperlessUser.canViewCorrespondents)
+                  LabelFormField<Correspondent>(
+                    showAnyAssignedOption: false,
+                    showNotAssignedOption: false,
+                    addLabelPageBuilder: (initialName) => MultiProvider(
+                      providers: [
+                        Provider.value(
+                          value: context.read<LabelRepository>(),
+                        ),
+                        Provider.value(
+                          value: context.read<ApiVersion>(),
+                        )
+                      ],
+                      child: AddCorrespondentPage(initialName: initialName),
+                    ),
+                    addLabelText: S.of(context)!.addCorrespondent,
+                    labelText: S.of(context)!.correspondent + " *",
+                    name: DocumentModel.correspondentKey,
+                    options: state.correspondents,
+                    prefixIcon: const Icon(Icons.person_outline),
+                    allowSelectUnassigned: true,
+                    canCreateNewLabel: LocalUserAccount
+                        .current.paperlessUser.canCreateCorrespondents,
                   ),
-                  addLabelText: S.of(context)!.addCorrespondent,
-                  labelText: S.of(context)!.correspondent + " *",
-                  name: DocumentModel.correspondentKey,
-                  options: state.correspondents,
-                  prefixIcon: const Icon(Icons.person_outline),
-                  allowSelectUnassigned: true,
-                  canCreateNewLabel:
-                      LocalUserAccount.current.paperlessUser.hasPermission(
-                    PermissionAction.add,
-                    PermissionTarget.correspondent,
-                  ),
-                ),
                 // Document type
-                LabelFormField<DocumentType>(
-                  showAnyAssignedOption: false,
-                  showNotAssignedOption: false,
-                  addLabelPageBuilder: (initialName) =>
-                      RepositoryProvider.value(
-                    value: context.read<LabelRepository>(),
-                    child: AddDocumentTypePage(initialName: initialName),
+                if (LocalUserAccount.current.paperlessUser.canViewDocumentTypes)
+                  LabelFormField<DocumentType>(
+                    showAnyAssignedOption: false,
+                    showNotAssignedOption: false,
+                    addLabelPageBuilder: (initialName) => MultiProvider(
+                      providers: [
+                        Provider.value(
+                          value: context.read<LabelRepository>(),
+                        ),
+                        Provider.value(
+                          value: context.read<ApiVersion>(),
+                        )
+                      ],
+                      child: AddDocumentTypePage(initialName: initialName),
+                    ),
+                    addLabelText: S.of(context)!.addDocumentType,
+                    labelText: S.of(context)!.documentType + " *",
+                    name: DocumentModel.documentTypeKey,
+                    options: state.documentTypes,
+                    prefixIcon: const Icon(Icons.description_outlined),
+                    allowSelectUnassigned: true,
+                    canCreateNewLabel: LocalUserAccount
+                        .current.paperlessUser.canCreateDocumentTypes,
                   ),
-                  addLabelText: S.of(context)!.addDocumentType,
-                  labelText: S.of(context)!.documentType + " *",
-                  name: DocumentModel.documentTypeKey,
-                  options: state.documentTypes,
-                  prefixIcon: const Icon(Icons.description_outlined),
-                  allowSelectUnassigned: true,
-                  canCreateNewLabel:
-                      LocalUserAccount.current.paperlessUser.hasPermission(
-                    PermissionAction.add,
-                    PermissionTarget.documentType,
+                if (LocalUserAccount.current.paperlessUser.canViewTags)
+                  TagsFormField(
+                    name: DocumentModel.tagsKey,
+                    allowCreation: true,
+                    allowExclude: false,
+                    allowOnlySelection: true,
+                    options: state.tags,
                   ),
-                ),
-                TagsFormField(
-                  name: DocumentModel.tagsKey,
-                  allowCreation: true,
-                  allowExclude: false,
-                  allowOnlySelection: true,
-                  options: state.tags,
-                ),
                 Text(
                   "* " + S.of(context)!.uploadInferValuesHint,
                   style: Theme.of(context).textTheme.bodySmall,
@@ -301,14 +312,14 @@ class _DocumentUploadPreparationPageState
           context,
           DocumentUploadResult(true, taskId),
         );
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
-      } on PaperlessValidationErrors catch (errors) {
-        setState(() => _errors = errors);
+      } on PaperlessFormValidationException catch (exception) {
+        setState(() => _errors = exception.validationMessages);
       } catch (unknownError, stackTrace) {
         debugPrint(unknownError.toString());
         showErrorMessage(
-            context, const PaperlessServerException.unknown(), stackTrace);
+            context, const PaperlessApiException.unknown(), stackTrace);
       } finally {
         setState(() {
           _isUploadLoading = false;

@@ -36,8 +36,7 @@ class LabelItem<T extends Label> extends StatelessWidget {
 
   Widget _buildReferencedDocumentsWidget(BuildContext context) {
     final canOpen = (label.documentCount ?? 0) > 0 &&
-        LocalUserAccount.current.paperlessUser
-            .hasPermission(PermissionAction.view, PermissionTarget.document);
+        LocalUserAccount.current.paperlessUser.canViewDocuments;
     return TextButton.icon(
       label: const Icon(Icons.link),
       icon: Text(formatMaxCount(label.documentCount)),

@@ -38,8 +38,8 @@ class _InboxPageState extends State<InboxPage>
 
   @override
   Widget build(BuildContext context) {
-    final canEditDocument = LocalUserAccount.current.paperlessUser
-        .hasPermission(PermissionAction.change, PermissionTarget.document);
+    final canEditDocument =
+        LocalUserAccount.current.paperlessUser.canEditDocuments;
     return Scaffold(
       drawer: const AppDrawer(),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
@@ -65,7 +65,9 @@ class _InboxPageState extends State<InboxPage>
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverOverlapAbsorber(
               handle: searchBarHandle,
-              sliver: const SliverSearchBar(),
+              sliver: SliverSearchBar(
+                titleText: S.of(context)!.inbox,
+              ),
             )
           ],
           body: BlocBuilder<InboxCubit, InboxState>(
@@ -222,14 +224,14 @@ class _InboxPageState extends State<InboxPage>
         ),
       );
       return true;
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } on ServerMessageException catch (error) {
       showGenericError(context, error.message);
     } catch (error) {
       showErrorMessage(
         context,
-        const PaperlessServerException.unknown(),
+        const PaperlessApiException.unknown(),
       );
     }
     return false;
@@ -243,7 +245,7 @@ class _InboxPageState extends State<InboxPage>
       await context
           .read<InboxCubit>()
           .undoRemoveFromInbox(document, removedTags);
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

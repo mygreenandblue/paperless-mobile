@@ -44,14 +44,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _currentIndex = 0;
-  late Timer _inboxTimer;
+  Timer? _inboxTimer;
   late final StreamSubscription _shareMediaSubscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _listenToInboxChanges();
+
     final currentUser = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
         .getValue()!
         .currentLoggedInUser!;
@@ -73,13 +73,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _listenToInboxChanges() {
-    _inboxTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
-      if (!mounted) {
-        timer.cancel();
-      } else {
-        context.read<InboxCubit>().refreshItemsInInboxCount();
-      }
-    });
+    if (LocalUserAccount.current.paperlessUser.canViewTags) {
+      _inboxTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
+        if (!mounted) {
+          timer.cancel();
+        } else {
+          context.read<InboxCubit>().refreshItemsInInboxCount();
+        }
+      });
+    }
   }
 
   @override
@@ -89,7 +91,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         log('App is now in foreground');
         context.read<ConnectivityCubit>().reload();
         log("Reloaded device connectivity state");
-        if (!_inboxTimer.isActive) {
+        if (!(_inboxTimer?.isActive ?? true)) {
           _listenToInboxChanges();
         }
         break;
@@ -98,7 +100,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       case AppLifecycleState.detached:
       default:
         log('App is now in background');
-        _inboxTimer.cancel();
+        _inboxTimer?.cancel();
         break;
     }
   }
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _inboxTimer.cancel();
+    _inboxTimer?.cancel();
     _shareMediaSubscription.cancel();
     super.dispose();
   }
@@ -158,8 +160,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return;
     }
 
-    if (!LocalUserAccount.current.paperlessUser
-        .hasPermission(PermissionAction.add, PermissionTarget.document)) {
+    if (!LocalUserAccount.current.paperlessUser.canCreateDocuments) {
       Fluttertoast.showToast(
         msg: "You do not have the permissions to upload documents.",
       );
@@ -200,8 +201,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.documents,
       ),
-      if (LocalUserAccount.current.paperlessUser
-          .hasPermission(PermissionAction.add, PermissionTarget.document))
+      if (LocalUserAccount.current.paperlessUser.canCreateDocuments)
         RouteDescription(
           icon: const Icon(Icons.document_scanner_outlined),
           selectedIcon: Icon(
@@ -218,33 +218,31 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         label: S.of(context)!.labels,
       ),
-      RouteDescription(
-        icon: const Icon(Icons.inbox_outlined),
-        selectedIcon: Icon(
-          Icons.inbox,
-          color: Theme.of(context).colorScheme.primary,
+      if (LocalUserAccount.current.paperlessUser.canViewTags)
+        RouteDescription(
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: Icon(
+            Icons.inbox,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          label: S.of(context)!.inbox,
+          badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
+            builder: (context, state) {
+              return Badge.count(
+                isLabelVisible: state.itemsInInboxCount > 0,
+                count: state.itemsInInboxCount,
+                child: icon,
+              );
+            },
+          ),
         ),
-        label: S.of(context)!.inbox,
-        badgeBuilder: (icon) => BlocBuilder<InboxCubit, InboxState>(
-          builder: (context, state) {
-            return Badge.count(
-              isLabelVisible: state.itemsInInboxCount > 0,
-              count: state.itemsInInboxCount,
-              child: icon,
-            );
-          },
-        ),
-      ),
     ];
     final routes = <Widget>[
       const DocumentsPage(),
-      if (LocalUserAccount.current.paperlessUser.hasPermission(
-        PermissionAction.add,
-        PermissionTarget.document,
-      ))
+      if (LocalUserAccount.current.paperlessUser.canCreateDocuments)
         const ScannerPage(),
       const LabelsPage(),
-      const InboxPage(),
+      if (LocalUserAccount.current.paperlessUser.canViewTags) const InboxPage(),
     ];
     return MultiBlocListener(
       listeners: [

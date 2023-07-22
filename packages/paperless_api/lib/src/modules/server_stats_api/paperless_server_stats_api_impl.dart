@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:paperless_api/src/models/paperless_server_exception.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 import 'package:paperless_api/src/models/paperless_server_information_model.dart';
 import 'package:paperless_api/src/models/paperless_server_statistics_model.dart';
 import 'package:paperless_api/src/models/paperless_ui_settings_model.dart';
@@ -18,8 +19,11 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
 
   @override
   Future<PaperlessServerInformationModel> getServerInformation() async {
-    final response = await client.get("/api/remote_version/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await client.get(
+        "/api/remote_version/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       final version = response.data["version"] as String;
       final updateAvailable = response.data["update_available"] as bool;
       return PaperlessServerInformationModel(
@@ -27,25 +31,44 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
         version: version,
         isUpdateAvailable: updateAvailable,
       );
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.serverInformationLoadFailed,
+        ),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
   Future<PaperlessServerStatisticsModel> getServerStatistics() async {
-    final response = await client.get('/api/statistics/');
-    if (response.statusCode == 200) {
+    try {
+      final response = await client.get(
+        '/api/statistics/',
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return PaperlessServerStatisticsModel.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.serverStatisticsLoadFailed,
+        ),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
   Future<PaperlessUiSettingsModel> getUiSettings() async {
-    final response = await client.get("/api/ui_settings/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await client.get(
+        "/api/ui_settings/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return PaperlessUiSettingsModel.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.uiSettingsLoadFailed),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 }

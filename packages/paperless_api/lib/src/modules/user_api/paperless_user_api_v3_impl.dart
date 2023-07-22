@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 
 class PaperlessUserApiV3Impl implements PaperlessUserApi, PaperlessUserApiV3 {
   final Dio dio;
@@ -8,11 +10,17 @@ class PaperlessUserApiV3Impl implements PaperlessUserApi, PaperlessUserApiV3 {
 
   @override
   Future<UserModelV3> find(int id) async {
-    final response = await dio.get("/api/users/$id/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio.get(
+        "/api/users/$id/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return UserModelV3.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
@@ -22,40 +30,59 @@ class PaperlessUserApiV3Impl implements PaperlessUserApi, PaperlessUserApiV3 {
     String contains = '',
     String username = '',
   }) async {
-    final response = await dio.get("/api/users/", queryParameters: {
-      "username__istartswith": startsWith,
-      "username__iendswith": endsWith,
-      "username__icontains": contains,
-      "username__iexact": username,
-    });
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio.get(
+        "/api/users/",
+        queryParameters: {
+          "username__istartswith": startsWith,
+          "username__iendswith": endsWith,
+          "username__icontains": contains,
+          "username__iexact": username,
+        },
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return PagedSearchResult<UserModelV3>.fromJson(
         response.data,
         UserModelV3.fromJson as UserModelV3 Function(Object?),
       ).results;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
   Future<int> findCurrentUserId() async {
-    final response = await dio.get("/api/ui_settings/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio.get(
+        "/api/ui_settings/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return response.data['user']['id'];
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override
   Future<Iterable<UserModelV3>> findAll() async {
-    final response = await dio.get("/api/users/");
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio.get(
+        "/api/users/",
+        options: Options(validateStatus: (status) => status == 200),
+      );
       return PagedSearchResult<UserModelV3>.fromJson(
         response.data,
         (json) => UserModelV3.fromJson(json as dynamic),
       ).results;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.userNotFound),
+      );
     }
-    throw const PaperlessServerException.unknown();
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
@@ -53,14 +54,16 @@ class _DocumentsPageState extends State<DocumentsPage>
   @override
   void initState() {
     super.initState();
+    final showSavedViews =
+        LocalUserAccount.current.paperlessUser.canViewSavedViews;
     _tabController = TabController(
-      length: 2,
+      length: showSavedViews ? 2 : 1,
       vsync: this,
     );
     Future.wait([
       context.read<DocumentsCubit>().reload(),
       context.read<SavedViewCubit>().reload(),
-    ]).onError<PaperlessServerException>(
+    ]).onError<PaperlessApiException>(
       (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
         return [];
@@ -105,7 +108,7 @@ class _DocumentsPageState extends State<DocumentsPage>
         listener: (context, state) {
           try {
             context.read<DocumentsCubit>().reload();
-          } on PaperlessServerException catch (error, stackTrace) {
+          } on PaperlessApiException catch (error, stackTrace) {
             showErrorMessage(context, error, stackTrace);
           }
         },
@@ -197,7 +200,10 @@ class _DocumentsPageState extends State<DocumentsPage>
                       sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
                         builder: (context, state) {
                           if (state.selection.isEmpty) {
-                            return const SliverSearchBar(floating: true);
+                            return SliverSearchBar(
+                              floating: true,
+                              titleText: S.of(context)!.documents,
+                            );
                           } else {
                             return DocumentSelectionSliverAppBar(
                               state: state,
@@ -226,7 +232,9 @@ class _DocumentsPageState extends State<DocumentsPage>
                                   controller: _tabController,
                                   tabs: [
                                     Tab(text: S.of(context)!.documents),
-                                    Tab(text: S.of(context)!.views),
+                                    if (LocalUserAccount.current.paperlessUser
+                                        .canViewSavedViews)
+                                      Tab(text: S.of(context)!.views),
                                   ],
                                 ),
                               ),
@@ -268,14 +276,16 @@ class _DocumentsPageState extends State<DocumentsPage>
                             );
                           },
                         ),
-                        Builder(
-                          builder: (context) {
-                            return _buildSavedViewsTab(
-                              connectivityState,
-                              context,
-                            );
-                          },
-                        ),
+                        if (LocalUserAccount
+                            .current.paperlessUser.canViewSavedViews)
+                          Builder(
+                            builder: (context) {
+                              return _buildSavedViewsTab(
+                                connectivityState,
+                                context,
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -334,7 +344,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           context
               .read<DocumentsCubit>()
               .loadMore()
-              .onError<PaperlessServerException>(
+              .onError<PaperlessApiException>(
                 (error, stackTrace) => showErrorMessage(
                   context,
                   error,
@@ -419,7 +429,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     if (newView != null) {
       try {
         await context.read<SavedViewCubit>().add(newView);
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       }
     }
@@ -472,7 +482,7 @@ class _DocumentsPageState extends State<DocumentsPage>
               .read<DocumentsCubit>()
               .updateFilter(filter: filterIntent.filter!);
         }
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       }
     }
@@ -524,7 +534,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           );
         },
       );
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -555,7 +565,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           );
         },
       );
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -586,7 +596,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           );
         },
       );
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -617,7 +627,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           );
         },
       );
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -626,7 +636,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     try {
       // We do not await here on purpose so we can show a linear progress indicator below the app bar.
       await context.read<DocumentsCubit>().reload();
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -635,7 +645,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     try {
       // We do not await here on purpose so we can show a linear progress indicator below the app bar.
       await context.read<SavedViewCubit>().reload();
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

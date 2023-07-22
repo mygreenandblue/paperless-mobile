@@ -287,8 +287,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   Widget _buildEditButton() {
     bool canEdit = context.watchInternetConnection &&
-        LocalUserAccount.current.paperlessUser
-            .hasPermission(PermissionAction.change, PermissionTarget.document);
+        LocalUserAccount.current.paperlessUser.canEditDocuments;
     if (!canEdit) {
       return const SizedBox.shrink();
     }
@@ -319,8 +318,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               final isConnected = connectivityState.isConnected;
 
               final canDelete = isConnected &&
-                  LocalUserAccount.current.paperlessUser.hasPermission(
-                      PermissionAction.delete, PermissionTarget.document);
+                  LocalUserAccount.current.paperlessUser.canDeleteDocuments;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -430,7 +428,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       try {
         await context.read<DocumentDetailsCubit>().delete(document);
         showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
-      } on PaperlessServerException catch (error, stackTrace) {
+      } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
         // Document deleted => go back to primary route

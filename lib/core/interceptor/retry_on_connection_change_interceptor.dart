@@ -10,7 +10,7 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
   });
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (_shouldRetryOnHttpException(err)) {
       try {
         handler.resolve(await DioHttpRequestRetrier(dio: dio)
@@ -27,8 +27,8 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
     }
   }
 
-  bool _shouldRetryOnHttpException(DioError err) {
-    return err.type == DioErrorType.unknown &&
+  bool _shouldRetryOnHttpException(DioException err) {
+    return err.type == DioExceptionType.unknown &&
         (err.error is HttpException &&
             (err.message?.contains(
                   'Connection closed before full header was received',

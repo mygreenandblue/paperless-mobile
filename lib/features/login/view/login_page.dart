@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ServerConnectionPage(
-              titleString: widget.titleString,
+              titleText: widget.titleString,
               formBuilderKey: _formKey,
               onContinue: () {
                 _pageController.nextPage(
@@ -126,7 +126,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-    
     FocusScope.of(context).unfocus();
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final form = _formKey.currentState!.value;
@@ -150,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
           form[ServerAddressFormField.fkServerAddress],
           clientCert,
         );
-      } on PaperlessServerException catch (error) {
+      } on PaperlessApiException catch (error) {
         showErrorMessage(context, error);
       } on ServerMessageException catch (error) {
         showLocalizedError(context, error.message);

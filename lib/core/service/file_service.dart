@@ -12,7 +12,7 @@ class FileService {
   ) async {
     final dir = await documentsDirectory;
     if (dir == null) {
-      throw const PaperlessServerException.unknown(); //TODO: better handling
+      throw const PaperlessApiException.unknown(); //TODO: better handling
     }
     File file = File("${dir.path}/$filename");
     return file..writeAsBytes(bytes);

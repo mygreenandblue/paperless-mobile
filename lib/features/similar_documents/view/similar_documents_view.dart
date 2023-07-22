@@ -27,7 +27,7 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
     super.initState();
     try {
       context.read<SimilarDocumentsCubit>().initialize();
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

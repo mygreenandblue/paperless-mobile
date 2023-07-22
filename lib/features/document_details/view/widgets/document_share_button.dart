@@ -90,7 +90,7 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
       await context.read<DocumentDetailsCubit>().shareDocument(
             shareOriginal: original,
           );
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {
       showGenericError(context, error);

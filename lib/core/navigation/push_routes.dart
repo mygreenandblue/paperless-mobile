@@ -354,6 +354,7 @@ Future<DocumentUploadResult?> pushDocumentUploadPreparationPage(
   final labelRepo = context.read<LabelRepository>();
   final docsApi = context.read<PaperlessDocumentsApi>();
   final connectivity = context.read<Connectivity>();
+  final apiVersion = context.read<ApiVersion>();
   return Navigator.of(context).push<DocumentUploadResult>(
     MaterialPageRoute(
       builder: (_) => MultiProvider(
@@ -361,6 +362,7 @@ Future<DocumentUploadResult?> pushDocumentUploadPreparationPage(
           Provider.value(value: labelRepo),
           Provider.value(value: docsApi),
           Provider.value(value: connectivity),
+          Provider.value(value: apiVersion)
         ],
         builder: (_, child) => BlocProvider(
           create: (_) => DocumentUploadCubit(

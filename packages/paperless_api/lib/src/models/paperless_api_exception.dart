@@ -1,17 +1,17 @@
-class PaperlessServerException implements Exception {
+class PaperlessApiException implements Exception {
   final ErrorCode code;
   final String? details;
   final StackTrace? stackTrace;
   final int? httpStatusCode;
 
-  const PaperlessServerException(
+  const PaperlessApiException(
     this.code, {
     this.details,
     this.stackTrace,
     this.httpStatusCode,
   });
 
-  const PaperlessServerException.unknown() : this(ErrorCode.unknown);
+  const PaperlessApiException.unknown() : this(ErrorCode.unknown);
 
   @override
   String toString() {
@@ -53,5 +53,6 @@ enum ErrorCode {
   requestTimedOut,
   unsupportedFileFormat,
   missingClientCertificate,
-  acknowledgeTasksError;
+  acknowledgeTasksError,
+  correspondentDeleteFailed, documentTypeDeleteFailed, tagDeleteFailed, correspondentUpdateFailed, documentTypeUpdateFailed, tagUpdateFailed, storagePathDeleteFailed, storagePathUpdateFailed, serverInformationLoadFailed, serverStatisticsLoadFailed, uiSettingsLoadFailed, loadTasksError, userNotFound;
 }

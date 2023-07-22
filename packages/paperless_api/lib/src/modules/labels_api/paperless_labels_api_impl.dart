@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
 import 'package:paperless_api/src/models/labels/correspondent_model.dart';
 import 'package:paperless_api/src/models/labels/document_type_model.dart';
 import 'package:paperless_api/src/models/labels/storage_path_model.dart';
 import 'package:paperless_api/src/models/labels/tag_model.dart';
-import 'package:paperless_api/src/models/paperless_server_exception.dart';
+import 'package:paperless_api/src/models/paperless_api_exception.dart';
 import 'package:paperless_api/src/modules/labels_api/paperless_labels_api.dart';
 import 'package:paperless_api/src/request_utils.dart';
 
@@ -94,16 +95,15 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.post(
         '/api/correspondents/',
         data: correspondent.toJson(),
+        options: Options(validateStatus: (status) => status == 201),
       );
-      if (response.statusCode == HttpStatus.created) {
-        return Correspondent.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.correspondentCreateFailed,
-        httpStatusCode: response.statusCode,
+      return Correspondent.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentCreateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -113,16 +113,17 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.post(
         '/api/document_types/',
         data: type.toJson(),
+        options: Options(
+          validateStatus: (status) => status == 201,
+        ),
       );
-      if (response.statusCode == HttpStatus.created) {
-        return DocumentType.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.documentTypeCreateFailed,
-        httpStatusCode: response.statusCode,
+      return DocumentType.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.documentTypeCreateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -132,17 +133,18 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.post(
         '/api/tags/',
         data: tag.toJson(),
-        options: Options(headers: {"Accept": "application/json; version=2"}),
+        options: Options(
+          headers: {"Accept": "application/json; version=2"},
+          validateStatus: (status) => status == 201,
+        ),
       );
-      if (response.statusCode == HttpStatus.created) {
-        return Tag.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.tagCreateFailed,
-        httpStatusCode: response.statusCode,
+      return Tag.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.tagCreateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -150,17 +152,17 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   Future<int> deleteCorrespondent(Correspondent correspondent) async {
     assert(correspondent.id != null);
     try {
-      final response =
-          await _client.delete('/api/correspondents/${correspondent.id}/');
-      if (response.statusCode == HttpStatus.noContent) {
-        return correspondent.id!;
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      await _client.delete(
+        '/api/correspondents/${correspondent.id}/',
+        options: Options(validateStatus: (status) => status == 204),
       );
-    } on DioError catch (err) {
-      throw err.error!;
+      return correspondent.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentDeleteFailed,
+        ),
+      );
     }
   }
 
@@ -168,17 +170,17 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   Future<int> deleteDocumentType(DocumentType documentType) async {
     assert(documentType.id != null);
     try {
-      final response =
-          await _client.delete('/api/document_types/${documentType.id}/');
-      if (response.statusCode == HttpStatus.noContent) {
-        return documentType.id!;
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      final response = await _client.delete(
+        '/api/document_types/${documentType.id}/',
+        options: Options(validateStatus: (status) => status == 204),
       );
-    } on DioError catch (err) {
-      throw err.error!;
+      return documentType.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.documentTypeDeleteFailed,
+        ),
+      );
     }
   }
 
@@ -186,16 +188,17 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   Future<int> deleteTag(Tag tag) async {
     assert(tag.id != null);
     try {
-      final response = await _client.delete('/api/tags/${tag.id}/');
-      if (response.statusCode == HttpStatus.noContent) {
-        return tag.id!;
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      await _client.delete(
+        '/api/tags/${tag.id}/',
+        options: Options(validateStatus: (status) => status == 204),
       );
-    } on DioError catch (err) {
-      throw err.error!;
+      return tag.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.tagDeleteFailed,
+        ),
+      );
     }
   }
 
@@ -206,16 +209,15 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.put(
         '/api/correspondents/${correspondent.id}/',
         data: json.encode(correspondent.toJson()),
+        options: Options(validateStatus: (status) => status == 200),
       );
-      if (response.statusCode == HttpStatus.ok) {
-        return Correspondent.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown, //TODO: Add correct error code mapping.
-        httpStatusCode: response.statusCode,
+      return Correspondent.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentUpdateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -226,16 +228,15 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.put(
         '/api/document_types/${documentType.id}/',
         data: documentType.toJson(),
+        options: Options(validateStatus: (status) => status == 200),
       );
-      if (response.statusCode == HttpStatus.ok) {
-        return DocumentType.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      return DocumentType.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.documentTypeUpdateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -245,18 +246,19 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
     try {
       final response = await _client.put(
         '/api/tags/${tag.id}/',
-        options: Options(headers: {"Accept": "application/json; version=2"}),
+        options: Options(
+          headers: {"Accept": "application/json; version=2"},
+          validateStatus: (status) => status == 200,
+        ),
         data: tag.toJson(),
       );
-      if (response.statusCode == HttpStatus.ok) {
-        return Tag.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      return Tag.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.tagUpdateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -264,16 +266,17 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   Future<int> deleteStoragePath(StoragePath path) async {
     assert(path.id != null);
     try {
-      final response = await _client.delete('/api/storage_paths/${path.id}/');
-      if (response.statusCode == HttpStatus.noContent) {
-        return path.id!;
-      }
-      throw PaperlessServerException(
-        ErrorCode.unknown,
-        httpStatusCode: response.statusCode,
+      final response = await _client.delete(
+        '/api/storage_paths/${path.id}/',
+        options: Options(validateStatus: (status) => status == 204),
       );
-    } on DioError catch (err) {
-      throw err.error!;
+      return path.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.storagePathDeleteFailed,
+        ),
+      );
     }
   }
 
@@ -307,16 +310,15 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.post(
         '/api/storage_paths/',
         data: path.toJson(),
+        options: Options(validateStatus: (status) => status == 201),
       );
-      if (response.statusCode == HttpStatus.created) {
-        return StoragePath.fromJson(response.data);
-      }
-      throw PaperlessServerException(
-        ErrorCode.storagePathCreateFailed,
-        httpStatusCode: response.statusCode,
+      return StoragePath.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.storagePathCreateFailed,
+        ),
       );
-    } on DioError catch (err) {
-      throw err.error!;
     }
   }
 
@@ -327,13 +329,15 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
       final response = await _client.put(
         '/api/storage_paths/${path.id}/',
         data: path.toJson(),
+        options: Options(validateStatus: (status) => status == 200),
       );
-      if (response.statusCode == HttpStatus.ok) {
-        return StoragePath.fromJson(response.data);
-      }
-      throw const PaperlessServerException(ErrorCode.unknown);
-    } on DioError catch (err) {
-      throw err.error!;
+      return StoragePath.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.storagePathUpdateFailed,
+        ),
+      );
     }
   }
 }

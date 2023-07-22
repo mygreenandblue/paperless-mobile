@@ -3,74 +3,75 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 String translateError(BuildContext context, ErrorCode code) {
-  switch (code) {
-    case ErrorCode.unknown:
-      return S.of(context)!.anUnknownErrorOccurred;
-    case ErrorCode.authenticationFailed:
-      return S.of(context)!.authenticationFailedPleaseTryAgain;
-    case ErrorCode.notAuthenticated:
-      return S.of(context)!.userIsNotAuthenticated;
-    case ErrorCode.documentUploadFailed:
-      return S.of(context)!.couldNotUploadDocument;
-    case ErrorCode.documentUpdateFailed:
-      return S.of(context)!.couldNotUpdateDocument;
-    case ErrorCode.documentLoadFailed:
-      return S.of(context)!.couldNotLoadDocuments;
-    case ErrorCode.documentDeleteFailed:
-      return S.of(context)!.couldNotDeleteDocument;
-    case ErrorCode.documentPreviewFailed:
-      return S.of(context)!.couldNotLoadDocumentPreview;
-    case ErrorCode.documentAsnQueryFailed:
-      return S.of(context)!.couldNotAssignArchiveSerialNumber;
-    case ErrorCode.tagCreateFailed:
-      return S.of(context)!.couldNotCreateTag;
-    case ErrorCode.tagLoadFailed:
-      return S.of(context)!.couldNotLoadTags;
-    case ErrorCode.documentTypeCreateFailed:
-      return S.of(context)!.couldNotCreateDocument;
-    case ErrorCode.documentTypeLoadFailed:
-      return S.of(context)!.couldNotLoadDocumentTypes;
-    case ErrorCode.correspondentCreateFailed:
-      return S.of(context)!.couldNotCreateCorrespondent;
-    case ErrorCode.correspondentLoadFailed:
-      return S.of(context)!.couldNotLoadCorrespondents;
-    case ErrorCode.scanRemoveFailed:
-      return S.of(context)!.anErrorOccurredRemovingTheScans;
-    case ErrorCode.invalidClientCertificateConfiguration:
-      return S.of(context)!.invalidCertificateOrMissingPassphrase;
-    case ErrorCode.documentBulkActionFailed:
-      return S.of(context)!.couldNotBulkEditDocuments;
-    case ErrorCode.biometricsNotSupported:
-      return S.of(context)!.biometricAuthenticationNotSupported;
-    case ErrorCode.biometricAuthenticationFailed:
-      return S.of(context)!.biometricAuthenticationFailed;
-    case ErrorCode.deviceOffline:
-      return S.of(context)!.youAreCurrentlyOffline;
-    case ErrorCode.serverUnreachable:
-      return S.of(context)!.couldNotReachYourPaperlessServer;
-    case ErrorCode.similarQueryError:
-      return S.of(context)!.couldNotLoadSimilarDocuments;
-    case ErrorCode.autocompleteQueryError:
-      return S.of(context)!.anErrorOccurredWhileTryingToAutocompleteYourQuery;
-    case ErrorCode.storagePathLoadFailed:
-      return S.of(context)!.couldNotLoadStoragePaths;
-    case ErrorCode.storagePathCreateFailed:
-      return S.of(context)!.couldNotCreateStoragePath;
-    case ErrorCode.loadSavedViewsError:
-      return S.of(context)!.couldNotLoadSavedViews;
-    case ErrorCode.createSavedViewError:
-      return S.of(context)!.couldNotCreateSavedView;
-    case ErrorCode.deleteSavedViewError:
-      return S.of(context)!.couldNotDeleteSavedView;
-    case ErrorCode.requestTimedOut:
-      return S.of(context)!.requestTimedOut;
-    case ErrorCode.unsupportedFileFormat:
-      return S.of(context)!.fileFormatNotSupported;
-    case ErrorCode.missingClientCertificate:
-      return S.of(context)!.aClientCertificateWasExpectedButNotSent;
-    case ErrorCode.suggestionsQueryError:
-      return S.of(context)!.couldNotLoadSuggestions;
-    case ErrorCode.acknowledgeTasksError:
-      return S.of(context)!.couldNotAcknowledgeTasks;
-  }
+  return switch (code) {
+    ErrorCode.unknown => S.of(context)!.anUnknownErrorOccurred,
+    ErrorCode.authenticationFailed =>
+      S.of(context)!.authenticationFailedPleaseTryAgain,
+    ErrorCode.notAuthenticated => S.of(context)!.userIsNotAuthenticated,
+    ErrorCode.documentUploadFailed => S.of(context)!.couldNotUploadDocument,
+    ErrorCode.documentUpdateFailed => S.of(context)!.couldNotUpdateDocument,
+    ErrorCode.documentLoadFailed => S.of(context)!.couldNotLoadDocuments,
+    ErrorCode.documentDeleteFailed => S.of(context)!.couldNotDeleteDocument,
+    ErrorCode.documentPreviewFailed =>
+      S.of(context)!.couldNotLoadDocumentPreview,
+    ErrorCode.documentAsnQueryFailed =>
+      S.of(context)!.couldNotAssignArchiveSerialNumber,
+    ErrorCode.tagCreateFailed => S.of(context)!.couldNotCreateTag,
+    ErrorCode.tagLoadFailed => S.of(context)!.couldNotLoadTags,
+    ErrorCode.documentTypeCreateFailed => S.of(context)!.couldNotCreateDocument,
+    ErrorCode.documentTypeLoadFailed =>
+      S.of(context)!.couldNotLoadDocumentTypes,
+    ErrorCode.correspondentCreateFailed =>
+      S.of(context)!.couldNotCreateCorrespondent,
+    ErrorCode.correspondentLoadFailed =>
+      S.of(context)!.couldNotLoadCorrespondents,
+    ErrorCode.scanRemoveFailed =>
+      S.of(context)!.anErrorOccurredRemovingTheScans,
+    ErrorCode.invalidClientCertificateConfiguration =>
+      S.of(context)!.invalidCertificateOrMissingPassphrase,
+    ErrorCode.documentBulkActionFailed =>
+      S.of(context)!.couldNotBulkEditDocuments,
+    ErrorCode.biometricsNotSupported =>
+      S.of(context)!.biometricAuthenticationNotSupported,
+    ErrorCode.biometricAuthenticationFailed =>
+      S.of(context)!.biometricAuthenticationFailed,
+    ErrorCode.deviceOffline => S.of(context)!.youAreCurrentlyOffline,
+    ErrorCode.serverUnreachable =>
+      S.of(context)!.couldNotReachYourPaperlessServer,
+    ErrorCode.similarQueryError => S.of(context)!.couldNotLoadSimilarDocuments,
+    ErrorCode.autocompleteQueryError =>
+      S.of(context)!.anErrorOccurredWhileTryingToAutocompleteYourQuery,
+    ErrorCode.storagePathLoadFailed => S.of(context)!.couldNotLoadStoragePaths,
+    ErrorCode.storagePathCreateFailed =>
+      S.of(context)!.couldNotCreateStoragePath,
+    ErrorCode.loadSavedViewsError => S.of(context)!.couldNotLoadSavedViews,
+    ErrorCode.createSavedViewError => S.of(context)!.couldNotCreateSavedView,
+    ErrorCode.deleteSavedViewError => S.of(context)!.couldNotDeleteSavedView,
+    ErrorCode.requestTimedOut => S.of(context)!.requestTimedOut,
+    ErrorCode.unsupportedFileFormat => S.of(context)!.fileFormatNotSupported,
+    ErrorCode.missingClientCertificate =>
+      S.of(context)!.aClientCertificateWasExpectedButNotSent,
+    ErrorCode.suggestionsQueryError => S.of(context)!.couldNotLoadSuggestions,
+    ErrorCode.acknowledgeTasksError => S.of(context)!.couldNotAcknowledgeTasks,
+    ErrorCode.correspondentDeleteFailed =>
+      "Could not delete correspondent, please try again.",
+    ErrorCode.documentTypeDeleteFailed =>
+      "Could not delete document type, please try again.",
+    ErrorCode.tagDeleteFailed => "Could not delete tag, please try again.",
+    ErrorCode.correspondentUpdateFailed =>
+      "Could not update correspondent, please try again.",
+    ErrorCode.documentTypeUpdateFailed =>
+      "Could not update document type, please try again.",
+    ErrorCode.tagUpdateFailed => "Could not update tag, please try again.",
+    ErrorCode.storagePathDeleteFailed =>
+      "Could not delete storage path, please try again.",
+    ErrorCode.storagePathUpdateFailed =>
+      "Could not update storage path, please try again.",
+    ErrorCode.serverInformationLoadFailed =>
+      "Could not load server information.",
+    ErrorCode.serverStatisticsLoadFailed => "Could not load server statistics.",
+    ErrorCode.uiSettingsLoadFailed => "Could not load UI settings",
+    ErrorCode.loadTasksError => "Could not load tasks.",
+    ErrorCode.userNotFound => "User could not be found.",
+  };
 }

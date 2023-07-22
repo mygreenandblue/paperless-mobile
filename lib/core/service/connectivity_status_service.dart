@@ -83,8 +83,8 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
         return ReachabilityStatus.reachable;
       }
       return ReachabilityStatus.notReachable;
-    } on DioError catch (error) {
-      if (error.type == DioErrorType.unknown &&
+    } on DioException catch (error) {
+      if (error.type == DioExceptionType.unknown &&
           error.error is ReachabilityStatus) {
         return error.error as ReachabilityStatus;
       }

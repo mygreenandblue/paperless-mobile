@@ -160,10 +160,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
       allowSelectUnassigned: false,
-      canCreateNewLabel: LocalUserAccount.current.paperlessUser.hasPermission(
-        PermissionAction.add,
-        PermissionTarget.documentType,
-      ),
+      canCreateNewLabel:
+          LocalUserAccount.current.paperlessUser.canCreateDocumentTypes,
     );
   }
 
@@ -175,10 +173,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
       allowSelectUnassigned: false,
-      canCreateNewLabel: LocalUserAccount.current.paperlessUser.hasPermission(
-        PermissionAction.add,
-        PermissionTarget.correspondent,
-      ),
+      canCreateNewLabel:
+          LocalUserAccount.current.paperlessUser.canCreateCorrespondents,
     );
   }
 
@@ -190,10 +186,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.storagePath,
       prefixIcon: const Icon(Icons.folder_outlined),
       allowSelectUnassigned: false,
-      canCreateNewLabel: LocalUserAccount.current.paperlessUser.hasPermission(
-        PermissionAction.add,
-        PermissionTarget.storagePath,
-      ),
+      canCreateNewLabel:
+          LocalUserAccount.current.paperlessUser.canCreateStoragePaths,
     );
   }
 

@@ -8,7 +8,7 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
   static const _missingClientCertText = "No required SSL certificate was sent";
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 400) {
       final message = err.response?.data;
       if (message is String && message.contains(_missingClientCertText)) {
@@ -19,7 +19,7 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
         );
       }
     }
-    if (err.type == DioErrorType.connectionTimeout) {
+    if (err.type == DioExceptionType.connectionTimeout) {
       return _rejectWithStatus(
         ReachabilityStatus.connectionTimeout,
         err,
@@ -48,13 +48,13 @@ class ServerReachabilityErrorInterceptor extends Interceptor {
 
 void _rejectWithStatus(
   ReachabilityStatus reachabilityStatus,
-  DioError err,
+  DioException err,
   ErrorInterceptorHandler handler,
 ) {
-  handler.reject(DioError(
+  handler.reject(DioException(
     error: reachabilityStatus,
     requestOptions: err.requestOptions,
     response: err.response,
-    type: DioErrorType.unknown,
+    type: DioExceptionType.unknown,
   ));
 }

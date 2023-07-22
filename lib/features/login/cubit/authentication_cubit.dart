@@ -365,7 +365,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             apiVersion: apiVersion,
           )
           .findCurrentUser();
-    } on DioError catch (error, stackTrace) {
+    } on DioException catch (error, stackTrace) {
       _debugPrintMessage(
         "_addUser",
         "An error occurred: ${error.message}",

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:paperless_api/src/models/paperless_server_exception.dart';
+import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
 import 'package:paperless_api/src/modules/authentication_api/authentication_api.dart';
 
 class PaperlessAuthenticationApiImpl implements PaperlessAuthenticationApi {
@@ -13,34 +12,20 @@ class PaperlessAuthenticationApiImpl implements PaperlessAuthenticationApi {
     required String username,
     required String password,
   }) async {
-    late Response response;
     try {
-      response = await client.post(
+      final response = await client.post(
         "/api/token/",
         data: {
           "username": username,
           "password": password,
         },
+        options: Options(
+          validateStatus: (status) => status == 200,
+        ),
       );
-    } on DioError catch (error) {
-      if (error.error is PaperlessServerException ||
-          error.error is Map<String, String>) {
-        throw error.error as Map<String, String>;
-      } else {
-        throw PaperlessServerException(
-          ErrorCode.authenticationFailed,
-          details: error.message,
-        );
-      }
-    }
-
-    if (response.statusCode == 200) {
       return response.data['token'];
-    } else {
-      throw PaperlessServerException(
-        ErrorCode.authenticationFailed,
-        httpStatusCode: response.statusCode,
-      );
+    } on DioException catch (exception) {
+      throw exception.unravel();
     }
   }
 }

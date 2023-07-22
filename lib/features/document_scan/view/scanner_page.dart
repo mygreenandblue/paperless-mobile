@@ -73,7 +73,9 @@ class _ScannerPageState extends State<ScannerPage>
                     headerSliverBuilder: (context, innerBoxIsScrolled) => [
                       SliverOverlapAbsorber(
                         handle: searchBarHandle,
-                        sliver: const SliverSearchBar(),
+                        sliver: SliverSearchBar(
+                          titleText: S.of(context)!.scanner,
+                        ),
                       ),
                       SliverOverlapAbsorber(
                         handle: actionsHandle,
@@ -322,7 +324,7 @@ class _ScannerPageState extends State<ScannerPage>
                 onDelete: () async {
                   try {
                     context.read<DocumentScannerCubit>().removeScan(index);
-                  } on PaperlessServerException catch (error, stackTrace) {
+                  } on PaperlessApiException catch (error, stackTrace) {
                     showErrorMessage(context, error, stackTrace);
                   }
                 },
@@ -339,7 +341,7 @@ class _ScannerPageState extends State<ScannerPage>
   void _reset(BuildContext context) {
     try {
       context.read<DocumentScannerCubit>().reset();
-    } on PaperlessServerException catch (error, stackTrace) {
+    } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -360,7 +362,7 @@ class _ScannerPageState extends State<ScannerPage>
       )) {
         showErrorMessage(
           context,
-          const PaperlessServerException(ErrorCode.unsupportedFileFormat),
+          const PaperlessApiException(ErrorCode.unsupportedFileFormat),
         );
         return;
       }

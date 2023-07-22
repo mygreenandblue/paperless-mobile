@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/type/types.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -48,10 +47,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
   @override
   Widget build(BuildContext context) {
     final userCanEditDocument =
-        LocalUserAccount.current.paperlessUser.hasPermission(
-      PermissionAction.change,
-      PermissionTarget.document,
-    );
+        LocalUserAccount.current.paperlessUser.canEditDocuments;
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
           previous.document.archiveSerialNumber !=
@@ -124,12 +120,14 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
         .read<DocumentDetailsCubit>()
         .assignAsn(widget.document, asn: asn)
         .then((value) => _onAsnUpdated())
-        .onError<PaperlessServerException>(
+        .onError<PaperlessApiException>(
           (error, stackTrace) => showErrorMessage(context, error, stackTrace),
         )
-        .onError<PaperlessValidationErrors>(
-          (error, stackTrace) => setState(() => _errors = error),
-        );
+        .onError<PaperlessFormValidationException>(
+      (error, stackTrace) {
+        setState(() => _errors = error.validationMessages);
+      },
+    );
     FocusScope.of(context).unfocus();
   }
 
@@ -141,9 +139,10 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
           autoAssign: true,
         )
         .then((value) => _onAsnUpdated())
-        .onError<PaperlessServerException>(
+        .onError<PaperlessApiException>(
           (error, stackTrace) => showErrorMessage(context, error, stackTrace),
-        );
+        )
+        .catchError((error) => showGenericError(context, error));
   }
 
   void _onAsnUpdated() {
