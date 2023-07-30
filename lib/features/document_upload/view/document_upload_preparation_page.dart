@@ -198,8 +198,10 @@ class _DocumentUploadPreparationPageState
                   ),
                 ),
                 // Correspondent
-                if (LocalUserAccount
-                    .current.paperlessUser.canViewCorrespondents)
+                if (context
+                    .watch<LocalUserAccount>()
+                    .paperlessUser
+                    .canViewCorrespondents)
                   LabelFormField<Correspondent>(
                     showAnyAssignedOption: false,
                     showNotAssignedOption: false,
@@ -220,11 +222,16 @@ class _DocumentUploadPreparationPageState
                     options: state.correspondents,
                     prefixIcon: const Icon(Icons.person_outline),
                     allowSelectUnassigned: true,
-                    canCreateNewLabel: LocalUserAccount
-                        .current.paperlessUser.canCreateCorrespondents,
+                    canCreateNewLabel: context
+                        .watch<LocalUserAccount>()
+                        .paperlessUser
+                        .canCreateCorrespondents,
                   ),
                 // Document type
-                if (LocalUserAccount.current.paperlessUser.canViewDocumentTypes)
+                if (context
+                    .watch<LocalUserAccount>()
+                    .paperlessUser
+                    .canViewDocumentTypes)
                   LabelFormField<DocumentType>(
                     showAnyAssignedOption: false,
                     showNotAssignedOption: false,
@@ -245,10 +252,12 @@ class _DocumentUploadPreparationPageState
                     options: state.documentTypes,
                     prefixIcon: const Icon(Icons.description_outlined),
                     allowSelectUnassigned: true,
-                    canCreateNewLabel: LocalUserAccount
-                        .current.paperlessUser.canCreateDocumentTypes,
+                    canCreateNewLabel: context
+                        .watch<LocalUserAccount>()
+                        .paperlessUser
+                        .canCreateDocumentTypes,
                   ),
-                if (LocalUserAccount.current.paperlessUser.canViewTags)
+                if (context.watch<LocalUserAccount>().paperlessUser.canViewTags)
                   TagsFormField(
                     name: DocumentModel.tagsKey,
                     allowCreation: true,
@@ -296,7 +305,7 @@ class _DocumentUploadPreparationPageState
           ),
           userId: Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
               .getValue()!
-              .currentLoggedInUser!,
+              .loggedInUserId!,
           title: title,
           documentType: docType,
           correspondent: correspondent,

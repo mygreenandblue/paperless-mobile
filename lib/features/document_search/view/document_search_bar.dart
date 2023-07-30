@@ -91,7 +91,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
               Provider.value(value: context.read<PaperlessDocumentsApi>()),
               Provider.value(value: context.read<CacheManager>()),
               Provider.value(value: context.read<ApiVersion>()),
-              if (context.read<ApiVersion>().hasMultiUserSupport)
+              if (context.watch<LocalUserAccount>().hasMultiUserSupport)
                 Provider.value(value: context.read<UserRepository>()),
             ],
             child: Provider(
@@ -99,7 +99,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
                 context.read(),
                 context.read(),
                 Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
-                    .get(LocalUserAccount.current.id)!,
+                    .get(context.watch<LocalUserAccount>().id)!,
               ),
               builder: (_, __) => const DocumentSearchPage(),
             ),
@@ -112,19 +112,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
   IconButton _buildUserAvatar(BuildContext context) {
     return IconButton(
       padding: const EdgeInsets.all(6),
-      icon: GlobalSettingsBuilder(
-        builder: (context, settings) {
-          return ValueListenableBuilder(
-            valueListenable:
-                Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
-                    .listenable(),
-            builder: (context, box, _) {
-              final account = box.get(settings.currentLoggedInUser!)!;
-              return UserAvatar(account: account);
-            },
-          );
-        },
-      ),
+      icon: UserAvatar(account: context.watch<LocalUserAccount>()),
       onPressed: () {
         final apiVersion = context.read<ApiVersion>();
         showDialog(

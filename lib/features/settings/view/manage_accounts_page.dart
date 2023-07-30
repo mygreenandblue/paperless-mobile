@@ -6,7 +6,7 @@ import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/view/login_page.dart';
+import 'package:paperless_mobile/features/login/view/add_account_page.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
@@ -22,7 +22,7 @@ class ManageAccountsPage extends StatelessWidget {
       builder: (context, globalSettings) {
         // This is one of the few places where the currentLoggedInUser can be null
         // (exactly after loggin out as the current user to be precise).
-        if (globalSettings.currentLoggedInUser == null) {
+        if (globalSettings.loggedInUserId == null) {
           return const SizedBox.shrink();
         }
         return ValueListenableBuilder(
@@ -32,8 +32,7 @@ class ManageAccountsPage extends StatelessWidget {
           builder: (context, box, _) {
             final userIds = box.keys.toList().cast<String>();
             final otherAccounts = userIds
-                .whereNot(
-                    (element) => element == globalSettings.currentLoggedInUser)
+                .whereNot((element) => element == globalSettings.loggedInUserId)
                 .toList();
             return SimpleDialog(
               insetPadding: const EdgeInsets.all(24),
@@ -54,7 +53,7 @@ class ManageAccountsPage extends StatelessWidget {
               children: [
                 Card(
                   child: UserAccountListTile(
-                    account: box.get(globalSettings.currentLoggedInUser!)!,
+                    account: box.get(globalSettings.loggedInUserId!)!,
                     trailing: PopupMenuButton(
                       icon: const Icon(Icons.more_vert),
                       itemBuilder: (context) => [
@@ -71,8 +70,7 @@ class ManageAccountsPage extends StatelessWidget {
                       ],
                       onSelected: (value) async {
                         if (value == 0) {
-                          final currentUser =
-                              globalSettings.currentLoggedInUser!;
+                          final currentUser = globalSettings.loggedInUserId!;
                           await context.read<AuthenticationCubit>().logout();
                           Navigator.of(context).pop();
                           await context
@@ -117,7 +115,7 @@ class ManageAccountsPage extends StatelessWidget {
                               // Switch
                               _onSwitchAccount(
                                 context,
-                                globalSettings.currentLoggedInUser!,
+                                globalSettings.loggedInUserId!,
                                 otherAccounts[index],
                               );
                             } else if (value == 1) {
@@ -135,10 +133,10 @@ class ManageAccountsPage extends StatelessWidget {
                   title: Text(S.of(context)!.addAccount),
                   leading: const Icon(Icons.person_add),
                   onTap: () {
-                    _onAddAccount(context, globalSettings.currentLoggedInUser!);
+                    _onAddAccount(context, globalSettings.loggedInUserId!);
                   },
                 ),
-                if (context.watch<ApiVersion>().hasMultiUserSupport)
+                if (context.watch<LocalUserAccount>().hasMultiUserSupport)
                   ListTile(
                     leading: const Icon(Icons.admin_panel_settings),
                     title: Text(S.of(context)!.managePermissions),
@@ -155,7 +153,7 @@ class ManageAccountsPage extends StatelessWidget {
     final userId = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginPage(
+        builder: (context) => AddAccountPage(
           titleString: S.of(context)!.addAccount,
           onSubmit: (context, username, password, serverUrl,
               clientCertificate) async {

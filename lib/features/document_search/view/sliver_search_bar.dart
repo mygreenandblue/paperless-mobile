@@ -25,7 +25,7 @@ class SliverSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (LocalUserAccount.current.paperlessUser.canViewDocuments) {
+    if (context.watch<LocalUserAccount>().paperlessUser.canViewDocuments) {
       return SliverAppBar(
         toolbarHeight: kToolbarHeight,
         flexibleSpace: Container(
@@ -49,7 +49,7 @@ class SliverSearchBar extends StatelessWidget {
                         Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
                             .listenable(),
                     builder: (context, box, _) {
-                      final account = box.get(settings.currentLoggedInUser!)!;
+                      final account = box.get(settings.loggedInUserId!)!;
                       return UserAvatar(account: account);
                     },
                   );

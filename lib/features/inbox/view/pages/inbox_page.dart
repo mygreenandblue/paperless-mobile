@@ -39,7 +39,7 @@ class _InboxPageState extends State<InboxPage>
   @override
   Widget build(BuildContext context) {
     final canEditDocument =
-        LocalUserAccount.current.paperlessUser.canEditDocuments;
+        context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
     return Scaffold(
       drawer: const AppDrawer(),
       floatingActionButton: BlocBuilder<InboxCubit, InboxState>(

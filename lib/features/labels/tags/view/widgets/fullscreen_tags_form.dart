@@ -191,7 +191,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     final createdTag = await Navigator.of(context).push<Tag?>(
       MaterialPageRoute(
         builder: (context) => AddTagPage(
-          initialValue: _textEditingController.text,
+          initialName: _textEditingController.text,
         ),
       ),
     );

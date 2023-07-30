@@ -26,7 +26,8 @@ class EditTagPage extends StatelessWidget {
             context.read<EditLabelCubit>().replaceTag(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeTag(label),
-        canDelete: LocalUserAccount.current.paperlessUser.canDeleteTags,
+        canDelete:
+            context.watch<LocalUserAccount>().paperlessUser.canDeleteTags,
         additionalFields: [
           FormBuilderColorPickerField(
             initialValue: tag.color,

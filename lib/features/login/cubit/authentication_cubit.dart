@@ -55,12 +55,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     // Mark logged in user as currently active user.
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings.currentLoggedInUser = localUserId;
+    globalSettings.loggedInUserId = localUserId;
     await globalSettings.save();
 
     emit(
       AuthenticationState.authenticated(
-        apiVersion: apiVersion,
         localUserId: localUserId,
       ),
     );
@@ -75,7 +74,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     emit(const AuthenticationState.switchingAccounts());
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    if (globalSettings.currentLoggedInUser == localUserId) {
+    if (globalSettings.loggedInUserId == localUserId) {
+      emit(AuthenticationState.authenticated(localUserId: localUserId));
       return;
     }
     final userAccountBox =
@@ -112,7 +112,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         baseUrl: account.serverUrl,
       );
 
-      globalSettings.currentLoggedInUser = localUserId;
+      globalSettings.loggedInUserId = localUserId;
       await globalSettings.save();
 
       final apiVersion = await _getApiVersion(_sessionManager.client);
@@ -126,7 +126,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
       emit(AuthenticationState.authenticated(
         localUserId: localUserId,
-        apiVersion: apiVersion,
       ));
     });
   }
@@ -175,13 +174,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    final localUserId = globalSettings.currentLoggedInUser;
+    final localUserId = globalSettings.loggedInUserId;
     if (localUserId == null) {
       _debugPrintMessage(
         "restoreSessionState",
         "There is nothing to restore.",
       );
       // If there is nothing to restore, we can quit here.
+      emit(const AuthenticationState.unauthenticated());
       return;
     }
     final localUserAccountBox =
@@ -223,7 +223,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final authentication =
         await withEncryptedBox<UserCredentials, UserCredentials>(
             HiveBoxes.localUserCredentials, (box) {
-      return box.get(globalSettings.currentLoggedInUser!);
+      return box.get(globalSettings.loggedInUserId!);
     });
 
     if (authentication == null) {
@@ -261,7 +261,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
     emit(
       AuthenticationState.authenticated(
-        apiVersion: apiVersion,
         localUserId: localUserId,
       ),
     );
@@ -279,7 +278,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     await _resetExternalState();
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings.currentLoggedInUser = null;
+    globalSettings.loggedInUserId = null;
     await globalSettings.save();
 
     emit(const AuthenticationState.unauthenticated());
@@ -389,6 +388,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         settings: LocalUserSettings(),
         serverUrl: serverUrl,
         paperlessUser: serverUser,
+        apiVersion: apiVersion,
       ),
     );
     _debugPrintMessage(

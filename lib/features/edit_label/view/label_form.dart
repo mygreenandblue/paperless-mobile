@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
@@ -68,7 +69,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   Widget build(BuildContext context) {
     List<MatchingAlgorithm> selectableMatchingAlgorithmValues =
         getSelectableMatchingAlgorithmValues(
-      context.watch<ApiVersion>().hasMultiUserSupport,
+      context.watch<LocalUserAccount>().hasMultiUserSupport,
     );
     return Scaffold(
       resizeToAvoidBottomInset: false,

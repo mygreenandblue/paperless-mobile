@@ -1,7 +1,5 @@
-import 'package:paperless_api/src/models/labels/correspondent_model.dart';
-import 'package:paperless_api/src/models/labels/document_type_model.dart';
-import 'package:paperless_api/src/models/labels/storage_path_model.dart';
-import 'package:paperless_api/src/models/labels/tag_model.dart';
+
+import 'package:paperless_api/src/models/models.dart';
 
 ///
 /// Provides basic CRUD operations for labels, including:

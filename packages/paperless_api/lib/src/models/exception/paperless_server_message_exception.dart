@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'paperless_server_exception.g.dart';
+part 'paperless_server_message_exception.g.dart';
 
 @JsonSerializable(createToJson: false)
 class PaperlessServerMessageException implements Exception {
@@ -13,5 +13,5 @@ class PaperlessServerMessageException implements Exception {
   }
 
   factory PaperlessServerMessageException.fromJson(Map<String, dynamic> json) =>
-      _$PaperlessServerExceptionFromJson(json);
+      _$PaperlessServerMessageExceptionFromJson(json);
 }

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
@@ -11,6 +12,7 @@ import 'package:paperless_mobile/features/document_search/view/remove_history_en
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});
@@ -218,11 +220,8 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hasLoaded: state.hasLoaded,
             enableHeroAnimation: false,
             onTap: (document) {
-              pushDocumentDetailsRoute(
-                context,
-                document: document,
-                isLabelClickable: false,
-              );
+              DocumentDetailsRoute($extra: document, isLabelClickable: false)
+                  .push(context);
             },
           )
       ],

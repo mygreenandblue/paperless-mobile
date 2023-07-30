@@ -23,7 +23,7 @@ class UserAccountBuilder extends StatelessWidget {
       builder: (context, accountBox, _) {
         final currentUser = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
             .getValue()!
-            .currentLoggedInUser;
+            .loggedInUserId;
         if (currentUser != null) {
           final account = accountBox.get(currentUser);
           return builder(context, account);

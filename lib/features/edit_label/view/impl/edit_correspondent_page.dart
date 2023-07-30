@@ -24,8 +24,10 @@ class EditCorrespondentPage extends StatelessWidget {
               context.read<EditLabelCubit>().replaceCorrespondent(label),
           onDelete: (context, label) =>
               context.read<EditLabelCubit>().removeCorrespondent(label),
-          canDelete:
-              LocalUserAccount.current.paperlessUser.canDeleteCorrespondents,
+          canDelete: context
+              .watch<LocalUserAccount>()
+              .paperlessUser
+              .canDeleteCorrespondents,
         );
       }),
     );

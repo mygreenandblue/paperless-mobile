@@ -22,10 +22,8 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class DocumentEditPage extends StatefulWidget {
-  final FieldSuggestions? suggestions;
   const DocumentEditPage({
     Key? key,
-    required this.suggestions,
   }) : super(key: key);
 
   @override
@@ -44,19 +42,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   bool _isSubmitLoading = false;
 
-  late final FieldSuggestions? _filteredSuggestions;
-
-  @override
-  void initState() {
-    super.initState();
-    _filteredSuggestions = widget.suggestions
-        ?.documentDifference(context.read<DocumentEditCubit>().state.document);
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
+        final filteredSuggestions = state.suggestions?.documentDifference(
+            context.read<DocumentEditCubit>().state.document);
         return DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -94,8 +85,10 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                       ListView(
                         children: [
                           _buildTitleFormField(state.document.title).padded(),
-                          _buildCreatedAtFormField(state.document.created)
-                              .padded(),
+                          _buildCreatedAtFormField(
+                            state.document.created,
+                            filteredSuggestions,
+                          ).padded(),
                           // Correspondent form field
                           Column(
                             children: [
@@ -123,15 +116,17 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 name: fkCorrespondent,
                                 prefixIcon: const Icon(Icons.person_outlined),
                                 allowSelectUnassigned: true,
-                                canCreateNewLabel: LocalUserAccount.current
-                                    .paperlessUser.canCreateCorrespondents,
+                                canCreateNewLabel: context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canCreateCorrespondents,
                               ),
-                              if (_filteredSuggestions
+                              if (filteredSuggestions
                                       ?.hasSuggestedCorrespondents ??
                                   false)
                                 _buildSuggestionsSkeleton<int>(
                                   suggestions:
-                                      _filteredSuggestions!.correspondents,
+                                      filteredSuggestions!.correspondents,
                                   itemBuilder: (context, itemData) =>
                                       ActionChip(
                                     label: Text(
@@ -160,8 +155,10 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     initialName: currentInput,
                                   ),
                                 ),
-                                canCreateNewLabel: LocalUserAccount.current
-                                    .paperlessUser.canCreateDocumentTypes,
+                                canCreateNewLabel: context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canCreateDocumentTypes,
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType,
                                 initialValue:
@@ -175,12 +172,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     const Icon(Icons.description_outlined),
                                 allowSelectUnassigned: true,
                               ),
-                              if (_filteredSuggestions
+                              if (filteredSuggestions
                                       ?.hasSuggestedDocumentTypes ??
                                   false)
                                 _buildSuggestionsSkeleton<int>(
                                   suggestions:
-                                      _filteredSuggestions!.documentTypes,
+                                      filteredSuggestions!.documentTypes,
                                   itemBuilder: (context, itemData) =>
                                       ActionChip(
                                     label: Text(
@@ -204,10 +201,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     RepositoryProvider.value(
                                   value: context.read<LabelRepository>(),
                                   child: AddStoragePathPage(
-                                      initalName: initialValue),
+                                      initialName: initialValue),
                                 ),
-                                canCreateNewLabel: LocalUserAccount.current
-                                    .paperlessUser.canCreateStoragePaths,
+                                canCreateNewLabel: context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canCreateStoragePaths,
                                 addLabelText: S.of(context)!.addStoragePath,
                                 labelText: S.of(context)!.storagePath,
                                 options: state.storagePaths,
@@ -232,14 +231,14 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                               include: state.document.tags.toList(),
                             ),
                           ).padded(),
-                          if (_filteredSuggestions?.tags
+                          if (filteredSuggestions?.tags
                                   .toSet()
                                   .difference(state.document.tags.toSet())
                                   .isNotEmpty ??
                               false)
                             _buildSuggestionsSkeleton<int>(
                               suggestions:
-                                  (_filteredSuggestions?.tags.toSet() ?? {}),
+                                  (filteredSuggestions?.tags.toSet() ?? {}),
                               itemBuilder: (context, itemData) {
                                 final tag = state.tags[itemData]!;
                                 return ActionChip(
@@ -343,7 +342,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     );
   }
 
-  Widget _buildCreatedAtFormField(DateTime? initialCreatedAtDate) {
+  Widget _buildCreatedAtFormField(
+      DateTime? initialCreatedAtDate, FieldSuggestions? filteredSuggestions) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -358,9 +358,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
           format: DateFormat.yMMMMd(),
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
-        if (_filteredSuggestions?.hasSuggestedDates ?? false)
+        if (filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(
-            suggestions: _filteredSuggestions!.dates,
+            suggestions: filteredSuggestions!.dates,
             itemBuilder: (context, itemData) => ActionChip(
               label: Text(DateFormat.yMMMd().format(itemData)),
               onPressed: () => _formKey.currentState?.fields[fkCreatedDate]

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
@@ -7,6 +8,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/view_
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {
   const LinkedDocumentsPage({super.key});
@@ -51,11 +53,10 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
                     isLoading: state.isLoading,
                     hasLoaded: state.hasLoaded,
                     onTap: (document) {
-                      pushDocumentDetailsRoute(
-                        context,
-                        document: document,
+                      DocumentDetailsRoute(
+                        $extra: document,
                         isLabelClickable: false,
-                      );
+                      ).push(context);
                     },
                   ),
                 ],

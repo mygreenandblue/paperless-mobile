@@ -100,14 +100,4 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-
-  void _goto(Widget page, BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => page,
-        maintainState: true,
-      ),
-    );
-  }
 }

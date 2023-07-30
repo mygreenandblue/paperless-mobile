@@ -45,20 +45,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         ),
       ),
     );
-    loadSuggestions();
     loadMetaData();
   }
 
   Future<void> delete(DocumentModel document) async {
     await _api.delete(document);
     _notifier.notifyDeleted(document);
-  }
-
-  Future<void> loadSuggestions() async {
-    final suggestions = await _api.findSuggestions(state.document);
-    if (!isClosed) {
-      emit(state.copyWith(suggestions: suggestions));
-    }
   }
 
   Future<void> loadMetaData() async {

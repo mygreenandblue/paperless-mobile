@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -47,7 +48,10 @@ class DocumentOverviewWidget extends StatelessWidget {
             label: S.of(context)!.createdAt,
           ).paddedOnly(bottom: itemSpacing),
           if (document.documentType != null &&
-              LocalUserAccount.current.paperlessUser.canViewDocumentTypes)
+              context
+                  .watch<LocalUserAccount>()
+                  .paperlessUser
+                  .canViewDocumentTypes)
             DetailsItem(
               label: S.of(context)!.documentType,
               content: LabelText<DocumentType>(
@@ -56,7 +60,10 @@ class DocumentOverviewWidget extends StatelessWidget {
               ),
             ).paddedOnly(bottom: itemSpacing),
           if (document.correspondent != null &&
-              LocalUserAccount.current.paperlessUser.canViewCorrespondents)
+              context
+                  .watch<LocalUserAccount>()
+                  .paperlessUser
+                  .canViewCorrespondents)
             DetailsItem(
               label: S.of(context)!.correspondent,
               content: LabelText<Correspondent>(
@@ -65,7 +72,10 @@ class DocumentOverviewWidget extends StatelessWidget {
               ),
             ).paddedOnly(bottom: itemSpacing),
           if (document.storagePath != null &&
-              LocalUserAccount.current.paperlessUser.canViewStoragePaths)
+              context
+                  .watch<LocalUserAccount>()
+                  .paperlessUser
+                  .canViewStoragePaths)
             DetailsItem(
               label: S.of(context)!.storagePath,
               content: LabelText<StoragePath>(
@@ -73,7 +83,7 @@ class DocumentOverviewWidget extends StatelessWidget {
               ),
             ).paddedOnly(bottom: itemSpacing),
           if (document.tags.isNotEmpty &&
-              LocalUserAccount.current.paperlessUser.canViewTags)
+              context.watch<LocalUserAccount>().paperlessUser.canViewTags)
             DetailsItem(
               label: S.of(context)!.tags,
               content: Padding(

@@ -22,8 +22,10 @@ class EditDocumentTypePage extends StatelessWidget {
             context.read<EditLabelCubit>().replaceDocumentType(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeDocumentType(label),
-        canDelete:
-            LocalUserAccount.current.paperlessUser.canDeleteDocumentTypes,
+        canDelete: context
+            .watch<LocalUserAccount>()
+            .paperlessUser
+            .canDeleteDocumentTypes,
       ),
     );
   }

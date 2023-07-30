@@ -81,4 +81,10 @@ extension UserPermissionExtension on UserModel {
       hasPermission(PermissionAction.add, PermissionTarget.storagePath);
   bool get canCreateSavedViews =>
       hasPermission(PermissionAction.add, PermissionTarget.savedView);
+
+  bool get canViewAnyLabel =>
+      canViewCorrespondents ||
+      canViewDocumentTypes ||
+      canViewTags ||
+      canViewStoragePaths;
 }

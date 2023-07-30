@@ -9,6 +9,7 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/settings/view/settings_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
 
 import 'package:url_launcher/url_launcher_string.dart';
@@ -91,18 +92,7 @@ class AppDrawer extends StatelessWidget {
               title: Text(
                 S.of(context)!.settings,
               ),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MultiProvider(
-                    providers: [
-                      Provider.value(
-                          value: context.read<PaperlessServerStatsApi>()),
-                      Provider.value(value: context.read<ApiVersion>()),
-                    ],
-                    child: const SettingsPage(),
-                  ),
-                ),
-              ),
+              onTap: () => SettingsRoute().push(context),
             ),
           ],
         ),

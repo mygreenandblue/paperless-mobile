@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -160,8 +161,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
       allowSelectUnassigned: false,
-      canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateDocumentTypes,
+      canCreateNewLabel: context
+          .watch<LocalUserAccount>()
+          .paperlessUser
+          .canCreateDocumentTypes,
     );
   }
 
@@ -173,8 +176,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
       allowSelectUnassigned: false,
-      canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateCorrespondents,
+      canCreateNewLabel: context
+          .watch<LocalUserAccount>()
+          .paperlessUser
+          .canCreateCorrespondents,
     );
   }
 
@@ -187,7 +192,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       prefixIcon: const Icon(Icons.folder_outlined),
       allowSelectUnassigned: false,
       canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateStoragePaths,
+          context.watch<LocalUserAccount>().paperlessUser.canCreateStoragePaths,
     );
   }
 

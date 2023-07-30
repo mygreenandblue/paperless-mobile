@@ -23,6 +23,7 @@ import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -55,7 +56,7 @@ class _DocumentsPageState extends State<DocumentsPage>
   void initState() {
     super.initState();
     final showSavedViews =
-        LocalUserAccount.current.paperlessUser.canViewSavedViews;
+        context.read<LocalUserAccount>().paperlessUser.canViewSavedViews;
     _tabController = TabController(
       length: showSavedViews ? 2 : 1,
       vsync: this,
@@ -116,7 +117,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           return SafeArea(
             top: true,
             child: Scaffold(
-              drawer: const AppDrawer(),
+              drawer: AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
                 builder: (context, state) {
                   final appliedFiltersCount = state.filter.appliedFiltersCount;
@@ -232,7 +233,9 @@ class _DocumentsPageState extends State<DocumentsPage>
                                   controller: _tabController,
                                   tabs: [
                                     Tab(text: S.of(context)!.documents),
-                                    if (LocalUserAccount.current.paperlessUser
+                                    if (context
+                                        .watch<LocalUserAccount>()
+                                        .paperlessUser
                                         .canViewSavedViews)
                                       Tab(text: S.of(context)!.views),
                                   ],
@@ -276,8 +279,10 @@ class _DocumentsPageState extends State<DocumentsPage>
                             );
                           },
                         ),
-                        if (LocalUserAccount
-                            .current.paperlessUser.canViewSavedViews)
+                        if (context
+                            .watch<LocalUserAccount>()
+                            .paperlessUser
+                            .canViewSavedViews)
                           Builder(
                             builder: (context) {
                               return _buildSavedViewsTab(
@@ -378,7 +383,9 @@ class _DocumentsPageState extends State<DocumentsPage>
                 final allowToggleFilter = state.selection.isEmpty;
                 return SliverAdaptiveDocumentsView(
                   viewType: state.viewType,
-                  onTap: _openDetails,
+                  onTap: (document) {
+                    DocumentDetailsRoute($extra: document).push(context);
+                  },
                   onSelected:
                       context.read<DocumentsCubit>().toggleDocumentSelection,
                   hasInternetConnection: connectivityState.isConnected,
@@ -486,13 +493,6 @@ class _DocumentsPageState extends State<DocumentsPage>
         showErrorMessage(context, error, stackTrace);
       }
     }
-  }
-
-  void _openDetails(DocumentModel document) {
-    pushDocumentDetailsRoute(
-      context,
-      document: document,
-    );
   }
 
   void _addTagToFilter(int tagId) {

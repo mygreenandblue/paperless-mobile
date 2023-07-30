@@ -47,7 +47,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
   @override
   Widget build(BuildContext context) {
     final userCanEditDocument =
-        LocalUserAccount.current.paperlessUser.canEditDocuments;
+        context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
           previous.document.archiveSerialNumber !=

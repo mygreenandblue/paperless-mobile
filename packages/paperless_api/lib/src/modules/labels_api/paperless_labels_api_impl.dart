@@ -3,10 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:paperless_api/src/extensions/dio_exception_extension.dart';
-import 'package:paperless_api/src/models/labels/correspondent_model.dart';
-import 'package:paperless_api/src/models/labels/document_type_model.dart';
-import 'package:paperless_api/src/models/labels/storage_path_model.dart';
-import 'package:paperless_api/src/models/labels/tag_model.dart';
+import 'package:paperless_api/src/models/models.dart';
 import 'package:paperless_api/src/models/paperless_api_exception.dart';
 import 'package:paperless_api/src/modules/labels_api/paperless_labels_api.dart';
 import 'package:paperless_api/src/request_utils.dart';
