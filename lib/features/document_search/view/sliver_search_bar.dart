@@ -56,11 +56,10 @@ class SliverSearchBar extends StatelessWidget {
                 },
               ),
               onPressed: () {
-                final apiVersion = context.read<ApiVersion>();
                 showDialog(
                   context: context,
-                  builder: (context) => Provider.value(
-                    value: apiVersion,
+                  builder: (_) => Provider.value(
+                    value: context.read<LocalUserAccount>(),
                     child: const ManageAccountsPage(),
                   ),
                 );

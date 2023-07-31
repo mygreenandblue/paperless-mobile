@@ -48,6 +48,7 @@ class _InboxPageState extends State<InboxPage>
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(
+            heroTag: "fab_inbox",
             label: Text(S.of(context)!.allSeen),
             icon: const Icon(Icons.done_all),
             onPressed: state.hasLoaded && state.documents.isNotEmpty

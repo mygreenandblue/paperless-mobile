@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
-
+import 'package:image/image.dart' as img;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -56,7 +57,7 @@ class _DocumentUploadPreparationPageState
   static final fileNameDateFormat = DateFormat("yyyy_MM_ddTHH_mm_ss");
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
-
+  Color? _titleColor;
   Map<String, String> _errors = {};
   bool _isUploadLoading = false;
   late bool _syncTitleAndFilename;
@@ -67,24 +68,21 @@ class _DocumentUploadPreparationPageState
   void initState() {
     super.initState();
     _syncTitleAndFilename = widget.filename == null && widget.title == null;
+    _titleColor = _computeAverageColor().computeLuminance() > 0.5
+        ? Colors.black
+        : Colors.white;
     initializeDateFormatting();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: false,
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text(S.of(context)!.prepareDocument),
-        bottom: _isUploadLoading
-            ? const PreferredSize(
-                child: LinearProgressIndicator(),
-                preferredSize: Size.fromHeight(4.0))
-            : null,
-      ),
       floatingActionButton: Visibility(
         visible: MediaQuery.of(context).viewInsets.bottom == 0,
         child: FloatingActionButton.extended(
+          heroTag: "fab_document_upload",
           onPressed: _onSubmit,
           label: Text(S.of(context)!.upload),
           icon: const Icon(Icons.upload),
@@ -94,183 +92,246 @@ class _DocumentUploadPreparationPageState
         builder: (context, state) {
           return FormBuilder(
             key: _formKey,
-            child: ListView(
-              children: [
-                // Title
-                FormBuilderTextField(
-                  autovalidateMode: AutovalidateMode.always,
-                  name: DocumentModel.titleKey,
-                  initialValue:
-                      widget.title ?? "scan_${fileNameDateFormat.format(_now)}",
-                  validator: (value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return S.of(context)!.thisFieldIsRequired;
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: S.of(context)!.title,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        _formKey.currentState?.fields[DocumentModel.titleKey]
-                            ?.didChange("");
-                        if (_syncTitleAndFilename) {
-                          _formKey.currentState?.fields[fkFileName]
-                              ?.didChange("");
-                        }
-                      },
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverOverlapAbsorber(
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  sliver: SliverAppBar(
+                    leading: BackButton(
+                      color: _titleColor,
                     ),
-                    errorText: _errors[DocumentModel.titleKey],
-                  ),
-                  onChanged: (value) {
-                    final String transformedValue =
-                        _formatFilename(value ?? '');
-                    if (_syncTitleAndFilename) {
-                      _formKey.currentState?.fields[fkFileName]
-                          ?.didChange(transformedValue);
-                    }
-                  },
-                ),
-                // Filename
-                FormBuilderTextField(
-                  autovalidateMode: AutovalidateMode.always,
-                  readOnly: _syncTitleAndFilename,
-                  enabled: !_syncTitleAndFilename,
-                  name: fkFileName,
-                  decoration: InputDecoration(
-                    labelText: S.of(context)!.fileName,
-                    suffixText: widget.fileExtension,
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => _formKey.currentState?.fields[fkFileName]
-                          ?.didChange(''),
+                    pinned: true,
+                    expandedHeight: 150,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Image.memory(
+                        widget.fileBytes,
+                        fit: BoxFit.cover,
+                      ),
+                      title: Text(
+                        S.of(context)!.prepareDocument,
+                        style: TextStyle(
+                          color: _titleColor,
+                        ),
+                      ),
                     ),
-                  ),
-                  initialValue: widget.filename ??
-                      "scan_${fileNameDateFormat.format(_now)}",
-                ),
-                // Synchronize title and filename
-                SwitchListTile(
-                  value: _syncTitleAndFilename,
-                  onChanged: (value) {
-                    setState(
-                      () => _syncTitleAndFilename = value,
-                    );
-                    if (_syncTitleAndFilename) {
-                      final String transformedValue = _formatFilename(_formKey
-                          .currentState
-                          ?.fields[DocumentModel.titleKey]
-                          ?.value as String);
-                      if (_syncTitleAndFilename) {
-                        _formKey.currentState?.fields[fkFileName]
-                            ?.didChange(transformedValue);
-                      }
-                    }
-                  },
-                  title: Text(
-                    S.of(context)!.synchronizeTitleAndFilename,
-                  ),
-                ),
-                // Created at
-                FormBuilderDateTimePicker(
-                  autovalidateMode: AutovalidateMode.always,
-                  format: DateFormat.yMMMMd(),
-                  inputType: InputType.date,
-                  name: DocumentModel.createdKey,
-                  initialValue: null,
-                  onChanged: (value) {
-                    setState(() => _showDatePickerDeleteIcon = value != null);
-                  },
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.calendar_month_outlined),
-                    labelText: S.of(context)!.createdAt + " *",
-                    suffixIcon: _showDatePickerDeleteIcon
-                        ? IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _formKey.currentState!
-                                  .fields[DocumentModel.createdKey]
-                                  ?.didChange(null);
-                            },
+                    bottom: _isUploadLoading
+                        ? const PreferredSize(
+                            child: LinearProgressIndicator(),
+                            preferredSize: Size.fromHeight(4.0),
                           )
                         : null,
                   ),
                 ),
-                // Correspondent
-                if (context
-                    .watch<LocalUserAccount>()
-                    .paperlessUser
-                    .canViewCorrespondents)
-                  LabelFormField<Correspondent>(
-                    showAnyAssignedOption: false,
-                    showNotAssignedOption: false,
-                    addLabelPageBuilder: (initialName) => MultiProvider(
-                      providers: [
-                        Provider.value(
-                          value: context.read<LabelRepository>(),
+              ],
+              body: Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Builder(
+                  builder: (context) {
+                    return CustomScrollView(
+                      slivers: [
+                        SliverOverlapInjector(
+                          handle:
+                              NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                  context),
                         ),
-                        Provider.value(
-                          value: context.read<ApiVersion>(),
-                        )
-                      ],
-                      child: AddCorrespondentPage(initialName: initialName),
-                    ),
-                    addLabelText: S.of(context)!.addCorrespondent,
-                    labelText: S.of(context)!.correspondent + " *",
-                    name: DocumentModel.correspondentKey,
-                    options: state.correspondents,
-                    prefixIcon: const Icon(Icons.person_outline),
-                    allowSelectUnassigned: true,
-                    canCreateNewLabel: context
-                        .watch<LocalUserAccount>()
-                        .paperlessUser
-                        .canCreateCorrespondents,
-                  ),
-                // Document type
-                if (context
-                    .watch<LocalUserAccount>()
-                    .paperlessUser
-                    .canViewDocumentTypes)
-                  LabelFormField<DocumentType>(
-                    showAnyAssignedOption: false,
-                    showNotAssignedOption: false,
-                    addLabelPageBuilder: (initialName) => MultiProvider(
-                      providers: [
-                        Provider.value(
-                          value: context.read<LabelRepository>(),
+                        SliverList.list(
+                          children: [
+                            // Title
+                            FormBuilderTextField(
+                              autovalidateMode: AutovalidateMode.always,
+                              name: DocumentModel.titleKey,
+                              initialValue: widget.title ??
+                                  "scan_${fileNameDateFormat.format(_now)}",
+                              validator: (value) {
+                                if (value?.trim().isEmpty ?? true) {
+                                  return S.of(context)!.thisFieldIsRequired;
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                labelText: S.of(context)!.title,
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    _formKey.currentState
+                                        ?.fields[DocumentModel.titleKey]
+                                        ?.didChange("");
+                                    if (_syncTitleAndFilename) {
+                                      _formKey.currentState?.fields[fkFileName]
+                                          ?.didChange("");
+                                    }
+                                  },
+                                ),
+                                errorText: _errors[DocumentModel.titleKey],
+                              ),
+                              onChanged: (value) {
+                                final String transformedValue =
+                                    _formatFilename(value ?? '');
+                                if (_syncTitleAndFilename) {
+                                  _formKey.currentState?.fields[fkFileName]
+                                      ?.didChange(transformedValue);
+                                }
+                              },
+                            ),
+                            // Filename
+                            FormBuilderTextField(
+                              autovalidateMode: AutovalidateMode.always,
+                              readOnly: _syncTitleAndFilename,
+                              enabled: !_syncTitleAndFilename,
+                              name: fkFileName,
+                              decoration: InputDecoration(
+                                labelText: S.of(context)!.fileName,
+                                suffixText: widget.fileExtension,
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () => _formKey
+                                      .currentState?.fields[fkFileName]
+                                      ?.didChange(''),
+                                ),
+                              ),
+                              initialValue: widget.filename ??
+                                  "scan_${fileNameDateFormat.format(_now)}",
+                            ),
+                            // Synchronize title and filename
+                            SwitchListTile(
+                              value: _syncTitleAndFilename,
+                              onChanged: (value) {
+                                setState(
+                                  () => _syncTitleAndFilename = value,
+                                );
+                                if (_syncTitleAndFilename) {
+                                  final String transformedValue =
+                                      _formatFilename(_formKey
+                                          .currentState
+                                          ?.fields[DocumentModel.titleKey]
+                                          ?.value as String);
+                                  if (_syncTitleAndFilename) {
+                                    _formKey.currentState?.fields[fkFileName]
+                                        ?.didChange(transformedValue);
+                                  }
+                                }
+                              },
+                              title: Text(
+                                S.of(context)!.synchronizeTitleAndFilename,
+                              ),
+                            ),
+                            // Created at
+                            FormBuilderDateTimePicker(
+                              autovalidateMode: AutovalidateMode.always,
+                              format: DateFormat.yMMMMd(),
+                              inputType: InputType.date,
+                              name: DocumentModel.createdKey,
+                              initialValue: null,
+                              onChanged: (value) {
+                                setState(() =>
+                                    _showDatePickerDeleteIcon = value != null);
+                              },
+                              decoration: InputDecoration(
+                                prefixIcon:
+                                    const Icon(Icons.calendar_month_outlined),
+                                labelText: S.of(context)!.createdAt + " *",
+                                suffixIcon: _showDatePickerDeleteIcon
+                                    ? IconButton(
+                                        icon: const Icon(Icons.close),
+                                        onPressed: () {
+                                          _formKey.currentState!
+                                              .fields[DocumentModel.createdKey]
+                                              ?.didChange(null);
+                                        },
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            // Correspondent
+                            if (context
+                                .watch<LocalUserAccount>()
+                                .paperlessUser
+                                .canViewCorrespondents)
+                              LabelFormField<Correspondent>(
+                                showAnyAssignedOption: false,
+                                showNotAssignedOption: false,
+                                addLabelPageBuilder: (initialName) =>
+                                    MultiProvider(
+                                  providers: [
+                                    Provider.value(
+                                      value: context.read<LabelRepository>(),
+                                    ),
+                                    Provider.value(
+                                      value: context.read<ApiVersion>(),
+                                    )
+                                  ],
+                                  child: AddCorrespondentPage(
+                                      initialName: initialName),
+                                ),
+                                addLabelText: S.of(context)!.addCorrespondent,
+                                labelText: S.of(context)!.correspondent + " *",
+                                name: DocumentModel.correspondentKey,
+                                options: state.correspondents,
+                                prefixIcon: const Icon(Icons.person_outline),
+                                allowSelectUnassigned: true,
+                                canCreateNewLabel: context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canCreateCorrespondents,
+                              ),
+                            // Document type
+                            if (context
+                                .watch<LocalUserAccount>()
+                                .paperlessUser
+                                .canViewDocumentTypes)
+                              LabelFormField<DocumentType>(
+                                showAnyAssignedOption: false,
+                                showNotAssignedOption: false,
+                                addLabelPageBuilder: (initialName) =>
+                                    MultiProvider(
+                                  providers: [
+                                    Provider.value(
+                                      value: context.read<LabelRepository>(),
+                                    ),
+                                    Provider.value(
+                                      value: context.read<ApiVersion>(),
+                                    )
+                                  ],
+                                  child: AddDocumentTypePage(
+                                      initialName: initialName),
+                                ),
+                                addLabelText: S.of(context)!.addDocumentType,
+                                labelText: S.of(context)!.documentType + " *",
+                                name: DocumentModel.documentTypeKey,
+                                options: state.documentTypes,
+                                prefixIcon:
+                                    const Icon(Icons.description_outlined),
+                                allowSelectUnassigned: true,
+                                canCreateNewLabel: context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canCreateDocumentTypes,
+                              ),
+                            if (context
+                                .watch<LocalUserAccount>()
+                                .paperlessUser
+                                .canViewTags)
+                              TagsFormField(
+                                name: DocumentModel.tagsKey,
+                                allowCreation: true,
+                                allowExclude: false,
+                                allowOnlySelection: true,
+                                options: state.tags,
+                              ),
+                            Text(
+                              "* " + S.of(context)!.uploadInferValuesHint,
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.justify,
+                            ).padded(),
+                            const SizedBox(height: 300),
+                          ].padded(),
                         ),
-                        Provider.value(
-                          value: context.read<ApiVersion>(),
-                        )
                       ],
-                      child: AddDocumentTypePage(initialName: initialName),
-                    ),
-                    addLabelText: S.of(context)!.addDocumentType,
-                    labelText: S.of(context)!.documentType + " *",
-                    name: DocumentModel.documentTypeKey,
-                    options: state.documentTypes,
-                    prefixIcon: const Icon(Icons.description_outlined),
-                    allowSelectUnassigned: true,
-                    canCreateNewLabel: context
-                        .watch<LocalUserAccount>()
-                        .paperlessUser
-                        .canCreateDocumentTypes,
-                  ),
-                if (context.watch<LocalUserAccount>().paperlessUser.canViewTags)
-                  TagsFormField(
-                    name: DocumentModel.tagsKey,
-                    allowCreation: true,
-                    allowExclude: false,
-                    allowOnlySelection: true,
-                    options: state.tags,
-                  ),
-                Text(
-                  "* " + S.of(context)!.uploadInferValuesHint,
-                  style: Theme.of(context).textTheme.bodySmall,
+                    );
+                  },
                 ),
-                const SizedBox(height: 300),
-              ].padded(),
+              ),
             ),
           );
         },
@@ -317,10 +378,7 @@ class _DocumentUploadPreparationPageState
           context,
           S.of(context)!.documentSuccessfullyUploadedProcessing,
         );
-        Navigator.pop(
-          context,
-          DocumentUploadResult(true, taskId),
-        );
+        context.pop(DocumentUploadResult(true, taskId));
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on PaperlessFormValidationException catch (exception) {
@@ -344,5 +402,34 @@ class _DocumentUploadPreparationPageState
 
   String _formatFilename(String source) {
     return source.replaceAll(RegExp(r"[\W_]"), "_").toLowerCase();
+  }
+
+  Color _computeAverageColor() {
+    final bitmap = img.decodeImage(widget.fileBytes);
+    if (bitmap == null) {
+      return Colors.black;
+    }
+    int redBucket = 0;
+    int greenBucket = 0;
+    int blueBucket = 0;
+    int pixelCount = 0;
+
+    for (int y = 0; y < bitmap.height; y++) {
+      for (int x = 0; x < bitmap.width; x++) {
+        final c = bitmap.getPixel(x, y);
+
+        pixelCount++;
+        redBucket += c.r.toInt();
+        greenBucket += c.g.toInt();
+        blueBucket += c.b.toInt();
+      }
+    }
+
+    return Color.fromRGBO(
+      redBucket ~/ pixelCount,
+      greenBucket ~/ pixelCount,
+      blueBucket ~/ pixelCount,
+      1,
+    );
   }
 }

@@ -72,6 +72,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     return Scaffold(
       floatingActionButton: widget.allowCreation
           ? FloatingActionButton(
+              heroTag: "fab_tags_form",
               onPressed: _onAddTag,
               child: const Icon(Icons.add),
             )

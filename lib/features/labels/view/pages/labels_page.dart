@@ -66,15 +66,19 @@ class _LabelsPageState extends State<LabelsPage>
                 child: Scaffold(
                   drawer: const AppDrawer(),
                   floatingActionButton: FloatingActionButton(
+                    heroTag: "fab_labels_page",
                     onPressed: [
                       if (user.canViewCorrespondents)
-                        () => CreateLabelRoute<Correspondent>().push(context),
+                        () => CreateLabelRoute(LabelType.correspondent)
+                            .push(context),
                       if (user.canViewDocumentTypes)
-                        () => CreateLabelRoute<DocumentType>().push(context),
+                        () => CreateLabelRoute(LabelType.documentType)
+                            .push(context),
                       if (user.canViewTags)
-                        () => CreateLabelRoute<Tag>().push(context),
+                        () => CreateLabelRoute(LabelType.tag).push(context),
                       if (user.canViewStoragePaths)
-                        () => CreateLabelRoute<StoragePath>().push(context),
+                        () => CreateLabelRoute(LabelType.storagePath)
+                            .push(context),
                     ][_currentIndex],
                     child: const Icon(Icons.add),
                   ),
@@ -247,7 +251,8 @@ class _LabelsPageState extends State<LabelsPage>
               },
               emptyStateActionButtonLabel: S.of(context)!.addNewCorrespondent,
               emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
-              onAddNew: () => CreateLabelRoute<Correspondent>().push(context),
+              onAddNew: () =>
+                  CreateLabelRoute(LabelType.correspondent).push(context),
             ),
           ],
         );
@@ -274,7 +279,8 @@ class _LabelsPageState extends State<LabelsPage>
               },
               emptyStateActionButtonLabel: S.of(context)!.addNewDocumentType,
               emptyStateDescription: S.of(context)!.noDocumentTypesSetUp,
-              onAddNew: () => CreateLabelRoute<DocumentType>().push(context),
+              onAddNew: () =>
+                  CreateLabelRoute(LabelType.documentType).push(context),
             ),
           ],
         );
@@ -310,7 +316,7 @@ class _LabelsPageState extends State<LabelsPage>
               ),
               emptyStateActionButtonLabel: S.of(context)!.addNewTag,
               emptyStateDescription: S.of(context)!.noTagsSetUp,
-              onAddNew: () => CreateLabelRoute<Tag>().push(context),
+              onAddNew: () => CreateLabelRoute(LabelType.tag).push(context),
             ),
           ],
         );
@@ -338,7 +344,8 @@ class _LabelsPageState extends State<LabelsPage>
               contentBuilder: (path) => Text(path.path),
               emptyStateActionButtonLabel: S.of(context)!.addNewStoragePath,
               emptyStateDescription: S.of(context)!.noStoragePathsSetUp,
-              onAddNew: () => CreateLabelRoute<StoragePath>().push(context),
+              onAddNew: () =>
+                  CreateLabelRoute(LabelType.storagePath).push(context),
             ),
           ],
         );

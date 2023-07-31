@@ -37,6 +37,7 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
+import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
@@ -163,9 +164,7 @@ void main() async {
             BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
             BlocProvider.value(value: authenticationCubit),
           ],
-          child: GoRouterShell(
-            apiFactory: apiFactory,
-          ),
+          child: GoRouterShell(apiFactory: apiFactory),
         ),
       ),
     );
@@ -178,64 +177,8 @@ void main() async {
     debugPrint("An unepxected exception has occured!");
     debugPrint(message);
     debugPrintStack(stackTrace: stack);
-    // if (_rootScaffoldKey.currentContext != null) {
-    //   ScaffoldMessenger.maybeOf(_rootScaffoldKey.currentContext!)
-    //     ?..hideCurrentSnackBar()
-    //     ..showSnackBar(SnackBar(content: Text(message)));
-    // }
   });
 }
-
-// class PaperlessMobileEntrypoint extends StatefulWidget {
-//   final PaperlessApiFactory paperlessProviderFactory;
-//   const PaperlessMobileEntrypoint({
-//     Key? key,
-//     required this.paperlessProviderFactory,
-//   }) : super(key: key);
-
-//   @override
-//   State<PaperlessMobileEntrypoint> createState() =>
-//       _PaperlessMobileEntrypointState();
-// }
-
-// class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return GlobalSettingsBuilder(
-//       builder: (context, settings) {
-//         return DynamicColorBuilder(
-//           builder: (lightDynamic, darkDynamic) {
-//             return MaterialApp(
-//               debugShowCheckedModeBanner: true,
-//               title: "Paperless Mobile",
-//               theme: buildTheme(
-//                 brightness: Brightness.light,
-//                 dynamicScheme: lightDynamic,
-//                 preferredColorScheme: settings.preferredColorSchemeOption,
-//               ),
-//               darkTheme: buildTheme(
-//                 brightness: Brightness.dark,
-//                 dynamicScheme: darkDynamic,
-//                 preferredColorScheme: settings.preferredColorSchemeOption,
-//               ),
-//               themeMode: settings.preferredThemeMode,
-//               supportedLocales: S.supportedLocales,
-//               locale: Locale.fromSubtags(
-//                 languageCode: settings.preferredLocaleSubtag,
-//               ),
-//               localizationsDelegates: const [
-//                 ...S.localizationsDelegates,
-//               ],
-//               home: AuthenticationWrapper(
-//                 paperlessProviderFactory: widget.paperlessProviderFactory,
-//               ),
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-// }
 
 class GoRouterShell extends StatefulWidget {
   final PaperlessApiFactory apiFactory;
@@ -252,21 +195,19 @@ class _GoRouterShellState extends State<GoRouterShell> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context.read<AuthenticationCubit>().restoreSessionState().then((value) {
-      FlutterNativeSplash.remove();
-    });
   }
 
   @override
   void initState() {
     super.initState();
-    // Activate the highest supported refresh rate on the device
+    FlutterNativeSplash.remove();
     if (Platform.isAndroid) {
       _setOptimalDisplayMode();
     }
     initializeDateFormatting();
   }
 
+  /// Activates the highest supported refresh rate on the device.
   Future<void> _setOptimalDisplayMode() async {
     final List<DisplayMode> supported = await FlutterDisplayMode.supported;
     final DisplayMode active = await FlutterDisplayMode.active;
@@ -284,7 +225,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
   }
 
   late final _router = GoRouter(
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     initialLocation: "/login",
     routes: [
       $loginRoute,
@@ -348,23 +289,20 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
   @override
   Widget build(BuildContext context) {
-    return GlobalSettingsBuilder(
-      builder: (context, settings) {
-        return DynamicColorBuilder(
-          builder: (lightDynamic, darkDynamic) {
-            return BlocListener<AuthenticationCubit, AuthenticationState>(
-              listener: (context, state) {
-                state.when(
-                  unauthenticated: () => const LoginRoute().go(context),
-                  requriresLocalAuthentication: () =>
-                      const VerifyIdentityRoute().go(context),
-                  authenticated: (localUserId) =>
-                      const LandingRoute().go(context),
-                  switchingAccounts: () =>
-                      const SwitchingAccountsRoute().go(context),
-                );
-              },
-              child: MaterialApp.router(
+    return BlocListener<AuthenticationCubit, AuthenticationState>(
+      listener: (context, state) {
+        state.when(
+          unauthenticated: () => _router.goNamed(R.login),
+          requriresLocalAuthentication: () => _router.goNamed(R.verifyIdentity),
+          switchingAccounts: () => _router.goNamed(R.switchingAccounts),
+          authenticated: (localUserId) => _router.goNamed(R.landing),
+        );
+      },
+      child: GlobalSettingsBuilder(
+        builder: (context, settings) {
+          return DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              return MaterialApp.router(
                 routerConfig: _router,
                 debugShowCheckedModeBanner: true,
                 title: "Paperless Mobile",
@@ -384,79 +322,11 @@ class _GoRouterShellState extends State<GoRouterShell> {
                   languageCode: settings.preferredLocaleSubtag,
                 ),
                 localizationsDelegates: S.localizationsDelegates,
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
-
-// class AuthenticationWrapper extends StatefulWidget {
-//   final PaperlessApiFactory paperlessProviderFactory;
-
-//   const AuthenticationWrapper({
-//     Key? key,
-//     required this.paperlessProviderFactory,
-//   }) : super(key: key);
-
-//   @override
-//   State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
-// }
-
-// class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
-//   @override
-//   void didChangeDependencies() {
-//     super.didChangeDependencies();
-//     context.read<AuthenticationCubit>().restoreSessionState().then((value) {
-//       FlutterNativeSplash.remove();
-//     });
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     // Activate the highest supported refresh rate on the device
-//     if (Platform.isAndroid) {
-//       _setOptimalDisplayMode();
-//     }
-//     initializeDateFormatting();
-//   }
-
-//   Future<void> _setOptimalDisplayMode() async {
-//     final List<DisplayMode> supported = await FlutterDisplayMode.supported;
-//     final DisplayMode active = await FlutterDisplayMode.active;
-
-//     final List<DisplayMode> sameResolution = supported
-//         .where((m) => m.width == active.width && m.height == active.height)
-//         .toList()
-//       ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
-
-//     final DisplayMode mostOptimalMode =
-//         sameResolution.isNotEmpty ? sameResolution.first : active;
-//     debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
-
-//     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
-//       builder: (context, authentication) {
-//         return authentication.when(
-//           unauthenticated: () => const LoginPage(),
-//           requriresLocalAuthentication: () => const VerifyIdentityPage(),
-//           authenticated: (localUserId, apiVersion) => HomeShellWidget(
-//             key: ValueKey(localUserId),
-//             paperlessApiVersion: apiVersion,
-//             paperlessProviderFactory: widget.paperlessProviderFactory,
-//             localUserId: localUserId,
-//           ),
-//           switchingAccounts: () => const SwitchingAccountsPage(),
-//         );
-//       },
-//     );
-//   }
-// }

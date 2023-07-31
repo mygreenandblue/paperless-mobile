@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -39,6 +40,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
         title: Text(S.of(context)!.newView),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "fab_add_saved_view_page",
         icon: const Icon(Icons.add),
         onPressed: () => _onCreate(context),
         label: Text(S.of(context)!.create),
@@ -102,8 +104,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
 
   void _onCreate(BuildContext context) {
     if (_savedViewFormKey.currentState?.saveAndValidate() ?? false) {
-      Navigator.pop(
-        context,
+      context.pop(
         SavedView.fromDocumentFilter(
           DocumentFilterForm.assembleFilter(
             _filterFormKey,

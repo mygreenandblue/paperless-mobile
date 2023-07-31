@@ -8,6 +8,13 @@ import 'package:paperless_api/src/models/labels/matching_algorithm.dart';
 
 part 'label_model.g.dart';
 
+enum LabelType {
+  correspondent,
+  documentType,
+  tag,
+  storagePath,
+}
+
 sealed class Label extends Equatable implements Comparable {
   static const idKey = "id";
   static const nameKey = "name";

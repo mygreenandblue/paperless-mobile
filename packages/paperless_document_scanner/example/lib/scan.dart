@@ -124,19 +124,22 @@ class _ScanState extends State<Scan> {
       imagePath = filePath;
     });
 
-    EdgeDetectionResult result = await EdgeDetector().detectEdgesFromFile(filePath);
+    EdgeDetectionResult result =
+        await EdgeDetector().detectEdgesFromFile(filePath);
 
     setState(() {
       edgeDetectionResult = result;
     });
   }
 
-  Future _processImage(String filePath, EdgeDetectionResult edgeDetectionResult) async {
+  Future _processImage(
+      String filePath, EdgeDetectionResult edgeDetectionResult) async {
     if (!mounted) {
       return;
     }
 
-    bool result = await EdgeDetector().processImageFromFile(filePath, edgeDetectionResult);
+    bool result = await EdgeDetector()
+        .processImageFromFile(filePath, edgeDetectionResult);
 
     if (result == false) {
       return;

@@ -17,4 +17,6 @@ class R {
   static const inbox = "inbox";
   static const documentPreview = "documentPreview";
   static const settings = "settings";
+  static const linkedDocuments = "linkedDocuments";
+  static const bulkEditDocuments = "bulkEditDocuments";
 }

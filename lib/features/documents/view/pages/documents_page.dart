@@ -134,7 +134,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: FloatingActionButton.small(
-                              key: UniqueKey(),
+                              heroTag: "fab_documents_page_reset_filter",
                               backgroundColor: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryContainer,
@@ -164,11 +164,13 @@ class _DocumentsPageState extends State<DocumentsPage>
                             duration: const Duration(milliseconds: 250),
                             child: (_currentTab == 0)
                                 ? FloatingActionButton(
+                                    heroTag: "fab_documents_page_filter",
                                     child:
                                         const Icon(Icons.filter_alt_outlined),
                                     onPressed: _openDocumentFilter,
                                   )
                                 : FloatingActionButton(
+                                    heroTag: "fab_documents_page_filter",
                                     child: const Icon(Icons.add),
                                     onPressed: () =>
                                         _onCreateSavedView(state.filter),

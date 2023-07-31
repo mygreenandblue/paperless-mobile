@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/archive_serial_number_field.dart';
@@ -25,6 +26,7 @@ class DocumentMetaDataWidget extends StatefulWidget {
 class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
   @override
   Widget build(BuildContext context) {
+    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
     return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
       builder: (context, state) {
         if (state.metaData == null) {
@@ -37,9 +39,10 @@ class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
         return SliverList(
           delegate: SliverChildListDelegate(
             [
-              ArchiveSerialNumberField(
-                document: widget.document,
-              ).paddedOnly(bottom: widget.itemSpacing),
+              if (currentUser.canEditDocuments)
+                ArchiveSerialNumberField(
+                  document: widget.document,
+                ).paddedOnly(bottom: widget.itemSpacing),
               DetailsItem.text(
                 DateFormat().format(widget.document.modified),
                 context: context,

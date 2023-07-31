@@ -46,24 +46,24 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
               if (widget.authenticatedUser.canViewDocuments) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(
-                    context, "You do not have permission to access this page.");
+                showSnackBar(context,
+                    "You do not have the required permissions to access this page.");
               }
               break;
             case _scannerIndex:
               if (widget.authenticatedUser.canCreateDocuments) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(
-                    context, "You do not have permission to access this page.");
+                showSnackBar(context,
+                    "You do not have the required permissions to access this page.");
               }
               break;
             case _labelsIndex:
               if (widget.authenticatedUser.canViewAnyLabel) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(
-                    context, "You do not have permission to access this page.");
+                showSnackBar(context,
+                    "You do not have the required permissions to access this page.");
               }
               break;
             case _inboxIndex:
@@ -71,8 +71,8 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
                   widget.authenticatedUser.canViewTags) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(
-                    context, "You do not have permission to access this page.");
+                showSnackBar(context,
+                    "You do not have the required permissions to access this page.");
               }
               break;
             default:
@@ -132,7 +132,7 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
               if (!(widget.authenticatedUser.canViewDocuments &&
                   widget.authenticatedUser.canViewTags)) {
                 return Icon(
-                  Icons.close,
+                  Icons.inbox_outlined,
                   color: disabledColor,
                 );
               }

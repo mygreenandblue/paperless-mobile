@@ -47,7 +47,7 @@ class _SavedViewDetailsPageState extends State<SavedViewDetailsPage>
                   false;
               if (shouldDelete) {
                 await widget.onDelete(cubit.savedView);
-                Navigator.pop(context);
+                context.pop(context);
               }
             },
           ),

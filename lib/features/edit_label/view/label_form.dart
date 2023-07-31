@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -74,6 +75,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "fab_label_form",
         icon: widget.submitButtonConfig.icon,
         label: widget.submitButtonConfig.label,
         onPressed: _onSubmit,
@@ -168,7 +170,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         };
         final parsed = widget.fromJsonT(mergedJson);
         final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
-        Navigator.pop(context, createdLabel);
+        context.pop(createdLabel);
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on PaperlessFormValidationException catch (exception) {

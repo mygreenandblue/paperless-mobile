@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
@@ -119,11 +120,11 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         } catch (error, stackTrace) {
           log("An error occurred!", error: error, stackTrace: stackTrace);
         }
-        Navigator.pop(context);
+        context.pop();
       }
     } else {
       onDelete(context, label);
-      Navigator.pop(context);
+      context.pop();
     }
   }
 }

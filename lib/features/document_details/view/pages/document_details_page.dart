@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
@@ -92,37 +93,43 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               DocumentDetailsState>(
                             builder: (context, state) {
                               return Positioned.fill(
-                                child: DocumentPreview(
-                                  document: state.document,
-                                  fit: BoxFit.cover,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    DocumentPreviewRoute($extra: state.document)
+                                        .push(context);
+                                  },
+                                  child: DocumentPreview(
+                                    document: state.document,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               );
                             },
                           ),
-                          Positioned.fill(
-                            top: 0,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .background
-                                        .withOpacity(0.8),
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .background
-                                        .withOpacity(0.5),
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // Positioned.fill(
+                          //   top: -kToolbarHeight,
+                          //   child: DecoratedBox(
+                          //     decoration: BoxDecoration(
+                          //       gradient: LinearGradient(
+                          //         colors: [
+                          //           Theme.of(context)
+                          //               .colorScheme
+                          //               .background
+                          //               .withOpacity(0.8),
+                          //           Theme.of(context)
+                          //               .colorScheme
+                          //               .background
+                          //               .withOpacity(0.5),
+                          //           Colors.transparent,
+                          //           Colors.transparent,
+                          //           Colors.transparent,
+                          //         ],
+                          //         begin: Alignment.topCenter,
+                          //         end: Alignment.bottomCenter,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -302,6 +309,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           preferBelow: false,
           verticalOffset: 40,
           child: FloatingActionButton(
+            heroTag: "fab_document_details",
             child: const Icon(Icons.edit),
             onPressed: () => EditDocumentRoute(state.document).push(context),
           ),
@@ -333,13 +341,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     document: state.document,
                     enabled: isConnected,
                   ),
-                  //TODO: Enable again, need new pdf viewer package...
-                  IconButton(
-                    tooltip: S.of(context)!.previewTooltip,
-                    icon: const Icon(Icons.visibility),
-                    onPressed:
-                        (isConnected) ? () => _onOpen(state.document) : null,
-                  ).paddedOnly(right: 4.0),
+                  // //TODO: Enable again, need new pdf viewer package...
+                  // IconButton(
+                  //   tooltip: S.of(context)!.previewTooltip,
+                  //   icon: const Icon(Icons.visibility),
+                  //   onPressed:
+                  //       (isConnected) ? () => _onOpen(state.document) : null,
+                  // ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
                     icon: const Icon(Icons.open_in_new),
@@ -391,21 +399,17 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
-        // Document deleted => go back to primary route
-        Navigator.popUntil(context, (route) => route.isFirst);
+        do {
+          context.pop();
+        } while (context.canPop());
       }
     }
   }
 
   Future<void> _onOpen(DocumentModel document) async {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => DocumentView(
-          documentBytes:
-              context.read<PaperlessDocumentsApi>().download(document),
-          title: document.title,
-        ),
-      ),
-    );
+    DocumentPreviewRoute(
+      $extra: document,
+      title: document.title,
+    ).push(context);
   }
 }

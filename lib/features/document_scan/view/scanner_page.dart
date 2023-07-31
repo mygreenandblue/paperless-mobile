@@ -22,11 +22,13 @@ import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_c
 import 'package:paperless_mobile/features/document_scan/view/widgets/export_scans_dialog.dart';
 import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
+import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -53,58 +55,52 @@ class _ScannerPageState extends State<ScannerPage>
   Widget build(BuildContext context) {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectedState) {
-        return Scaffold(
-          drawer: const AppDrawer(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _openDocumentScanner(context),
-            child: const Icon(Icons.add_a_photo_outlined),
-          ),
-          body: BlocBuilder<DocumentScannerCubit, List<File>>(
-            builder: (context, state) {
-              return SafeArea(
-                child: Scaffold(
-                  drawer: const AppDrawer(),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () => _openDocumentScanner(context),
-                    child: const Icon(Icons.add_a_photo_outlined),
-                  ),
-                  body: NestedScrollView(
-                    floatHeaderSlivers: true,
-                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                      SliverOverlapAbsorber(
-                        handle: searchBarHandle,
-                        sliver: SliverSearchBar(
-                          titleText: S.of(context)!.scanner,
-                        ),
+        return BlocBuilder<DocumentScannerCubit, List<File>>(
+          builder: (context, state) {
+            return SafeArea(
+              child: Scaffold(
+                drawer: const AppDrawer(),
+                floatingActionButton: FloatingActionButton(
+                  heroTag: "fab_document_edit",
+                  onPressed: () => _openDocumentScanner(context),
+                  child: const Icon(Icons.add_a_photo_outlined),
+                ),
+                body: NestedScrollView(
+                  floatHeaderSlivers: true,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverOverlapAbsorber(
+                      handle: searchBarHandle,
+                      sliver: SliverSearchBar(
+                        titleText: S.of(context)!.scanner,
                       ),
-                      SliverOverlapAbsorber(
-                        handle: actionsHandle,
-                        sliver: SliverPinnedHeader(
-                          child: _buildActions(connectedState.isConnected),
-                        ),
-                      ),
-                    ],
-                    body: BlocBuilder<DocumentScannerCubit, List<File>>(
-                      builder: (context, state) {
-                        if (state.isEmpty) {
-                          return SizedBox.expand(
-                            child: Center(
-                              child: _buildEmptyState(
-                                connectedState.isConnected,
-                                state,
-                              ),
-                            ),
-                          );
-                        } else {
-                          return _buildImageGrid(state);
-                        }
-                      },
                     ),
+                    SliverOverlapAbsorber(
+                      handle: actionsHandle,
+                      sliver: SliverPinnedHeader(
+                        child: _buildActions(connectedState.isConnected),
+                      ),
+                    ),
+                  ],
+                  body: BlocBuilder<DocumentScannerCubit, List<File>>(
+                    builder: (context, state) {
+                      if (state.isEmpty) {
+                        return SizedBox.expand(
+                          child: Center(
+                            child: _buildEmptyState(
+                              connectedState.isConnected,
+                              state,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return _buildImageGrid(state);
+                      }
+                    },
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -260,11 +256,10 @@ class _ScannerPageState extends State<ScannerPage>
           .getValue()!
           .enforceSinglePagePdfUpload,
     );
-    final uploadResult = await pushDocumentUploadPreparationPage(
-      context,
-      bytes: file.bytes,
+    final uploadResult = await DocumentUploadRoute(
+      $extra: file.bytes,
       fileExtension: file.extension,
-    );
+    ).push<DocumentUploadResult>(context);
     if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
@@ -366,13 +361,12 @@ class _ScannerPageState extends State<ScannerPage>
         );
         return;
       }
-      pushDocumentUploadPreparationPage(
-        context,
-        bytes: file.readAsBytesSync(),
+      DocumentUploadRoute(
+        $extra: file.readAsBytesSync(),
         filename: fileDescription.filename,
         title: fileDescription.filename,
         fileExtension: fileDescription.extension,
-      );
+      ).push(context);
     }
   }
 
