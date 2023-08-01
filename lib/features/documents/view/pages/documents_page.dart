@@ -61,15 +61,15 @@ class _DocumentsPageState extends State<DocumentsPage>
       length: showSavedViews ? 2 : 1,
       vsync: this,
     );
-    Future.wait([
-      context.read<DocumentsCubit>().reload(),
-      context.read<SavedViewCubit>().reload(),
-    ]).onError<PaperlessApiException>(
-      (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
-        return [];
-      },
-    );
+    // Future.wait([
+    //   context.read<DocumentsCubit>().reload(),
+    //   context.read<SavedViewCubit>().reload(),
+    // ]).onError<PaperlessApiException>(
+    //   (error, stackTrace) {
+    //     showErrorMessage(context, error, stackTrace);
+    //     return [];
+    //   },
+    // );
     _tabController.addListener(_tabChangesListener);
   }
 
@@ -117,7 +117,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           return SafeArea(
             top: true,
             child: Scaffold(
-              drawer: AppDrawer(),
+              drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
                 builder: (context, state) {
                   final appliedFiltersCount = state.filter.appliedFiltersCount;

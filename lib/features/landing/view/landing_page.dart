@@ -8,6 +8,8 @@ import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/landing/view/widgets/expansion_card.dart';
 import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
+import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:paperless_mobile/features/saved_view_details/view/saved_view_details_preview.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
@@ -52,6 +54,27 @@ class _LandingPageState extends State<LandingPage> {
                 ).padded(24),
               ),
               SliverToBoxAdapter(child: _buildStatisticsCard(context)),
+              BlocBuilder<SavedViewCubit, SavedViewState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    loaded: (savedViews) {
+                      return SliverList.builder(
+                        itemBuilder: (context, index) {
+                          return SavedViewDetailsPreview(
+                            savedView: savedViews.values.elementAt(index),
+                          );
+                        },
+                        itemCount: savedViews.length,
+                      );
+                    },
+                    orElse: () => const SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                },
+              )
             ],
           ),
         ),

@@ -158,6 +158,7 @@ class HomeShellWidget extends StatelessWidget {
                     return MultiProvider(
                       providers: [
                         Provider(
+                          lazy: false,
                           create: (context) => DocumentsCubit(
                             context.read(),
                             context.read(),

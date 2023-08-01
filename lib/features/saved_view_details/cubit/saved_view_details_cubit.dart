@@ -29,6 +29,7 @@ class SavedViewDetailsCubit extends Cubit<SavedViewDetailsState>
     this._labelRepository,
     this._userState, {
     required this.savedView,
+    int initialCount = 25,
   }) : super(
           SavedViewDetailsState(
             correspondents: _labelRepository.state.correspondents,
@@ -56,7 +57,12 @@ class SavedViewDetailsCubit extends Cubit<SavedViewDetailsState>
         }
       },
     );
-    updateFilter(filter: savedView.toDocumentFilter());
+    updateFilter(
+      filter: savedView.toDocumentFilter().copyWith(
+            page: 1,
+            pageSize: initialCount,
+          ),
+    );
   }
 
   void setViewType(ViewType viewType) {

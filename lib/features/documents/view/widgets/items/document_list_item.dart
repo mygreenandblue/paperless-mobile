@@ -11,8 +11,10 @@ import 'package:provider/provider.dart';
 class DocumentListItem extends DocumentItem {
   static const _a4AspectRatio = 1 / 1.4142;
 
+  final Color? backgroundColor;
   const DocumentListItem({
     super.key,
+    this.backgroundColor,
     required super.document,
     required super.isSelected,
     required super.isSelectionActive,
@@ -31,6 +33,7 @@ class DocumentListItem extends DocumentItem {
     final labels = context.watch<LabelRepository>().state;
     return Material(
       child: ListTile(
+        tileColor: backgroundColor,
         dense: true,
         selected: isSelected,
         onTap: () => _onTap(),

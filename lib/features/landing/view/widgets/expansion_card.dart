@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 
 class ExpansionCard extends StatelessWidget {
   final Widget title;
@@ -10,7 +9,7 @@ class ExpansionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       child: Theme(
         data: Theme.of(context).copyWith(
           dividerColor: Colors.transparent,
@@ -23,6 +22,7 @@ class ExpansionCard extends StatelessWidget {
           ),
         ),
         child: ExpansionTile(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           initiallyExpanded: true,
           title: title,
           children: [content],
