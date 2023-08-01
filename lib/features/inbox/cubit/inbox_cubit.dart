@@ -61,7 +61,6 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> initialize() async {
     await refreshItemsInInboxCount(false);
     await loadInbox();
-    super.initialize();
   }
 
   Future<void> refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {

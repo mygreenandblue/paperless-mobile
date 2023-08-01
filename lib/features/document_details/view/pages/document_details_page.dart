@@ -341,13 +341,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     document: state.document,
                     enabled: isConnected,
                   ),
-                  // //TODO: Enable again, need new pdf viewer package...
-                  // IconButton(
-                  //   tooltip: S.of(context)!.previewTooltip,
-                  //   icon: const Icon(Icons.visibility),
-                  //   onPressed:
-                  //       (isConnected) ? () => _onOpen(state.document) : null,
-                  // ).paddedOnly(right: 4.0),
                   IconButton(
                     tooltip: S.of(context)!.openInSystemViewer,
                     icon: const Icon(Icons.open_in_new),
@@ -355,7 +348,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   ).paddedOnly(right: 4.0),
                   DocumentShareButton(document: state.document),
                   IconButton(
-                    tooltip: S.of(context)!.print, //TODO: INTL
+                    tooltip: S.of(context)!.print,
                     onPressed: () =>
                         context.read<DocumentDetailsCubit>().printDocument(),
                     icon: const Icon(Icons.print),

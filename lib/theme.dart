@@ -8,6 +8,12 @@ const _defaultListTileTheme = ListTileThemeData(
   tileColor: Colors.transparent,
 );
 
+final _defaultCardTheme = CardTheme(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+);
+
 final _defaultInputDecorationTheme = InputDecorationTheme(
   border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(16),
@@ -40,6 +46,7 @@ ThemeData buildTheme({
     colorScheme: colorScheme.harmonized(),
     useMaterial3: true,
   ).copyWith(
+    cardTheme: _defaultCardTheme,
     inputDecorationTheme: _defaultInputDecorationTheme,
     listTileTheme: _defaultListTileTheme,
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

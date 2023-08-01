@@ -214,6 +214,10 @@ class _InboxPageState extends State<InboxPage>
   }
 
   Future<bool> _onItemDismissed(DocumentModel doc) async {
+    if (!context.read<LocalUserAccount>().paperlessUser.canEditDocuments) {
+      showSnackBar(context, S.of(context)!.missingPermissions);
+      return false;
+    }
     try {
       final removedTags = await context.read<InboxCubit>().removeFromInbox(doc);
       showSnackBar(

@@ -837,7 +837,7 @@
   "@clearCache": {
     "description": "Title of the clear cache setting"
   },
-  "freeBytes": "{bytes} freigeben",
+  "freeBytes": "{byteString} freigeben",
   "@freeBytes": {
     "description": "Text shown for clear storage settings"
   },
@@ -860,5 +860,9 @@
   "loginRequiredPermissionsHint": "Die Verwendung von Paperless Mobile erfordert seit paperless-ngx 1.14.0 und höher ein Mindestmaß an Benutzerberechtigungen. Stelle deshalb bitte sicher, dass der anzumeldende Benutzer die Berechtigung hat, andere Benutzer (User → View) und die Einstellungen (UISettings → View) einzusehen. Falls du nicht über diese Berechtigungen verfügst, wende dich bitte an einen Administrator deines paperless-ngx Servers.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
+  },
+  "missingPermissions": "Sie besitzen nicht die benötigten Berechtigungen, um diese Aktion durchzuführen.",
+  "@missingPermissions": {
+    "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   }
 }

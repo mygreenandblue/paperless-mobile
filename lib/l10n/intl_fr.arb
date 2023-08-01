@@ -812,53 +812,57 @@
   "@goToLogin": {
     "description": "Label of the button shown on the login page to skip logging in to existing accounts and navigate user to login page"
   },
-  "export": "Export",
+  "export": "Exporter",
   "@export": {
     "description": "Label for button that exports scanned images to pdf (before upload)"
   },
-  "invalidFilenameCharacter": "Invalid character(s) found in filename: {characters}",
+  "invalidFilenameCharacter": "Caractère(s) invalide(s) trouvé dans le nom du fichier : {characters}",
   "@invalidFilenameCharacter": {
     "description": "For validating filename in export dialogue"
   },
-  "exportScansToPdf": "Export scans to PDF",
+  "exportScansToPdf": "Exporter les scans en PDF",
   "@exportScansToPdf": {
     "description": "title of the alert dialog when exporting scans to pdf"
   },
-  "allScansWillBeMerged": "All scans will be merged into a single PDF file.",
-  "behavior": "Behavior",
+  "allScansWillBeMerged": "Tous les scans seront fusionnés en un seul fichier PDF.",
+  "behavior": "Comportement",
   "@behavior": {
     "description": "Title of the settings concerning app beahvior"
   },
-  "theme": "Theme",
+  "theme": "Thème",
   "@theme": {
     "description": "Title of the theme mode setting"
   },
-  "clearCache": "Clear cache",
+  "clearCache": "Vider le cache",
   "@clearCache": {
     "description": "Title of the clear cache setting"
   },
-  "freeBytes": "Free {bytes}",
+  "freeBytes": "{byteString} libres",
   "@freeBytes": {
     "description": "Text shown for clear storage settings"
   },
-  "calculatingDots": "Calculating...",
+  "calculatingDots": "Calcul en cours...",
   "@calculatingDots": {
     "description": "Text shown when the byte size is still being calculated"
   },
-  "freedDiskSpace": "Successfully freed {bytes} of disk space.",
+  "freedDiskSpace": "{bytes} d'espace disque libérés avec succès.",
   "@freedDiskSpace": {
     "description": "Message shown after clearing storage"
   },
-  "uploadScansAsPdf": "Upload scans as PDF",
+  "uploadScansAsPdf": "Charger les scans au format PDF",
   "@uploadScansAsPdf": {
     "description": "Title of the setting which toggles whether scans are always uploaded as pdf"
   },
-  "convertSinglePageScanToPdf": "Always convert single page scans to PDF before uploading",
+  "convertSinglePageScanToPdf": "Toujours convertir les scans d'une page en PDF avant de charger le document",
   "@convertSinglePageScanToPdf": {
     "description": "description of the upload scans as pdf setting"
   },
-  "loginRequiredPermissionsHint": "Using Paperless Mobile requires a minimum set of user permissions since paperless-ngx 1.14.0 and higher. Therefore, please make sure that the user to be logged in has the permission to view other users (User → View) and the settings (UISettings → View). If you do not have these permissions, please contact an administrator of your paperless-ngx server.",
+  "loginRequiredPermissionsHint": "L'utilisation de Paperless Mobile nécessite un ensemble minimal d'autorisations utilisateur depuis la version 1.14.0 et supérieure. Par conséquent, assurez-vous que l'utilisateur connecté a la permission de voir les autres utilisateurs (Utilisateur → Affichage) et les paramètres (UISettings → Affichage). Si vous ne disposez pas de ces autorisations, veuillez contacter un administrateur de votre serveur paperless-ngx.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
+  },
+  "missingPermissions": "You do not have the necessary permissions to perform this action.",
+  "@missingPermissions": {
+    "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   }
 }

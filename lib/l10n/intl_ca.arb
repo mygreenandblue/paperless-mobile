@@ -837,7 +837,7 @@
   "@clearCache": {
     "description": "Title of the clear cache setting"
   },
-  "freeBytes": "Lliure {bytes}",
+  "freeBytes": "Lliure {byteString}",
   "@freeBytes": {
     "description": "Text shown for clear storage settings"
   },
@@ -857,8 +857,12 @@
   "@convertSinglePageScanToPdf": {
     "description": "description of the upload scans as pdf setting"
   },
-  "loginRequiredPermissionsHint": "Using Paperless Mobile requires a minimum set of user permissions since paperless-ngx 1.14.0 and higher. Therefore, please make sure that the user to be logged in has the permission to view other users (User → View) and the settings (UISettings → View). If you do not have these permissions, please contact an administrator of your paperless-ngx server.",
+  "loginRequiredPermissionsHint": "L'ús de Paperless Mobile requereix un conjunt mínim de permisos d'usuari des de paperless-ngx 1.14.0 i posterior. Per tant, assegureu-vos que l'usuari que voleu iniciar sessió té el permís per veure altres usuaris (Usuari → Visualització) i la configuració (UISettings → Visualització). Si no teniu aquests permisos, poseu-vos en contacte amb un administrador del vostre servidor paperless-ngx.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
+  },
+  "missingPermissions": "You do not have the necessary permissions to perform this action.",
+  "@missingPermissions": {
+    "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   }
 }

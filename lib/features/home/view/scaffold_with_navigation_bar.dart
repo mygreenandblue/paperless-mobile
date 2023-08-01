@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -46,24 +45,21 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
               if (widget.authenticatedUser.canViewDocuments) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(context,
-                    "You do not have the required permissions to access this page.");
+                showSnackBar(context, S.of(context)!.missingPermissions);
               }
               break;
             case _scannerIndex:
               if (widget.authenticatedUser.canCreateDocuments) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(context,
-                    "You do not have the required permissions to access this page.");
+                showSnackBar(context, S.of(context)!.missingPermissions);
               }
               break;
             case _labelsIndex:
               if (widget.authenticatedUser.canViewAnyLabel) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(context,
-                    "You do not have the required permissions to access this page.");
+                showSnackBar(context, S.of(context)!.missingPermissions);
               }
               break;
             case _inboxIndex:
@@ -71,8 +67,7 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
                   widget.authenticatedUser.canViewTags) {
                 widget.navigationShell.goBranch(index);
               } else {
-                showSnackBar(context,
-                    "You do not have the required permissions to access this page.");
+                showSnackBar(context, S.of(context)!.missingPermissions);
               }
               break;
             default:

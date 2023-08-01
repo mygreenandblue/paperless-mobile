@@ -81,7 +81,7 @@
   "@createdAt": {},
   "documentSuccessfullyDeleted": "Dokument byl úspěšně smazán.",
   "@documentSuccessfullyDeleted": {},
-  "assignAsn": "Assign ASN",
+  "assignAsn": "Přiřadit ASČ",
   "@assignAsn": {},
   "deleteDocumentTooltip": "Smazat",
   "@deleteDocumentTooltip": {
@@ -129,13 +129,13 @@
   },
   "documentType": "Typ dokumentu",
   "@documentType": {},
-  "archivedPdf": "Archived (pdf)",
+  "archivedPdf": "Archivováno (pdf)",
   "@archivedPdf": {
     "description": "Option to chose when downloading a document"
   },
   "chooseFiletype": "Choose filetype",
   "@chooseFiletype": {},
-  "original": "Original",
+  "original": "Originál",
   "@original": {
     "description": "Option to chose when downloading a document"
   },
@@ -580,7 +580,7 @@
   "@done": {},
   "next": "Další",
   "@next": {},
-  "couldNotAccessReceivedFile": "Could not access the received file. Please try to open the app before sharing.",
+  "couldNotAccessReceivedFile": "Přístup k obdrženému souboru zamítnut. Než budeš sdílet, zkus nejdříve otevřít aplikaci.",
   "@couldNotAccessReceivedFile": {},
   "newView": "Nový náhled",
   "@newView": {},
@@ -666,44 +666,44 @@
   "@verifyYourIdentity": {},
   "verifyIdentity": "Ověřit identitu",
   "@verifyIdentity": {},
-  "detailed": "Detailed",
+  "detailed": "Detailně",
   "@detailed": {},
-  "grid": "Grid",
+  "grid": "Mřížka",
   "@grid": {},
-  "list": "List",
+  "list": "Seznam",
   "@list": {},
-  "remove": "Remove",
-  "removeQueryFromSearchHistory": "Remove query from search history?",
+  "remove": "Odstranit",
+  "removeQueryFromSearchHistory": "Odstranit dotaz z historie vyhledávání?",
   "dynamicColorScheme": "Dynamicky",
   "@dynamicColorScheme": {},
   "classicColorScheme": "Klasicky",
   "@classicColorScheme": {},
-  "notificationDownloadComplete": "Download complete",
+  "notificationDownloadComplete": "Stahování dokončeno",
   "@notificationDownloadComplete": {
     "description": "Notification title when a download has been completed."
   },
-  "notificationDownloadingDocument": "Downloading document",
+  "notificationDownloadingDocument": "Stahování dokumentu",
   "@notificationDownloadingDocument": {
     "description": "Notification title shown when a document download is pending"
   },
-  "archiveSerialNumberUpdated": "Archive Serial Number updated.",
+  "archiveSerialNumberUpdated": "Archivní sériové číslo aktualizováno.",
   "@archiveSerialNumberUpdated": {
     "description": "Message shown when the ASN has been updated."
   },
-  "donateCoffee": "Buy me a coffee",
+  "donateCoffee": "Kupte mi kávu",
   "@donateCoffee": {
     "description": "Label displayed in the app drawer"
   },
-  "thisFieldIsRequired": "This field is required!",
+  "thisFieldIsRequired": "Toto pole je povinné!",
   "@thisFieldIsRequired": {
     "description": "Message shown below the form field when a required field has not been filled out."
   },
-  "confirm": "Confirm",
-  "confirmAction": "Confirm action",
+  "confirm": "Potvrdit",
+  "confirmAction": "Potvrdit akci",
   "@confirmAction": {
     "description": "Typically used as a title to confirm a previously selected action"
   },
-  "areYouSureYouWantToContinue": "Are you sure you want to continue?",
+  "areYouSureYouWantToContinue": "Opravdu chcete pokračovat?",
   "bulkEditTagsAddMessage": "{count, plural, one{This operation will add the tags {tags} to the selected document.} other{This operation will add the tags {tags} to {count} selected documents.}}",
   "@bulkEditTagsAddMessage": {
     "description": "Message of the confirmation dialog when bulk adding tags."
@@ -722,39 +722,39 @@
   "bulkEditCorrespondentRemoveMessage": "{count, plural, one{This operation will remove the correspondent from the selected document.} other{This operation will remove the correspondent from {count} selected documents.}}",
   "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{This operation will remove the document type from the selected document.} other{This operation will remove the document type from {count} selected documents.}}",
   "bulkEditStoragePathRemoveMessage": "{count, plural, one{This operation will remove the storage path from the selected document.} other{This operation will remove the storage path from {count} selected documents.}}",
-  "anyTag": "Any",
+  "anyTag": "Jakékoliv",
   "@anyTag": {
     "description": "Label shown when any tag should be filtered"
   },
-  "allTags": "All",
+  "allTags": "Všechny",
   "@allTags": {
     "description": "Label shown when a document has to be assigned to all selected tags"
   },
-  "switchingAccountsPleaseWait": "Switching accounts. Please wait...",
+  "switchingAccountsPleaseWait": "Přepínání účtů. Počkejte prosím...",
   "@switchingAccountsPleaseWait": {
     "description": "Message shown while switching accounts is in progress."
   },
-  "testConnection": "Test connection",
+  "testConnection": "Ověřit připojení",
   "@testConnection": {
     "description": "Button label shown on login page. Allows user to test whether the server is reachable or not."
   },
-  "accounts": "Accounts",
+  "accounts": "Účty",
   "@accounts": {
     "description": "Title of the account management dialog"
   },
-  "addAccount": "Add account",
+  "addAccount": "Přidat účet",
   "@addAccount": {
     "description": "Label of add account action"
   },
-  "switchAccount": "Switch",
+  "switchAccount": "Přepnout",
   "@switchAccount": {
     "description": "Label for switch account action"
   },
-  "logout": "Logout",
+  "logout": "Odhlásit",
   "@logout": {
     "description": "Generic Logout label"
   },
-  "switchAccountTitle": "Switch account",
+  "switchAccountTitle": "Přepnout účet",
   "@switchAccountTitle": {
     "description": "Title of the dialog shown after adding an account, asking the user whether to switch to the newly added account or not."
   },
@@ -837,7 +837,7 @@
   "@clearCache": {
     "description": "Title of the clear cache setting"
   },
-  "freeBytes": "Free {bytes}",
+  "freeBytes": "Free {byteString}",
   "@freeBytes": {
     "description": "Text shown for clear storage settings"
   },
@@ -860,5 +860,9 @@
   "loginRequiredPermissionsHint": "Using Paperless Mobile requires a minimum set of user permissions since paperless-ngx 1.14.0 and higher. Therefore, please make sure that the user to be logged in has the permission to view other users (User → View) and the settings (UISettings → View). If you do not have these permissions, please contact an administrator of your paperless-ngx server.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
+  },
+  "missingPermissions": "You do not have the necessary permissions to perform this action.",
+  "@missingPermissions": {
+    "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   }
 }

@@ -257,7 +257,10 @@ class _GoRouterShellState extends State<GoRouterShell> {
           //     ),
           //   ],
           // ),
-          StatefulShellRoute.indexedStack(
+          StatefulShellRoute(
+            navigatorContainerBuilder: (context, navigationShell, children) {
+              return children[navigationShell.currentIndex];
+            },
             builder: const ScaffoldShellRoute().builder,
             branches: [
               StatefulShellBranch(
