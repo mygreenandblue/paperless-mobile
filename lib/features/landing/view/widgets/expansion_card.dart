@@ -4,7 +4,14 @@ class ExpansionCard extends StatelessWidget {
   final Widget title;
   final Widget content;
 
-  const ExpansionCard({super.key, required this.title, required this.content});
+  final bool initiallyExpanded;
+
+  const ExpansionCard({
+    super.key,
+    required this.title,
+    required this.content,
+    this.initiallyExpanded = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +30,7 @@ class ExpansionCard extends StatelessWidget {
         ),
         child: ExpansionTile(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          initiallyExpanded: true,
+          initiallyExpanded: initiallyExpanded,
           title: title,
           children: [content],
         ),

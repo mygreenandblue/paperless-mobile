@@ -75,7 +75,7 @@ class _MimeTypesPieChartState extends State<MimeTypesPieChart> {
           ),
         ),
         Wrap(
-          alignment: WrapAlignment.start,
+          alignment: WrapAlignment.spaceAround,
           spacing: 8,
           runSpacing: 8,
           children: [
@@ -126,25 +126,18 @@ class _MimeTypesPieChartState extends State<MimeTypesPieChart> {
     for (int i = 0; i < widget.statistics.fileTypeCounts.length; i++) {
       final type = widget.statistics.fileTypeCounts[i];
       final isTouched = i == _touchedIndex;
-      final fontSize = isTouched ? 24.0 : 16.0;
+      final fontSize = isTouched ? 18.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
-      const shadows = [
-        Shadow(color: Colors.black, blurRadius: 2),
-      ];
-      final color = colorShades[i % colorShades.length];
-      final textColor =
-          color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+      final percentage = type.count / widget.statistics.documentsTotal * 100;
       yield PieChartSectionData(
         color: colorShades[i % colorShades.length],
         value: type.count.toDouble(),
-        title: ((type.count / widget.statistics.documentsTotal) * 100)
-                .toStringAsFixed(1) +
-            "%",
+        title: percentage.toStringAsFixed(1) + "%",
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: textColor,
+          color: Colors.black,
         ),
       );
     }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -9,12 +8,10 @@ import 'package:paperless_mobile/features/document_search/view/sliver_search_bar
 import 'package:paperless_mobile/features/landing/view/widgets/expansion_card.dart';
 import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view_details/view/saved_view_details_preview.dart';
+import 'package:paperless_mobile/features/saved_view_details/view/saved_view_preview.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -45,7 +42,7 @@ class _LandingPageState extends State<LandingPage> {
             slivers: [
               SliverToBoxAdapter(
                 child: Text(
-                  "Welcome to Paperless Mobile, ${currentUser.fullName ?? currentUser.username}!",
+                  "Welcome, ${currentUser.fullName ?? currentUser.username}!",
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -54,17 +51,34 @@ class _LandingPageState extends State<LandingPage> {
                 ).padded(24),
               ),
               SliverToBoxAdapter(child: _buildStatisticsCard(context)),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    "Saved Views",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ),
               BlocBuilder<SavedViewCubit, SavedViewState>(
                 builder: (context, state) {
                   return state.maybeWhen(
                     loaded: (savedViews) {
+                      final dashboardViews = savedViews.values
+                          .where((element) => element.showOnDashboard)
+                          .toList();
+                      if (dashboardViews.isEmpty) {
+                        return const SliverToBoxAdapter(
+                          child: Text("No views"),
+                        );
+                      }
                       return SliverList.builder(
                         itemBuilder: (context, index) {
-                          return SavedViewDetailsPreview(
-                            savedView: savedViews.values.elementAt(index),
+                          return SavedViewPreview(
+                            savedView: dashboardViews.elementAt(index),
                           );
                         },
-                        itemCount: savedViews.length,
+                        itemCount: dashboardViews.length,
                       );
                     },
                     orElse: () => const SliverToBoxAdapter(
@@ -83,6 +97,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _buildStatisticsCard(BuildContext context) {
+    final currentUser = context.read<LocalUserAccount>().paperlessUser;
     return FutureBuilder<PaperlessServerStatisticsModel>(
       future: context.read<PaperlessServerStatsApi>().getServerStatistics(),
       builder: (context, snapshot) {
@@ -118,19 +133,13 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: Text("Documents in inbox:"),
-                  onTap: () {
-                    InboxRoute().go(context);
-                  },
-                  trailing: Chip(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    labelPadding: EdgeInsets.symmetric(horizontal: 4),
-                    label: Text(
-                      stats.documentsInInbox.toString(),
-                    ),
+                  title: const Text("Documents in inbox:"),
+                  onTap: currentUser.canViewTags && currentUser.canViewDocuments
+                      ? () => InboxRoute().go(context)
+                      : null,
+                  trailing: Text(
+                    stats.documentsInInbox.toString(),
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),
@@ -139,16 +148,16 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: Text("Total documents:"),
+                  title: const Text("Total documents:"),
                   onTap: () {
                     DocumentsRoute().go(context);
                   },
                   trailing: Chip(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 4,
                       vertical: 2,
                     ),
-                    labelPadding: EdgeInsets.symmetric(horizontal: 4),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
                     label: Text(
                       stats.documentsTotal.toString(),
                     ),
@@ -160,13 +169,13 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: Text("Total characters:"),
+                  title: const Text("Total characters:"),
                   trailing: Chip(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 4,
                       vertical: 2,
                     ),
-                    labelPadding: EdgeInsets.symmetric(horizontal: 4),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
                     label: Text(
                       stats.totalChars.toString(),
                     ),
