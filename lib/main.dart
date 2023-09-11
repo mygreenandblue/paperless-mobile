@@ -193,11 +193,6 @@ class GoRouterShell extends StatefulWidget {
 
 class _GoRouterShellState extends State<GoRouterShell> {
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
   void initState() {
     super.initState();
     FlutterNativeSplash.remove();

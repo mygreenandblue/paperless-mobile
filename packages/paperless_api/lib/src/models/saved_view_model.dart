@@ -50,11 +50,32 @@ class SavedView with EquatableMixin {
 
   Map<String, dynamic> toJson() => _$SavedViewToJson(this);
 
+  SavedView copyWith({
+    int? id,
+    String? name,
+    bool? showOnDashboard,
+    bool? showInSidebar,
+    SortField? sortField,
+    bool? sortReverse,
+    List<FilterRule>? filterRules,
+  }) {
+    return SavedView(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      showOnDashboard: showOnDashboard ?? this.showOnDashboard,
+      showInSidebar: showInSidebar ?? this.showInSidebar,
+      sortField: sortField ?? this.sortField,
+      sortReverse: sortReverse ?? this.sortReverse,
+      filterRules: filterRules ?? this.filterRules,
+    );
+  }
+
   DocumentFilter toDocumentFilter() {
     return filterRules.fold(
       DocumentFilter(
         sortOrder: sortReverse ? SortOrder.descending : SortOrder.ascending,
         sortField: sortField,
+        selectedView: id,
       ),
       (filter, filterRule) => filterRule.applyToFilter(filter),
     );

@@ -6,4 +6,7 @@ abstract class PaperlessSavedViewsApi {
 
   Future<SavedView> save(SavedView view);
   Future<int> delete(SavedView view);
+
+  /// Since API V3
+  Future<SavedView> update(SavedView view);
 }

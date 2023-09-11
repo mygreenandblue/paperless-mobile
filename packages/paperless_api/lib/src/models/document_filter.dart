@@ -63,6 +63,9 @@ class DocumentFilter extends Equatable {
   @HiveField(13)
   final int? moreLike;
 
+  @HiveField(14)
+  final int? selectedView;
+
   const DocumentFilter({
     this.documentType = const IdQueryParameter.unset(),
     this.correspondent = const IdQueryParameter.unset(),
@@ -78,6 +81,7 @@ class DocumentFilter extends Equatable {
     this.created = const UnsetDateRangeQuery(),
     this.modified = const UnsetDateRangeQuery(),
     this.moreLike,
+    this.selectedView,
   });
 
   bool get forceExtendedQuery {
@@ -143,6 +147,7 @@ class DocumentFilter extends Equatable {
     DateRangeQuery? modified,
     TextQuery? query,
     int? Function()? moreLike,
+    int? Function()? selectedView,
   }) {
     final newFilter = DocumentFilter(
       pageSize: pageSize ?? this.pageSize,
@@ -159,6 +164,7 @@ class DocumentFilter extends Equatable {
       created: created ?? this.created,
       modified: modified ?? this.modified,
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
+      selectedView: selectedView != null ? selectedView.call() : this.selectedView,
     );
     if (query?.queryType != QueryType.extended &&
         newFilter.forceExtendedQuery) {
@@ -244,6 +250,8 @@ class DocumentFilter extends Equatable {
         created,
         modified,
         query,
+        moreLike,
+        selectedView,
       ];
 
   factory DocumentFilter.fromJson(Map<String, dynamic> json) =>

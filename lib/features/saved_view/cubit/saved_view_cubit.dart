@@ -35,6 +35,10 @@ class SavedViewCubit extends Cubit<SavedViewState> {
     return _savedViewRepository.delete(view);
   }
 
+  Future<SavedView> update(SavedView view) async {
+    return await _savedViewRepository.update(view);
+  }
+
   Future<void> reload() async {
     final views = await _savedViewRepository.findAll();
     final values = {for (var element in views) element.id!: element};

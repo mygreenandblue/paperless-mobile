@@ -35,6 +35,18 @@ class SavedViewRepository
     return created;
   }
 
+  Future<SavedView> update(SavedView object) async {
+    await _initialized.future;
+    final updated = await _api.update(object);
+    final updatedState = {...state.savedViews}..update(
+        updated.id!,
+        (_) => updated,
+        ifAbsent: () => updated,
+      );
+    emit(SavedViewRepositoryState.loaded(savedViews: updatedState));
+    return updated;
+  }
+
   Future<int> delete(SavedView view) async {
     await _initialized.future;
     await _api.delete(view);

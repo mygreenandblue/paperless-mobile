@@ -5,15 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
-import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_view_changed_dialog.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_views_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/document_selection_sliver_app_bar.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
@@ -24,6 +22,7 @@ import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class DocumentFilterIntent {
   final DocumentFilter? filter;
@@ -46,11 +45,28 @@ class _DocumentsPageState extends State<DocumentsPage>
     with SingleTickerProviderStateMixin {
   final SliverOverlapAbsorberHandle searchBarHandle =
       SliverOverlapAbsorberHandle();
-  final SliverOverlapAbsorberHandle tabBarHandle =
+  final SliverOverlapAbsorberHandle savedViewsHandle =
       SliverOverlapAbsorberHandle();
   late final TabController _tabController;
 
   int _currentTab = 0;
+
+  bool get hasSelectedViewChanged {
+    final cubit = context.watch<DocumentsCubit>();
+    final savedViewCubit = context.watch<SavedViewCubit>();
+    final activeView = savedViewCubit.state.maybeMap(
+      loaded: (state) {
+        if (cubit.state.filter.selectedView != null) {
+          return state.savedViews[cubit.state.filter.selectedView!];
+        }
+        return null;
+      },
+      orElse: () => null,
+    );
+    final viewHasChanged = activeView != null &&
+        activeView.toDocumentFilter() != cubit.state.filter;
+    return viewHasChanged;
+  }
 
   @override
   void initState() {
@@ -139,7 +155,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                                   .colorScheme
                                   .onPrimaryContainer,
                               onPressed: () {
-                                context.read<DocumentsCubit>().updateFilter();
+                                _onResetFilter();
                               },
                               child: Icon(
                                 Icons.refresh,
@@ -195,107 +211,148 @@ class _DocumentsPageState extends State<DocumentsPage>
                   }
                   return true;
                 },
-                child: NestedScrollView(
-                  floatHeaderSlivers: true,
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverOverlapAbsorber(
-                      handle: searchBarHandle,
-                      sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
-                        builder: (context, state) {
-                          if (state.selection.isEmpty) {
-                            return SliverSearchBar(
-                              floating: true,
-                              titleText: S.of(context)!.documents,
-                            );
-                          } else {
-                            return DocumentSelectionSliverAppBar(
-                              state: state,
-                            );
+                child: Stack(
+                  children: [
+                    NestedScrollView(
+                      floatHeaderSlivers: true,
+                      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                        SliverOverlapAbsorber(
+                          handle: searchBarHandle,
+                          sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
+                            builder: (context, state) {
+                              if (state.selection.isEmpty) {
+                                return SliverSearchBar(
+                                  floating: true,
+                                  titleText: S.of(context)!.documents,
+                                );
+                              } else {
+                                return DocumentSelectionSliverAppBar(
+                                  state: state,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        SliverOverlapAbsorber(
+                          handle: savedViewsHandle,
+                          sliver: SliverPinnedHeader(
+                            child: _buildViewActions(),
+                          ),
+                        ),
+                        // SliverOverlapAbsorber(
+                        //   handle: tabBarHandle,
+                        //   sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
+                        //     builder: (context, state) {
+                        //       if (state.selection.isNotEmpty) {
+                        //         return const SliverToBoxAdapter(
+                        //           child: SizedBox.shrink(),
+                        //         );
+                        //       }
+                        //       return SliverPersistentHeader(
+                        //         pinned: true,
+                        //         delegate:
+                        //             CustomizableSliverPersistentHeaderDelegate(
+                        //           minExtent: kTextTabBarHeight,
+                        //           maxExtent: kTextTabBarHeight,
+                        //           child: ColoredTabBar(
+                        //             tabBar: TabBar(
+                        //               controller: _tabController,
+                        //               tabs: [
+                        //                 Tab(text: S.of(context)!.documents),
+                        //                 if (context
+                        //                     .watch<LocalUserAccount>()
+                        //                     .paperlessUser
+                        //                     .canViewSavedViews)
+                        // Tab(text: S.of(context)!.views),
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       );
+                        //     },
+                        //   ),
+                        // ),
+                      ],
+                      body: NotificationListener<ScrollNotification>(
+                        onNotification: (notification) {
+                          final metrics = notification.metrics;
+                          if (metrics.maxScrollExtent == 0) {
+                            return true;
                           }
+                          final desiredTab =
+                              (metrics.pixels / metrics.maxScrollExtent)
+                                  .round();
+                          if (metrics.axis == Axis.horizontal &&
+                              _currentTab != desiredTab) {
+                            setState(() => _currentTab = desiredTab);
+                          }
+                          return false;
                         },
+                        child: TabBarView(
+                          controller: _tabController,
+                          physics: context
+                                  .watch<DocumentsCubit>()
+                                  .state
+                                  .selection
+                                  .isNotEmpty
+                              ? const NeverScrollableScrollPhysics()
+                              : null,
+                          children: [
+                            Builder(
+                              builder: (context) {
+                                return _buildDocumentsTab(
+                                  connectivityState,
+                                  context,
+                                );
+                              },
+                            ),
+                            if (context
+                                .watch<LocalUserAccount>()
+                                .paperlessUser
+                                .canViewSavedViews)
+                              Builder(
+                                builder: (context) {
+                                  return _buildSavedViewsTab(
+                                    connectivityState,
+                                    context,
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                    SliverOverlapAbsorber(
-                      handle: tabBarHandle,
-                      sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
-                        builder: (context, state) {
-                          if (state.selection.isNotEmpty) {
-                            return const SliverToBoxAdapter(
-                              child: SizedBox.shrink(),
-                            );
-                          }
-                          return SliverPersistentHeader(
-                            pinned: true,
-                            delegate:
-                                CustomizableSliverPersistentHeaderDelegate(
-                              minExtent: kTextTabBarHeight,
-                              maxExtent: kTextTabBarHeight,
-                              child: ColoredTabBar(
-                                tabBar: TabBar(
-                                  controller: _tabController,
-                                  tabs: [
-                                    Tab(text: S.of(context)!.documents),
-                                    if (context
-                                        .watch<LocalUserAccount>()
-                                        .paperlessUser
-                                        .canViewSavedViews)
-                                      Tab(text: S.of(context)!.views),
-                                  ],
+                    AnimatedOpacity(
+                      opacity: hasSelectedViewChanged ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 24),
+                          child: Material(
+                            borderRadius: BorderRadius.circular(24),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceVariant
+                                .withOpacity(0.9),
+                            child: InkWell(
+                              customBorder: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              onTap: () {},
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                child: Text(
+                                  "Update selected view",
+                                  style: Theme.of(context).textTheme.labelLarge,
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                  body: NotificationListener<ScrollNotification>(
-                    onNotification: (notification) {
-                      final metrics = notification.metrics;
-                      if (metrics.maxScrollExtent == 0) {
-                        return true;
-                      }
-                      final desiredTab =
-                          (metrics.pixels / metrics.maxScrollExtent).round();
-                      if (metrics.axis == Axis.horizontal &&
-                          _currentTab != desiredTab) {
-                        setState(() => _currentTab = desiredTab);
-                      }
-                      return false;
-                    },
-                    child: TabBarView(
-                      controller: _tabController,
-                      physics: context
-                              .watch<DocumentsCubit>()
-                              .state
-                              .selection
-                              .isNotEmpty
-                          ? const NeverScrollableScrollPhysics()
-                          : null,
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            return _buildDocumentsTab(
-                              connectivityState,
-                              context,
-                            );
-                          },
-                        ),
-                        if (context
-                            .watch<LocalUserAccount>()
-                            .paperlessUser
-                            .canViewSavedViews)
-                          Builder(
-                            builder: (context) {
-                              return _buildSavedViewsTab(
-                                connectivityState,
-                                context,
-                              );
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -315,12 +372,12 @@ class _DocumentsPageState extends State<DocumentsPage>
       notificationPredicate: (_) => connectivityState.isConnected,
       child: CustomScrollView(
         key: const PageStorageKey<String>("savedViews"),
-        slivers: <Widget>[
+        slivers: [
           SliverOverlapInjector(
             handle: searchBarHandle,
           ),
           SliverOverlapInjector(
-            handle: tabBarHandle,
+            handle: savedViewsHandle,
           ),
           const SavedViewList(),
         ],
@@ -370,15 +427,40 @@ class _DocumentsPageState extends State<DocumentsPage>
           key: const PageStorageKey<String>("documents"),
           slivers: <Widget>[
             SliverOverlapInjector(handle: searchBarHandle),
-            SliverOverlapInjector(handle: tabBarHandle),
-            _buildViewActions(),
+            SliverOverlapInjector(handle: savedViewsHandle),
+            BlocBuilder<DocumentsCubit, DocumentsState>(
+              buildWhen: (previous, current) =>
+                  previous.filter != current.filter,
+              builder: (context, state) {
+                return SliverToBoxAdapter(
+                  child: SavedViewsWidget(
+                    onViewSelected: (view) {
+                      final cubit = context.read<DocumentsCubit>();
+                      if (state.filter.selectedView == view.id) {
+                        _onResetFilter();
+                      } else {
+                        cubit.updateFilter(
+                          filter: view.toDocumentFilter(),
+                        );
+                      }
+                    },
+                    onUpdateView: (view) async {
+                      await context.read<SavedViewCubit>().update(view);
+                      showSnackBar(context,
+                          "Saved view successfully updated."); //TODO: INTL
+                    },
+                    filter: state.filter,
+                  ),
+                );
+              },
+            ),
             BlocBuilder<DocumentsCubit, DocumentsState>(
               builder: (context, state) {
                 if (state.hasLoaded && state.documents.isEmpty) {
                   return SliverToBoxAdapter(
                     child: DocumentsEmptyState(
                       state: state,
-                      onReset: context.read<DocumentsCubit>().resetFilter,
+                      onReset: _onResetFilter,
                     ),
                   );
                 }
@@ -413,10 +495,12 @@ class _DocumentsPageState extends State<DocumentsPage>
   }
 
   Widget _buildViewActions() {
-    return SliverToBoxAdapter(
-      child: BlocBuilder<DocumentsCubit, DocumentsState>(
-        builder: (context, state) {
-          return Row(
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        return Container(
+          padding: EdgeInsets.all(4),
+          color: Theme.of(context).colorScheme.background,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SortDocumentsButton(
@@ -427,21 +511,22 @@ class _DocumentsPageState extends State<DocumentsPage>
                 onChanged: context.read<DocumentsCubit>().setViewType,
               ),
             ],
-          );
-        },
-      ).paddedSymmetrically(horizontal: 8, vertical: 4),
+          ),
+        );
+      },
     );
   }
 
   void _onCreateSavedView(DocumentFilter filter) async {
-    final newView = await pushAddSavedViewRoute(context, filter: filter);
-    if (newView != null) {
-      try {
-        await context.read<SavedViewCubit>().add(newView);
-      } on PaperlessApiException catch (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
-      }
-    }
+    //TODO: Implement
+    // final newView = await pushAddSavedViewRoute(context, filter: filter);
+    // if (newView != null) {
+    //   try {
+    //     await context.read<SavedViewCubit>().add(newView);
+    //   } on PaperlessApiException catch (error, stackTrace) {
+    //     showErrorMessage(context, error, stackTrace);
+    //   }
+    // }
   }
 
   void _openDocumentFilter() async {
@@ -485,7 +570,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     if (filterIntent != null) {
       try {
         if (filterIntent.shouldReset) {
-          await context.read<DocumentsCubit>().resetFilter();
+          await _onResetFilter();
         } else {
           await context
               .read<DocumentsCubit>()
@@ -649,6 +734,42 @@ class _DocumentsPageState extends State<DocumentsPage>
       await context.read<SavedViewCubit>().reload();
     } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
+    }
+  }
+
+  Future<void> _onResetFilter() async {
+    final cubit = context.read<DocumentsCubit>();
+    final savedViewCubit = context.read<SavedViewCubit>();
+    final activeView = savedViewCubit.state.maybeMap(
+      loaded: (state) {
+        if (cubit.state.filter.selectedView != null) {
+          return state.savedViews[cubit.state.filter.selectedView!];
+        }
+        return null;
+      },
+      orElse: () => null,
+    );
+    final viewHasChanged = activeView != null &&
+        activeView.toDocumentFilter() != cubit.state.filter;
+    if (viewHasChanged) {
+      final discardChanges = await showDialog(
+        context: context,
+        builder: (context) => SavedViewChangedDialog(),
+      );
+      if (discardChanges == true) {
+        cubit.resetFilter();
+        // Reset
+      } else if (discardChanges == false) {
+        final newView = activeView.copyWith(
+          filterRules: FilterRule.fromFilter(cubit.state.filter),
+        );
+        final savedViewCubit2 = context.read<SavedViewCubit>();
+
+        await savedViewCubit2.update(newView);
+        showSnackBar(context, "Saved view successfully updated.");
+      }
+    } else {
+      cubit.resetFilter();
     }
   }
 }

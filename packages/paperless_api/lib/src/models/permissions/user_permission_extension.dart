@@ -87,4 +87,6 @@ extension UserPermissionExtension on UserModel {
       canViewDocumentTypes ||
       canViewTags ||
       canViewStoragePaths;
+
+  bool get canViewInbox => canViewTags && canViewDocuments;
 }

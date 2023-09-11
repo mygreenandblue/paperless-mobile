@@ -8,8 +8,12 @@ class PaperlessServerMessageException implements Exception {
 
   PaperlessServerMessageException(this.detail);
 
-  static bool canParse(Map<String, dynamic> json) {
-    return json.containsKey('detail') && json.length == 1;
+  static bool canParse(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return json.containsKey('detail') && json.length == 1;
+    } else {
+      return false;
+    }
   }
 
   factory PaperlessServerMessageException.fromJson(Map<String, dynamic> json) =>

@@ -54,5 +54,18 @@ enum ErrorCode {
   unsupportedFileFormat,
   missingClientCertificate,
   acknowledgeTasksError,
-  correspondentDeleteFailed, documentTypeDeleteFailed, tagDeleteFailed, correspondentUpdateFailed, documentTypeUpdateFailed, tagUpdateFailed, storagePathDeleteFailed, storagePathUpdateFailed, serverInformationLoadFailed, serverStatisticsLoadFailed, uiSettingsLoadFailed, loadTasksError, userNotFound;
+  correspondentDeleteFailed,
+  documentTypeDeleteFailed,
+  tagDeleteFailed,
+  correspondentUpdateFailed,
+  documentTypeUpdateFailed,
+  tagUpdateFailed,
+  storagePathDeleteFailed,
+  storagePathUpdateFailed,
+  serverInformationLoadFailed,
+  serverStatisticsLoadFailed,
+  uiSettingsLoadFailed,
+  loadTasksError,
+  userNotFound,
+  updateSavedViewError;
 }

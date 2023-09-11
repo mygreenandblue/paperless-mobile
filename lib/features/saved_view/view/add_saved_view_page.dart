@@ -1,25 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddSavedViewPage extends StatefulWidget {
-  final DocumentFilter currentFilter;
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
+  final DocumentFilter? initialFilter;
   const AddSavedViewPage({
     super.key,
-    required this.currentFilter,
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
+    this.initialFilter,
   });
 
   @override
@@ -81,21 +71,6 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
               ),
             ),
             const Divider(),
-            Text(
-              "Review filter",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ).padded(),
-            Flexible(
-              child: DocumentFilterForm(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                formKey: _filterFormKey,
-                initialFilter: widget.currentFilter,
-                correspondents: widget.correspondents,
-                documentTypes: widget.documentTypes,
-                storagePaths: widget.storagePaths,
-                tags: widget.tags,
-              ),
-            ),
           ],
         ),
       ),
@@ -104,19 +79,19 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
 
   void _onCreate(BuildContext context) {
     if (_savedViewFormKey.currentState?.saveAndValidate() ?? false) {
-      context.pop(
-        SavedView.fromDocumentFilter(
-          DocumentFilterForm.assembleFilter(
-            _filterFormKey,
-            widget.currentFilter,
-          ),
-          name: _savedViewFormKey.currentState?.value[fkName] as String,
-          showOnDashboard:
-              _savedViewFormKey.currentState?.value[fkShowOnDashboard] as bool,
-          showInSidebar:
-              _savedViewFormKey.currentState?.value[fkShowInSidebar] as bool,
-        ),
-      );
+      // context.pop(
+      //   SavedView.fromDocumentFilter(
+      //     DocumentFilterForm.assembleFilter(
+      //       _filterFormKey,
+      //       widget.currentFilter,
+      //     ),
+      //     name: _savedViewFormKey.currentState?.value[fkName] as String,
+      //     showOnDashboard:
+      //         _savedViewFormKey.currentState?.value[fkShowOnDashboard] as bool,
+      //     showInSidebar:
+      //         _savedViewFormKey.currentState?.value[fkShowInSidebar] as bool,
+      //   ),
+      // );
     }
   }
 }

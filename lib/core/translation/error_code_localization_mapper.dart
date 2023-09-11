@@ -54,7 +54,7 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.suggestionsQueryError => S.of(context)!.couldNotLoadSuggestions,
     ErrorCode.acknowledgeTasksError => S.of(context)!.couldNotAcknowledgeTasks,
     ErrorCode.correspondentDeleteFailed =>
-      "Could not delete correspondent, please try again.",
+      "Could not delete correspondent, please try again.", //TODO: INTL
     ErrorCode.documentTypeDeleteFailed =>
       "Could not delete document type, please try again.",
     ErrorCode.tagDeleteFailed => "Could not delete tag, please try again.",
@@ -73,5 +73,6 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.uiSettingsLoadFailed => "Could not load UI settings",
     ErrorCode.loadTasksError => "Could not load tasks.",
     ErrorCode.userNotFound => "User could not be found.",
+    ErrorCode.updateSavedViewError => "Could not update saved view.",
   };
 }

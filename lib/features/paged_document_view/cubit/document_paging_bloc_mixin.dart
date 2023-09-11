@@ -68,7 +68,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   /// Convenience method which allows to directly use [DocumentFilter.copyWith] on the current filter.
   ///
   Future<void> updateCurrentFilter(
-    final DocumentFilter Function(DocumentFilter) transformFn,
+    final DocumentFilter Function(DocumentFilter filter) transformFn,
   ) async =>
       updateFilter(filter: transformFn(state.filter));
 

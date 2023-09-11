@@ -42,6 +42,22 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
   }
 
   @override
+  Future<SavedView> update(SavedView view) async {
+    try {
+      final response = await _client.patch(
+        "/api/saved_views/${view.id}/",
+        data: view.toJson(),
+        options: Options(validateStatus: (status) => status == 200),
+      );
+      return SavedView.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.updateSavedViewError),
+      );
+    }
+  }
+
+  @override
   Future<int> delete(SavedView view) async {
     try {
       await _client.delete(

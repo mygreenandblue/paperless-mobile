@@ -19,10 +19,12 @@ class DocumentFilterForm extends StatefulWidget {
   static const fkAddedAt = DocumentModel.addedKey;
 
   static DocumentFilter assembleFilter(
-      GlobalKey<FormBuilderState> formKey, DocumentFilter initialFilter) {
+    GlobalKey<FormBuilderState> formKey,
+    DocumentFilter initialFilter,
+  ) {
     formKey.currentState?.save();
     final v = formKey.currentState!.value;
-    return DocumentFilter(
+    return initialFilter.copyWith(
       correspondent:
           v[DocumentFilterForm.fkCorrespondent] as IdQueryParameter? ??
               DocumentFilter.initial.correspondent,
@@ -36,11 +38,7 @@ class DocumentFilterForm extends StatefulWidget {
           DocumentFilter.initial.query,
       created: (v[DocumentFilterForm.fkCreatedAt] as DateRangeQuery),
       added: (v[DocumentFilterForm.fkAddedAt] as DateRangeQuery),
-      asnQuery: initialFilter.asnQuery,
       page: 1,
-      pageSize: initialFilter.pageSize,
-      sortField: initialFilter.sortField,
-      sortOrder: initialFilter.sortOrder,
     );
   }
 

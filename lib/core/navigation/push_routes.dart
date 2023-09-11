@@ -56,21 +56,6 @@ Future<void> pushSavedViewDetailsRoute(
   );
 }
 
-Future<SavedView?> pushAddSavedViewRoute(BuildContext context,
-    {required DocumentFilter filter}) {
-  return Navigator.of(context).push<SavedView?>(
-    MaterialPageRoute(
-      builder: (_) => AddSavedViewPage(
-        currentFilter: filter,
-        correspondents: context.read<LabelRepository>().state.correspondents,
-        documentTypes: context.read<LabelRepository>().state.documentTypes,
-        storagePaths: context.read<LabelRepository>().state.storagePaths,
-        tags: context.read<LabelRepository>().state.tags,
-      ),
-    ),
-  );
-}
-
 Future<void> pushBulkEditCorrespondentRoute(
   BuildContext context, {
   required List<DocumentModel> selection,

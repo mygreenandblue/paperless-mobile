@@ -51,44 +51,58 @@ class _LandingPageState extends State<LandingPage> {
                 ).padded(24),
               ),
               SliverToBoxAdapter(child: _buildStatisticsCard(context)),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
-                sliver: SliverToBoxAdapter(
-                  child: Text(
-                    "Saved Views",
-                    style: Theme.of(context).textTheme.titleMedium,
+              if (currentUser.canViewSavedViews) ...[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      "Saved Views",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ),
                 ),
-              ),
-              BlocBuilder<SavedViewCubit, SavedViewState>(
-                builder: (context, state) {
-                  return state.maybeWhen(
-                    loaded: (savedViews) {
-                      final dashboardViews = savedViews.values
-                          .where((element) => element.showOnDashboard)
-                          .toList();
-                      if (dashboardViews.isEmpty) {
-                        return const SliverToBoxAdapter(
-                          child: Text("No views"),
-                        );
-                      }
-                      return SliverList.builder(
-                        itemBuilder: (context, index) {
-                          return SavedViewPreview(
-                            savedView: dashboardViews.elementAt(index),
+                BlocBuilder<SavedViewCubit, SavedViewState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      loaded: (savedViews) {
+                        final dashboardViews = savedViews.values
+                            .where((element) => element.showOnDashboard)
+                            .toList();
+                        if (dashboardViews.isEmpty) {
+                          return SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "There are no saved views to show on your dashboard.", //TODO: INTL
+                                ),
+                                TextButton.icon(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.add),
+                                  label: Text("Add new view"),
+                                )
+                              ],
+                            ).paddedOnly(left: 16),
                           );
-                        },
-                        itemCount: dashboardViews.length,
-                      );
-                    },
-                    orElse: () => const SliverToBoxAdapter(
-                      child: Center(
-                        child: CircularProgressIndicator(),
+                        }
+                        return SliverList.builder(
+                          itemBuilder: (context, index) {
+                            return SavedViewPreview(
+                              savedView: dashboardViews.elementAt(index),
+                            );
+                          },
+                          itemCount: dashboardViews.length,
+                        );
+                      },
+                      orElse: () => const SliverToBoxAdapter(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              )
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ),
@@ -121,6 +135,7 @@ class _LandingPageState extends State<LandingPage> {
         }
         final stats = snapshot.data!;
         return ExpansionCard(
+          initiallyExpanded: false,
           title: Text(
             "Statistics", //TODO: INTL
             style: Theme.of(context).textTheme.titleLarge,
