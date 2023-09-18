@@ -29,7 +29,7 @@ class ExpansionCard extends StatelessWidget {
           ),
         ),
         child: ExpansionTile(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           initiallyExpanded: initiallyExpanded,
           title: title,
           children: [content],

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
@@ -10,7 +11,7 @@ part 'text_query.g.dart';
 //TODO: Realize with freezed...
 @HiveType(typeId: PaperlessApiHiveTypeIds.textQuery)
 @JsonSerializable()
-class TextQuery extends Equatable {
+class TextQuery {
   @HiveField(0)
   final QueryType queryType;
   @HiveField(1)
@@ -23,7 +24,8 @@ class TextQuery extends Equatable {
 
   const TextQuery.title(this.queryText) : queryType = QueryType.title;
 
-  const TextQuery.titleAndContent(this.queryText) : queryType = QueryType.titleAndContent;
+  const TextQuery.titleAndContent(this.queryText)
+      : queryType = QueryType.titleAndContent;
 
   const TextQuery.extended(this.queryText) : queryType = QueryType.extended;
 
@@ -73,7 +75,8 @@ class TextQuery extends Equatable {
       case QueryType.title:
         return title.contains(queryText!);
       case QueryType.titleAndContent:
-        return title.contains(queryText!) || (content?.contains(queryText!) ?? false);
+        return title.contains(queryText!) ||
+            (content?.contains(queryText!) ?? false);
       case QueryType.extended:
         //TODO: Implement. Might be too complex...
         return true;
@@ -84,8 +87,19 @@ class TextQuery extends Equatable {
 
   Map<String, dynamic> toJson() => _$TextQueryToJson(this);
 
-  factory TextQuery.fromJson(Map<String, dynamic> json) => _$TextQueryFromJson(json);
+  factory TextQuery.fromJson(Map<String, dynamic> json) =>
+      _$TextQueryFromJson(json);
 
   @override
-  List<Object?> get props => [queryType, queryText];
+  bool operator ==(Object? other) {
+    if (identical(this, other)) return true;
+    if (other is! TextQuery) return false;
+    if (queryText == null && other.queryText == null) {
+      return true;
+    }
+    return other.queryText == queryText && other.queryType == queryType;
+  }
+
+  @override
+  int get hashCode => Object.hash(queryText, queryType);
 }

@@ -55,9 +55,17 @@ class _LandingPageState extends State<LandingPage> {
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
                   sliver: SliverToBoxAdapter(
-                    child: Text(
-                      "Saved Views",
-                      style: Theme.of(context).textTheme.titleMedium,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.saved_search,
+                          color: Theme.of(context).colorScheme.primary,
+                        ).paddedOnly(right: 8),
+                        Text(
+                          S.of(context)!.views,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -75,7 +83,7 @@ class _LandingPageState extends State<LandingPage> {
                               children: [
                                 Text(
                                   "There are no saved views to show on your dashboard.", //TODO: INTL
-                                ),
+                                ).padded(),
                                 TextButton.icon(
                                   onPressed: () {},
                                   icon: const Icon(Icons.add),
@@ -89,6 +97,7 @@ class _LandingPageState extends State<LandingPage> {
                           itemBuilder: (context, index) {
                             return SavedViewPreview(
                               savedView: dashboardViews.elementAt(index),
+                              expanded: index == 0,
                             );
                           },
                           itemCount: dashboardViews.length,

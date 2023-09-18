@@ -137,10 +137,16 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                 initialValue: widget.initialValue?.match,
                 onChanged: (val) => setState(() => _errors = {}),
               ),
-            FormBuilderCheckbox(
+            FormBuilderField<bool>(
               name: Label.isInsensitiveKey,
               initialValue: widget.initialValue?.isInsensitive ?? true,
-              title: Text(S.of(context)!.caseIrrelevant),
+              builder: (field) {
+                return CheckboxListTile(
+                  value: field.value,
+                  title: Text(S.of(context)!.caseIrrelevant),
+                  onChanged: (value) => field.didChange(value),
+                );
+              },
             ),
             ...widget.additionalFields,
           ].padded(),

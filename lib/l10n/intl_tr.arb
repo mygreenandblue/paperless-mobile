@@ -67,7 +67,7 @@
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Bu görünümü gerçekten silmek istiyor musunuz?",
   "@doYouReallyWantToDeleteThisView": {},
-  "deleteView": "Görünümü sil",
+  "deleteView": "Görünümü sil {name}?",
   "@deleteView": {},
   "addedAt": "Added at",
   "@addedAt": {},
@@ -864,5 +864,17 @@
   "missingPermissions": "You do not have the necessary permissions to perform this action.",
   "@missingPermissions": {
     "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
+  },
+  "editView": "Edit View",
+  "@editView": {
+    "description": "Title of the edit saved view page"
+  },
+  "donate": "Donate",
+  "@donate": {
+    "description": "Label of the in-app donate button"
+  },
+  "donationDialogContent": "Thank you for considering to support this app! Due to both Google's and Apple's Payment Policies, no links leading to donations may be displayed in-app. Not even linking to the project's repository page appears to be allowed in this context. Therefore, maybe have a look at the 'Donations' section in the project's README. Your support is much appreciated and keeps the development of this app alive. Thanks!",
+  "@donationDialogContent": {
+    "description": "Text displayed in the donation dialog"
   }
 }

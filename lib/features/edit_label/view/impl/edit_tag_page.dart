@@ -38,10 +38,16 @@ class EditTagPage extends StatelessWidget {
             colorPickerType: ColorPickerType.materialPicker,
             readOnly: true,
           ),
-          FormBuilderCheckbox(
-            initialValue: tag.isInboxTag,
+          FormBuilderField<bool>(
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context)!.inboxTag),
+            initialValue: tag.isInboxTag,
+            builder: (field) {
+              return CheckboxListTile(
+                value: field.value,
+                title: Text(S.of(context)!.inboxTag),
+                onChanged: (value) => field.didChange(value),
+              );
+            },
           ),
         ],
       ),

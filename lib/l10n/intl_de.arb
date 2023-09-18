@@ -864,5 +864,17 @@
   "missingPermissions": "Sie besitzen nicht die benötigten Berechtigungen, um diese Aktion durchzuführen.",
   "@missingPermissions": {
     "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
+  },
+  "editView": "Ansicht bearbeiten",
+  "@editView": {
+    "description": "Title of the edit saved view page"
+  },
+  "donate": "Spenden",
+  "@donate": {
+    "description": "Label of the in-app donate button"
+  },
+  "donationDialogContent": "Vielen Dank, dass Du diese App unterstützen möchtest! Aufgrund der Zahlungsrichtlinien von Google und Apple dürfen keine Links, die zu Spendenseiten führen, in der App angezeigt werden. Nicht einmal die Verlinkung zur Repository-Seite des Projekts scheint in diesem Zusammenhang erlaubt zu sein. Werfe von daher vielleicht einen Blick auf den Abschnitt 'Donations' in der README des Projekts. Deine Unterstützung ist sehr willkommen und hält die Entwicklung dieser App am Leben. Vielen Dank!",
+  "@donationDialogContent": {
+    "description": "Text displayed in the donation dialog"
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -11,30 +10,30 @@ const _fkName = 'name';
 const _fkShowOnDashboard = 'show_on_dashboard';
 const _fkShowInSidebar = 'show_in_sidebar';
 
-class AddSavedViewPage extends StatefulWidget {
-  final DocumentFilter? initialFilter;
-  const AddSavedViewPage({
+class EditSavedViewPage extends StatefulWidget {
+  final SavedView savedView;
+  const EditSavedViewPage({
     super.key,
-    this.initialFilter,
+    required this.savedView,
   });
 
   @override
-  State<AddSavedViewPage> createState() => _AddSavedViewPageState();
+  State<EditSavedViewPage> createState() => _EditSavedViewPageState();
 }
 
-class _AddSavedViewPageState extends State<AddSavedViewPage> {
+class _EditSavedViewPageState extends State<EditSavedViewPage> {
   final _savedViewFormKey = GlobalKey<FormBuilderState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context)!.newView),
+        title: Text(S.of(context)!.editView),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: "fab_add_saved_view_page",
-        icon: const Icon(Icons.add),
+        heroTag: "fab_edit_saved_view_page",
+        icon: const Icon(Icons.save),
         onPressed: () => _onCreate(context),
-        label: Text(S.of(context)!.create),
+        label: Text(S.of(context)!.saveChanges),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -47,6 +46,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
               child: Column(
                 children: [
                   FormBuilderTextField(
+                    initialValue: widget.savedView.name,
                     name: _fkName,
                     validator: (value) {
                       if (value?.trim().isEmpty ?? true) {
@@ -60,7 +60,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                   ),
                   FormBuilderField<bool>(
                     name: _fkShowOnDashboard,
-                    initialValue: false,
+                    initialValue: widget.savedView.showOnDashboard,
                     builder: (field) {
                       return CheckboxListTile(
                         value: field.value,
@@ -71,7 +71,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                   ),
                   FormBuilderField<bool>(
                     name: _fkShowInSidebar,
-                    initialValue: false,
+                    initialValue: widget.savedView.showInSidebar,
                     builder: (field) {
                       return CheckboxListTile(
                         value: field.value,
@@ -92,18 +92,14 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
   void _onCreate(BuildContext context) async {
     if (_savedViewFormKey.currentState?.saveAndValidate() ?? false) {
       final cubit = context.read<SavedViewCubit>();
-      var savedView = SavedView.fromDocumentFilter(
-        widget.initialFilter ?? const DocumentFilter(),
-        name: _savedViewFormKey.currentState?.value[_fkName] as String,
+      var savedView = widget.savedView.copyWith(
+        name: _savedViewFormKey.currentState!.value[_fkName],
+        showInSidebar: _savedViewFormKey.currentState!.value[_fkShowInSidebar],
         showOnDashboard:
-            _savedViewFormKey.currentState?.value[_fkShowOnDashboard] as bool,
-        showInSidebar:
-            _savedViewFormKey.currentState?.value[_fkShowInSidebar] as bool,
+            _savedViewFormKey.currentState!.value[_fkShowOnDashboard],
       );
       final router = GoRouter.of(context);
-      await cubit.add(
-        savedView,
-      );
+      await cubit.update(savedView);
       router.pop();
     }
   }

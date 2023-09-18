@@ -16,12 +16,12 @@ class SavedViewChangedDialog extends StatelessWidget {
       actionsOverflowButtonSpacing: 8,
       actions: [
         const DialogCancelButton(),
-        TextButton(
-          child: Text(S.of(context)!.saveChanges),
-          onPressed: () {
-            Navigator.pop(context, false);
-          },
-        ),
+        // TextButton(
+        //   child: Text(S.of(context)!.saveChanges),
+        //   onPressed: () {
+        //     Navigator.pop(context, false);
+        //   },
+        // ),
         DialogConfirmButton(
           label: S.of(context)!.resetFilter,
           style: DialogConfirmButtonStyle.danger,

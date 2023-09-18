@@ -15,9 +15,10 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
     'en': LanguageOption('English', true),
     'de': LanguageOption('Deutsch', true),
+    'es': LanguageOption("Español", true),
+    'fr': LanguageOption('Français', true),
     'cs': LanguageOption('Česky', true),
     'tr': LanguageOption('Türkçe', true),
-    'fr': LanguageOption('Français', true),
     'pl': LanguageOption('Polska', true),
     'ca': LanguageOption('Catalan', true),
   };

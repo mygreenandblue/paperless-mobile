@@ -37,9 +37,16 @@ class AddTagPage extends StatelessWidget {
                 .withOpacity(1.0),
             readOnly: true,
           ),
-          FormBuilderCheckbox(
+          FormBuilderField<bool>(
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context)!.inboxTag),
+            initialValue: false,
+            builder: (field) {
+              return CheckboxListTile(
+                value: field.value,
+                title: Text(S.of(context)!.inboxTag),
+                onChanged: (value) => field.didChange(value),
+              );
+            },
           ),
         ],
       ),

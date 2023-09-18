@@ -34,6 +34,7 @@ import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
@@ -42,6 +43,7 @@ import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
@@ -231,27 +233,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
         navigatorKey: rootNavigatorKey,
         builder: ProviderShellRoute(widget.apiFactory).build,
         routes: [
-          // GoRoute(
-          //   parentNavigatorKey: rootNavigatorKey,
-          //   name: R.savedView,
-          //   path: "/saved_view/:id",
-          //   builder: (context, state) {
-          //     return Placeholder(
-          //       child: Text("Documents"),
-          //     );
-          //   },
-          //   routes: [
-          //     GoRoute(
-          //       path: "create",
-          //       name: R.createSavedView,
-          //       builder: (context, state) {
-          //         return Placeholder(
-          //           child: Text("Documents"),
-          //         );
-          //       },
-          //     ),
-          //   ],
-          // ),
+          $savedViewsRoute,
           StatefulShellRoute(
             navigatorContainerBuilder: (context, navigationShell, children) {
               return children[navigationShell.currentIndex];

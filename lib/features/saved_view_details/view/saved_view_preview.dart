@@ -12,9 +12,11 @@ import 'package:provider/provider.dart';
 
 class SavedViewPreview extends StatelessWidget {
   final SavedView savedView;
+  final bool expanded;
   const SavedViewPreview({
     super.key,
     required this.savedView,
+    required this.expanded,
   });
 
   @override
@@ -24,7 +26,7 @@ class SavedViewPreview extends StatelessWidget {
           SavedViewPreviewCubit(context.read(), savedView)..initialize(),
       builder: (context, child) {
         return ExpansionCard(
-          initiallyExpanded: true,
+          initiallyExpanded: expanded,
           title: Text(savedView.name),
           content: BlocBuilder<SavedViewPreviewCubit, SavedViewPreviewState>(
             builder: (context, state) {
@@ -33,7 +35,7 @@ class SavedViewPreview extends StatelessWidget {
                   return Column(
                     children: [
                       if (documents.isEmpty)
-                        Text("This view is empty.").padded()
+                        Text("This view does not match any documents.").padded()
                       else
                         for (final document in documents)
                           DocumentListItem(
@@ -45,6 +47,7 @@ class SavedViewPreview extends StatelessWidget {
                               DocumentDetailsRoute($extra: document)
                                   .push(context);
                             },
+                            onSelected: null,
                           ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -64,7 +67,8 @@ class SavedViewPreview extends StatelessWidget {
                     ],
                   );
                 },
-                error: () => const Text("Error loading preview"), //TODO: INTL
+                error: () =>
+                    const Text("Could not load saved view."), //TODO: INTL
                 orElse: () => const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(child: CircularProgressIndicator()),

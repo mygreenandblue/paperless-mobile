@@ -25,6 +25,7 @@ void showSnackBar(
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
+        behavior: SnackBarBehavior.floating,
         content: (details != null)
             ? RichText(
                 maxLines: 5,
