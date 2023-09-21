@@ -1,11 +1,11 @@
-import 'package:badges/badges.dart' as b;
 import 'package:collection/collection.dart';
+import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
@@ -18,8 +18,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/confi
 import 'package:paperless_mobile/features/documents/view/widgets/selection/document_selection_sliver_app_bar.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/view/saved_view_list.dart';
 import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -43,45 +43,58 @@ class DocumentsPage extends StatefulWidget {
   State<DocumentsPage> createState() => _DocumentsPageState();
 }
 
-class _DocumentsPageState extends State<DocumentsPage>
-    with SingleTickerProviderStateMixin {
+class _DocumentsPageState extends State<DocumentsPage> {
   final SliverOverlapAbsorberHandle searchBarHandle =
       SliverOverlapAbsorberHandle();
 
   final SliverOverlapAbsorberHandle savedViewsHandle =
       SliverOverlapAbsorberHandle();
-  late final TabController _tabController;
 
-  int _currentTab = 0;
+  final _nestedScrollViewKey = GlobalKey<NestedScrollViewState>();
+
   final _savedViewsExpansionController = ExpansionTileController();
+  bool _showExtendedFab = true;
+
   @override
   void initState() {
     super.initState();
-    final showSavedViews =
-        context.read<LocalUserAccount>().paperlessUser.canViewSavedViews;
-    _tabController = TabController(
-      length: showSavedViews ? 2 : 1,
-      vsync: this,
-    );
-    // Future.wait([
-    //   context.read<DocumentsCubit>().reload(),
-    //   context.read<SavedViewCubit>().reload(),
-    // ]).onError<PaperlessApiException>(
-    //   (error, stackTrace) {
-    //     showErrorMessage(context, error, stackTrace);
-    //     return [];
-    //   },
-    // );
-    _tabController.addListener(_tabChangesListener);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nestedScrollViewKey.currentState!.innerController
+          .addListener(_scrollExtentChangedListener);
+    });
   }
 
-  void _tabChangesListener() {
-    setState(() => _currentTab = _tabController.index);
+  Future<void> _reloadData() async {
+    try {
+      await Future.wait([
+        context.read<DocumentsCubit>().reload(),
+        context.read<SavedViewCubit>().reload(),
+        context.read<LabelCubit>().reload(),
+      ]);
+    } catch (error, stackTrace) {
+      showGenericError(context, error, stackTrace);
+    }
+  }
+
+  void _scrollExtentChangedListener() {
+    const threshold = 400;
+    final offset =
+        _nestedScrollViewKey.currentState!.innerController.position.pixels;
+    if (offset < threshold && _showExtendedFab == false) {
+      setState(() {
+        _showExtendedFab = true;
+      });
+    } else if (offset >= threshold && _showExtendedFab == true) {
+      setState(() {
+        _showExtendedFab = false;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _nestedScrollViewKey.currentState?.innerController
+        .removeListener(_scrollExtentChangedListener);
     super.dispose();
   }
 
@@ -109,11 +122,7 @@ class _DocumentsPageState extends State<DocumentsPage>
             previous != ConnectivityState.connected &&
             current == ConnectivityState.connected,
         listener: (context, state) {
-          try {
-            context.read<DocumentsCubit>().reload();
-          } on PaperlessApiException catch (error, stackTrace) {
-            showErrorMessage(context, error, stackTrace);
-          }
+          _reloadData();
         },
         builder: (context, connectivityState) {
           return SafeArea(
@@ -122,59 +131,104 @@ class _DocumentsPageState extends State<DocumentsPage>
               drawer: const AppDrawer(),
               floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
                 builder: (context, state) {
-                  final appliedFiltersCount = state.filter.appliedFiltersCount;
                   final show = state.selection.isEmpty;
                   final canReset = state.filter.appliedFiltersCount > 0;
-                  return AnimatedScale(
-                    scale: show ? 1 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeIn,
-                    child: Column(
+                  if (show) {
+                    return Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        if (canReset)
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: FloatingActionButton.small(
-                              heroTag: "fab_documents_page_reset_filter",
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                              onPressed: () {
-                                _onResetFilter();
-                              },
-                              child: Icon(
-                                Icons.refresh,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
+                        DeferredPointerHandler(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              FloatingActionButton.extended(
+                                extendedPadding: _showExtendedFab
+                                    ? null
+                                    : const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                heroTag: "fab_documents_page_filter",
+                                label: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 150),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: SizeTransition(
+                                        sizeFactor: animation,
+                                        axis: Axis.horizontal,
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: _showExtendedFab
+                                      ? Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.filter_alt_outlined,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              S.of(context)!.filterDocuments,
+                                            ),
+                                          ],
+                                        )
+                                      : const Icon(Icons.filter_alt_outlined),
+                                ),
+                                onPressed: _openDocumentFilter,
                               ),
-                            ),
+                              if (canReset)
+                                Positioned(
+                                  top: -20,
+                                  right: -8,
+                                  child: DeferPointer(
+                                    paintOnTop: true,
+                                    child: Material(
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(8),
+                                        onTap: () {
+                                          HapticFeedback.mediumImpact();
+                                          _onResetFilter();
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            if (_showExtendedFab)
+                                              Text(
+                                                "Reset (${state.filter.appliedFiltersCount})",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelLarge
+                                                    ?.copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onError,
+                                                    ),
+                                              ).padded()
+                                            else
+                                              Icon(
+                                                Icons.replay,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError,
+                                              ).padded(4),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                        b.Badge(
-                          position: b.BadgePosition.topEnd(top: -12, end: -6),
-                          showBadge: appliedFiltersCount > 0,
-                          badgeContent: Text(
-                            '$appliedFiltersCount',
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          animationType: b.BadgeAnimationType.fade,
-                          badgeColor: Colors.red,
-                          child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 250),
-                              child: Builder(builder: (context) {
-                                return FloatingActionButton(
-                                  heroTag: "fab_documents_page_filter",
-                                  child: const Icon(Icons.filter_alt_outlined),
-                                  onPressed: _openDocumentFilter,
-                                );
-                              })),
                         ),
                       ],
-                    ),
-                  );
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
                 },
               ),
               resizeToAvoidBottomInset: true,
@@ -190,94 +244,41 @@ class _DocumentsPageState extends State<DocumentsPage>
                   }
                   return true;
                 },
-                child: Stack(
-                  children: [
-                    NestedScrollView(
-                      floatHeaderSlivers: true,
-                      headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                        SliverOverlapAbsorber(
-                          handle: searchBarHandle,
-                          sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
-                            builder: (context, state) {
-                              if (state.selection.isEmpty) {
-                                return SliverSearchBar(
-                                  floating: true,
-                                  titleText: S.of(context)!.documents,
-                                );
-                              } else {
-                                return DocumentSelectionSliverAppBar(
-                                  state: state,
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                        SliverOverlapAbsorber(
-                          handle: savedViewsHandle,
-                          sliver: SliverPinnedHeader(
-                            child: Material(
-                              child: _buildViewActions(),
-                              elevation: 4,
-                            ),
-                          ),
-                        ),
-                        // SliverOverlapAbsorber(
-                        //   handle: tabBarHandle,
-                        //   sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
-                        //     builder: (context, state) {
-                        //       if (state.selection.isNotEmpty) {
-                        //         return const SliverToBoxAdapter(
-                        //           child: SizedBox.shrink(),
-                        //         );
-                        //       }
-                        //       return SliverPersistentHeader(
-                        //         pinned: true,
-                        //         delegate:
-                        //             CustomizableSliverPersistentHeaderDelegate(
-                        //           minExtent: kTextTabBarHeight,
-                        //           maxExtent: kTextTabBarHeight,
-                        //           child: ColoredTabBar(
-                        //             tabBar: TabBar(
-                        //               controller: _tabController,
-                        //               tabs: [
-                        //                 Tab(text: S.of(context)!.documents),
-                        //                 if (context
-                        //                     .watch<LocalUserAccount>()
-                        //                     .paperlessUser
-                        //                     .canViewSavedViews)
-                        // Tab(text: S.of(context)!.views),
-                        //               ],
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
-                      ],
-                      body: NotificationListener<ScrollNotification>(
-                        onNotification: (notification) {
-                          final metrics = notification.metrics;
-                          if (metrics.maxScrollExtent == 0) {
-                            return true;
+                child: NestedScrollView(
+                  key: _nestedScrollViewKey,
+                  floatHeaderSlivers: true,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverOverlapAbsorber(
+                      handle: searchBarHandle,
+                      sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
+                        builder: (context, state) {
+                          if (state.selection.isEmpty) {
+                            return SliverSearchBar(
+                              floating: true,
+                              titleText: S.of(context)!.documents,
+                            );
+                          } else {
+                            return DocumentSelectionSliverAppBar(
+                              state: state,
+                            );
                           }
-                          final desiredTab =
-                              (metrics.pixels / metrics.maxScrollExtent)
-                                  .round();
-                          if (metrics.axis == Axis.horizontal &&
-                              _currentTab != desiredTab) {
-                            setState(() => _currentTab = desiredTab);
-                          }
-                          return false;
                         },
-                        child: _buildDocumentsTab(
-                          connectivityState,
-                          context,
+                      ),
+                    ),
+                    SliverOverlapAbsorber(
+                      handle: savedViewsHandle,
+                      sliver: SliverPinnedHeader(
+                        child: Material(
+                          child: _buildViewActions(),
+                          elevation: 2,
                         ),
                       ),
                     ),
-                    _buildSavedViewChangedIndicator(),
                   ],
+                  body: _buildDocumentsTab(
+                    connectivityState,
+                    context,
+                  ),
                 ),
               ),
             ),
@@ -286,82 +287,6 @@ class _DocumentsPageState extends State<DocumentsPage>
       ),
     );
   }
-
-  Widget _buildSavedViewChangedIndicator() {
-    return BlocBuilder<DocumentsCubit, DocumentsState>(
-      builder: (context, state) {
-        final savedViewCubit = context.watch<SavedViewCubit>();
-        final activeView = savedViewCubit.state.maybeMap(
-          loaded: (savedViewState) {
-            if (state.filter.selectedView != null) {
-              return savedViewState.savedViews[state.filter.selectedView!];
-            }
-            return null;
-          },
-          orElse: () => null,
-        );
-        final viewHasChanged =
-            activeView != null && activeView.toDocumentFilter() != state.filter;
-        return AnimatedScale(
-          scale: viewHasChanged ? 1 : 0,
-          alignment: Alignment.bottomCenter,
-          duration: const Duration(milliseconds: 300),
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              child: Material(
-                borderRadius: BorderRadius.circular(24),
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceVariant
-                    .withOpacity(0.9),
-                child: InkWell(
-                  customBorder: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  onTap: () async {
-                    await _updateCurrentSavedView();
-                    setState(() {});
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Text(
-                      "Update selected view",
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // Widget _buildSavedViewsTab(
-  //   ConnectivityState connectivityState,
-  //   BuildContext context,
-  // ) {
-  //   return RefreshIndicator(
-  //     edgeOffset: kTextTabBarHeight,
-  //     onRefresh: _onReloadSavedViews,
-  //     notificationPredicate: (_) => connectivityState.isConnected,
-  //     child: CustomScrollView(
-  //       key: const PageStorageKey<String>("savedViews"),
-  //       slivers: [
-  //         SliverOverlapInjector(
-  //           handle: searchBarHandle,
-  //         ),
-  //         SliverOverlapInjector(
-  //           handle: savedViewsHandle,
-  //         ),
-  //         const SavedViewList(),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildDocumentsTab(
     ConnectivityState connectivityState,
@@ -376,12 +301,11 @@ class _DocumentsPageState extends State<DocumentsPage>
           _savedViewsExpansionController.collapse();
         }
 
-        final currState = context.read<DocumentsCubit>().state;
         final max = notification.metrics.maxScrollExtent;
+        final currentState = context.read<DocumentsCubit>().state;
         if (max == 0 ||
-            _currentTab != 0 ||
-            currState.isLoading ||
-            currState.isLastPageLoaded) {
+            currentState.isLoading ||
+            currentState.isLastPageLoaded) {
           return false;
         }
 
@@ -402,7 +326,7 @@ class _DocumentsPageState extends State<DocumentsPage>
       },
       child: RefreshIndicator(
         edgeOffset: kTextTabBarHeight + 2,
-        onRefresh: _onReloadDocuments,
+        onRefresh: _reloadData,
         notificationPredicate: (_) => connectivityState.isConnected,
         child: CustomScrollView(
           key: const PageStorageKey<String>("documents"),
@@ -428,8 +352,8 @@ class _DocumentsPageState extends State<DocumentsPage>
                     },
                     onUpdateView: (view) async {
                       await context.read<SavedViewCubit>().update(view);
-                      showSnackBar(context,
-                          "Saved view successfully updated."); //TODO: INTL
+                      showSnackBar(
+                          context, S.of(context)!.savedViewSuccessfullyUpdated);
                     },
                     onDeleteView: (view) async {
                       HapticFeedback.mediumImpact();
@@ -496,7 +420,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     return BlocBuilder<DocumentsCubit, DocumentsState>(
       builder: (context, state) {
         return Container(
-          padding: EdgeInsets.all(4),
+          padding: const EdgeInsets.all(4),
           color: Theme.of(context).colorScheme.background,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -513,18 +437,6 @@ class _DocumentsPageState extends State<DocumentsPage>
         );
       },
     );
-  }
-
-  void _onCreateSavedView(DocumentFilter filter) async {
-    //TODO: Implement
-    // final newView = await pushAddSavedViewRoute(context, filter: filter);
-    // if (newView != null) {
-    //   try {
-    //     await context.read<SavedViewCubit>().add(newView);
-    //   } on PaperlessApiException catch (error, stackTrace) {
-    //     showErrorMessage(context, error, stackTrace);
-    //   }
-    // }
   }
 
   void _openDocumentFilter() async {
@@ -717,66 +629,46 @@ class _DocumentsPageState extends State<DocumentsPage>
     }
   }
 
-  Future<void> _onReloadDocuments() async {
-    try {
-      // We do not await here on purpose so we can show a linear progress indicator below the app bar.
-      await Future.wait([
-        context.read<DocumentsCubit>().reload(),
-        context.read<SavedViewCubit>().reload(),
-      ]);
-    } on PaperlessApiException catch (error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-    }
-  }
-
+  ///
+  /// Resets the current filter and scrolls all the way to the top of the view.
+  /// If a saved view is currently selected and the filter has changed,
+  /// the user will be shown a dialog informing them about the changes.
+  /// The user can then decide whether to abort the reset or to continue and discard the changes.
   Future<void> _onResetFilter() async {
     final cubit = context.read<DocumentsCubit>();
     final savedViewCubit = context.read<SavedViewCubit>();
-    final activeView = savedViewCubit.state.maybeMap(
+
+    void toTop() async {
+      await _nestedScrollViewKey.currentState?.outerController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+
+    final activeView = savedViewCubit.state.mapOrNull(
       loaded: (state) {
         if (cubit.state.filter.selectedView != null) {
           return state.savedViews[cubit.state.filter.selectedView!];
         }
         return null;
       },
-      orElse: () => null,
     );
     final viewHasChanged = activeView != null &&
         activeView.toDocumentFilter() != cubit.state.filter;
     if (viewHasChanged) {
-      final discardChanges = await showDialog(
-        context: context,
-        builder: (context) => const SavedViewChangedDialog(),
-      );
-      if (discardChanges == true) {
+      final discardChanges = await showDialog<bool>(
+            context: context,
+            builder: (context) => const SavedViewChangedDialog(),
+          ) ??
+          false;
+      if (discardChanges) {
         cubit.resetFilter();
-        // Reset
-      } else if (discardChanges == false) {
-        _updateCurrentSavedView();
+        toTop();
       }
     } else {
       cubit.resetFilter();
+      toTop();
     }
-  }
-
-  Future<void> _updateCurrentSavedView() async {
-    final savedViewCubit = context.read<SavedViewCubit>();
-    final cubit = context.read<DocumentsCubit>();
-    final activeView = savedViewCubit.state.maybeMap(
-      loaded: (state) {
-        if (cubit.state.filter.selectedView != null) {
-          return state.savedViews[cubit.state.filter.selectedView!];
-        }
-        return null;
-      },
-      orElse: () => null,
-    );
-    if (activeView == null) return;
-    final newView = activeView.copyWith(
-      filterRules: FilterRule.fromFilter(cubit.state.filter),
-    );
-
-    await savedViewCubit.update(newView);
-    showSnackBar(context, "Saved view successfully updated.");
   }
 }

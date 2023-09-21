@@ -15,6 +15,7 @@ class ExpansionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       margin: const EdgeInsets.all(16),
       child: Theme(
@@ -29,8 +30,17 @@ class ExpansionCard extends StatelessWidget {
           ),
         ),
         child: ExpansionTile(
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          backgroundColor: ElevationOverlay.applySurfaceTint(
+            colorScheme.surface,
+            colorScheme.surfaceTint,
+            4,
+          ),
           initiallyExpanded: initiallyExpanded,
+          collapsedBackgroundColor: ElevationOverlay.applySurfaceTint(
+            colorScheme.surface,
+            colorScheme.surfaceTint,
+            4,
+          ),
           title: title,
           children: [content],
         ),

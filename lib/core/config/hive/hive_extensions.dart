@@ -10,7 +10,9 @@ import 'package:hive_flutter/adapters.dart';
 /// [callback] to return and returns the calculated value. Closes the box after.
 ///
 Future<R?> withEncryptedBox<T, R>(
-    String name, FutureOr<R?> Function(Box<T> box) callback) async {
+  String name,
+  FutureOr<R?> Function(Box<T> box) callback,
+) async {
   final key = await _getEncryptedBoxKey();
   final box = await Hive.openBox<T>(
     name,
@@ -22,7 +24,11 @@ Future<R?> withEncryptedBox<T, R>(
 }
 
 Future<Uint8List> _getEncryptedBoxKey() async {
-  const secureStorage = FlutterSecureStorage();
+  const secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
   if (!await secureStorage.containsKey(key: 'key')) {
     final key = Hive.generateSecureKey();
 

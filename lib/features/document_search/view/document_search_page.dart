@@ -4,8 +4,6 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
@@ -188,7 +186,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
       children: [
         Text(
           S.of(context)!.results,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         BlocBuilder<DocumentSearchCubit, DocumentSearchState>(
           builder: (context, state) {
@@ -200,15 +198,15 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
           },
         )
       ],
-    ).padded();
+    ).paddedLTRB(16, 8, 8, 8);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: header),
         if (state.hasLoaded && !state.isLoading && state.documents.isEmpty)
           SliverToBoxAdapter(
             child: Center(
-              child: Text(S.of(context)!.noMatchesFound),
-            ),
+              child: Text(S.of(context)!.noDocumentsFound),
+            ).paddedOnly(top: 8),
           )
         else
           SliverAdaptiveDocumentsView(

@@ -30,6 +30,7 @@ class _LabelsPageState extends State<LabelsPage>
       SliverOverlapAbsorberHandle();
 
   late final TabController _tabController;
+
   int _currentIndex = 0;
 
   int _calculateTabCount(UserModel user) => [
@@ -49,6 +50,12 @@ class _LabelsPageState extends State<LabelsPage>
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable:
@@ -65,8 +72,17 @@ class _LabelsPageState extends State<LabelsPage>
               return SafeArea(
                 child: Scaffold(
                   drawer: const AppDrawer(),
-                  floatingActionButton: FloatingActionButton(
-                    heroTag: "fab_labels_page",
+                  floatingActionButton: FloatingActionButton.extended(
+                    heroTag: "inbox_page_fab",
+                    label: Text(
+                      [
+                        S.of(context)!.addCorrespondent,
+                        S.of(context)!.addDocumentType,
+                        S.of(context)!.addTag,
+                        S.of(context)!.addStoragePath,
+                      ][_currentIndex],
+                    ),
+                    icon: Icon(Icons.add),
                     onPressed: [
                       if (user.canViewCorrespondents)
                         () => CreateLabelRoute(LabelType.correspondent)
@@ -80,7 +96,6 @@ class _LabelsPageState extends State<LabelsPage>
                         () => CreateLabelRoute(LabelType.storagePath)
                             .push(context),
                     ][_currentIndex],
-                    child: const Icon(Icons.add),
                   ),
                   body: NestedScrollView(
                     floatHeaderSlivers: true,

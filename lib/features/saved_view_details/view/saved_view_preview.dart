@@ -28,53 +28,57 @@ class SavedViewPreview extends StatelessWidget {
         return ExpansionCard(
           initiallyExpanded: expanded,
           title: Text(savedView.name),
-          content: BlocBuilder<SavedViewPreviewCubit, SavedViewPreviewState>(
-            builder: (context, state) {
-              return state.maybeWhen(
-                loaded: (documents) {
-                  return Column(
-                    children: [
-                      if (documents.isEmpty)
-                        Text("This view does not match any documents.").padded()
-                      else
-                        for (final document in documents)
-                          DocumentListItem(
-                            document: document,
-                            isLabelClickable: false,
-                            isSelected: false,
-                            isSelectionActive: false,
-                            onTap: (document) {
-                              DocumentDetailsRoute($extra: document)
-                                  .push(context);
-                            },
-                            onSelected: null,
-                          ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton.icon(
-                            icon: const Icon(Icons.open_in_new),
-                            label: Text("Show all"), //TODO: INTL
-                            onPressed: () {
-                              context.read<DocumentsCubit>().updateFilter(
-                                    filter: savedView.toDocumentFilter(),
-                                  );
-                              DocumentsRoute().go(context);
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BlocBuilder<SavedViewPreviewCubit, SavedViewPreviewState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    loaded: (documents) {
+                      if (documents.isEmpty) {
+                        return Text(S.of(context)!.noDocumentsFound).padded();
+                      } else {
+                        return Column(
+                          children: [
+                            for (final document in documents)
+                              DocumentListItem(
+                                document: document,
+                                isLabelClickable: false,
+                                isSelected: false,
+                                isSelectionActive: false,
+                                onTap: (document) {
+                                  DocumentDetailsRoute($extra: document)
+                                      .push(context);
+                                },
+                                onSelected: null,
+                              ),
+                          ],
+                        );
+                      }
+                    },
+                    error: () => Text(S.of(context)!.couldNotLoadSavedViews),
+                    orElse: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ).paddedOnly(top: 8, bottom: 24),
                   );
                 },
-                error: () =>
-                    const Text("Could not load saved view."), //TODO: INTL
-                orElse: () => const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    icon: const Icon(Icons.open_in_new),
+                    label: Text(S.of(context)!.showAll),
+                    onPressed: () {
+                      context.read<DocumentsCubit>().updateFilter(
+                            filter: savedView.toDocumentFilter(),
+                          );
+                      DocumentsRoute().go(context);
+                    },
+                  ).paddedOnly(bottom: 8),
+                ],
+              ),
+            ],
           ),
         );
       },

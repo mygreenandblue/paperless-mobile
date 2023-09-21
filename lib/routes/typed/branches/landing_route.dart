@@ -15,24 +15,11 @@ class LandingBranch extends StatefulShellBranchData {
 @TypedGoRoute<LandingRoute>(
   path: "/landing",
   name: R.landing,
-  routes: [
-    TypedGoRoute<SavedViewRoute>(
-      path: "saved-view",
-      name: R.savedView,
-    ),
-  ],
 )
 class LandingRoute extends GoRouteData {
   const LandingRoute();
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const LandingPage();
-  }
-}
-
-class SavedViewRoute extends GoRouteData {
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return Placeholder();
   }
 }

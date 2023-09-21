@@ -2,15 +2,16 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class EditLabelPage<T extends Label> extends StatelessWidget {
@@ -56,8 +57,9 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
   final Future<T> Function(BuildContext context, T label) onSubmit;
   final Future<void> Function(BuildContext context, T label) onDelete;
   final bool canDelete;
+  final _formKey = GlobalKey<FormBuilderState>();
 
-  const EditLabelForm({
+  EditLabelForm({
     super.key,
     required this.label,
     required this.fromJsonT,
@@ -69,26 +71,32 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context)!.edit),
-        actions: [
-          IconButton(
-            onPressed: canDelete ? () => _onDelete(context) : null,
-            icon: const Icon(Icons.delete),
-          ),
-        ],
-      ),
-      body: LabelForm<T>(
-        autofocusNameField: false,
-        initialValue: label,
-        fromJsonT: fromJsonT,
-        submitButtonConfig: SubmitButtonConfig<T>(
-          icon: const Icon(Icons.save),
-          label: Text(S.of(context)!.saveChanges),
-          onSubmit: (label) => onSubmit(context, label),
+    return PopWithUnsavedChanges(
+      hasChangesPredicate: () {
+        return _formKey.currentState?.isDirty ?? false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context)!.edit),
+          actions: [
+            IconButton(
+              onPressed: canDelete ? () => _onDelete(context) : null,
+              icon: const Icon(Icons.delete),
+            ),
+          ],
         ),
-        additionalFields: additionalFields,
+        body: LabelForm<T>(
+          formKey: _formKey,
+          autofocusNameField: false,
+          initialValue: label,
+          fromJsonT: fromJsonT,
+          submitButtonConfig: SubmitButtonConfig<T>(
+            icon: const Icon(Icons.save),
+            label: Text(S.of(context)!.saveChanges),
+            onSubmit: (label) => onSubmit(context, label),
+          ),
+          additionalFields: additionalFields,
+        ),
       ),
     );
   }

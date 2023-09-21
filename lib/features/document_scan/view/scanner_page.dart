@@ -14,7 +14,6 @@ import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -58,6 +57,7 @@ class _ScannerPageState extends State<ScannerPage>
         return BlocBuilder<DocumentScannerCubit, List<File>>(
           builder: (context, state) {
             return SafeArea(
+              top: true,
               child: Scaffold(
                 drawer: const AppDrawer(),
                 floatingActionButton: FloatingActionButton(

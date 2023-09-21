@@ -3,21 +3,20 @@ import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-class SavedViewChangedDialog extends StatelessWidget {
-  const SavedViewChangedDialog({super.key});
+class UnsavedChangesWarningDialog extends StatelessWidget {
+  const UnsavedChangesWarningDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.of(context)!.discardChanges),
-      content: Text(S.of(context)!.savedViewChangedDialogContent),
-      actionsOverflowButtonSpacing: 8,
+      title: Text("Discard changes?"),
+      content: Text(
+        "You have unsaved changes. Do you want to continue without saving? Your changes will be discarded.",
+      ),
       actions: [
-        const DialogCancelButton(),
+        DialogCancelButton(),
         DialogConfirmButton(
-          label: S.of(context)!.resetFilter,
-          style: DialogConfirmButtonStyle.danger,
-          returnValue: true,
+          label: S.of(context)!.continueLabel,
         ),
       ],
     );

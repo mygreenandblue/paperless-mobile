@@ -54,25 +54,26 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.suggestionsQueryError => S.of(context)!.couldNotLoadSuggestions,
     ErrorCode.acknowledgeTasksError => S.of(context)!.couldNotAcknowledgeTasks,
     ErrorCode.correspondentDeleteFailed =>
-      "Could not delete correspondent, please try again.", //TODO: INTL
+      S.of(context)!.couldNotDeleteCorrespondent,
     ErrorCode.documentTypeDeleteFailed =>
-      "Could not delete document type, please try again.",
-    ErrorCode.tagDeleteFailed => "Could not delete tag, please try again.",
-    ErrorCode.correspondentUpdateFailed =>
-      "Could not update correspondent, please try again.",
-    ErrorCode.documentTypeUpdateFailed =>
-      "Could not update document type, please try again.",
-    ErrorCode.tagUpdateFailed => "Could not update tag, please try again.",
+      S.of(context)!.couldNotDeleteDocumentType,
+    ErrorCode.tagDeleteFailed => S.of(context)!.couldNotDeleteTag,
     ErrorCode.storagePathDeleteFailed =>
-      "Could not delete storage path, please try again.",
+      S.of(context)!.couldNotDeleteStoragePath,
+    ErrorCode.correspondentUpdateFailed =>
+      S.of(context)!.couldNotUpdateCorrespondent,
+    ErrorCode.documentTypeUpdateFailed =>
+      S.of(context)!.couldNotUpdateDocumentType,
+    ErrorCode.tagUpdateFailed => S.of(context)!.couldNotUpdateTag,
     ErrorCode.storagePathUpdateFailed =>
-      "Could not update storage path, please try again.",
+      S.of(context)!.couldNotUpdateStoragePath,
     ErrorCode.serverInformationLoadFailed =>
-      "Could not load server information.",
-    ErrorCode.serverStatisticsLoadFailed => "Could not load server statistics.",
-    ErrorCode.uiSettingsLoadFailed => "Could not load UI settings",
-    ErrorCode.loadTasksError => "Could not load tasks.",
-    ErrorCode.userNotFound => "User could not be found.",
-    ErrorCode.updateSavedViewError => "Could not update saved view.",
+      S.of(context)!.couldNotLoadServerInformation,
+    ErrorCode.serverStatisticsLoadFailed =>
+      S.of(context)!.couldNotLoadStatistics,
+    ErrorCode.uiSettingsLoadFailed => S.of(context)!.couldNotLoadUISettings,
+    ErrorCode.loadTasksError => S.of(context)!.couldNotLoadTasks,
+    ErrorCode.userNotFound => S.of(context)!.userNotFound,
+    ErrorCode.updateSavedViewError => S.of(context)!.couldNotUpdateSavedView,
   };
 }

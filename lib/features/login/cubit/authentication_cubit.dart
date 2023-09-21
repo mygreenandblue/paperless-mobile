@@ -16,6 +16,7 @@ import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 part 'authentication_cubit.freezed.dart';
 part 'authentication_state.dart';
@@ -196,8 +197,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         "restoreSessionState",
         "Biometric authentication required, waiting for user to authenticate...",
       );
-      final localAuthSuccess = await _localAuthService
-          .authenticateLocalUser("Authenticate to log back in"); //TODO: INTL
+      final authenticationMesage =
+          (await S.delegate.load(Locale(globalSettings.preferredLocaleSubtag)))
+              .verifyYourIdentity;
+      final localAuthSuccess =
+          await _localAuthService.authenticateLocalUser(authenticationMesage);
       if (!localAuthSuccess) {
         emit(const AuthenticationState.requriresLocalAuthentication());
         _debugPrintMessage(
@@ -233,7 +237,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       );
       throw Exception(
         "User should be authenticated but no authentication information was found.",
-      ); //TODO: INTL
+      );
     }
     _debugPrintMessage(
       "restoreSessionState",

@@ -42,7 +42,8 @@ class _LandingPageState extends State<LandingPage> {
             slivers: [
               SliverToBoxAdapter(
                 child: Text(
-                  "Welcome, ${currentUser.fullName ?? currentUser.username}!",
+                  S.of(context)!.welcomeUser(
+                      currentUser.fullName ?? currentUser.username),
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -81,13 +82,12 @@ class _LandingPageState extends State<LandingPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "There are no saved views to show on your dashboard.", //TODO: INTL
-                                ).padded(),
+                                Text(S.of(context)!.noSavedViewOnHomepageHint)
+                                    .padded(),
                                 TextButton.icon(
                                   onPressed: () {},
                                   icon: const Icon(Icons.add),
-                                  label: Text("Add new view"),
+                                  label: Text(S.of(context)!.newView),
                                 )
                               ],
                             ).paddedOnly(left: 16),
@@ -121,35 +121,23 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget _buildStatisticsCard(BuildContext context) {
     final currentUser = context.read<LocalUserAccount>().paperlessUser;
-    return FutureBuilder<PaperlessServerStatisticsModel>(
-      future: context.read<PaperlessServerStatsApi>().getServerStatistics(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Card(
-            margin: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Statistics", //TODO: INTL
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ],
-            ).padded(16),
-          );
-        }
-        final stats = snapshot.data!;
-        return ExpansionCard(
-          initiallyExpanded: false,
-          title: Text(
-            "Statistics", //TODO: INTL
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          content: Column(
+
+    return ExpansionCard(
+      initiallyExpanded: false,
+      title: Text(
+        S.of(context)!.statistics,
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      content: FutureBuilder<PaperlessServerStatisticsModel>(
+        future: context.read<PaperlessServerStatsApi>().getServerStatistics(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            ).paddedOnly(top: 8, bottom: 24);
+          }
+          final stats = snapshot.data!;
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Card(
@@ -157,7 +145,7 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: const Text("Documents in inbox:"),
+                  title: Text(S.of(context)!.documentsInInbox),
                   onTap: currentUser.canViewTags && currentUser.canViewDocuments
                       ? () => InboxRoute().go(context)
                       : null,
@@ -172,19 +160,13 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: const Text("Total documents:"),
+                  title: Text(S.of(context)!.totalDocuments),
                   onTap: () {
                     DocumentsRoute().go(context);
                   },
-                  trailing: Chip(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    label: Text(
-                      stats.documentsTotal.toString(),
-                    ),
+                  trailing: Text(
+                    stats.documentsTotal.toString(),
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),
@@ -193,16 +175,10 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: const Text("Total characters:"),
-                  trailing: Chip(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    label: Text(
-                      stats.totalChars.toString(),
-                    ),
+                  title: Text(S.of(context)!.totalCharacters),
+                  trailing: Text(
+                    stats.totalChars.toString(),
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),
@@ -214,9 +190,9 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
             ],
-          ).padded(16),
-        );
-      },
+          ).padded(16);
+        },
+      ),
     );
   }
 }

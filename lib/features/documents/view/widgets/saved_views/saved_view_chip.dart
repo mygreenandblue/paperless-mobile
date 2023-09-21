@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/confirm_delete_saved_view_dialog.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 
 class SavedViewChip extends StatefulWidget {
@@ -102,7 +101,6 @@ class _SavedViewChipState extends State<SavedViewChip>
                   _buildLabel(context, effectiveForegroundColor)
                       .paddedSymmetrically(
                     horizontal: 12,
-                    vertical: 0,
                   ),
                 ],
               ).paddedOnly(left: 8),
@@ -120,6 +118,7 @@ class _SavedViewChipState extends State<SavedViewChip>
 
   Widget _buildTrailing(Color effectiveForegroundColor) {
     return IconButton(
+      padding: EdgeInsets.zero,
       icon: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {

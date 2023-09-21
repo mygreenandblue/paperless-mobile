@@ -6,6 +6,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -34,7 +35,6 @@ import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
@@ -109,7 +109,6 @@ void main() async {
     if (Platform.isIOS) {
       iosInfo = await DeviceInfoPlugin().iosInfo;
     }
-
     final connectivity = Connectivity();
     final localAuthentication = LocalAuthentication();
     final connectivityStatusService =
@@ -149,6 +148,7 @@ void main() async {
     final authenticationCubit =
         AuthenticationCubit(localAuthService, apiFactory, sessionManager);
     await authenticationCubit.restoreSessionState();
+
     runApp(
       MultiProvider(
         providers: [
@@ -228,11 +228,11 @@ class _GoRouterShellState extends State<GoRouterShell> {
       $loginRoute,
       $verifyIdentityRoute,
       $switchingAccountsRoute,
-      $settingsRoute,
       ShellRoute(
         navigatorKey: rootNavigatorKey,
         builder: ProviderShellRoute(widget.apiFactory).build,
         routes: [
+          $settingsRoute,
           $savedViewsRoute,
           StatefulShellRoute(
             navigatorContainerBuilder: (context, navigationShell, children) {

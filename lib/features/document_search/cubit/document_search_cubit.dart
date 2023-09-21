@@ -24,8 +24,10 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
     this.api,
     this.notifier,
     this._userAppState,
-  ) : super(DocumentSearchState(
-            searchHistory: _userAppState.documentSearchHistory)) {
+  ) : super(
+          DocumentSearchState(
+              searchHistory: _userAppState.documentSearchHistory),
+        ) {
     notifier.addListener(
       this,
       onDeleted: remove,
@@ -34,22 +36,25 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
   }
 
   Future<void> search(String query) async {
-    emit(state.copyWith(
-      isLoading: true,
-      suggestions: [],
-      view: SearchView.results,
-    ));
+    final normalizedQuery = query.trim();
+    emit(
+      state.copyWith(
+        isLoading: true,
+        suggestions: [],
+        view: SearchView.results,
+      ),
+    );
     final searchFilter = DocumentFilter(
-      query: TextQuery.extended(query),
+      query: TextQuery.extended(normalizedQuery),
     );
 
     await updateFilter(filter: searchFilter);
     emit(
       state.copyWith(
         searchHistory: [
-          query,
+          normalizedQuery,
           ...state.searchHistory
-              .whereNot((previousQuery) => previousQuery == query)
+              .whereNot((previousQuery) => previousQuery == normalizedQuery)
         ],
       ),
     );

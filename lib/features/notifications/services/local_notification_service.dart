@@ -130,7 +130,7 @@ class LocalNotificationService {
           filePath: filePath,
         ).toJson(),
       ),
-    ); //TODO: INTL
+    );
   }
 
 

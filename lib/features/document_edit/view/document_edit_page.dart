@@ -5,11 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
@@ -19,7 +19,6 @@ import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class DocumentEditPage extends StatefulWidget {
@@ -46,253 +45,257 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<LocalUserAccount>().paperlessUser;
-    return BlocBuilder<DocumentEditCubit, DocumentEditState>(
-      builder: (context, state) {
-        final filteredSuggestions = state.suggestions?.documentDifference(
-            context.read<DocumentEditCubit>().state.document);
-        return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              floatingActionButton: FloatingActionButton.extended(
-                heroTag: "fab_document_edit",
-                onPressed: () => _onSubmit(state.document),
-                icon: const Icon(Icons.save),
-                label: Text(S.of(context)!.saveChanges),
-              ),
-              appBar: AppBar(
-                title: Text(S.of(context)!.editDocument),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(
-                      text: S.of(context)!.overview,
-                    ),
-                    Tab(
-                      text: S.of(context)!.content,
-                    )
-                  ],
+    return PopWithUnsavedChanges(
+      hasChangesPredicate: () => _formKey.currentState?.isDirty ?? false,
+      child: BlocBuilder<DocumentEditCubit, DocumentEditState>(
+        builder: (context, state) {
+          final filteredSuggestions = state.suggestions?.documentDifference(
+              context.read<DocumentEditCubit>().state.document);
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                floatingActionButton: FloatingActionButton.extended(
+                  heroTag: "fab_document_edit",
+                  onPressed: () => _onSubmit(state.document),
+                  icon: const Icon(Icons.save),
+                  label: Text(S.of(context)!.saveChanges),
                 ),
-              ),
-              extendBody: true,
-              body: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                  top: 8,
-                  left: 8,
-                  right: 8,
-                ),
-                child: FormBuilder(
-                  key: _formKey,
-                  child: TabBarView(
-                    children: [
-                      ListView(
-                        children: [
-                          _buildTitleFormField(state.document.title).padded(),
-                          _buildCreatedAtFormField(
-                            state.document.created,
-                            filteredSuggestions,
-                          ).padded(),
-                          // Correspondent form field
-                          if (currentUser.canViewCorrespondents)
-                            Column(
-                              children: [
-                                LabelFormField<Correspondent>(
-                                  showAnyAssignedOption: false,
-                                  showNotAssignedOption: false,
-                                  addLabelPageBuilder: (initialValue) =>
-                                      RepositoryProvider.value(
-                                    value: context.read<LabelRepository>(),
-                                    child: AddCorrespondentPage(
-                                      initialName: initialValue,
-                                    ),
-                                  ),
-                                  addLabelText: S.of(context)!.addCorrespondent,
-                                  labelText: S.of(context)!.correspondent,
-                                  options: context
-                                      .watch<DocumentEditCubit>()
-                                      .state
-                                      .correspondents,
-                                  initialValue:
-                                      state.document.correspondent != null
-                                          ? IdQueryParameter.fromId(
-                                              state.document.correspondent!)
-                                          : const IdQueryParameter.unset(),
-                                  name: fkCorrespondent,
-                                  prefixIcon: const Icon(Icons.person_outlined),
-                                  allowSelectUnassigned: true,
-                                  canCreateNewLabel:
-                                      currentUser.canCreateCorrespondents,
-                                ),
-                                if (filteredSuggestions
-                                        ?.hasSuggestedCorrespondents ??
-                                    false)
-                                  _buildSuggestionsSkeleton<int>(
-                                    suggestions:
-                                        filteredSuggestions!.correspondents,
-                                    itemBuilder: (context, itemData) =>
-                                        ActionChip(
-                                      label: Text(
-                                          state.correspondents[itemData]!.name),
-                                      onPressed: () {
-                                        _formKey.currentState
-                                            ?.fields[fkCorrespondent]
-                                            ?.didChange(
-                                          IdQueryParameter.fromId(itemData),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                              ],
-                            ).padded(),
-                          // DocumentType form field
-                          if (currentUser.canViewDocumentTypes)
-                            Column(
-                              children: [
-                                LabelFormField<DocumentType>(
-                                  showAnyAssignedOption: false,
-                                  showNotAssignedOption: false,
-                                  addLabelPageBuilder: (currentInput) =>
-                                      RepositoryProvider.value(
-                                    value: context.read<LabelRepository>(),
-                                    child: AddDocumentTypePage(
-                                      initialName: currentInput,
-                                    ),
-                                  ),
-                                  canCreateNewLabel:
-                                      currentUser.canCreateDocumentTypes,
-                                  addLabelText: S.of(context)!.addDocumentType,
-                                  labelText: S.of(context)!.documentType,
-                                  initialValue:
-                                      state.document.documentType != null
-                                          ? IdQueryParameter.fromId(
-                                              state.document.documentType!)
-                                          : const IdQueryParameter.unset(),
-                                  options: state.documentTypes,
-                                  name: _DocumentEditPageState.fkDocumentType,
-                                  prefixIcon:
-                                      const Icon(Icons.description_outlined),
-                                  allowSelectUnassigned: true,
-                                ),
-                                if (filteredSuggestions
-                                        ?.hasSuggestedDocumentTypes ??
-                                    false)
-                                  _buildSuggestionsSkeleton<int>(
-                                    suggestions:
-                                        filteredSuggestions!.documentTypes,
-                                    itemBuilder: (context, itemData) =>
-                                        ActionChip(
-                                      label: Text(
-                                          state.documentTypes[itemData]!.name),
-                                      onPressed: () => _formKey
-                                          .currentState?.fields[fkDocumentType]
-                                          ?.didChange(
-                                        IdQueryParameter.fromId(itemData),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ).padded(),
-                          // StoragePath form field
-                          if (currentUser.canViewStoragePaths)
-                            Column(
-                              children: [
-                                LabelFormField<StoragePath>(
-                                  showAnyAssignedOption: false,
-                                  showNotAssignedOption: false,
-                                  addLabelPageBuilder: (initialValue) =>
-                                      RepositoryProvider.value(
-                                    value: context.read<LabelRepository>(),
-                                    child: AddStoragePathPage(
-                                        initialName: initialValue),
-                                  ),
-                                  canCreateNewLabel:
-                                      currentUser.canCreateStoragePaths,
-                                  addLabelText: S.of(context)!.addStoragePath,
-                                  labelText: S.of(context)!.storagePath,
-                                  options: state.storagePaths,
-                                  initialValue:
-                                      state.document.storagePath != null
-                                          ? IdQueryParameter.fromId(
-                                              state.document.storagePath!)
-                                          : const IdQueryParameter.unset(),
-                                  name: fkStoragePath,
-                                  prefixIcon: const Icon(Icons.folder_outlined),
-                                  allowSelectUnassigned: true,
-                                ),
-                              ],
-                            ).padded(),
-                          // Tag form field
-                          if (currentUser.canViewTags)
-                            TagsFormField(
-                              options: state.tags,
-                              name: fkTags,
-                              allowOnlySelection: true,
-                              allowCreation: true,
-                              allowExclude: false,
-                              initialValue: TagsQuery.ids(
-                                include: state.document.tags.toList(),
-                              ),
-                            ).padded(),
-                          if (filteredSuggestions?.tags
-                                  .toSet()
-                                  .difference(state.document.tags.toSet())
-                                  .isNotEmpty ??
-                              false)
-                            _buildSuggestionsSkeleton<int>(
-                              suggestions:
-                                  (filteredSuggestions?.tags.toSet() ?? {}),
-                              itemBuilder: (context, itemData) {
-                                final tag = state.tags[itemData]!;
-                                return ActionChip(
-                                  label: Text(
-                                    tag.name,
-                                    style: TextStyle(color: tag.textColor),
-                                  ),
-                                  backgroundColor: tag.color,
-                                  onPressed: () {
-                                    final currentTags = _formKey.currentState
-                                        ?.fields[fkTags]?.value as TagsQuery;
-                                    _formKey.currentState?.fields[fkTags]
-                                        ?.didChange(
-                                      currentTags.maybeWhen(
-                                        ids: (include, exclude) =>
-                                            TagsQuery.ids(
-                                                include: [...include, itemData],
-                                                exclude: exclude),
-                                        orElse: () =>
-                                            TagsQuery.ids(include: [itemData]),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          // Prevent tags from being hidden by fab
-                          const SizedBox(height: 64),
-                        ],
-                      ),
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            FormBuilderTextField(
-                              name: fkContent,
-                              maxLines: null,
-                              keyboardType: TextInputType.multiline,
-                              initialValue: state.document.content,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                              ),
-                            ),
-                            const SizedBox(height: 84),
-                          ],
-                        ),
-                      ),
+                appBar: AppBar(
+                  title: Text(S.of(context)!.editDocument),
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(text: S.of(context)!.overview),
+                      Tab(text: S.of(context)!.content)
                     ],
                   ),
                 ),
-              )),
-        );
-      },
+                extendBody: true,
+                body: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                    top: 8,
+                    left: 8,
+                    right: 8,
+                  ),
+                  child: FormBuilder(
+                    key: _formKey,
+                    child: TabBarView(
+                      children: [
+                        ListView(
+                          children: [
+                            _buildTitleFormField(state.document.title).padded(),
+                            _buildCreatedAtFormField(
+                              state.document.created,
+                              filteredSuggestions,
+                            ).padded(),
+                            // Correspondent form field
+                            if (currentUser.canViewCorrespondents)
+                              Column(
+                                children: [
+                                  LabelFormField<Correspondent>(
+                                    showAnyAssignedOption: false,
+                                    showNotAssignedOption: false,
+                                    addLabelPageBuilder: (initialValue) =>
+                                        RepositoryProvider.value(
+                                      value: context.read<LabelRepository>(),
+                                      child: AddCorrespondentPage(
+                                        initialName: initialValue,
+                                      ),
+                                    ),
+                                    addLabelText:
+                                        S.of(context)!.addCorrespondent,
+                                    labelText: S.of(context)!.correspondent,
+                                    options: context
+                                        .watch<DocumentEditCubit>()
+                                        .state
+                                        .correspondents,
+                                    initialValue:
+                                        state.document.correspondent != null
+                                            ? IdQueryParameter.fromId(
+                                                state.document.correspondent!)
+                                            : const IdQueryParameter.unset(),
+                                    name: fkCorrespondent,
+                                    prefixIcon:
+                                        const Icon(Icons.person_outlined),
+                                    allowSelectUnassigned: true,
+                                    canCreateNewLabel:
+                                        currentUser.canCreateCorrespondents,
+                                  ),
+                                  if (filteredSuggestions
+                                          ?.hasSuggestedCorrespondents ??
+                                      false)
+                                    _buildSuggestionsSkeleton<int>(
+                                      suggestions:
+                                          filteredSuggestions!.correspondents,
+                                      itemBuilder: (context, itemData) =>
+                                          ActionChip(
+                                        label: Text(state
+                                            .correspondents[itemData]!.name),
+                                        onPressed: () {
+                                          _formKey.currentState
+                                              ?.fields[fkCorrespondent]
+                                              ?.didChange(
+                                            IdQueryParameter.fromId(itemData),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                ],
+                              ).padded(),
+                            // DocumentType form field
+                            if (currentUser.canViewDocumentTypes)
+                              Column(
+                                children: [
+                                  LabelFormField<DocumentType>(
+                                    showAnyAssignedOption: false,
+                                    showNotAssignedOption: false,
+                                    addLabelPageBuilder: (currentInput) =>
+                                        RepositoryProvider.value(
+                                      value: context.read<LabelRepository>(),
+                                      child: AddDocumentTypePage(
+                                        initialName: currentInput,
+                                      ),
+                                    ),
+                                    canCreateNewLabel:
+                                        currentUser.canCreateDocumentTypes,
+                                    addLabelText:
+                                        S.of(context)!.addDocumentType,
+                                    labelText: S.of(context)!.documentType,
+                                    initialValue:
+                                        state.document.documentType != null
+                                            ? IdQueryParameter.fromId(
+                                                state.document.documentType!)
+                                            : const IdQueryParameter.unset(),
+                                    options: state.documentTypes,
+                                    name: _DocumentEditPageState.fkDocumentType,
+                                    prefixIcon:
+                                        const Icon(Icons.description_outlined),
+                                    allowSelectUnassigned: true,
+                                  ),
+                                  if (filteredSuggestions
+                                          ?.hasSuggestedDocumentTypes ??
+                                      false)
+                                    _buildSuggestionsSkeleton<int>(
+                                      suggestions:
+                                          filteredSuggestions!.documentTypes,
+                                      itemBuilder: (context, itemData) =>
+                                          ActionChip(
+                                        label: Text(state
+                                            .documentTypes[itemData]!.name),
+                                        onPressed: () => _formKey.currentState
+                                            ?.fields[fkDocumentType]
+                                            ?.didChange(
+                                          IdQueryParameter.fromId(itemData),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ).padded(),
+                            // StoragePath form field
+                            if (currentUser.canViewStoragePaths)
+                              Column(
+                                children: [
+                                  LabelFormField<StoragePath>(
+                                    showAnyAssignedOption: false,
+                                    showNotAssignedOption: false,
+                                    addLabelPageBuilder: (initialValue) =>
+                                        RepositoryProvider.value(
+                                      value: context.read<LabelRepository>(),
+                                      child: AddStoragePathPage(
+                                          initialName: initialValue),
+                                    ),
+                                    canCreateNewLabel:
+                                        currentUser.canCreateStoragePaths,
+                                    addLabelText: S.of(context)!.addStoragePath,
+                                    labelText: S.of(context)!.storagePath,
+                                    options: state.storagePaths,
+                                    initialValue:
+                                        state.document.storagePath != null
+                                            ? IdQueryParameter.fromId(
+                                                state.document.storagePath!)
+                                            : const IdQueryParameter.unset(),
+                                    name: fkStoragePath,
+                                    prefixIcon:
+                                        const Icon(Icons.folder_outlined),
+                                    allowSelectUnassigned: true,
+                                  ),
+                                ],
+                              ).padded(),
+                            // Tag form field
+                            if (currentUser.canViewTags)
+                              TagsFormField(
+                                options: state.tags,
+                                name: fkTags,
+                                allowOnlySelection: true,
+                                allowCreation: true,
+                                allowExclude: false,
+                                initialValue: TagsQuery.ids(
+                                  include: state.document.tags.toList(),
+                                ),
+                              ).padded(),
+                            if (filteredSuggestions?.tags
+                                    .toSet()
+                                    .difference(state.document.tags.toSet())
+                                    .isNotEmpty ??
+                                false)
+                              _buildSuggestionsSkeleton<int>(
+                                suggestions:
+                                    (filteredSuggestions?.tags.toSet() ?? {}),
+                                itemBuilder: (context, itemData) {
+                                  final tag = state.tags[itemData]!;
+                                  return ActionChip(
+                                    label: Text(
+                                      tag.name,
+                                      style: TextStyle(color: tag.textColor),
+                                    ),
+                                    backgroundColor: tag.color,
+                                    onPressed: () {
+                                      final currentTags = _formKey.currentState
+                                          ?.fields[fkTags]?.value as TagsQuery;
+                                      _formKey.currentState?.fields[fkTags]
+                                          ?.didChange(
+                                        currentTags.maybeWhen(
+                                          ids: (include, exclude) =>
+                                              TagsQuery.ids(include: [
+                                            ...include,
+                                            itemData
+                                          ], exclude: exclude),
+                                          orElse: () => TagsQuery.ids(
+                                              include: [itemData]),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            // Prevent tags from being hidden by fab
+                            const SizedBox(height: 64),
+                          ],
+                        ),
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              FormBuilderTextField(
+                                name: fkContent,
+                                maxLines: null,
+                                keyboardType: TextInputType.multiline,
+                                initialValue: state.document.content,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                              const SizedBox(height: 84),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
+          );
+        },
+      ),
     );
   }
 

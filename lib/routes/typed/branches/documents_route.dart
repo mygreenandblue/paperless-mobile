@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
@@ -14,6 +15,7 @@ import 'package:paperless_mobile/features/documents/view/pages/documents_page.da
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/routes.dart';
+import 'package:paperless_mobile/theme.dart';
 
 part 'documents_route.g.dart';
 
@@ -92,14 +94,21 @@ class EditDocumentRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return BlocProvider(
-      create: (context) => DocumentEditCubit(
-        context.read(),
-        context.read(),
-        context.read(),
-        document: $extra,
-      )..loadFieldSuggestions(),
-      child: const DocumentEditPage(),
+    final theme = Theme.of(context);
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: buildOverlayStyle(
+        theme,
+        systemNavigationBarColor: theme.colorScheme.background,
+      ),
+      child: BlocProvider(
+        create: (context) => DocumentEditCubit(
+          context.read(),
+          context.read(),
+          context.read(),
+          document: $extra,
+        )..loadFieldSuggestions(),
+        child: const DocumentEditPage(),
+      ),
     );
   }
 }

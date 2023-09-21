@@ -33,8 +33,40 @@ class _InboxPageState extends State<InboxPage>
 
   @override
   final pagingScrollController = ScrollController();
+  final _nestedScrollViewKey = GlobalKey<NestedScrollViewState>();
   final _emptyStateRefreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   final _scrollController = ScrollController();
+  bool _showExtendedFab = true;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nestedScrollViewKey.currentState!.innerController
+          .addListener(_scrollExtentChangedListener);
+    });
+  }
+
+  @override
+  void dispose() {
+    _nestedScrollViewKey.currentState?.innerController
+        .removeListener(_scrollExtentChangedListener);
+    super.dispose();
+  }
+
+  void _scrollExtentChangedListener() {
+    const threshold = 400;
+    final offset =
+        _nestedScrollViewKey.currentState!.innerController.position.pixels;
+    if (offset < threshold && _showExtendedFab == false) {
+      setState(() {
+        _showExtendedFab = true;
+      });
+    } else if (offset >= threshold && _showExtendedFab == true) {
+      setState(() {
+        _showExtendedFab = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +80,31 @@ class _InboxPageState extends State<InboxPage>
             return const SizedBox.shrink();
           }
           return FloatingActionButton.extended(
-            heroTag: "fab_inbox",
-            label: Text(S.of(context)!.allSeen),
-            icon: const Icon(Icons.done_all),
+            extendedPadding: _showExtendedFab
+                ? null
+                : const EdgeInsets.symmetric(horizontal: 16),
+            heroTag: "inbox_page_fab",
+            label: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SizeTransition(
+                    sizeFactor: animation,
+                    axis: Axis.horizontal,
+                    child: child,
+                  ),
+                );
+              },
+              child: _showExtendedFab
+                  ? Row(
+                      children: [
+                        const Icon(Icons.done_all),
+                        Text(S.of(context)!.allSeen),
+                      ],
+                    )
+                  : const Icon(Icons.done_all),
+            ),
             onPressed: state.hasLoaded && state.documents.isNotEmpty
                 ? () => _onMarkAllAsSeen(
                       state.documents,
@@ -63,13 +117,9 @@ class _InboxPageState extends State<InboxPage>
       body: SafeArea(
         top: true,
         child: NestedScrollView(
+          key: _nestedScrollViewKey,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverOverlapAbsorber(
-              handle: searchBarHandle,
-              sliver: SliverSearchBar(
-                titleText: S.of(context)!.inbox,
-              ),
-            )
+            SliverSearchBar(titleText: S.of(context)!.inbox),
           ],
           body: BlocBuilder<InboxCubit, InboxState>(
             builder: (_, state) {

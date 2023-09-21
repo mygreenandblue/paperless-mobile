@@ -13,7 +13,6 @@ import 'package:paperless_mobile/features/document_bulk_action/view/widgets/full
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/view/add_saved_view_page.dart';
 import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_details_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/view/saved_view_details_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';

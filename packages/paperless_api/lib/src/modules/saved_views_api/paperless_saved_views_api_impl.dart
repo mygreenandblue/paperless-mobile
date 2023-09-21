@@ -16,7 +16,7 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
   @override
   Future<Iterable<SavedView>> findAll([Iterable<int>? ids]) async {
     final result = await getCollection(
-      "/api/saved_views/",
+      "/api/saved_views/?page_size=100000",
       SavedView.fromJson,
       ErrorCode.loadSavedViewsError,
       client: _client,
