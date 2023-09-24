@@ -184,9 +184,7 @@ Don't forget to give the project a star! Thanks again!
 Distributed under the GNU General Public License v3.0. See `LICENSE.txt` for more information.
 
 ## Donations
-I do this in my free time, so if you like the project, consider buying me a coffee! Any donation is much appreciated :^)
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/astubenbord)
+I you wish to support the development of this project, you can donate through GitHub Sponsors (see "Sponsor this project" on the right). Any donation is much appreciated and keeps the development of this project alive!
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
