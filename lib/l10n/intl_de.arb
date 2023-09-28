@@ -969,5 +969,9 @@
   "showAll": "Alle anzeigen",
   "@showAll": {
     "description": "Button label shown on a saved view preview to open this view in the documents page"
+  },
+  "userAlreadyExists": "Dieser Nutzer existiert bereits.",
+  "@userAlreadyExists": {
+    "description": "Error message shown when the user tries to add an already existing account."
   }
 }

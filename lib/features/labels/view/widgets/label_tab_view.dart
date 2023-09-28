@@ -44,7 +44,7 @@ class LabelTabView<T extends Label> extends StatelessWidget {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectivityState) {
         if (!connectivityState.isConnected) {
-          return const OfflineWidget();
+          return const SliverFillRemaining(child: OfflineWidget());
         }
         final sortedLabels = labels.values.toList()..sort();
         if (labels.isEmpty) {

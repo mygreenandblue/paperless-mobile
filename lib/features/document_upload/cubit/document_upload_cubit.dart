@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 
 part 'document_upload_state.dart';
 
@@ -13,12 +13,12 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final PaperlessDocumentsApi _documentApi;
 
   final LabelRepository _labelRepository;
-  final Connectivity _connectivity;
+  final ConnectivityStatusService _connectivityStatusService;
 
   DocumentUploadCubit(
     this._labelRepository,
     this._documentApi,
-    this._connectivity,
+    this._connectivityStatusService,
   ) : super(const DocumentUploadState()) {
     _labelRepository.addListener(
       this,

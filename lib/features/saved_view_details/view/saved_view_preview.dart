@@ -22,8 +22,11 @@ class SavedViewPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider(
-      create: (context) =>
-          SavedViewPreviewCubit(context.read(), savedView)..initialize(),
+      create: (context) => SavedViewPreviewCubit(
+        context.read(),
+        context.read(),
+        view: savedView,
+      )..initialize(),
       builder: (context, child) {
         return ExpansionCard(
           initiallyExpanded: expanded,
@@ -33,34 +36,40 @@ class SavedViewPreview extends StatelessWidget {
             children: [
               BlocBuilder<SavedViewPreviewCubit, SavedViewPreviewState>(
                 builder: (context, state) {
-                  return state.maybeWhen(
-                    loaded: (documents) {
-                      if (documents.isEmpty) {
-                        return Text(S.of(context)!.noDocumentsFound).padded();
-                      } else {
-                        return Column(
-                          children: [
-                            for (final document in documents)
-                              DocumentListItem(
-                                document: document,
-                                isLabelClickable: false,
-                                isSelected: false,
-                                isSelectionActive: false,
-                                onTap: (document) {
-                                  DocumentDetailsRoute($extra: document)
-                                      .push(context);
-                                },
-                                onSelected: null,
-                              ),
-                          ],
-                        );
-                      }
-                    },
-                    error: () => Text(S.of(context)!.couldNotLoadSavedViews),
-                    orElse: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ).paddedOnly(top: 8, bottom: 24),
-                  );
+                  return switch (state) {
+                    LoadedSavedViewPreviewState(documents: var documents) =>
+                      Builder(
+                        builder: (context) {
+                          if (documents.isEmpty) {
+                            return Text(S.of(context)!.noDocumentsFound)
+                                .padded();
+                          } else {
+                            return Column(
+                              children: [
+                                for (final document in documents)
+                                  DocumentListItem(
+                                    document: document,
+                                    isLabelClickable: false,
+                                    isSelected: false,
+                                    isSelectionActive: false,
+                                    onTap: (document) {
+                                      DocumentDetailsRoute($extra: document)
+                                          .push(context);
+                                    },
+                                    onSelected: null,
+                                  ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
+                    ErrorSavedViewPreviewState() =>
+                      Text(S.of(context)!.couldNotLoadSavedViews).padded(16),
+                    OfflineSavedViewPreviewState() =>
+                      Text(S.of(context)!.youAreCurrentlyOffline).padded(16),
+                    _ => const CircularProgressIndicator()
+                        .paddedOnly(top: 8, bottom: 24),
+                  };
                 },
               ),
               Row(

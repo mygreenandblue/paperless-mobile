@@ -67,5 +67,6 @@ enum ErrorCode {
   uiSettingsLoadFailed,
   loadTasksError,
   userNotFound,
+  userAlreadyExists,
   updateSavedViewError;
 }

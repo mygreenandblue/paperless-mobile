@@ -6,6 +6,7 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_view_chip.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 
 class SavedViewsWidget extends StatefulWidget {
@@ -146,15 +147,17 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                                   final isSelected =
                                       (widget.filter.selectedView ?? -1) ==
                                           view.id;
-                                  return SavedViewChip(
-                                    view: view,
-                                    onViewSelected: widget.onViewSelected,
-                                    selected: isSelected,
-                                    hasChanged: isSelected &&
-                                        view.toDocumentFilter() !=
-                                            widget.filter,
-                                    onUpdateView: widget.onUpdateView,
-                                    onDeleteView: widget.onDeleteView,
+                                  return ConnectivityAwareActionWrapper(
+                                    child: SavedViewChip(
+                                      view: view,
+                                      onViewSelected: widget.onViewSelected,
+                                      selected: isSelected,
+                                      hasChanged: isSelected &&
+                                          view.toDocumentFilter() !=
+                                              widget.filter,
+                                      onUpdateView: widget.onUpdateView,
+                                      onDeleteView: widget.onDeleteView,
+                                    ),
                                   );
                                 },
                                 separatorBuilder: (context, index) =>
@@ -178,12 +181,14 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                 alignment: Alignment.centerRight,
                 child: Tooltip(
                   message: S.of(context)!.createFromCurrentFilter,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      CreateSavedViewRoute(widget.filter).push(context);
-                    },
-                    icon: const Icon(Icons.add),
-                    label: Text(S.of(context)!.newView),
+                  child: ConnectivityAwareActionWrapper(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        CreateSavedViewRoute(widget.filter).push(context);
+                      },
+                      icon: const Icon(Icons.add),
+                      label: Text(S.of(context)!.newView),
+                    ),
                   ),
                 ).padded(4),
               ),

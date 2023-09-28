@@ -7,6 +7,7 @@ import 'package:paperless_mobile/core/interceptor/server_reachability_error_inte
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
+import 'package:rxdart/subjects.dart';
 
 abstract class ConnectivityStatusService {
   Future<bool> isConnectedToInternet();
@@ -20,14 +21,19 @@ abstract class ConnectivityStatusService {
 
 class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
   final Connectivity _connectivity;
+  final BehaviorSubject<bool> _connectivityState$ = BehaviorSubject();
 
-  ConnectivityStatusServiceImpl(this._connectivity);
+  ConnectivityStatusServiceImpl(this._connectivity) {
+    _connectivityState$.addStream(
+      _connectivity.onConnectivityChanged
+          .map(_hasActiveInternetConnection)
+          .asBroadcastStream(),
+    );
+  }
 
   @override
   Stream<bool> connectivityChanges() {
-    return _connectivity.onConnectivityChanged
-        .map(_hasActiveInternetConnection)
-        .asBroadcastStream();
+    return _connectivityState$.asBroadcastStream();
   }
 
   @override
@@ -96,5 +102,33 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
       }
     }
     return ReachabilityStatus.notReachable;
+  }
+}
+
+class ConnectivityStatusServiceMock implements ConnectivityStatusService {
+  final bool isConnected;
+
+  ConnectivityStatusServiceMock(this.isConnected);
+  @override
+  Stream<bool> connectivityChanges() {
+    return Stream.value(isConnected);
+  }
+
+  @override
+  Future<bool> isConnectedToInternet() async {
+    return isConnected;
+  }
+
+  @override
+  Future<ReachabilityStatus> isPaperlessServerReachable(String serverAddress,
+      [ClientCertificate? clientCertificate]) async {
+    return isConnected
+        ? ReachabilityStatus.reachable
+        : ReachabilityStatus.notReachable;
+  }
+
+  @override
+  Future<bool> isServerReachable(String serverAddress) async {
+    return isConnected;
   }
 }

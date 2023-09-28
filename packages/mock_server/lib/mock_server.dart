@@ -1,13 +1,13 @@
 library mock_server;
 
-export 'response_delay_generator.dart';
+export 'response_delay_factory.dart';
 
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:mock_server/english_words.dart';
-import 'package:mock_server/response_delay_generator.dart';
+import 'package:mock_server/response_delay_factory.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
@@ -22,15 +22,17 @@ class LocalMockApiServer {
 
   static get baseUrl => 'http://$host:$port/';
 
-  final DelayGenerator _delayGenerator;
+  final ResponseDelayFactory _delayGenerator;
 
   late shelf_router.Router app;
   Future<Map<String, dynamic>> loadFixture(String name) async {
-    var fixture = await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
+    var fixture =
+        await rootBundle.loadString('packages/mock_server/fixtures/$name.json');
     return json.decode(fixture);
   }
 
-  LocalMockApiServer([this._delayGenerator = const ZeroDelayGenerator()]) {
+  LocalMockApiServer(
+      [this._delayGenerator = const ZeroResponseDelayFactory()]) {
     app = shelf_router.Router();
 
     Map<String, dynamic> createdTags = {};
@@ -44,7 +46,8 @@ class LocalMockApiServer {
       log.info('Responding to /api/token/');
       var body = await req.bodyJsonMap();
       if (body?['username'] == 'admin' && body?['password'] == 'test') {
-        return JsonMockResponse.ok({'token': 'testToken'}, _delayGenerator.nextDelay());
+        return JsonMockResponse.ok(
+            {'token': 'testToken'}, _delayGenerator.nextDelay());
       } else {
         return Response.unauthorized('Unauthorized');
       }
@@ -149,9 +152,13 @@ class LocalMockApiServer {
 
     app.delete('/api/tags/<tagId>/', (Request req, String tagId) async {
       log.info('Responding to PUT /api/tags/<tagId>/');
-      (createdTags['results'] as List<dynamic>).removeWhere((element) => element['id'] == tagId);
+      (createdTags['results'] as List<dynamic>)
+          .removeWhere((element) => element['id'] == tagId);
       return Response(204,
-          body: null, headers: {'Content-Type': 'application/json'}, encoding: null, context: null);
+          body: null,
+          headers: {'Content-Type': 'application/json'},
+          encoding: null,
+          context: null);
     });
 
     app.get('/api/storage_paths/', (Request req) async {
@@ -180,7 +187,8 @@ class LocalMockApiServer {
 
     app.get('/api/documents/<docId>/thumb/', (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/thumb/');
-      var thumb = await rootBundle.load('packages/mock_server/fixtures/lorem-ipsum.png');
+      var thumb = await rootBundle
+          .load('packages/mock_server/fixtures/lorem-ipsum.png');
       try {
         var resp = Response.ok(
           http.ByteStream.fromBytes(thumb.buffer.asInt8List()),
@@ -192,14 +200,16 @@ class LocalMockApiServer {
       }
     });
 
-    app.get('/api/documents/<docId>/metadata/', (Request req, String docId) async {
+    app.get('/api/documents/<docId>/metadata/',
+        (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/metadata/');
       var data = await loadFixture('metadata');
       return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
     });
 
     //This is not yet used in the app
-    app.get('/api/documents/<docId>/suggestions/', (Request req, String docId) async {
+    app.get('/api/documents/<docId>/suggestions/',
+        (Request req, String docId) async {
       log.info('Responding to /api/documents/<docId>/suggestions/');
       var data = await loadFixture('suggestions');
       return JsonMockResponse.ok(data, _delayGenerator.nextDelay());
@@ -235,7 +245,10 @@ class LocalMockApiServer {
       final term = req.url.queryParameters["term"] ?? '';
       final limit = int.parse(req.url.queryParameters["limit"] ?? '5');
       return JsonMockResponse.ok(
-        mostFrequentWords.where((element) => element.startsWith(term)).take(limit).toList(),
+        mostFrequentWords
+            .where((element) => element.startsWith(term))
+            .take(limit)
+            .toList(),
         _delayGenerator.nextDelay(),
       );
     });

@@ -39,8 +39,6 @@ class DioHttpErrorInterceptor extends Interceptor {
           ),
         );
       }
-    } else {
-      return handler.next(err);
     }
   }
 }

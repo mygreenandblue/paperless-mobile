@@ -160,15 +160,18 @@ class HomeShellWidget extends StatelessWidget {
                             Hive.box<LocalUserAppState>(
                                     HiveBoxes.localUserAppState)
                                 .get(currentUserId)!,
+                            context.read(),
                           )..initialize(),
                         ),
                         Provider(
                           create: (context) =>
-                              DocumentScannerCubit(context.read()),
+                              DocumentScannerCubit(context.read())
+                                ..initialize(),
                         ),
                         Provider(
                           create: (context) {
                             final inboxCubit = InboxCubit(
+                              context.read(),
                               context.read(),
                               context.read(),
                               context.read(),

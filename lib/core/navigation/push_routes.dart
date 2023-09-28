@@ -43,6 +43,7 @@ Future<void> pushSavedViewDetailsRoute(
               context.read(),
               context.read(),
               LocalUserAppState.current,
+              context.read(),
               savedView: savedView,
             ),
             child: SavedViewDetailsPage(

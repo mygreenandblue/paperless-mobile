@@ -7,6 +7,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 
@@ -18,7 +19,8 @@ class InboxCubit extends HydratedCubit<InboxState>
   final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
-
+  @override
+  final ConnectivityStatusService connectivityStatusService;
   @override
   final DocumentChangedNotifier notifier;
 
@@ -32,6 +34,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     this._statsApi,
     this._labelRepository,
     this.notifier,
+    this.connectivityStatusService,
   ) : super(InboxState(
           labels: _labelRepository.state,
         )) {

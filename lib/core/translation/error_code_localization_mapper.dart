@@ -75,5 +75,6 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.loadTasksError => S.of(context)!.couldNotLoadTasks,
     ErrorCode.userNotFound => S.of(context)!.userNotFound,
     ErrorCode.updateSavedViewError => S.of(context)!.couldNotUpdateSavedView,
+    ErrorCode.userAlreadyExists => S.of(context)!.userAlreadyExists,
   };
 }

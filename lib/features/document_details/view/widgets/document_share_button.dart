@@ -11,6 +11,7 @@ import 'package:paperless_mobile/features/document_details/cubit/document_detail
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
 import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/helpers/permission_helpers.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -34,19 +35,25 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: S.of(context)!.shareTooltip,
-      icon: _isDownloadPending
-          ? const SizedBox(
-              height: 16,
-              width: 16,
-              child: CircularProgressIndicator(),
-            )
-          : const Icon(Icons.share),
-      onPressed: widget.document != null && widget.enabled
-          ? () => _onShare(widget.document!)
-          : null,
-    ).paddedOnly(right: 4);
+    return ConnectivityAwareActionWrapper(
+      offlineBuilder: (context, child) => const IconButton(
+        icon: Icon(Icons.share),
+        onPressed: null,
+      ),
+      child: IconButton(
+        tooltip: S.of(context)!.shareTooltip,
+        icon: _isDownloadPending
+            ? const SizedBox(
+                height: 16,
+                width: 16,
+                child: CircularProgressIndicator(),
+              )
+            : const Icon(Icons.share),
+        onPressed: widget.document != null && widget.enabled
+            ? () => _onShare(widget.document!)
+            : null,
+      ).paddedOnly(right: 4),
+    );
   }
 
   Future<void> _onShare(DocumentModel document) async {

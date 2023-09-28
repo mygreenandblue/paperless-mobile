@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
@@ -333,12 +334,16 @@ class _DocumentsPageState extends State<DocumentsPage> {
           slivers: <Widget>[
             SliverOverlapInjector(handle: searchBarHandle),
             SliverOverlapInjector(handle: savedViewsHandle),
-            BlocBuilder<DocumentsCubit, DocumentsState>(
-              buildWhen: (previous, current) =>
-                  previous.filter != current.filter,
-              builder: (context, state) {
-                return SliverToBoxAdapter(
-                  child: SavedViewsWidget(
+            SliverToBoxAdapter(
+              child: BlocBuilder<DocumentsCubit, DocumentsState>(
+                buildWhen: (previous, current) =>
+                    previous.filter != current.filter,
+                builder: (context, state) {
+                  final currentUser = context.watch<LocalUserAccount>();
+                  if (!currentUser.paperlessUser.canViewSavedViews) {
+                    return const SizedBox.shrink();
+                  }
+                  return SavedViewsWidget(
                     controller: _savedViewsExpansionController,
                     onViewSelected: (view) {
                       final cubit = context.read<DocumentsCubit>();
@@ -372,9 +377,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
                       }
                     },
                     filter: state.filter,
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
             BlocBuilder<DocumentsCubit, DocumentsState>(
               builder: (context, state) {

@@ -1,19 +1,32 @@
 part of 'authentication_cubit.dart';
 
-@freezed
-class AuthenticationState with _$AuthenticationState {
-  const AuthenticationState._();
+sealed class AuthenticationState {
+  const AuthenticationState();
 
-  const factory AuthenticationState.unauthenticated() = _Unauthenticated;
-  const factory AuthenticationState.requriresLocalAuthentication() =
-      _RequiresLocalAuthentication;
-  const factory AuthenticationState.authenticated({
-    required String localUserId,
-  }) = _Authenticated;
-  const factory AuthenticationState.switchingAccounts() = _SwitchingAccounts;
+  bool get isAuthenticated =>
+      switch (this) { AuthenticatedState() => true, _ => false };
+}
 
-  bool get isAuthenticated => maybeWhen(
-        authenticated: (_) => true,
-        orElse: () => false,
-      );
+class UnauthenticatedState extends AuthenticationState {
+  const UnauthenticatedState();
+}
+
+class RequiresLocalAuthenticationState extends AuthenticationState {
+  const RequiresLocalAuthenticationState();
+}
+
+class AuthenticatedState extends AuthenticationState {
+  final String localUserId;
+
+  const AuthenticatedState({
+    required this.localUserId,
+  });
+}
+
+class SwitchingAccountsState extends AuthenticationState {
+  const SwitchingAccountsState();
+}
+
+class AuthenticationErrorState extends AuthenticationState {
+  const AuthenticationErrorState();
 }

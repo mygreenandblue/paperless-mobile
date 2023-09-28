@@ -100,6 +100,7 @@ class LinkedDocumentsRoute extends GoRouteData {
         context.read(),
         context.read(),
         context.read(),
+        context.read(),
       ),
       child: const LinkedDocumentsPage(),
     );

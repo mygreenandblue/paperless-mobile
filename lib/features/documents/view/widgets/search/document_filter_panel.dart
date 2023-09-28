@@ -6,6 +6,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 
 enum DateRangeSelection { before, after }
 

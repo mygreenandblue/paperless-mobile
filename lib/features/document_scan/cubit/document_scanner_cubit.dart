@@ -1,43 +1,71 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:rxdart/rxdart.dart';
 
-class DocumentScannerCubit extends Cubit<List<File>> {
+part 'document_scanner_state.dart';
+
+class DocumentScannerCubit extends Cubit<DocumentScannerState> {
   final LocalNotificationService _notificationService;
 
-  DocumentScannerCubit(this._notificationService) : super(const []);
+  DocumentScannerCubit(this._notificationService)
+      : super(const InitialDocumentScannerState());
 
-  void addScan(File file) => emit([...state, file]);
-
-  void removeScan(int fileIndex) {
-    try {
-      state[fileIndex].deleteSync();
-      final scans = [...state];
-      scans.removeAt(fileIndex);
-      emit(scans);
-    } catch (_) {
-      throw const PaperlessApiException(ErrorCode.scanRemoveFailed);
-    }
+  Future<void> initialize() async {
+    debugPrint("Restoring scans...");
+    emit(const RestoringDocumentScannerState());
+    final tempDir = await FileService.temporaryScansDirectory;
+    final allFiles = tempDir.list().whereType<File>();
+    final scans =
+        await allFiles.where((event) => event.path.endsWith(".jpeg")).toList();
+    debugPrint("Restored ${scans.length} scans.");
+    emit(
+      scans.isEmpty
+          ? const InitialDocumentScannerState()
+          : LoadedDocumentScannerState(scans: scans),
+    );
   }
 
-  void reset() {
+  void addScan(File file) async {
+    emit(LoadedDocumentScannerState(
+      scans: [...state.scans, file],
+    ));
+  }
+
+  Future<void> removeScan(File file) async {
     try {
-      for (final doc in state) {
-        doc.deleteSync();
-        if (kDebugMode) {
-          log('[ScannerCubit]: Removed ${doc.path}');
-        }
-      }
+      await file.delete();
+    } catch (error, stackTrace) {
+      throw InfoMessageException(
+        code: ErrorCode.scanRemoveFailed,
+        message: error.toString(),
+        stackTrace: stackTrace,
+      );
+    }
+    final scans = state.scans..remove(file);
+    emit(
+      scans.isEmpty
+          ? const InitialDocumentScannerState()
+          : LoadedDocumentScannerState(scans: scans),
+    );
+  }
+
+  Future<void> reset() async {
+    try {
+      Future.wait([
+        for (final file in state.scans) file.delete(),
+      ]);
       imageCache.clear();
-      emit([]);
     } catch (_) {
       throw const PaperlessApiException(ErrorCode.scanRemoveFailed);
+    } finally {
+      emit(const InitialDocumentScannerState());
     }
   }
 

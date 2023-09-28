@@ -13,6 +13,7 @@ import 'package:paperless_mobile/features/document_search/view/sliver_search_bar
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 
 class LabelsPage extends StatefulWidget {
@@ -66,36 +67,37 @@ class _LabelsPageState extends State<LabelsPage>
                   .getValue()!
                   .loggedInUserId;
           final user = box.get(currentUserId)!.paperlessUser;
-
+          final fabLabel = [
+            S.of(context)!.addCorrespondent,
+            S.of(context)!.addDocumentType,
+            S.of(context)!.addTag,
+            S.of(context)!.addStoragePath,
+          ][_currentIndex];
           return BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectedState) {
               return SafeArea(
                 child: Scaffold(
                   drawer: const AppDrawer(),
-                  floatingActionButton: FloatingActionButton.extended(
-                    heroTag: "inbox_page_fab",
-                    label: Text(
-                      [
-                        S.of(context)!.addCorrespondent,
-                        S.of(context)!.addDocumentType,
-                        S.of(context)!.addTag,
-                        S.of(context)!.addStoragePath,
+                  floatingActionButton: ConnectivityAwareActionWrapper(
+                    offlineBuilder: (context, child) => const SizedBox.shrink(),
+                    child: FloatingActionButton.extended(
+                      heroTag: "inbox_page_fab",
+                      label: Text(fabLabel),
+                      icon: Icon(Icons.add),
+                      onPressed: [
+                        if (user.canViewCorrespondents)
+                          () => CreateLabelRoute(LabelType.correspondent)
+                              .push(context),
+                        if (user.canViewDocumentTypes)
+                          () => CreateLabelRoute(LabelType.documentType)
+                              .push(context),
+                        if (user.canViewTags)
+                          () => CreateLabelRoute(LabelType.tag).push(context),
+                        if (user.canViewStoragePaths)
+                          () => CreateLabelRoute(LabelType.storagePath)
+                              .push(context),
                       ][_currentIndex],
                     ),
-                    icon: Icon(Icons.add),
-                    onPressed: [
-                      if (user.canViewCorrespondents)
-                        () => CreateLabelRoute(LabelType.correspondent)
-                            .push(context),
-                      if (user.canViewDocumentTypes)
-                        () => CreateLabelRoute(LabelType.documentType)
-                            .push(context),
-                      if (user.canViewTags)
-                        () => CreateLabelRoute(LabelType.tag).push(context),
-                      if (user.canViewStoragePaths)
-                        () => CreateLabelRoute(LabelType.storagePath)
-                            .push(context),
-                    ][_currentIndex],
                   ),
                   body: NestedScrollView(
                     floatHeaderSlivers: true,

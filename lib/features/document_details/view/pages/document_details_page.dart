@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +21,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/document_previe
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
@@ -199,6 +201,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                       context.read(),
                       context.read(),
                       context.read(),
+                      context.read(),
                       documentId: state.document.id,
                     ),
                     child: Padding(
@@ -322,28 +325,45 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         return BottomAppBar(
           child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectivityState) {
-              final isConnected = connectivityState.isConnected;
               final currentUser = context.watch<LocalUserAccount>();
-              final canDelete =
-                  isConnected && currentUser.paperlessUser.canDeleteDocuments;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  IconButton(
-                    tooltip: S.of(context)!.deleteDocumentTooltip,
-                    icon: const Icon(Icons.delete),
-                    onPressed:
-                        canDelete ? () => _onDelete(state.document) : null,
-                  ).paddedSymmetrically(horizontal: 4),
-                  DocumentDownloadButton(
-                    document: state.document,
-                    enabled: isConnected,
+                  ConnectivityAwareActionWrapper(
+                    disabled: !currentUser.paperlessUser.canDeleteDocuments,
+                    offlineBuilder: (context, child) {
+                      return const IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: null,
+                      ).paddedSymmetrically(horizontal: 4);
+                    },
+                    child: IconButton(
+                      tooltip: S.of(context)!.deleteDocumentTooltip,
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => _onDelete(state.document),
+                    ).paddedSymmetrically(horizontal: 4),
                   ),
-                  IconButton(
-                    tooltip: S.of(context)!.openInSystemViewer,
-                    icon: const Icon(Icons.open_in_new),
-                    onPressed: isConnected ? _onOpenFileInSystemViewer : null,
-                  ).paddedOnly(right: 4.0),
+                  ConnectivityAwareActionWrapper(
+                    offlineBuilder: (context, child) =>
+                        const DocumentDownloadButton(
+                      document: null,
+                      enabled: false,
+                    ),
+                    child: DocumentDownloadButton(
+                      document: state.document,
+                    ),
+                  ),
+                  ConnectivityAwareActionWrapper(
+                    offlineBuilder: (context, child) => const IconButton(
+                      icon: Icon(Icons.open_in_new),
+                      onPressed: null,
+                    ),
+                    child: IconButton(
+                      tooltip: S.of(context)!.openInSystemViewer,
+                      icon: const Icon(Icons.open_in_new),
+                      onPressed: _onOpenFileInSystemViewer,
+                    ).paddedOnly(right: 4.0),
+                  ),
                   DocumentShareButton(document: state.document),
                   IconButton(
                     tooltip: S.of(context)!.print,

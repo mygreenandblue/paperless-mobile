@@ -52,10 +52,11 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
           Text(
             S.of(context)!.loginRequiredPermissionsHint,
             style: Theme.of(context).textTheme.bodySmall?.apply(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onBackground
-                    .withOpacity(0.6)),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.6),
+                ),
           ).padded(16),
         ],
       ),
@@ -64,11 +65,16 @@ class _ServerLoginPageState extends State<ServerLoginPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FilledButton(
-              onPressed: () async {
-                setState(() => _isLoginLoading = true);
-                await widget.onSubmit();
-                setState(() => _isLoginLoading = false);
-              },
+              onPressed: !_isLoginLoading
+                  ? () async {
+                      setState(() => _isLoginLoading = true);
+                      try {
+                        await widget.onSubmit();
+                      } finally {
+                        setState(() => _isLoginLoading = false);
+                      }
+                    }
+                  : null,
               child: Text(S.of(context)!.signIn),
             )
           ],

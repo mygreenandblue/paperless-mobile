@@ -1,11 +1,29 @@
 part of 'saved_view_preview_cubit.dart';
 
-@freezed
-class SavedViewPreviewState with _$SavedViewPreviewState {
-  const factory SavedViewPreviewState.initial() = _Initial;
-  const factory SavedViewPreviewState.loading() = _Loading;
-  const factory SavedViewPreviewState.loaded({
-    required List<DocumentModel> documents,
-  }) = _Loaded;
-  const factory SavedViewPreviewState.error() = _Error;
+sealed class SavedViewPreviewState {
+  const SavedViewPreviewState();
+}
+
+class InitialSavedViewPreviewState extends SavedViewPreviewState {
+  const InitialSavedViewPreviewState();
+}
+
+class LoadingSavedViewPreviewState extends SavedViewPreviewState {
+  const LoadingSavedViewPreviewState();
+}
+
+class LoadedSavedViewPreviewState extends SavedViewPreviewState {
+  final List<DocumentModel> documents;
+
+  const LoadedSavedViewPreviewState({
+    required this.documents,
+  });
+}
+
+class ErrorSavedViewPreviewState extends SavedViewPreviewState {
+  const ErrorSavedViewPreviewState();
+}
+
+class OfflineSavedViewPreviewState extends SavedViewPreviewState {
+  const OfflineSavedViewPreviewState();
 }

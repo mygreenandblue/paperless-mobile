@@ -1,9 +1,11 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/config/hive/hive_extensions.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
@@ -12,25 +14,28 @@ import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart'
 import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-part 'authentication_cubit.freezed.dart';
 part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LocalAuthenticationService _localAuthService;
   final PaperlessApiFactory _apiFactory;
   final SessionManager _sessionManager;
+  final ConnectivityStatusService _connectivityService;
 
   AuthenticationCubit(
     this._localAuthService,
     this._apiFactory,
     this._sessionManager,
-  ) : super(const AuthenticationState.unauthenticated());
+    this._connectivityService,
+  ) : super(const UnauthenticatedState());
 
   Future<void> login({
     required LoginFormCredentials credentials,
@@ -51,8 +56,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       _sessionManager,
     );
 
-    final apiVersion = await _getApiVersion(_sessionManager.client);
-
     // Mark logged in user as currently active user.
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
@@ -60,7 +63,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     await globalSettings.save();
 
     emit(
-      AuthenticationState.authenticated(
+      AuthenticatedState(
         localUserId: localUserId,
       ),
     );
@@ -72,11 +75,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   /// Switches to another account if it exists.
   Future<void> switchAccount(String localUserId) async {
-    emit(const AuthenticationState.switchingAccounts());
+    emit(const SwitchingAccountsState());
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     if (globalSettings.loggedInUserId == localUserId) {
-      emit(AuthenticationState.authenticated(localUserId: localUserId));
+      emit(AuthenticatedState(localUserId: localUserId));
       return;
     }
     final userAccountBox =
@@ -125,7 +128,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         apiVersion,
       );
 
-      emit(AuthenticationState.authenticated(
+      emit(AuthenticatedState(
         localUserId: localUserId,
       ));
     });
@@ -182,7 +185,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         "There is nothing to restore.",
       );
       // If there is nothing to restore, we can quit here.
-      emit(const AuthenticationState.unauthenticated());
+      emit(const UnauthenticatedState());
       return;
     }
     final localUserAccountBox =
@@ -203,7 +206,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       final localAuthSuccess =
           await _localAuthService.authenticateLocalUser(authenticationMesage);
       if (!localAuthSuccess) {
-        emit(const AuthenticationState.requriresLocalAuthentication());
+        emit(const RequiresLocalAuthenticationState());
         _debugPrintMessage(
           "restoreSessionState",
           "User could not be authenticated.",
@@ -239,14 +242,17 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         "User should be authenticated but no authentication information was found.",
       );
     }
+
     _debugPrintMessage(
       "restoreSessionState",
       "Authentication credentials successfully retrieved.",
     );
+
     _debugPrintMessage(
       "restoreSessionState",
       "Updating current session state...",
     );
+
     _sessionManager.updateSettings(
       clientCertificate: authentication.clientCertificate,
       authToken: authentication.token,
@@ -256,18 +262,32 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       "restoreSessionState",
       "Current session state successfully updated.",
     );
+    final hasInternetConnection =
+        await _connectivityService.isConnectedToInternet();
+    if (hasInternetConnection) {
+      _debugPrintMessage(
+        "restoreSessionMState",
+        "Updating server user...",
+      );
+      final apiVersion = await _getApiVersion(_sessionManager.client);
+      await _updateRemoteUser(
+        _sessionManager,
+        localUserAccount,
+        apiVersion,
+      );
+      _debugPrintMessage(
+        "restoreSessionMState",
+        "Successfully updated server user.",
+      );
+    } else {
+      _debugPrintMessage(
+        "restoreSessionMState",
+        "Skipping update of server user (no internet connection).",
+      );
+    }
 
-    final apiVersion = await _getApiVersion(_sessionManager.client);
-    await _updateRemoteUser(
-      _sessionManager,
-      localUserAccount,
-      apiVersion,
-    );
-    emit(
-      AuthenticationState.authenticated(
-        localUserId: localUserId,
-      ),
-    );
+    emit(AuthenticatedState(localUserId: localUserId));
+
     _debugPrintMessage(
       "restoreSessionState",
       "Session was successfully restored.",
@@ -285,7 +305,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     globalSettings.loggedInUserId = null;
     await globalSettings.save();
 
-    emit(const AuthenticationState.unauthenticated());
+    emit(const UnauthenticatedState());
     _debugPrintMessage(
       "logout",
       "User successfully logged out.",
@@ -353,7 +373,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         "_addUser",
         "An error occurred! The user $localUserId already exists.",
       );
-      throw Exception("User already exists!");
+      throw InfoMessageException(code: ErrorCode.userAlreadyExists);
     }
     final apiVersion = await _getApiVersion(sessionManager.client);
     _debugPrintMessage(

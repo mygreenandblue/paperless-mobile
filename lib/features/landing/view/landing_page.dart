@@ -22,6 +22,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
+
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<LocalUserAccount>().paperlessUser;
@@ -121,7 +122,6 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget _buildStatisticsCard(BuildContext context) {
     final currentUser = context.read<LocalUserAccount>().paperlessUser;
-
     return ExpansionCard(
       initiallyExpanded: false,
       title: Text(

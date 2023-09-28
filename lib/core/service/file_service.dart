@@ -25,7 +25,7 @@ class FileService {
       case PaperlessDirectoryType.temporary:
         return temporaryDirectory;
       case PaperlessDirectoryType.scans:
-        return scanDirectory;
+        return temporaryScansDirectory;
       case PaperlessDirectoryType.download:
         return downloadsDirectory;
     }
@@ -52,8 +52,7 @@ class FileService {
     } else if (Platform.isIOS) {
       final appDir = await getApplicationDocumentsDirectory();
       final dir = Directory('${appDir.path}/documents');
-      dir.createSync();
-      return dir;
+      return dir.create(recursive: true);
     } else {
       throw UnsupportedError("Platform not supported.");
     }
@@ -72,33 +71,22 @@ class FileService {
     } else if (Platform.isIOS) {
       final appDir = await getApplicationDocumentsDirectory();
       final dir = Directory('${appDir.path}/downloads');
-      dir.createSync();
-      return dir;
+      return dir.create(recursive: true);
     } else {
       throw UnsupportedError("Platform not supported.");
     }
   }
 
-  static Future<Directory?> get scanDirectory async {
-    if (Platform.isAndroid) {
-      final scanDir = await getExternalStorageDirectories(
-        type: StorageDirectory.dcim,
-      );
-      return scanDir!.first;
-    } else if (Platform.isIOS) {
-      final appDir = await getApplicationDocumentsDirectory();
-      final dir = Directory('${appDir.path}/scans');
-      dir.createSync();
-      return dir;
-    } else {
-      throw UnsupportedError("Platform not supported.");
-    }
+  static Future<Directory> get temporaryScansDirectory async {
+    final tempDir = await temporaryDirectory;
+    final scansDir = Directory('${tempDir.path}/scans');
+    return scansDir.create(recursive: true);
   }
 
   static Future<void> clearUserData() async {
-    final scanDir = await scanDirectory;
+    final scanDir = await temporaryScansDirectory;
     final tempDir = await temporaryDirectory;
-    await scanDir?.delete(recursive: true);
+    await scanDir.delete(recursive: true);
     await tempDir.delete(recursive: true);
   }
 

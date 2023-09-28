@@ -51,8 +51,8 @@ class PagedSearchResult<T> extends Equatable {
 
   const PagedSearchResult({
     required this.count,
-    required this.next,
-    required this.previous,
+    this.next,
+    this.previous,
     required this.results,
   });
 

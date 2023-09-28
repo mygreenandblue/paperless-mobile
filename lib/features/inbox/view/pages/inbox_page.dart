@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/exception/server_message_exception.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
@@ -17,6 +18,7 @@ import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.
 import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class InboxPage extends StatefulWidget {
@@ -74,45 +76,50 @@ class _InboxPageState extends State<InboxPage>
         context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
     return Scaffold(
       drawer: const AppDrawer(),
-      floatingActionButton: BlocBuilder<InboxCubit, InboxState>(
-        builder: (context, state) {
-          if (!state.hasLoaded || state.documents.isEmpty || !canEditDocument) {
-            return const SizedBox.shrink();
-          }
-          return FloatingActionButton.extended(
-            extendedPadding: _showExtendedFab
-                ? null
-                : const EdgeInsets.symmetric(horizontal: 16),
-            heroTag: "inbox_page_fab",
-            label: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SizeTransition(
-                    sizeFactor: animation,
-                    axis: Axis.horizontal,
-                    child: child,
-                  ),
-                );
-              },
-              child: _showExtendedFab
-                  ? Row(
-                      children: [
-                        const Icon(Icons.done_all),
-                        Text(S.of(context)!.allSeen),
-                      ],
-                    )
-                  : const Icon(Icons.done_all),
-            ),
-            onPressed: state.hasLoaded && state.documents.isNotEmpty
-                ? () => _onMarkAllAsSeen(
-                      state.documents,
-                      state.inboxTags,
-                    )
-                : null,
-          );
-        },
+      floatingActionButton: ConnectivityAwareActionWrapper(
+        offlineBuilder: (context, child) => const SizedBox.shrink(),
+        child: BlocBuilder<InboxCubit, InboxState>(
+          builder: (context, state) {
+            if (!state.hasLoaded ||
+                state.documents.isEmpty ||
+                !canEditDocument) {
+              return const SizedBox.shrink();
+            }
+            return FloatingActionButton.extended(
+              extendedPadding: _showExtendedFab
+                  ? null
+                  : const EdgeInsets.symmetric(horizontal: 16),
+              heroTag: "inbox_page_fab",
+              label: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      axis: Axis.horizontal,
+                      child: child,
+                    ),
+                  );
+                },
+                child: _showExtendedFab
+                    ? Row(
+                        children: [
+                          const Icon(Icons.done_all),
+                          Text(S.of(context)!.allSeen),
+                        ],
+                      )
+                    : const Icon(Icons.done_all),
+              ),
+              onPressed: state.hasLoaded && state.documents.isNotEmpty
+                  ? () => _onMarkAllAsSeen(
+                        state.documents,
+                        state.inboxTags,
+                      )
+                  : null,
+            );
+          },
+        ),
       ),
       body: SafeArea(
         top: true,
@@ -266,6 +273,12 @@ class _InboxPageState extends State<InboxPage>
   Future<bool> _onItemDismissed(DocumentModel doc) async {
     if (!context.read<LocalUserAccount>().paperlessUser.canEditDocuments) {
       showSnackBar(context, S.of(context)!.missingPermissions);
+      return false;
+    }
+    final isConnectedToInternet =
+        await context.read<ConnectivityStatusService>().isConnectedToInternet();
+    if (!isConnectedToInternet) {
+      showSnackBar(context, S.of(context)!.youAreCurrentlyOffline);
       return false;
     }
     try {

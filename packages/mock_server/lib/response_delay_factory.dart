@@ -1,10 +1,10 @@
 import 'dart:math';
 
-abstract interface class DelayGenerator {
+abstract interface class ResponseDelayFactory {
   Duration nextDelay();
 }
 
-class RandomDelayGenerator implements DelayGenerator {
+class RandomResponseDelayFactory implements ResponseDelayFactory {
   /// Minimum allowed response delay
   final Duration minDelay;
 
@@ -12,7 +12,7 @@ class RandomDelayGenerator implements DelayGenerator {
   final Duration maxDelay;
 
   final Random _random = Random();
-  RandomDelayGenerator(this.minDelay, this.maxDelay);
+  RandomResponseDelayFactory(this.minDelay, this.maxDelay);
 
   @override
   Duration nextDelay() {
@@ -25,10 +25,10 @@ class RandomDelayGenerator implements DelayGenerator {
   }
 }
 
-class ConstantDelayGenerator implements DelayGenerator {
+class ConstantResponseDelayFactory implements ResponseDelayFactory {
   final Duration delay;
 
-  const ConstantDelayGenerator(this.delay);
+  const ConstantResponseDelayFactory(this.delay);
 
   @override
   Duration nextDelay() {
@@ -36,8 +36,8 @@ class ConstantDelayGenerator implements DelayGenerator {
   }
 }
 
-class ZeroDelayGenerator implements DelayGenerator {
-  const ZeroDelayGenerator();
+class ZeroResponseDelayFactory implements ResponseDelayFactory {
+  const ZeroResponseDelayFactory();
 
   @override
   Duration nextDelay() {

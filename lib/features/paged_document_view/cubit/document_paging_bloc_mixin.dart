@@ -2,6 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:rxdart/streams.dart';
 
 import 'paged_documents_state.dart';
 
@@ -11,13 +13,16 @@ import 'paged_documents_state.dart';
 ///
 mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     on BlocBase<State> {
+  ConnectivityStatusService get connectivityStatusService;
   PaperlessDocumentsApi get api;
   DocumentChangedNotifier get notifier;
 
   Future<void> onFilterUpdated(DocumentFilter filter);
 
   Future<void> loadMore() async {
-    if (state.isLastPageLoaded) {
+    final hasConnection =
+        await connectivityStatusService.isConnectedToInternet();
+    if (state.isLastPageLoaded || !hasConnection) {
       return;
     }
     emit(state.copyWithPaged(isLoading: true));
@@ -47,6 +52,32 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   Future<void> updateFilter({
     final DocumentFilter filter = const DocumentFilter(),
   }) async {
+    final hasConnection =
+        await connectivityStatusService.isConnectedToInternet();
+    if (!hasConnection) {
+      // Just filter currently loaded documents
+      final filteredDocuments = state.value
+          .expand((page) => page.results)
+          .where((doc) => filter.matches(doc))
+          .toList();
+          emit(state.copyWithPaged(isLoading: true));
+
+      emit(
+        state.copyWithPaged(
+          filter: filter,
+          value: [
+            PagedSearchResult(
+              results: filteredDocuments,
+              count: filteredDocuments.length,
+              next: null,
+              previous: null,
+            )
+          ],
+          hasLoaded: true,
+        ),
+      );
+      return;
+    }
     try {
       emit(state.copyWithPaged(isLoading: true));
       final result = await api.findAll(filter.copyWith(page: 1));

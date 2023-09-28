@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -28,17 +29,17 @@ class DocumentPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: isClickable
-          ? () {
-              DocumentPreviewRoute($extra: document).push(context);
-            }
-          : null,
-      child: HeroMode(
-        enabled: enableHero,
-        child: Hero(
-          tag: "thumb_${document.id}",
-          child: _buildPreview(context),
+    return ConnectivityAwareActionWrapper(
+      child: GestureDetector(
+        onTap: isClickable
+            ? () => DocumentPreviewRoute($extra: document).push(context)
+            : null,
+        child: HeroMode(
+          enabled: enableHero,
+          child: Hero(
+            tag: "thumb_${document.id}",
+            child: _buildPreview(context),
+          ),
         ),
       ),
     );

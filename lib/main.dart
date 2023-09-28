@@ -6,7 +6,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -29,16 +28,17 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
@@ -103,17 +103,19 @@ void main() async {
 
     await findSystemLocale();
     packageInfo = await PackageInfo.fromPlatform();
+
     if (Platform.isAndroid) {
       androidInfo = await DeviceInfoPlugin().androidInfo;
     }
     if (Platform.isIOS) {
       iosInfo = await DeviceInfoPlugin().iosInfo;
     }
-    final connectivity = Connectivity();
-    final localAuthentication = LocalAuthentication();
-    final connectivityStatusService =
-        ConnectivityStatusServiceImpl(connectivity);
-    final localAuthService = LocalAuthenticationService(localAuthentication);
+    final connectivityStatusService = ConnectivityStatusServiceImpl(
+      Connectivity(),
+    );
+    final localAuthService = LocalAuthenticationService(
+      LocalAuthentication(),
+    );
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -145,8 +147,12 @@ void main() async {
     });
 
     final apiFactory = PaperlessApiFactoryImpl(sessionManager);
-    final authenticationCubit =
-        AuthenticationCubit(localAuthService, apiFactory, sessionManager);
+    final authenticationCubit = AuthenticationCubit(
+      localAuthService,
+      apiFactory,
+      sessionManager,
+      connectivityStatusService,
+    );
     await authenticationCubit.restoreSessionState();
 
     runApp(
@@ -154,7 +160,6 @@ void main() async {
         providers: [
           ChangeNotifierProvider.value(value: sessionManager),
           Provider<LocalAuthenticationService>.value(value: localAuthService),
-          Provider<Connectivity>.value(value: connectivity),
           Provider<ConnectivityStatusService>.value(
               value: connectivityStatusService),
           Provider<LocalNotificationService>.value(
@@ -171,6 +176,7 @@ void main() async {
       ),
     );
   }, (error, stack) {
+    // Catches all unexpected/uncaught errors and prints them to the console.
     String message = switch (error) {
       PaperlessApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
@@ -271,12 +277,22 @@ class _GoRouterShellState extends State<GoRouterShell> {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) {
-        state.when(
-          unauthenticated: () => _router.goNamed(R.login),
-          requriresLocalAuthentication: () => _router.goNamed(R.verifyIdentity),
-          switchingAccounts: () => _router.goNamed(R.switchingAccounts),
-          authenticated: (localUserId) => _router.goNamed(R.landing),
-        );
+        switch (state) {
+          case UnauthenticatedState():
+            const LoginRoute().go(context);
+            break;
+
+          case RequiresLocalAuthenticationState():
+            const VerifyIdentityRoute().go(context);
+            break;
+          case SwitchingAccountsState():
+            const SwitchingAccountsRoute().go(context);
+            break;
+          case AuthenticatedState():
+            const LandingRoute().go(context);
+            break;
+          case AuthenticationErrorState():
+        }
       },
       child: GlobalSettingsBuilder(
         builder: (context, settings) {
