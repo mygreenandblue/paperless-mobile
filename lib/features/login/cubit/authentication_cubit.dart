@@ -17,6 +17,7 @@ import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
@@ -159,7 +160,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     final userAppStateBox =
         Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
-
+    await FileService.clearUserData(userId: userId);
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
     await withEncryptedBox<UserCredentials, void>(

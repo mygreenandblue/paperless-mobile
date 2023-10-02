@@ -1,11 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -16,6 +24,7 @@ class AppDrawer extends StatelessWidget {
     return SafeArea(
       child: Drawer(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -93,6 +102,29 @@ class AppDrawer extends StatelessWidget {
                 );
               },
             ),
+            Consumer<ConsumptionChangeNotifier>(
+              builder: (context, value, child) {
+                final files = value.pendingFiles;
+                final child = ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.drive_folder_upload_outlined),
+                  title: const Text("Upload Queue"),
+                  onTap: () {
+                    UploadQueueRoute().push(context);
+                  },
+                  trailing: Text(
+                    '${files.length}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                );
+                if (files.isEmpty) {
+                  return child;
+                }
+                return child
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .fade(duration: 1.seconds, begin: 1, end: 0.3);
+              },
+            ),
             ListTile(
               dense: true,
               leading: const Icon(Icons.settings_outlined),
@@ -101,10 +133,55 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () => SettingsRoute().push(context),
             ),
+            const Divider(),
+            Text(
+              S.of(context)!.views,
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.labelLarge,
+            ).padded(16),
+            _buildSavedViews(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSavedViews() {
+    return BlocBuilder<SavedViewCubit, SavedViewState>(
+        builder: (context, state) {
+      return state.when(
+        initial: () => const SizedBox.shrink(),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        loaded: (savedViews) {
+          final sidebarViews = savedViews.values
+              .where((element) => element.showInSidebar)
+              .toList();
+          if (sidebarViews.isEmpty) {
+            return Text("Nothing to show here.").paddedOnly(left: 16);
+          }
+          return Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                final view = sidebarViews[index];
+                return ListTile(
+                  title: Text(view.name),
+                  trailing: Icon(Icons.arrow_forward),
+                  onTap: () {
+                    Scaffold.of(context).closeDrawer();
+                    context
+                        .read<DocumentsCubit>()
+                        .updateFilter(filter: view.toDocumentFilter());
+                    DocumentsRoute().go(context);
+                  },
+                );
+              },
+              itemCount: sidebarViews.length,
+            ),
+          );
+        },
+        error: () => Text(S.of(context)!.couldNotLoadSavedViews),
+      );
+    });
   }
 
   void _showAboutDialog(BuildContext context) {

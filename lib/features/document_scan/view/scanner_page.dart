@@ -265,7 +265,7 @@ class _ScannerPageState extends State<ScannerPage>
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
       context
-          .read<TaskStatusCubit>()
+          .read<PendingTasksNotifier>()
           .listenToTaskChanges(uploadResult!.taskId!);
     }
   }

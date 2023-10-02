@@ -1,1 +1,8 @@
-const supportedFileExtensions = ['pdf', 'png', 'tiff', 'gif', 'jpg', 'jpeg'];
+const supportedFileExtensions = [
+  '.pdf',
+  '.png',
+  '.tiff',
+  '.gif',
+  '.jpg',
+  '.jpeg'
+];

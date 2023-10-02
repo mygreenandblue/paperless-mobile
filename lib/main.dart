@@ -28,15 +28,14 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:paperless_mobile/features/sharing/model/share_intent_queue.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
@@ -45,6 +44,7 @@ import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
@@ -84,17 +84,17 @@ Future<void> _initHive() async {
 void main() async {
   runZonedGuarded(() async {
     Paint.enableDithering = true;
-    if (kDebugMode) {
-      // URL: http://localhost:3131
-      // Login: admin:test
-      await LocalMockApiServer(
-              // RandomDelayGenerator(
-              //   const Duration(milliseconds: 100),
-              //   const Duration(milliseconds: 800),
-              // ),
-              )
-          .start();
-    }
+    // if (kDebugMode) {
+    //   // URL: http://localhost:3131
+    //   // Login: admin:test
+    //   await LocalMockApiServer(
+    //           // RandomDelayGenerator(
+    //           //   const Duration(milliseconds: 100),
+    //           //   const Duration(milliseconds: 800),
+    //           // ),
+    //           )
+    //       .start();
+    // }
     await _initHive();
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     final globalSettingsBox =
@@ -154,7 +154,7 @@ void main() async {
       connectivityStatusService,
     );
     await authenticationCubit.restoreSessionState();
-
+    await ShareIntentQueue.instance.initialize();
     runApp(
       MultiProvider(
         providers: [
@@ -240,6 +240,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
         routes: [
           $settingsRoute,
           $savedViewsRoute,
+          $uploadQueueRoute,
           StatefulShellRoute(
             navigatorContainerBuilder: (context, navigationShell, children) {
               return children[navigationShell.currentIndex];
@@ -281,7 +282,6 @@ class _GoRouterShellState extends State<GoRouterShell> {
           case UnauthenticatedState():
             const LoginRoute().go(context);
             break;
-
           case RequiresLocalAuthenticationState():
             const VerifyIdentityRoute().go(context);
             break;
@@ -292,6 +292,8 @@ class _GoRouterShellState extends State<GoRouterShell> {
             const LandingRoute().go(context);
             break;
           case AuthenticationErrorState():
+            const LoginRoute().go(context);
+            break;
         }
       },
       child: GlobalSettingsBuilder(

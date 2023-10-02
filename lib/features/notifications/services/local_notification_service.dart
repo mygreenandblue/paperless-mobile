@@ -133,7 +133,6 @@ class LocalNotificationService {
     );
   }
 
-
   //TODO: INTL
   Future<void> notifyTaskChanged(Task task) {
     log("[LocalNotificationService] notifyTaskChanged: ${task.toString()}");
@@ -158,7 +157,7 @@ class LocalNotificationService {
         break;
       case TaskStatus.failure:
         title = "Failed to process document";
-        body = "Document ${task.taskFileName} was rejected by the server.";
+        body = task.result ?? 'Rejected by the server.';
         timestampMillis = task.dateCreated.millisecondsSinceEpoch;
         break;
       case TaskStatus.success:

@@ -1,36 +1,26 @@
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
-part 'task_status_state.dart';
 
-class TaskStatusCubit extends Cubit<TaskStatusState> {
+class PendingTasksNotifier extends ValueNotifier<Map<String, Task>> {
   final PaperlessTasksApi _api;
-  TaskStatusCubit(this._api) : super(const TaskStatusState());
+  PendingTasksNotifier(this._api) : super({});
 
   void listenToTaskChanges(String taskId) {
-    _api
-        .listenForTaskChanges(taskId)
-        .forEach(
-          (element) => emit(
-            TaskStatusState(
-              isListening: true,
-              task: element,
-            ),
-          ),
-        )
-        .whenComplete(() => emit(state.copyWith(isListening: false)));
+    _api.listenForTaskChanges(taskId).forEach((task) {
+      value = {...value, taskId: task};
+      notifyListeners();
+    }).whenComplete(
+      () {
+        value = value..remove(taskId);
+        notifyListeners();
+      },
+    );
   }
 
-  Future<void> acknowledgeCurrentTask() async {
-    if (state.task == null) {
-      return;
-    }
-    final task = await _api.acknowledgeTask(state.task!);
-    emit(
-      state.copyWith(
-        task: task,
-        isListening: false,
-      ),
-    );
+  Future<void> acknowledgeTasks(Iterable<String> taskIds) async {
+    final tasks = value.values.where((task) => taskIds.contains(task.taskId));
+    await Future.wait([for (var task in tasks) _api.acknowledgeTask(task)]);
+    value = value..removeWhere((key, value) => taskIds.contains(key));
+    notifyListeners();
   }
 }

@@ -94,6 +94,8 @@ dependencies:
   fl_chart: ^0.63.0
   palette_generator: ^0.3.3+2
   defer_pointer: ^0.0.2
+  transparent_image: ^2.0.1
+  flutter_animate: ^4.2.0+1
 
 dependency_overrides:
   intl: ^0.18.1

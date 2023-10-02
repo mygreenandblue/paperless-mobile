@@ -47,8 +47,8 @@ class HomeShellWidget extends StatelessWidget {
       builder: (context, settings) {
         final currentUserId = settings.loggedInUserId;
         if (currentUserId == null) {
-          // This is the case when the current user logs out of the app.
-          return SizedBox.shrink();
+          // This is currently the case (only for a few ms) when the current user logs out of the app.
+          return const SizedBox.shrink();
         }
         final apiVersion = ApiVersion(paperlessApiVersion);
         return ValueListenableBuilder(
@@ -57,8 +57,6 @@ class HomeShellWidget extends StatelessWidget {
                   .listenable(keys: [currentUserId]),
           builder: (context, box, _) {
             final currentLocalUser = box.get(currentUserId)!;
-            print(currentLocalUser.paperlessUser.canViewDocuments);
-            print(currentLocalUser.paperlessUser.canViewTags);
             return MultiProvider(
               key: ValueKey(currentUserId),
               providers: [
@@ -195,8 +193,8 @@ class HomeShellWidget extends StatelessWidget {
                             context.read(),
                           ),
                         ),
-                        Provider(
-                          create: (context) => TaskStatusCubit(
+                        ChangeNotifierProvider(
+                          create: (context) => PendingTasksNotifier(
                             context.read(),
                           ),
                         ),

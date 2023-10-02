@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +53,7 @@ class ScannerRoute extends GoRouteData {
 
 class DocumentUploadRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
-  final Uint8List $extra;
+  final FutureOr<Uint8List> $extra;
   final String? title;
   final String? filename;
   final String? fileExtension;

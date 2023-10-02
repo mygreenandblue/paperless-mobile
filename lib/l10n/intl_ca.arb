@@ -865,11 +865,11 @@
   "@missingPermissions": {
     "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   },
-  "editView": "Edit View",
+  "editView": "Editar Vista",
   "@editView": {
     "description": "Title of the edit saved view page"
   },
-  "donate": "Donate",
+  "donate": "Donar",
   "@donate": {
     "description": "Label of the in-app donate button"
   },
@@ -877,23 +877,23 @@
   "@donationDialogContent": {
     "description": "Text displayed in the donation dialog"
   },
-  "noDocumentsFound": "No documents found.",
+  "noDocumentsFound": "Sense Documents trobats.",
   "@noDocumentsFound": {
     "description": "Message shown when no documents were found."
   },
-  "couldNotDeleteCorrespondent": "Could not delete correspondent, please try again.",
+  "couldNotDeleteCorrespondent": "No es pot esborrar corresponsal, torna a provar.",
   "@couldNotDeleteCorrespondent": {
     "description": "Message shown in snackbar when a correspondent could not be deleted."
   },
-  "couldNotDeleteDocumentType": "Could not delete document type, please try again.",
+  "couldNotDeleteDocumentType": "No es pot esborrar document, prova de nou.",
   "@couldNotDeleteDocumentType": {
     "description": "Message shown when a document type could not be deleted"
   },
-  "couldNotDeleteTag": "Could not delete tag, please try again.",
+  "couldNotDeleteTag": "No es pot esborrar etiqueta, prova de nou.",
   "@couldNotDeleteTag": {
     "description": "Message shown when a tag could not be deleted"
   },
-  "couldNotDeleteStoragePath": "Could not delete storage path, please try again.",
+  "couldNotDeleteStoragePath": "No es pot esborrar ruta emmagatzematge, prova de nou.",
   "@couldNotDeleteStoragePath": {
     "description": "Message shown when a storage path could not be deleted"
   },
@@ -938,7 +938,7 @@
   "@savedViewSuccessfullyUpdated": {
     "description": "Message shown when a saved view was successfully updated."
   },
-  "discardChanges": "Discard changes?",
+  "discardChanges": "Descartar canvis?",
   "@discardChanges": {
     "description": "Title of the alert dialog shown when a user tries to close a view with unsaved changes."
   },
@@ -950,11 +950,11 @@
   "@createFromCurrentFilter": {
     "description": "Tooltip of the \"New saved view\" button"
   },
-  "home": "Home",
+  "home": "Inici",
   "@home": {
     "description": "Label of the \"Home\" route"
   },
-  "welcomeUser": "Welcome, {name}!",
+  "welcomeUser": "Benvingut {name}!",
   "@welcomeUser": {
     "description": "Top message shown on the home page"
   },
@@ -962,16 +962,23 @@
   "@noSavedViewOnHomepageHint": {
     "description": "Message shown when there is no saved view to display on the home page."
   },
-  "statistics": "Statistics",
-  "documentsInInbox": "Documents in inbox",
+  "statistics": "Estadí­stiques",
+  "documentsInInbox": "Document safata",
   "totalDocuments": "Total documents",
-  "totalCharacters": "Total characters",
-  "showAll": "Show all",
+  "totalCharacters": "Caràcters Totals",
+  "showAll": "Mostra tot",
   "@showAll": {
     "description": "Button label shown on a saved view preview to open this view in the documents page"
   },
-  "userAlreadyExists": "This user already exists.",
+  "userAlreadyExists": "Usuari ja esisteix.",
   "@userAlreadyExists": {
     "description": "Error message shown when the user tries to add an already existing account."
-  }
+  },
+  "youDidNotSaveAnyViewsYet": "You did not save any views yet, create one and it will be shown here.",
+  "@youDidNotSaveAnyViewsYet": {
+    "description": "Message shown when there are no saved views yet."
+  },
+  "tryAgain": "Try again",
+  "discardFile": "Discard file?",
+  "discard": "Discard"
 }

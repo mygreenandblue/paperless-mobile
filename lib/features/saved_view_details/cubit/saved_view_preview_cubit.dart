@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 
 part 'saved_view_preview_state.dart';
-part 'saved_view_preview_cubit.freezed.dart';
 
 class SavedViewPreviewCubit extends Cubit<SavedViewPreviewState> {
   final PaperlessDocumentsApi _api;

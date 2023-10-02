@@ -21,6 +21,8 @@ class Task extends Equatable {
   @JsonKey(fromJson: tryParseNullable)
   final int? relatedDocument;
 
+  bool get isSuccess => status == TaskStatus.success;
+
   const Task({
     required this.id,
     this.taskId,

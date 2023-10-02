@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 class FileService {
+  const FileService._();
+
   static Future<File> saveToFile(
     Uint8List bytes,
     String filename,
@@ -19,16 +22,13 @@ class FileService {
   }
 
   static Future<Directory?> getDirectory(PaperlessDirectoryType type) {
-    switch (type) {
-      case PaperlessDirectoryType.documents:
-        return documentsDirectory;
-      case PaperlessDirectoryType.temporary:
-        return temporaryDirectory;
-      case PaperlessDirectoryType.scans:
-        return temporaryScansDirectory;
-      case PaperlessDirectoryType.download:
-        return downloadsDirectory;
-    }
+    return switch (type) {
+      PaperlessDirectoryType.documents => documentsDirectory,
+      PaperlessDirectoryType.temporary => temporaryDirectory,
+      PaperlessDirectoryType.scans => temporaryScansDirectory,
+      PaperlessDirectoryType.download => downloadsDirectory,
+      PaperlessDirectoryType.upload => uploadDirectory,
+    };
   }
 
   static Future<File> allocateTemporaryFile(
@@ -50,8 +50,8 @@ class FileService {
       ))!
           .first;
     } else if (Platform.isIOS) {
-      final appDir = await getApplicationDocumentsDirectory();
-      final dir = Directory('${appDir.path}/documents');
+      final dir = await getApplicationDocumentsDirectory()
+          .then((dir) => Directory('${dir.path}/documents'));
       return dir.create(recursive: true);
     } else {
       throw UnsupportedError("Platform not supported.");
@@ -77,17 +77,32 @@ class FileService {
     }
   }
 
+  static Future<Directory> get uploadDirectory async {
+    final dir = await getApplicationDocumentsDirectory()
+        .then((dir) => Directory('${dir.path}/upload'));
+    return dir.create(recursive: true);
+  }
+
+  static Future<Directory> getConsumptionDirectory(
+      {required String userId}) async {
+    final uploadDir =
+        await uploadDirectory.then((dir) => Directory('${dir.path}/$userId'));
+    return uploadDir.create(recursive: true);
+  }
+
   static Future<Directory> get temporaryScansDirectory async {
     final tempDir = await temporaryDirectory;
     final scansDir = Directory('${tempDir.path}/scans');
     return scansDir.create(recursive: true);
   }
 
-  static Future<void> clearUserData() async {
+  static Future<void> clearUserData({required String userId}) async {
     final scanDir = await temporaryScansDirectory;
     final tempDir = await temporaryDirectory;
+    final consumptionDir = await getConsumptionDirectory(userId: userId);
     await scanDir.delete(recursive: true);
     await tempDir.delete(recursive: true);
+    await consumptionDir.delete(recursive: true);
   }
 
   static Future<void> clearDirectoryContent(PaperlessDirectoryType type) async {
@@ -101,11 +116,20 @@ class FileService {
       dir.listSync().map((item) => item.delete(recursive: true)),
     );
   }
+
+  static Future<List<File>> getAllFiles(Directory directory) {
+    return directory.list().whereType<File>().toList();
+  }
+
+  static Future<List<Directory>> getAllSubdirectories(Directory directory) {
+    return directory.list().whereType<Directory>().toList();
+  }
 }
 
 enum PaperlessDirectoryType {
   documents,
   temporary,
   scans,
-  download;
+  download,
+  upload;
 }

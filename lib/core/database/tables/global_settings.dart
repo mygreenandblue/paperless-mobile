@@ -32,6 +32,9 @@ class GlobalSettings with HiveObjectMixin {
   @HiveField(7, defaultValue: false)
   bool enforceSinglePagePdfUpload;
 
+  @HiveField(8, defaultValue: false)
+  bool skipDocumentPreprarationOnUpload;
+
   GlobalSettings({
     required this.preferredLocaleSubtag,
     this.preferredThemeMode = ThemeMode.system,
@@ -41,5 +44,6 @@ class GlobalSettings with HiveObjectMixin {
     this.defaultDownloadType = FileDownloadType.alwaysAsk,
     this.defaultShareType = FileDownloadType.alwaysAsk,
     this.enforceSinglePagePdfUpload = false,
+    this.skipDocumentPreprarationOnUpload = false,
   });
 }

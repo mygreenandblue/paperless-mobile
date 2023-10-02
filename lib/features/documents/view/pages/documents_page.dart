@@ -59,18 +59,48 @@ class _DocumentsPageState extends State<DocumentsPage> {
   @override
   void initState() {
     super.initState();
+    context.read<PendingTasksNotifier>().addListener(_onTasksChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _nestedScrollViewKey.currentState!.innerController
           .addListener(_scrollExtentChangedListener);
     });
   }
 
+  void _onTasksChanged() {
+    final notifier = context.read<PendingTasksNotifier>();
+    final tasks = notifier.value;
+    final finishedTasks = tasks.values.where((element) => element.isSuccess);
+    if (finishedTasks.isNotEmpty) {
+      showSnackBar(
+        context,
+        S.of(context)!.newDocumentAvailable,
+        action: SnackBarActionConfig(
+          label: S.of(context)!.reload,
+          onPressed: () {
+            // finishedTasks.forEach((task) {
+            //   notifier.acknowledgeTasks([finishedTasks]);
+            // });
+            context.read<DocumentsCubit>().reload();
+          },
+        ),
+        duration: const Duration(seconds: 10),
+      );
+    }
+  }
+
   Future<void> _reloadData() async {
+    final user = context.read<LocalUserAccount>().paperlessUser;
     try {
       await Future.wait([
         context.read<DocumentsCubit>().reload(),
-        context.read<SavedViewCubit>().reload(),
-        context.read<LabelCubit>().reload(),
+        if (user.canViewSavedViews) context.read<SavedViewCubit>().reload(),
+        if (user.canViewTags) context.read<LabelCubit>().reloadTags(),
+        if (user.canViewCorrespondents)
+          context.read<LabelCubit>().reloadCorrespondents(),
+        if (user.canViewDocumentTypes)
+          context.read<LabelCubit>().reloadDocumentTypes(),
+        if (user.canViewStoragePaths)
+          context.read<LabelCubit>().reloadStoragePaths(),
       ]);
     } catch (error, stackTrace) {
       showGenericError(context, error, stackTrace);
@@ -96,196 +126,174 @@ class _DocumentsPageState extends State<DocumentsPage> {
   void dispose() {
     _nestedScrollViewKey.currentState?.innerController
         .removeListener(_scrollExtentChangedListener);
+    context.read<PendingTasksNotifier>().removeListener(_onTasksChanged);
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<TaskStatusCubit, TaskStatusState>(
+    return BlocConsumer<ConnectivityCubit, ConnectivityState>(
       listenWhen: (previous, current) =>
-          !previous.isSuccess && current.isSuccess,
+          previous != ConnectivityState.connected &&
+          current == ConnectivityState.connected,
       listener: (context, state) {
-        showSnackBar(
-          context,
-          S.of(context)!.newDocumentAvailable,
-          action: SnackBarActionConfig(
-            label: S.of(context)!.reload,
-            onPressed: () {
-              context.read<TaskStatusCubit>().acknowledgeCurrentTask();
-              context.read<DocumentsCubit>().reload();
-            },
-          ),
-          duration: const Duration(seconds: 10),
-        );
+        _reloadData();
       },
-      child: BlocConsumer<ConnectivityCubit, ConnectivityState>(
-        listenWhen: (previous, current) =>
-            previous != ConnectivityState.connected &&
-            current == ConnectivityState.connected,
-        listener: (context, state) {
-          _reloadData();
-        },
-        builder: (context, connectivityState) {
-          return SafeArea(
-            top: true,
-            child: Scaffold(
-              drawer: const AppDrawer(),
-              floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
-                builder: (context, state) {
-                  final show = state.selection.isEmpty;
-                  final canReset = state.filter.appliedFiltersCount > 0;
-                  if (show) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        DeferredPointerHandler(
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              FloatingActionButton.extended(
-                                extendedPadding: _showExtendedFab
-                                    ? null
-                                    : const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                heroTag: "fab_documents_page_filter",
-                                label: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 150),
-                                  transitionBuilder: (child, animation) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: SizeTransition(
-                                        sizeFactor: animation,
-                                        axis: Axis.horizontal,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                  child: _showExtendedFab
-                                      ? Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.filter_alt_outlined,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              S.of(context)!.filterDocuments,
-                                            ),
-                                          ],
-                                        )
-                                      : const Icon(Icons.filter_alt_outlined),
-                                ),
-                                onPressed: _openDocumentFilter,
+      builder: (context, connectivityState) {
+        return SafeArea(
+          top: true,
+          child: Scaffold(
+            drawer: const AppDrawer(),
+            floatingActionButton: BlocBuilder<DocumentsCubit, DocumentsState>(
+              builder: (context, state) {
+                final show = state.selection.isEmpty;
+                final canReset = state.filter.appliedFiltersCount > 0;
+                if (show) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      DeferredPointerHandler(
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            FloatingActionButton.extended(
+                              extendedPadding: _showExtendedFab
+                                  ? null
+                                  : const EdgeInsets.symmetric(horizontal: 16),
+                              heroTag: "fab_documents_page_filter",
+                              label: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 150),
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SizeTransition(
+                                      sizeFactor: animation,
+                                      axis: Axis.horizontal,
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _showExtendedFab
+                                    ? Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.filter_alt_outlined,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            S.of(context)!.filterDocuments,
+                                          ),
+                                        ],
+                                      )
+                                    : const Icon(Icons.filter_alt_outlined),
                               ),
-                              if (canReset)
-                                Positioned(
-                                  top: -20,
-                                  right: -8,
-                                  child: DeferPointer(
-                                    paintOnTop: true,
-                                    child: Material(
-                                      color:
-                                          Theme.of(context).colorScheme.error,
+                              onPressed: _openDocumentFilter,
+                            ),
+                            if (canReset)
+                              Positioned(
+                                top: -20,
+                                right: -8,
+                                child: DeferPointer(
+                                  paintOnTop: true,
+                                  child: Material(
+                                    color: Theme.of(context).colorScheme.error,
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: InkWell(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(8),
-                                        onTap: () {
-                                          HapticFeedback.mediumImpact();
-                                          _onResetFilter();
-                                        },
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            if (_showExtendedFab)
-                                              Text(
-                                                "Reset (${state.filter.appliedFiltersCount})",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelLarge
-                                                    ?.copyWith(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onError,
-                                                    ),
-                                              ).padded()
-                                            else
-                                              Icon(
-                                                Icons.replay,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onError,
-                                              ).padded(4),
-                                          ],
-                                        ),
+                                      onTap: () {
+                                        HapticFeedback.mediumImpact();
+                                        _onResetFilter();
+                                      },
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          if (_showExtendedFab)
+                                            Text(
+                                              "Reset (${state.filter.appliedFiltersCount})",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onError,
+                                                  ),
+                                            ).padded()
+                                          else
+                                            Icon(
+                                              Icons.replay,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError,
+                                            ).padded(4),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-              resizeToAvoidBottomInset: true,
-              body: WillPopScope(
-                onWillPop: () async {
-                  if (context
-                      .read<DocumentsCubit>()
-                      .state
-                      .selection
-                      .isNotEmpty) {
-                    context.read<DocumentsCubit>().resetSelection();
-                    return false;
-                  }
-                  return true;
-                },
-                child: NestedScrollView(
-                  key: _nestedScrollViewKey,
-                  floatHeaderSlivers: true,
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverOverlapAbsorber(
-                      handle: searchBarHandle,
-                      sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
-                        builder: (context, state) {
-                          if (state.selection.isEmpty) {
-                            return SliverSearchBar(
-                              floating: true,
-                              titleText: S.of(context)!.documents,
-                            );
-                          } else {
-                            return DocumentSelectionSliverAppBar(
-                              state: state,
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    SliverOverlapAbsorber(
-                      handle: savedViewsHandle,
-                      sliver: SliverPinnedHeader(
-                        child: Material(
-                          child: _buildViewActions(),
-                          elevation: 2,
+                              ),
+                          ],
                         ),
                       ),
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
+            resizeToAvoidBottomInset: true,
+            body: WillPopScope(
+              onWillPop: () async {
+                if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
+                  context.read<DocumentsCubit>().resetSelection();
+                  return false;
+                }
+                return true;
+              },
+              child: NestedScrollView(
+                key: _nestedScrollViewKey,
+                floatHeaderSlivers: true,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverOverlapAbsorber(
+                    handle: searchBarHandle,
+                    sliver: BlocBuilder<DocumentsCubit, DocumentsState>(
+                      builder: (context, state) {
+                        if (state.selection.isEmpty) {
+                          return SliverSearchBar(
+                            floating: true,
+                            titleText: S.of(context)!.documents,
+                          );
+                        } else {
+                          return DocumentSelectionSliverAppBar(
+                            state: state,
+                          );
+                        }
+                      },
                     ),
-                  ],
-                  body: _buildDocumentsTab(
-                    connectivityState,
-                    context,
                   ),
+                  SliverOverlapAbsorber(
+                    handle: savedViewsHandle,
+                    sliver: SliverPinnedHeader(
+                      child: Material(
+                        child: _buildViewActions(),
+                        elevation: 2,
+                      ),
+                    ),
+                  ),
+                ],
+                body: _buildDocumentsTab(
+                  connectivityState,
+                  context,
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

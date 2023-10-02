@@ -4,6 +4,11 @@ import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 
 ///
 /// Opens an encrypted box, calls [callback] with the now opened box, awaits
@@ -39,4 +44,17 @@ Future<Uint8List> _getEncryptedBoxKey() async {
   }
   final key = (await secureStorage.read(key: 'key'))!;
   return base64Decode(key);
+}
+
+extension HiveBoxAccessors on HiveInterface {
+  Box<GlobalSettings> get settingsBox =>
+      box<GlobalSettings>(HiveBoxes.globalSettings);
+  Box<LocalUserAccount> get localUserAccountBox =>
+      box<LocalUserAccount>(HiveBoxes.localUserAccount);
+  Box<LocalUserAppState> get localUserAppStateBox =>
+      box<LocalUserAppState>(HiveBoxes.localUserAppState);
+  Box<LocalUserSettings> get localUserSettingsBox =>
+      box<LocalUserSettings>(HiveBoxes.localUserSettings);
+  Box<GlobalSettings> get globalSettingsBox =>
+      box<GlobalSettings>(HiveBoxes.globalSettings);
 }

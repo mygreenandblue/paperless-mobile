@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
@@ -20,6 +22,7 @@ import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -33,7 +36,7 @@ class DocumentUploadResult {
 }
 
 class DocumentUploadPreparationPage extends StatefulWidget {
-  final Uint8List fileBytes;
+  final FutureOr<Uint8List> fileBytes;
   final String? title;
   final String? filename;
   final String? fileExtension;
@@ -68,9 +71,10 @@ class _DocumentUploadPreparationPageState
   void initState() {
     super.initState();
     _syncTitleAndFilename = widget.filename == null && widget.title == null;
-    _titleColor = _computeAverageColor().computeLuminance() > 0.5
-        ? Colors.black
-        : Colors.white;
+    _computeAverageColor().then((value) {
+      _titleColor =
+          value.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    });
     initializeDateFormatting();
   }
 
@@ -104,9 +108,17 @@ class _DocumentUploadPreparationPageState
                     pinned: true,
                     expandedHeight: 150,
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Image.memory(
-                        widget.fileBytes,
-                        fit: BoxFit.cover,
+                      background: FutureOrBuilder<Uint8List>(
+                        future: widget.fileBytes,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const SizedBox.shrink();
+                          }
+                          return FileThumbnail(
+                            bytes: snapshot.data!,
+                            fit: BoxFit.fitWidth,
+                          );
+                        },
                       ),
                       title: Text(
                         S.of(context)!.prepareDocument,
@@ -116,7 +128,7 @@ class _DocumentUploadPreparationPageState
                       ),
                     ),
                     bottom: _isUploadLoading
-                        ? const PreferredSize(
+                        ? PreferredSize(
                             child: LinearProgressIndicator(),
                             preferredSize: Size.fromHeight(4.0),
                           )
@@ -359,7 +371,7 @@ class _DocumentUploadPreparationPageState
                 ?.whenOrNull(fromId: (id) => id);
         final asn = fv[DocumentModel.asnKey] as int?;
         final taskId = await cubit.upload(
-          widget.fileBytes,
+          await widget.fileBytes,
           filename: _padWithExtension(
             _formKey.currentState?.value[fkFileName],
             widget.fileExtension,
@@ -404,8 +416,8 @@ class _DocumentUploadPreparationPageState
     return source.replaceAll(RegExp(r"[\W_]"), "_").toLowerCase();
   }
 
-  Color _computeAverageColor() {
-    final bitmap = img.decodeImage(widget.fileBytes);
+  Future<Color> _computeAverageColor() async {
+    final bitmap = img.decodeImage(await widget.fileBytes);
     if (bitmap == null) {
       return Colors.black;
     }

@@ -126,7 +126,7 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                   .maybeMap(
                     loaded: (value) {
                       if (value.savedViews.isEmpty) {
-                        return Text(S.of(context)!.noItemsFound)
+                        return Text(S.of(context)!.youDidNotSaveAnyViewsYet)
                             .paddedOnly(left: 16);
                       }
 
