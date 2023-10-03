@@ -5,6 +5,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
@@ -71,6 +72,8 @@ class LoginPage extends StatelessWidget {
           stackTrace,
         ); //TODO: Check if we can show error message directly on field here.
       }
+    } on InfoMessageException catch (error) {
+      showInfoMessage(context, error);
     } catch (unknownError, stackTrace) {
       showGenericError(context, unknownError.toString(), stackTrace);
     }

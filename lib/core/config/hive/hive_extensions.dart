@@ -8,7 +8,6 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 
 ///
 /// Opens an encrypted box, calls [callback] with the now opened box, awaits
@@ -53,8 +52,6 @@ extension HiveBoxAccessors on HiveInterface {
       box<LocalUserAccount>(HiveBoxes.localUserAccount);
   Box<LocalUserAppState> get localUserAppStateBox =>
       box<LocalUserAppState>(HiveBoxes.localUserAppState);
-  Box<LocalUserSettings> get localUserSettingsBox =>
-      box<LocalUserSettings>(HiveBoxes.localUserSettings);
   Box<GlobalSettings> get globalSettingsBox =>
       box<GlobalSettings>(HiveBoxes.globalSettings);
 }

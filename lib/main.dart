@@ -28,6 +28,7 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -37,7 +38,9 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/sharing/model/share_intent_queue.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
+import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
@@ -47,6 +50,8 @@ import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/checking_login_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/switching_accounts_route.dart';
@@ -234,6 +239,8 @@ class _GoRouterShellState extends State<GoRouterShell> {
       $loginRoute,
       $verifyIdentityRoute,
       $switchingAccountsRoute,
+      $logginOutRoute,
+      $checkingLoginRoute,
       ShellRoute(
         navigatorKey: rootNavigatorKey,
         builder: ProviderShellRoute(widget.apiFactory).build,
@@ -280,19 +287,33 @@ class _GoRouterShellState extends State<GoRouterShell> {
       listener: (context, state) {
         switch (state) {
           case UnauthenticatedState():
-            const LoginRoute().go(context);
+            _router.goNamed(R.login);
             break;
           case RequiresLocalAuthenticationState():
-            const VerifyIdentityRoute().go(context);
+            _router.goNamed(R.verifyIdentity);
             break;
           case SwitchingAccountsState():
-            const SwitchingAccountsRoute().go(context);
+            final userId = context.read<LocalUserAccount>().id;
+            context
+                .read<LocalNotificationService>()
+                .cancelUserNotifications(userId);
+            _router.goNamed(R.switchingAccounts);
             break;
           case AuthenticatedState():
-            const LandingRoute().go(context);
+            _router.goNamed(R.landing);
+            break;
+          case CheckingLoginState():
+            _router.goNamed(R.checkingLogin);
+            break;
+          case LogginOutState():
+            final userId = context.read<LocalUserAccount>().id;
+            context
+                .read<LocalNotificationService>()
+                .cancelUserNotifications(userId);
+            _router.goNamed(R.loggingOut);
             break;
           case AuthenticationErrorState():
-            const LoginRoute().go(context);
+            _router.goNamed(R.login);
             break;
         }
       },

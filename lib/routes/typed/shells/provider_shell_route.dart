@@ -61,11 +61,15 @@ class ProviderShellRoute extends ShellRouteData {
   ) {
     final currentUserId = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
         .getValue()!
-        .loggedInUserId!;
+        .loggedInUserId;
+    if (currentUserId == null) {
+      return const SizedBox.shrink();
+    }
     final authenticatedUser =
         Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(
       currentUserId,
     )!;
+
     return HomeShellWidget(
       localUserId: authenticatedUser.id,
       paperlessApiVersion: authenticatedUser.apiVersion,

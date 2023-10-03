@@ -28,13 +28,15 @@ class FileThumbnail extends StatefulWidget {
 
 class _FileThumbnailState extends State<FileThumbnail> {
   late String? mimeType;
-
+  late final Future<Uint8List?> _fileBytes;
   @override
   void initState() {
     super.initState();
     mimeType = widget.file != null
         ? mime.lookupMimeType(widget.file!.path)
         : mime.lookupMimeType('', headerBytes: widget.bytes);
+    _fileBytes = widget.file?.readAsBytes().then(_convertPdfToPng) ??
+        _convertPdfToPng(widget.bytes!);
   }
 
   @override
@@ -45,8 +47,7 @@ class _FileThumbnailState extends State<FileThumbnail> {
           height: widget.height,
           child: Center(
             child: FutureBuilder<Uint8List?>(
-              future: widget.file?.readAsBytes().then(_convertPdfToPng) ??
-                  _convertPdfToPng(widget.bytes!),
+              future: _fileBytes,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();

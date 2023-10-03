@@ -108,7 +108,7 @@ class AppDrawer extends StatelessWidget {
                 final child = ListTile(
                   dense: true,
                   leading: const Icon(Icons.drive_folder_upload_outlined),
-                  title: const Text("Upload Queue"),
+                  title: const Text("Pending Files"),
                   onTap: () {
                     UploadQueueRoute().push(context);
                   },

@@ -22,7 +22,7 @@ import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_ima
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
+import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';

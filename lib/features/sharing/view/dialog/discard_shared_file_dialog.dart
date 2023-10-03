@@ -6,7 +6,7 @@ import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
 import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 
 class DiscardSharedFileDialog extends StatelessWidget {
   final FutureOr<Uint8List> bytes;
@@ -24,13 +24,13 @@ class DiscardSharedFileDialog extends StatelessWidget {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
-          return LimitedBox(
-            maxHeight: 200,
-            maxWidth: 200,
-            child: FadeInImage(
-              fit: BoxFit.contain,
-              placeholder: MemoryImage(kTransparentImage),
-              image: MemoryImage(snapshot.data!),
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: FileThumbnail(
+              bytes: snapshot.data!,
+              width: 150,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           );
         },

@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
@@ -20,13 +16,13 @@ class ConsumptionQueueView extends StatelessWidget {
     final currentUser = context.watch<LocalUserAccount>();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Upload Queue"), //TODO: INTL
+        title: Text("Pending Files"), //TODO: INTL
       ),
       body: Consumer<ConsumptionChangeNotifier>(
         builder: (context, value, child) {
           if (value.pendingFiles.isEmpty) {
             return Center(
-              child: Text("No pending files."),
+              child: Text("There are no pending files."), //TODO: INTL
             );
           }
           return ListView.builder(
@@ -34,7 +30,37 @@ class ConsumptionQueueView extends StatelessWidget {
               final file = value.pendingFiles.elementAt(index);
               final filename = p.basename(file.path);
               return ListTile(
-                title: Text(filename),
+                title: Text(
+                  filename,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                subtitle: Row(
+                  children: [
+                    ActionChip(
+                      label: Text(S.of(context)!.upload),
+                      avatar: const Icon(Icons.file_upload_outlined),
+                      onPressed: () {
+                        consumeLocalFile(
+                          context,
+                          file: file,
+                          userId: currentUser.id,
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    ActionChip(
+                      label: Text(S.of(context)!.discard),
+                      avatar: const Icon(Icons.delete),
+                      onPressed: () {
+                        context.read<ConsumptionChangeNotifier>().discardFile(
+                              file,
+                              userId: currentUser.id,
+                            );
+                      },
+                    ),
+                  ],
+                ),
                 leading: Padding(
                   padding: const EdgeInsets.all(4),
                   child: ClipRRect(
@@ -46,60 +72,7 @@ class ConsumptionQueueView extends StatelessWidget {
                     ),
                   ),
                 ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    context
-                        .read<ConsumptionChangeNotifier>()
-                        .discardFile(file, userId: currentUser.id);
-                  },
-                ),
               );
-              return Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(filename, maxLines: 1),
-                        SizedBox(
-                          height: 56,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ActionChip(
-                                label: Text(S.of(context)!.upload),
-                                avatar: Icon(Icons.file_upload_outlined),
-                                onPressed: () {
-                                  consumeLocalFile(
-                                    context,
-                                    file: file,
-                                    userId: currentUser.id,
-                                  );
-                                },
-                              ),
-                              SizedBox(width: 8),
-                              ActionChip(
-                                label: Text(S.of(context)!.discard),
-                                avatar: Icon(Icons.delete),
-                                onPressed: () {
-                                  context
-                                      .read<ConsumptionChangeNotifier>()
-                                      .discardFile(
-                                        file,
-                                        userId: currentUser.id,
-                                      );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ).padded(),
-                  ),
-                ],
-              ).padded();
             },
             itemCount: value.pendingFiles.length,
           );

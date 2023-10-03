@@ -21,4 +21,6 @@ class R {
   static const linkedDocuments = "linkedDocuments";
   static const bulkEditDocuments = "bulkEditDocuments";
   static const uploadQueue = "uploadQueue";
+  static const checkingLogin = "checkingLogin";
+  static const loggingOut = "loggingOut";
 }

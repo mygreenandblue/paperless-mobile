@@ -57,72 +57,76 @@ class _AddAccountPageState extends State<AddAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    final localAccounts =
-        Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: FormBuilder(
-        key: _formKey,
-        child: PageView(
-          controller: _pageController,
-          scrollBehavior: NeverScrollableScrollBehavior(),
-          children: [
-            if (widget.showLocalAccounts && localAccounts.isNotEmpty)
-              Scaffold(
-                appBar: AppBar(
-                  title: Text(S.of(context)!.logInToExistingAccount),
-                ),
-                bottomNavigationBar: BottomAppBar(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FilledButton(
-                        child: Text(S.of(context)!.goToLogin),
-                        onPressed: () {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
+    return ValueListenableBuilder(
+      valueListenable:
+          Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).listenable(),
+      builder: (context, localAccounts, child) {
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: FormBuilder(
+            key: _formKey,
+            child: PageView(
+              controller: _pageController,
+              scrollBehavior: NeverScrollableScrollBehavior(),
+              children: [
+                if (widget.showLocalAccounts && localAccounts.isNotEmpty)
+                  Scaffold(
+                    appBar: AppBar(
+                      title: Text(S.of(context)!.logInToExistingAccount),
+                    ),
+                    bottomNavigationBar: BottomAppBar(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FilledButton(
+                            child: Text(S.of(context)!.goToLogin),
+                            onPressed: () {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
+                    body: ListView.builder(
+                      itemBuilder: (context, index) {
+                        final account = localAccounts.values.elementAt(index);
+                        return Card(
+                          child: UserAccountListTile(
+                            account: account,
+                            onTap: () {
+                              context
+                                  .read<AuthenticationCubit>()
+                                  .switchAccount(account.id);
+                            },
+                          ),
+                        );
+                      },
+                      itemCount: localAccounts.length,
+                    ),
                   ),
-                ),
-                body: ListView.builder(
-                  itemBuilder: (context, index) {
-                    final account = localAccounts.values.elementAt(index);
-                    return Card(
-                      child: UserAccountListTile(
-                        account: account,
-                        onTap: () {
-                          context
-                              .read<AuthenticationCubit>()
-                              .switchAccount(account.id);
-                        },
-                      ),
+                ServerConnectionPage(
+                  titleText: widget.titleString,
+                  formBuilderKey: _formKey,
+                  onContinue: () {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
                     );
                   },
-                  itemCount: localAccounts.length,
                 ),
-              ),
-            ServerConnectionPage(
-              titleText: widget.titleString,
-              formBuilderKey: _formKey,
-              onContinue: () {
-                _pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              },
+                ServerLoginPage(
+                  formBuilderKey: _formKey,
+                  submitText: widget.submitText,
+                  onSubmit: _login,
+                ),
+              ],
             ),
-            ServerLoginPage(
-              formBuilderKey: _formKey,
-              submitText: widget.submitText,
-              onSubmit: _login,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

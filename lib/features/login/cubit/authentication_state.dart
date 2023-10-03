@@ -15,6 +15,14 @@ class RequiresLocalAuthenticationState extends AuthenticationState {
   const RequiresLocalAuthenticationState();
 }
 
+class CheckingLoginState extends AuthenticationState {
+  const CheckingLoginState();
+}
+
+class LogginOutState extends AuthenticationState {
+  const LogginOutState();
+}
+
 class AuthenticatedState extends AuthenticationState {
   final String localUserId;
 

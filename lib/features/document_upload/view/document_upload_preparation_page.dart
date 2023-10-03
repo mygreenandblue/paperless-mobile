@@ -60,7 +60,6 @@ class _DocumentUploadPreparationPageState
   static final fileNameDateFormat = DateFormat("yyyy_MM_ddTHH_mm_ss");
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
-  Color? _titleColor;
   Map<String, String> _errors = {};
   bool _isUploadLoading = false;
   late bool _syncTitleAndFilename;
@@ -71,10 +70,6 @@ class _DocumentUploadPreparationPageState
   void initState() {
     super.initState();
     _syncTitleAndFilename = widget.filename == null && widget.title == null;
-    _computeAverageColor().then((value) {
-      _titleColor =
-          value.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-    });
     initializeDateFormatting();
   }
 
@@ -102,9 +97,7 @@ class _DocumentUploadPreparationPageState
                   handle:
                       NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
-                    leading: BackButton(
-                      color: _titleColor,
-                    ),
+                    leading: BackButton(),
                     pinned: true,
                     expandedHeight: 150,
                     flexibleSpace: FlexibleSpaceBar(
@@ -112,20 +105,17 @@ class _DocumentUploadPreparationPageState
                         future: widget.fileBytes,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
-                            return const SizedBox.shrink();
+                            return SizedBox.shrink();
                           }
                           return FileThumbnail(
                             bytes: snapshot.data!,
                             fit: BoxFit.fitWidth,
+                            width: MediaQuery.sizeOf(context).width,
                           );
                         },
                       ),
-                      title: Text(
-                        S.of(context)!.prepareDocument,
-                        style: TextStyle(
-                          color: _titleColor,
-                        ),
-                      ),
+                      title: Text(S.of(context)!.prepareDocument),
+                      collapseMode: CollapseMode.pin,
                     ),
                     bottom: _isUploadLoading
                         ? PreferredSize(
@@ -416,32 +406,32 @@ class _DocumentUploadPreparationPageState
     return source.replaceAll(RegExp(r"[\W_]"), "_").toLowerCase();
   }
 
-  Future<Color> _computeAverageColor() async {
-    final bitmap = img.decodeImage(await widget.fileBytes);
-    if (bitmap == null) {
-      return Colors.black;
-    }
-    int redBucket = 0;
-    int greenBucket = 0;
-    int blueBucket = 0;
-    int pixelCount = 0;
+  // Future<Color> _computeAverageColor() async {
+  //   final bitmap = img.decodeImage(await widget.fileBytes);
+  //   if (bitmap == null) {
+  //     return Colors.black;
+  //   }
+  //   int redBucket = 0;
+  //   int greenBucket = 0;
+  //   int blueBucket = 0;
+  //   int pixelCount = 0;
 
-    for (int y = 0; y < bitmap.height; y++) {
-      for (int x = 0; x < bitmap.width; x++) {
-        final c = bitmap.getPixel(x, y);
+  //   for (int y = 0; y < bitmap.height; y++) {
+  //     for (int x = 0; x < bitmap.width; x++) {
+  //       final c = bitmap.getPixel(x, y);
 
-        pixelCount++;
-        redBucket += c.r.toInt();
-        greenBucket += c.g.toInt();
-        blueBucket += c.b.toInt();
-      }
-    }
+  //       pixelCount++;
+  //       redBucket += c.r.toInt();
+  //       greenBucket += c.g.toInt();
+  //       blueBucket += c.b.toInt();
+  //     }
+  //   }
 
-    return Color.fromRGBO(
-      redBucket ~/ pixelCount,
-      greenBucket ~/ pixelCount,
-      blueBucket ~/ pixelCount,
-      1,
-    );
-  }
+  //   return Color.fromRGBO(
+  //     redBucket ~/ pixelCount,
+  //     greenBucket ~/ pixelCount,
+  //     blueBucket ~/ pixelCount,
+  //     1,
+  //   );
+  // }
 }

@@ -1,20 +1,24 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:path/path.dart' as p;
-import 'package:provider/provider.dart';
 
 part 'receive_share_state.dart';
 
 class ConsumptionChangeNotifier extends ChangeNotifier {
   List<File> pendingFiles = [];
 
-  ConsumptionChangeNotifier();
+  final Completer _restored = Completer();
+
+  Future<void> get isInitialized => _restored.future;
 
   Future<void> loadFromConsumptionDirectory({required String userId}) async {
     pendingFiles = await _getCurrentFiles(userId);
+    if (!_restored.isCompleted) {
+      _restored.complete();
+    }
     notifyListeners();
   }
 

@@ -20,6 +20,7 @@ import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
+import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -44,34 +45,35 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     ClientCertificate? clientCertificate,
   }) async {
     assert(credentials.username != null && credentials.password != null);
+    emit(const CheckingLoginState());
     final localUserId = "${credentials.username}@$serverUrl";
     _debugPrintMessage(
       "login",
       "Trying to login $localUserId...",
     );
-    await _addUser(
-      localUserId,
-      serverUrl,
-      credentials,
-      clientCertificate,
-      _sessionManager,
-    );
+    try {
+      await _addUser(
+        localUserId,
+        serverUrl,
+        credentials,
+        clientCertificate,
+        _sessionManager,
+      );
 
-    // Mark logged in user as currently active user.
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    globalSettings.loggedInUserId = localUserId;
-    await globalSettings.save();
+      // Mark logged in user as currently active user.
+      final globalSettings =
+          Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+      globalSettings.loggedInUserId = localUserId;
+      await globalSettings.save();
 
-    emit(
-      AuthenticatedState(
-        localUserId: localUserId,
-      ),
-    );
-    _debugPrintMessage(
-      "login",
-      "User successfully logged in.",
-    );
+      emit(AuthenticatedState(localUserId: localUserId));
+      _debugPrintMessage(
+        "login",
+        "User successfully logged in.",
+      );
+    } catch (error) {
+      emit(const UnauthenticatedState());
+    }
   }
 
   /// Switches to another account if it exists.
@@ -156,10 +158,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> removeAccount(String userId) async {
-    final userAccountBox =
-        Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
-    final userAppStateBox =
-        Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
+    final userAccountBox = Hive.localUserAccountBox;
+    final userAppStateBox = Hive.localUserAppStateBox;
     await FileService.clearUserData(userId: userId);
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
@@ -263,9 +263,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       "restoreSessionState",
       "Current session state successfully updated.",
     );
-    final hasInternetConnection =
-        await _connectivityService.isConnectedToInternet();
-    if (hasInternetConnection) {
+    final isPaperlessServerReachable =
+        await _connectivityService.isPaperlessServerReachable(
+              localUserAccount.serverUrl,
+              authentication.clientCertificate,
+            ) ==
+            ReachabilityStatus.reachable;
+    if (isPaperlessServerReachable) {
       _debugPrintMessage(
         "restoreSessionMState",
         "Updating server user...",
@@ -283,7 +287,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     } else {
       _debugPrintMessage(
         "restoreSessionMState",
-        "Skipping update of server user (no internet connection).",
+        "Skipping update of server user (server could not be reached).",
       );
     }
 
@@ -295,14 +299,18 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> logout() async {
+  Future<void> logout([bool removeAccount = false]) async {
+    emit(const LogginOutState());
     _debugPrintMessage(
       "logout",
       "Trying to log out current user...",
     );
     await _resetExternalState();
-    final globalSettings =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
+    final globalSettings = Hive.globalSettingsBox.getValue()!;
+    final userId = globalSettings.loggedInUserId!;
+    if (removeAccount) {
+      this.removeAccount(userId);
+    }
     globalSettings.loggedInUserId = null;
     await globalSettings.save();
 
@@ -459,19 +467,32 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     return serverUser.id;
   }
 
-  Future<int> _getApiVersion(Dio dio) async {
+  Future<int> _getApiVersion(
+    Dio dio, {
+    Duration? timeout,
+    int defaultValue = 2,
+  }) async {
     _debugPrintMessage(
       "_getApiVersion",
       "Trying to fetch API version...",
     );
-    final response = await dio.get("/api/");
-    final apiVersion =
-        int.parse(response.headers.value('x-api-version') ?? "3");
-    _debugPrintMessage(
-      "_getApiVersion",
-      "API version ($apiVersion) successfully retrieved.",
-    );
-    return apiVersion;
+    try {
+      final response = await dio.get(
+        "/api/",
+        options: Options(
+          sendTimeout: timeout,
+        ),
+      );
+      final apiVersion =
+          int.parse(response.headers.value('x-api-version') ?? "3");
+      _debugPrintMessage(
+        "_getApiVersion",
+        "API version ($apiVersion) successfully retrieved.",
+      );
+      return apiVersion;
+    } on DioException catch (e) {
+      return defaultValue;
+    }
   }
 
   /// Fetches possibly updated (permissions, name, updated server version and thus new user model, ...) remote user data.

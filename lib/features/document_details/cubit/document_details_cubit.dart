@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_description.dart';
@@ -120,6 +121,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   Future<void> downloadDocument({
     bool downloadOriginal = false,
     required String locale,
+    required String userId,
   }) async {
     if (state.metaData == null) {
       await loadMetaData();
@@ -141,6 +143,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         filePath: filePath,
         finished: true,
         locale: locale,
+        userId: userId,
       );
     }
 
@@ -150,6 +153,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       filePath: filePath,
       finished: false,
       locale: locale,
+      userId: userId,
     );
 
     await _api.downloadToFile(
@@ -163,6 +167,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       filePath: filePath,
       finished: true,
       locale: locale,
+      userId: userId,
     );
     debugPrint("Downloaded file to $filePath");
   }

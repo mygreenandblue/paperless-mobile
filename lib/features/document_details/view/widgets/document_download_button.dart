@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
@@ -90,9 +91,11 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
       }
 
       setState(() => _isDownloadPending = true);
+      final userId = context.read<LocalUserAccount>().id;
       await context.read<DocumentDetailsCubit>().downloadDocument(
             downloadOriginal: original,
             locale: globalSettings.preferredLocaleSubtag,
+            userId: userId,
           );
       // showSnackBar(context, S.of(context)!.documentSuccessfullyDownloaded);
     } on PaperlessApiException catch (error, stackTrace) {

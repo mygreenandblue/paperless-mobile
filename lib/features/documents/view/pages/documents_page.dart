@@ -21,7 +21,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/view_
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/tasks/cubit/task_status_cubit.dart';
+import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
@@ -59,7 +59,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PendingTasksNotifier>().addListener(_onTasksChanged);
+    // context.read<PendingTasksNotifier>().addListener(_onTasksChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _nestedScrollViewKey.currentState!.innerController
           .addListener(_scrollExtentChangedListener);
@@ -126,8 +126,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   void dispose() {
     _nestedScrollViewKey.currentState?.innerController
         .removeListener(_scrollExtentChangedListener);
-    context.read<PendingTasksNotifier>().removeListener(_onTasksChanged);
-
+    // context.read<PendingTasksNotifier>().removeListener(_onTasksChanged);
     super.dispose();
   }
 
