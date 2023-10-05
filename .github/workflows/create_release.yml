@@ -42,7 +42,7 @@ jobs:
       - name: Clone flutter repository
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.0'
+          flutter-version: '3.13.3'
           channel: stable
       - run: flutter doctor -v
 
