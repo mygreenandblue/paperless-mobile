@@ -6,16 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
-
+import 'package:path/path.dart' as p;
 part 'document_details_cubit.freezed.dart';
 part 'document_details_state.dart';
 
@@ -94,11 +92,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (state.metaData == null) {
       await loadMetaData();
     }
-    final desc = FileDescription.fromPath(
-      state.metaData!.mediaFilename.replaceAll("/", " "),
-    );
+    final filePath = state.metaData!.mediaFilename.replaceAll("/", " ");
 
-    final fileName = "${desc.filename}.pdf";
+    final fileName = "${p.basenameWithoutExtension(filePath)}.pdf";
     final file = File("${cacheDir.path}/$fileName");
 
     if (!file.existsSync()) {
@@ -126,50 +122,58 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (state.metaData == null) {
       await loadMetaData();
     }
-    String filePath = _buildDownloadFilePath(
+    String targetPath = _buildDownloadFilePath(
       downloadOriginal,
       await FileService.downloadsDirectory,
     );
-    final desc = FileDescription.fromPath(
-      state.metaData!.mediaFilename
-          .replaceAll("/", " "), // Flatten directory structure
-    );
-    if (!File(filePath).existsSync()) {
-      File(filePath).createSync();
+
+    if (!await File(targetPath).exists()) {
+      await File(targetPath).create();
     } else {
-      return _notificationService.notifyFileDownload(
+      await _notificationService.notifyFileDownload(
         document: state.document,
-        filename: "${desc.filename}.${desc.extension}",
-        filePath: filePath,
+        filename: p.basename(targetPath),
+        filePath: targetPath,
         finished: true,
         locale: locale,
         userId: userId,
       );
     }
 
-    await _notificationService.notifyFileDownload(
-      document: state.document,
-      filename: "${desc.filename}.${desc.extension}",
-      filePath: filePath,
-      finished: false,
-      locale: locale,
-      userId: userId,
-    );
+    // await _notificationService.notifyFileDownload(
+    //   document: state.document,
+    //   filename: p.basename(targetPath),
+    //   filePath: targetPath,
+    //   finished: false,
+    //   locale: locale,
+    //   userId: userId,
+    // );
 
     await _api.downloadToFile(
       state.document,
-      filePath,
+      targetPath,
       original: downloadOriginal,
+      onProgressChanged: (progress) {
+        _notificationService.notifyFileDownload(
+          document: state.document,
+          filename: p.basename(targetPath),
+          filePath: targetPath,
+          finished: true,
+          locale: locale,
+          userId: userId,
+          progress: progress,
+        );
+      },
     );
     await _notificationService.notifyFileDownload(
       document: state.document,
-      filename: "${desc.filename}.${desc.extension}",
-      filePath: filePath,
+      filename: p.basename(targetPath),
+      filePath: targetPath,
       finished: true,
       locale: locale,
       userId: userId,
     );
-    debugPrint("Downloaded file to $filePath");
+    debugPrint("Downloaded file to $targetPath");
   }
 
   Future<void> shareDocument({bool shareOriginal = false}) async {
@@ -220,12 +224,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   String _buildDownloadFilePath(bool original, Directory dir) {
-    final description = FileDescription.fromPath(
-      state.metaData!.mediaFilename
-          .replaceAll("/", " "), // Flatten directory structure
-    );
-    final extension = original ? description.extension : 'pdf';
-    return "${dir.path}/${description.filename}.$extension";
+    final normalizedPath = state.metaData!.mediaFilename.replaceAll("/", " ");
+    final extension = original ? p.extension(normalizedPath) : '.pdf';
+    return "${dir.path}/${p.basenameWithoutExtension(normalizedPath)}$extension";
   }
 
   @override

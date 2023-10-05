@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
-import 'package:paperless_mobile/features/sharing/view/widgets/upload_queue_shell.dart';
+import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';

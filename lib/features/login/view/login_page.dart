@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/config/hive/hive_extensions.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
@@ -13,18 +13,41 @@ import 'package:paperless_mobile/features/login/model/login_form_credentials.dar
 import 'package:paperless_mobile/features/login/view/add_account_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final String? initialServerUrl;
+  final String? initialUsername;
+  final String? initialPassword;
+  final ClientCertificate? initialClientCertificate;
+
+  const LoginPage({
+    super.key,
+    this.initialServerUrl,
+    this.initialUsername,
+    this.initialPassword,
+    this.initialClientCertificate,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AddAccountPage(
-      titleString: S.of(context)!.connectToPaperless,
+      titleText: S.of(context)!.connectToPaperless,
       submitText: S.of(context)!.signIn,
       onSubmit: _onLogin,
       showLocalAccounts: true,
+      initialServerUrl: initialServerUrl,
+      initialUsername: initialUsername,
+      initialPassword: initialPassword,
+      initialClientCertificate: initialClientCertificate,
+      bottomLeftButton: Hive.localUserAccountBox.isNotEmpty
+          ? TextButton(
+              child: Text(S.of(context)!.logInToExistingAccount),
+              onPressed: () {
+                const LoginToExistingAccountRoute().go(context);
+              },
+            )
+          : null,
     );
   }
 

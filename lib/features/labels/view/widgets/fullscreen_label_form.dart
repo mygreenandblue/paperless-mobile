@@ -69,6 +69,7 @@ class _FullscreenLabelFormState<T extends Label>
 
   @override
   Widget build(BuildContext context) {
+    final showFab = MediaQuery.viewInsetsOf(context).bottom == 0;
     final theme = Theme.of(context);
     final options = _filterOptionsByQuery(_textEditingController.text);
     return Scaffold(
@@ -124,6 +125,13 @@ class _FullscreenLabelFormState<T extends Label>
           ),
         ),
       ),
+      floatingActionButton: showFab && widget.onCreateNewLabel != null
+          ? FloatingActionButton(
+              heroTag: "fab_label_form",
+              onPressed: _onCreateNewLabel,
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: Builder(
         builder: (context) {
           return Column(

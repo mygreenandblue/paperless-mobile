@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:rxdart/streams.dart';
 
 import 'paged_documents_state.dart';
 
@@ -51,6 +50,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   /// Use [loadMore] to load more data.
   Future<void> updateFilter({
     final DocumentFilter filter = const DocumentFilter(),
+    bool emitLoading = true,
   }) async {
     final hasConnection =
         await connectivityStatusService.isConnectedToInternet();
@@ -60,7 +60,9 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
           .expand((page) => page.results)
           .where((doc) => filter.matches(doc))
           .toList();
-          emit(state.copyWithPaged(isLoading: true));
+      if (emitLoading) {
+        emit(state.copyWithPaged(isLoading: true));
+      }
 
       emit(
         state.copyWithPaged(
@@ -79,7 +81,9 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
       return;
     }
     try {
-      emit(state.copyWithPaged(isLoading: true));
+      if (emitLoading) {
+        emit(state.copyWithPaged(isLoading: true));
+      }
       final result = await api.findAll(filter.copyWith(page: 1));
 
       emit(
@@ -146,7 +150,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   /// Deletes a document and removes it from the currently loaded state.
   ///
   Future<void> delete(DocumentModel document) async {
-    emit(state.copyWithPaged(isLoading: true));
+    // emit(state.copyWithPaged(isLoading: true));
     try {
       await api.delete(document);
       notifier.notifyDeleted(document);
@@ -212,6 +216,7 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
       emit(newState);
     }
   }
+
 
   @override
   Future<void> close() {

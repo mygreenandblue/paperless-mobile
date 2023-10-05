@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
@@ -9,7 +8,6 @@ import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dar
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:provider/provider.dart';
-import 'package:sliver_tools/sliver_tools.dart';
 
 class SliverSearchBar extends StatelessWidget {
   final bool floating;
@@ -24,10 +22,8 @@ class SliverSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (context.watch<LocalUserAccount>().paperlessUser.canViewDocuments) {
-      return SliverAppBar(
+      return const SliverAppBar(
         titleSpacing: 8,
         automaticallyImplyLeading: false,
         title: DocumentSearchBar(),

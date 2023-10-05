@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +47,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   Widget build(BuildContext context) {
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
-    final tabLength = 4 + (hasMultiUserSupport ? 1 : 0);
+    final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context)
@@ -86,51 +85,52 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     collapsedHeight: kToolbarHeight,
                     expandedHeight: 250.0,
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          BlocBuilder<DocumentDetailsCubit,
-                              DocumentDetailsState>(
-                            builder: (context, state) {
-                              return Positioned.fill(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    DocumentPreviewRoute($extra: state.document)
-                                        .push(context);
-                                  },
-                                  child: DocumentPreview(
-                                    document: state.document,
-                                    fit: BoxFit.cover,
+                      background: BlocBuilder<DocumentDetailsCubit,
+                          DocumentDetailsState>(
+                        builder: (context, state) {
+                          return Hero(
+                            tag: "thumb_${state.document.id}",
+                            child: GestureDetector(
+                              onTap: () {
+                                DocumentPreviewRoute($extra: state.document)
+                                    .push(context);
+                              },
+                              child: Stack(
+                                alignment: Alignment.topCenter,
+                                children: [
+                                  Positioned.fill(
+                                    child: DocumentPreview(
+                                      enableHero: false,
+                                      document: state.document,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                          // Positioned.fill(
-                          //   top: -kToolbarHeight,
-                          //   child: DecoratedBox(
-                          //     decoration: BoxDecoration(
-                          //       gradient: LinearGradient(
-                          //         colors: [
-                          //           Theme.of(context)
-                          //               .colorScheme
-                          //               .background
-                          //               .withOpacity(0.8),
-                          //           Theme.of(context)
-                          //               .colorScheme
-                          //               .background
-                          //               .withOpacity(0.5),
-                          //           Colors.transparent,
-                          //           Colors.transparent,
-                          //           Colors.transparent,
-                          //         ],
-                          //         begin: Alignment.topCenter,
-                          //         end: Alignment.bottomCenter,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
+                                  Positioned.fill(
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          stops: [0.2, 0.4],
+                                          colors: [
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .background
+                                                .withOpacity(0.6),
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .background
+                                                .withOpacity(0.3),
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     bottom: ColoredTabBar(
@@ -177,7 +177,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ),
                           ),
-                          if (hasMultiUserSupport)
+                          if (hasMultiUserSupport && false)
                             Tab(
                               child: Text(
                                 "Permissions",
@@ -266,7 +266,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ],
                           ),
-                          if (hasMultiUserSupport)
+                          if (hasMultiUserSupport && false)
                             CustomScrollView(
                               controller: _pagingScrollController,
                               slivers: [
@@ -406,7 +406,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     if (delete) {
       try {
         await context.read<DocumentDetailsCubit>().delete(document);
-        showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
+        // showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {

@@ -12,6 +12,10 @@ class DocumentChangedNotifier {
 
   final Map<dynamic, List<StreamSubscription>> _subscribers = {};
 
+  Stream<DocumentModel> get $updated => _updated.asBroadcastStream();
+
+  Stream<DocumentModel> get $deleted => _deleted.asBroadcastStream();
+
   void notifyUpdated(DocumentModel updated) {
     debugPrint("Notifying updated document ${updated.id}");
     _updated.add(updated);

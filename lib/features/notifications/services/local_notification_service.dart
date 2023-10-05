@@ -54,6 +54,7 @@ class LocalNotificationService {
     required bool finished,
     required String locale,
     required String userId,
+    double? progress,
   }) async {
     final tr = await S.delegate.load(Locale(locale));
 
@@ -68,8 +69,10 @@ class LocalNotificationService {
         android: AndroidNotificationDetails(
           NotificationChannel.documentDownload.id + "_${document.id}",
           NotificationChannel.documentDownload.name,
+          progress: ((progress ?? 0) * 100).toInt(),
+          maxProgress: 100,
+          indeterminate: progress == null && !finished,
           ongoing: !finished,
-          indeterminate: true,
           importance: Importance.max,
           priority: Priority.high,
           showProgress: !finished,

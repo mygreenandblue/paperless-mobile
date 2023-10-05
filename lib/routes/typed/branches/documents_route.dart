@@ -54,7 +54,8 @@ class DocumentsRoute extends GoRouteData {
 }
 
 class DocumentDetailsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   final bool isLabelClickable;
   final DocumentModel $extra;
@@ -86,7 +87,8 @@ class DocumentDetailsRoute extends GoRouteData {
 }
 
 class EditDocumentRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   final DocumentModel $extra;
 
@@ -114,7 +116,8 @@ class EditDocumentRoute extends GoRouteData {
 }
 
 class DocumentPreviewRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   final DocumentModel $extra;
   final String? title;

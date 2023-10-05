@@ -146,7 +146,7 @@ class _LandingPageState extends State<LandingPage> {
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
                   title: Text(S.of(context)!.documentsInInbox),
-                  onTap: currentUser.canViewTags && currentUser.canViewDocuments
+                  onTap: currentUser.canViewInbox
                       ? () => InboxRoute().go(context)
                       : null,
                   trailing: Text(
@@ -161,9 +161,11 @@ class _LandingPageState extends State<LandingPage> {
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
                   title: Text(S.of(context)!.totalDocuments),
-                  onTap: () {
-                    DocumentsRoute().go(context);
-                  },
+                  onTap: currentUser.canViewDocuments
+                      ? () {
+                          DocumentsRoute().go(context);
+                        }
+                      : null,
                   trailing: Text(
                     stats.documentsTotal.toString(),
                     style: Theme.of(context).textTheme.labelLarge,

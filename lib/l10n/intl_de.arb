@@ -980,5 +980,21 @@
   },
   "tryAgain": "Erneut versuchen",
   "discardFile": "Datei verwerfen?",
-  "discard": "Verwerfen"
+  "discard": "Verwerfen",
+  "backToLogin": "Zurück zur Anmeldung",
+  "skipEditingReceivedFiles": "Bearbeitung von empfangenen Dateien überspringen",
+  "uploadWithoutPromptingUploadForm": "Mit der App geteilte Dateien immer direkt hochladen, ohne das Upload-Formular anzuzeigen.",
+  "authenticatingDots": "Authentifizieren...",
+  "@authenticatingDots": {
+    "description": "Message shown when the app is authenticating the user"
+  },
+  "persistingUserInformation": "Nutzerinformationen werden gespeichert...",
+  "fetchingUserInformation": "Benutzerinformationen werden abgerufen...",
+  "@fetchingUserInformation": {
+    "description": "Message shown when the app loads user data from the server"
+  },
+  "restoringSession": "Sitzung wird wiederhergestellt...",
+  "@restoringSession": {
+    "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
+  }
 }

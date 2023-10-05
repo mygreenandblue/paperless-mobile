@@ -52,10 +52,10 @@ class PendingTasksNotifier extends ValueNotifier<Map<String, Task>> {
       _subscriptions[taskId]?.cancel();
       _subscriptions.remove(taskId);
     } else {
-      _subscriptions.forEach((key, value) {
-        value.cancel();
-        _subscriptions.remove(key);
-      });
+      for (var sub in _subscriptions.values) {
+        sub.cancel();
+      }
+      _subscriptions.clear();
     }
   }
 

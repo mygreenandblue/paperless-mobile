@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
@@ -14,9 +13,6 @@ class FileService {
     String filename,
   ) async {
     final dir = await documentsDirectory;
-    if (dir == null) {
-      throw const PaperlessApiException.unknown(); //TODO: better handling
-    }
     File file = File("${dir.path}/$filename");
     return file..writeAsBytes(bytes);
   }
@@ -43,7 +39,7 @@ class FileService {
 
   static Future<Directory> get temporaryDirectory => getTemporaryDirectory();
 
-  static Future<Directory?> get documentsDirectory async {
+  static Future<Directory> get documentsDirectory async {
     if (Platform.isAndroid) {
       return (await getExternalStorageDirectories(
         type: StorageDirectory.documents,

@@ -13,7 +13,6 @@ import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/service/file_description.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
@@ -22,7 +21,6 @@ import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_ima
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -261,12 +259,12 @@ class _ScannerPageState extends State<ScannerPage>
       $extra: file.bytes,
       fileExtension: file.extension,
     ).push<DocumentUploadResult>(context);
-    if ((uploadResult?.success ?? false) && uploadResult?.taskId != null) {
+    if (uploadResult?.success ?? false) {
       // For paperless version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
-      context
-          .read<PendingTasksNotifier>()
-          .listenToTaskChanges(uploadResult!.taskId!);
+      // context
+      //     .read<PendingTasksNotifier>()
+      //     .listenToTaskChanges(uploadResult!.taskId!);
     }
   }
 
@@ -350,17 +348,17 @@ class _ScannerPageState extends State<ScannerPage>
   void _onUploadFromFilesystem() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: supportedFileExtensions,
+      allowedExtensions:
+          supportedFileExtensions.map((e) => e.replaceAll(".", "")).toList(),
       withData: true,
       allowMultiple: false,
     );
     if (result?.files.single.path != null) {
       final path = result!.files.single.path!;
-      final fileDescription = FileDescription.fromPath(path);
+      final extension = p.extension(path);
+      final filename = p.basenameWithoutExtension(path);
       File file = File(path);
-      if (!supportedFileExtensions.contains(
-        fileDescription.extension.toLowerCase(),
-      )) {
+      if (!supportedFileExtensions.contains(extension.toLowerCase())) {
         showErrorMessage(
           context,
           const PaperlessApiException(ErrorCode.unsupportedFileFormat),
@@ -369,10 +367,15 @@ class _ScannerPageState extends State<ScannerPage>
       }
       DocumentUploadRoute(
         $extra: file.readAsBytesSync(),
-        filename: fileDescription.filename,
-        title: fileDescription.filename,
-        fileExtension: fileDescription.extension,
-      ).push(context);
+        filename: filename,
+        title: filename,
+        fileExtension: extension,
+      ).push<DocumentUploadResult>(context);
+      // if (uploadResult.success && uploadResult.taskId != null) {
+      //   context
+      //       .read<PendingTasksNotifier>()
+      //       .listenToTaskChanges(uploadResult.taskId!);
+      // }
     }
   }
 

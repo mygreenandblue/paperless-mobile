@@ -42,6 +42,7 @@ class _InboxPageState extends State<InboxPage>
   @override
   void initState() {
     super.initState();
+    context.read<InboxCubit>().reloadInbox();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _nestedScrollViewKey.currentState!.innerController
           .addListener(_scrollExtentChangedListener);

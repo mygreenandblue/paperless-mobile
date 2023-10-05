@@ -20,7 +20,8 @@ class PaperlessFormValidationException implements Exception {
   }
 
   static bool canParse(Map<String, dynamic> json) {
-    return json.values.every((element) => element is String);
+    return json.values
+        .every((element) => element is String || element is List);
   }
 
   factory PaperlessFormValidationException.fromJson(Map<String, dynamic> json) {

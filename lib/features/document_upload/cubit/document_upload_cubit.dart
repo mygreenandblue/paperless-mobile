@@ -6,12 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 
 part 'document_upload_state.dart';
 
 class DocumentUploadCubit extends Cubit<DocumentUploadState> {
   final PaperlessDocumentsApi _documentApi;
-
+  final PendingTasksNotifier _tasksNotifier;
   final LabelRepository _labelRepository;
   final ConnectivityStatusService _connectivityStatusService;
 
@@ -19,6 +20,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     this._labelRepository,
     this._documentApi,
     this._connectivityStatusService,
+    this._tasksNotifier,
   ) : super(const DocumentUploadState()) {
     _labelRepository.addListener(
       this,
@@ -43,7 +45,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     DateTime? createdAt,
     int? asn,
   }) async {
-    return await _documentApi.create(
+    final taskId = await _documentApi.create(
       bytes,
       filename: filename,
       title: title,
@@ -53,6 +55,10 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       createdAt: createdAt,
       asn: asn,
     );
+    if (taskId != null) {
+      _tasksNotifier.listenToTaskChanges(taskId);
+    }
+    return taskId;
   }
 
   @override

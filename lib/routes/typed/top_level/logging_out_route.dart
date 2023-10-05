@@ -6,12 +6,12 @@ import 'package:paperless_mobile/routes/routes.dart';
 
 part 'logging_out_route.g.dart';
 
-@TypedGoRoute<LogginOutRoute>(
+@TypedGoRoute<LoggingOutRoute>(
   path: "/logging-out",
   name: R.loggingOut,
 )
-class LogginOutRoute extends GoRouteData {
-  const LogginOutRoute();
+class LoggingOutRoute extends GoRouteData {
+  const LoggingOutRoute();
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return Scaffold(

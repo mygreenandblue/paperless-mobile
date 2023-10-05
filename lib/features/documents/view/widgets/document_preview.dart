@@ -31,16 +31,19 @@ class DocumentPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConnectivityAwareActionWrapper(
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: isClickable
             ? () => DocumentPreviewRoute($extra: document).push(context)
             : null,
-        child: HeroMode(
-          enabled: enableHero,
-          child: Hero(
-            tag: "thumb_${document.id}",
-            child: _buildPreview(context),
-          ),
-        ),
+        child: Builder(builder: (context) {
+          if (enableHero) {
+            return Hero(
+              tag: "thumb_${document.id}",
+              child: _buildPreview(context),
+            );
+          }
+          return _buildPreview(context);
+        }),
       ),
     );
   }

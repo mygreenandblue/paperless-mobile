@@ -8,12 +8,6 @@ import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/theme.dart';
 
-const _landingPage = 0;
-const _documentsIndex = 1;
-const _scannerIndex = 2;
-const _labelsIndex = 3;
-const _inboxIndex = 4;
-
 class ScaffoldWithNavigationBar extends StatefulWidget {
   final UserModel authenticatedUser;
   final StatefulNavigationShell navigationShell;
@@ -29,11 +23,6 @@ class ScaffoldWithNavigationBar extends StatefulWidget {
 }
 
 class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -58,7 +47,7 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
                 Icons.home,
                 color: theme.colorScheme.primary,
               ),
-              label: S.of(context)!.home, 
+              label: S.of(context)!.home,
             ),
             _toggleDestination(
               NavigationDestination(

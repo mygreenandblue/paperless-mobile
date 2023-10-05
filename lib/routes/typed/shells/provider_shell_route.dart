@@ -7,7 +7,7 @@ import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/features/home/view/home_shell_widget.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
-import 'package:paperless_mobile/features/sharing/view/widgets/upload_queue_shell.dart';
+import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +50,7 @@ import 'package:provider/provider.dart';
 // )
 class ProviderShellRoute extends ShellRouteData {
   final PaperlessApiFactory apiFactory;
-  static final GlobalKey<NavigatorState> $navigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $navigatorKey = outerShellNavigatorKey;
 
   const ProviderShellRoute(this.apiFactory);
 
@@ -77,7 +77,7 @@ class ProviderShellRoute extends ShellRouteData {
       child: ChangeNotifierProvider(
         create: (context) => ConsumptionChangeNotifier()
           ..loadFromConsumptionDirectory(userId: currentUserId),
-        child: UploadQueueShell(child: navigator),
+        child: EventListenerShell(child: navigator),
       ),
     );
   }

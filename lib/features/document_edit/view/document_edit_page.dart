@@ -40,7 +40,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   static const fkContent = 'content';
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
-  bool _isSubmitLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -314,18 +313,13 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
         tags: (values[fkTags] as IdsTagsQuery?)?.include,
         content: values[fkContent],
       );
-      setState(() {
-        _isSubmitLoading = true;
-      });
+
       try {
         await context.read<DocumentEditCubit>().updateDocument(mergedDocument);
         showSnackBar(context, S.of(context)!.documentSuccessfullyUpdated);
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
-        setState(() {
-          _isSubmitLoading = false;
-        });
         context.pop();
       }
     }

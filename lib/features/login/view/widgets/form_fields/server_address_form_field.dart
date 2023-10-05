@@ -8,11 +8,12 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class ServerAddressFormField extends StatefulWidget {
   static const String fkServerAddress = "serverAddress";
-
+  final String? initialValue;
   final void Function(String? address) onSubmit;
   const ServerAddressFormField({
     Key? key,
     required this.onSubmit,
+    this.initialValue,
   }) : super(key: key);
 
   @override
@@ -38,6 +39,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
   @override
   Widget build(BuildContext context) {
     return FormBuilderField<String>(
+      initialValue: widget.initialValue,
       name: ServerAddressFormField.fkServerAddress,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
@@ -90,7 +92,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
                       )
                     : null,
               ),
-              autofocus: true,
+              autofocus: false,
               onSubmitted: (_) {
                 onFieldSubmitted();
                 _formatInput();

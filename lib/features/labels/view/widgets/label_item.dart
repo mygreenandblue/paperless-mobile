@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 

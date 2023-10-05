@@ -980,5 +980,21 @@
   },
   "tryAgain": "Try again",
   "discardFile": "Discard file?",
-  "discard": "Discard"
+  "discard": "Discard",
+  "backToLogin": "Back to login",
+  "skipEditingReceivedFiles": "Skip editing received files",
+  "uploadWithoutPromptingUploadForm": "Always upload without prompting the upload form when sharing files with the app.",
+  "authenticatingDots": "Authenticating...",
+  "@authenticatingDots": {
+    "description": "Message shown when the app is authenticating the user"
+  },
+  "persistingUserInformation": "Persisting user information...",
+  "fetchingUserInformation": "Fetching user information...",
+  "@fetchingUserInformation": {
+    "description": "Message shown when the app loads user data from the server"
+  },
+  "restoringSession": "Restoring session...",
+  "@restoringSession": {
+    "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
+  }
 }

@@ -16,6 +16,8 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
     with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
+  @override
+  final ConnectivityStatusService connectivityStatusService;
 
   @override
   final DocumentChangedNotifier notifier;
@@ -25,6 +27,7 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
     this.api,
     this.notifier,
     this._userAppState,
+    this.connectivityStatusService,
   ) : super(
           DocumentSearchState(
               searchHistory: _userAppState.documentSearchHistory),
@@ -120,9 +123,4 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
 
   @override
   Future<void> onFilterUpdated(DocumentFilter filter) async {}
-
-  @override
-  // TODO: implement connectivityStatusService
-  ConnectivityStatusService get connectivityStatusService =>
-      throw UnimplementedError();
 }

@@ -15,7 +15,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mock_server/mock_server.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -28,7 +27,6 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -36,11 +34,8 @@ import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart'
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/sharing/model/share_intent_queue.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
@@ -50,12 +45,10 @@ import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/checking_login_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/switching_accounts_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/verify_identity_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -157,9 +150,8 @@ void main() async {
       apiFactory,
       sessionManager,
       connectivityStatusService,
+      localNotificationService,
     );
-    await authenticationCubit.restoreSessionState();
-    await ShareIntentQueue.instance.initialize();
     runApp(
       MultiProvider(
         providers: [
@@ -208,11 +200,14 @@ class _GoRouterShellState extends State<GoRouterShell> {
   @override
   void initState() {
     super.initState();
-    FlutterNativeSplash.remove();
     if (Platform.isAndroid) {
       _setOptimalDisplayMode();
     }
     initializeDateFormatting();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<AuthenticationCubit>().restoreSession();
+      FlutterNativeSplash.remove();
+    });
   }
 
   /// Activates the highest supported refresh rate on the device.
@@ -236,43 +231,96 @@ class _GoRouterShellState extends State<GoRouterShell> {
     debugLogDiagnostics: kDebugMode,
     initialLocation: "/login",
     routes: [
-      $loginRoute,
-      $verifyIdentityRoute,
-      $switchingAccountsRoute,
-      $logginOutRoute,
-      $checkingLoginRoute,
       ShellRoute(
+        pageBuilder: (context, state, child) {
+          return MaterialPage(
+            child: BlocListener<AuthenticationCubit, AuthenticationState>(
+              listener: (context, state) {
+                switch (state) {
+                  case UnauthenticatedState(
+                      redirectToAccountSelection: var shouldRedirect
+                    ):
+                    if (shouldRedirect) {
+                      const LoginToExistingAccountRoute().go(context);
+                    } else {
+                      const LoginRoute().go(context);
+                    }
+                    break;
+                  case RestoringSessionState():
+                    const RestoringSessionRoute().go(context);
+                    break;
+                  case VerifyIdentityState(userId: var userId):
+                    VerifyIdentityRoute(userId: userId).go(context);
+                    break;
+                  case SwitchingAccountsState():
+                    const SwitchingAccountsRoute().push(context);
+                    break;
+                  case AuthenticatedState():
+                    const LandingRoute().go(context);
+                    break;
+                  case AuthenticatingState state:
+                    AuthenticatingRoute(state.currentStage.name).push(context);
+                    break;
+                  case LoggingOutState():
+                    const LoggingOutRoute().go(context);
+                    break;
+                  case AuthenticationErrorState():
+                    if (context.canPop()) {
+                      context.pop();
+                    }
+                    // LoginRoute(
+                    //   $extra: errorState.clientCertificate,
+                    //   password: errorState.password,
+                    //   serverUrl: errorState.serverUrl,
+                    //   username: errorState.username,
+                    // ).go(context);
+                    break;
+                }
+              },
+              child: child,
+            ),
+          );
+        },
         navigatorKey: rootNavigatorKey,
-        builder: ProviderShellRoute(widget.apiFactory).build,
         routes: [
-          $settingsRoute,
-          $savedViewsRoute,
-          $uploadQueueRoute,
-          StatefulShellRoute(
-            navigatorContainerBuilder: (context, navigationShell, children) {
-              return children[navigationShell.currentIndex];
-            },
-            builder: const ScaffoldShellRoute().builder,
-            branches: [
-              StatefulShellBranch(
-                navigatorKey: landingNavigatorKey,
-                routes: [$landingRoute],
-              ),
-              StatefulShellBranch(
-                navigatorKey: documentsNavigatorKey,
-                routes: [$documentsRoute],
-              ),
-              StatefulShellBranch(
-                navigatorKey: scannerNavigatorKey,
-                routes: [$scannerRoute],
-              ),
-              StatefulShellBranch(
-                navigatorKey: labelsNavigatorKey,
-                routes: [$labelsRoute],
-              ),
-              StatefulShellBranch(
-                navigatorKey: inboxNavigatorKey,
-                routes: [$inboxRoute],
+          $loginRoute,
+          $loggingOutRoute,
+          $addAccountRoute,
+          ShellRoute(
+            navigatorKey: outerShellNavigatorKey,
+            builder: ProviderShellRoute(widget.apiFactory).build,
+            routes: [
+              $settingsRoute,
+              $savedViewsRoute,
+              $uploadQueueRoute,
+              StatefulShellRoute(
+                navigatorContainerBuilder:
+                    (context, navigationShell, children) {
+                  return children[navigationShell.currentIndex];
+                },
+                builder: const ScaffoldShellRoute().builder,
+                branches: [
+                  StatefulShellBranch(
+                    navigatorKey: landingNavigatorKey,
+                    routes: [$landingRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: documentsNavigatorKey,
+                    routes: [$documentsRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: scannerNavigatorKey,
+                    routes: [$scannerRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: labelsNavigatorKey,
+                    routes: [$labelsRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: inboxNavigatorKey,
+                    routes: [$inboxRoute],
+                  ),
+                ],
               ),
             ],
           ),
@@ -283,69 +331,34 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthenticationCubit, AuthenticationState>(
-      listener: (context, state) {
-        switch (state) {
-          case UnauthenticatedState():
-            _router.goNamed(R.login);
-            break;
-          case RequiresLocalAuthenticationState():
-            _router.goNamed(R.verifyIdentity);
-            break;
-          case SwitchingAccountsState():
-            final userId = context.read<LocalUserAccount>().id;
-            context
-                .read<LocalNotificationService>()
-                .cancelUserNotifications(userId);
-            _router.goNamed(R.switchingAccounts);
-            break;
-          case AuthenticatedState():
-            _router.goNamed(R.landing);
-            break;
-          case CheckingLoginState():
-            _router.goNamed(R.checkingLogin);
-            break;
-          case LogginOutState():
-            final userId = context.read<LocalUserAccount>().id;
-            context
-                .read<LocalNotificationService>()
-                .cancelUserNotifications(userId);
-            _router.goNamed(R.loggingOut);
-            break;
-          case AuthenticationErrorState():
-            _router.goNamed(R.login);
-            break;
-        }
+    return GlobalSettingsBuilder(
+      builder: (context, settings) {
+        return DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            return MaterialApp.router(
+              routerConfig: _router,
+              debugShowCheckedModeBanner: true,
+              title: "Paperless Mobile",
+              theme: buildTheme(
+                brightness: Brightness.light,
+                dynamicScheme: lightDynamic,
+                preferredColorScheme: settings.preferredColorSchemeOption,
+              ),
+              darkTheme: buildTheme(
+                brightness: Brightness.dark,
+                dynamicScheme: darkDynamic,
+                preferredColorScheme: settings.preferredColorSchemeOption,
+              ),
+              themeMode: settings.preferredThemeMode,
+              supportedLocales: S.supportedLocales,
+              locale: Locale.fromSubtags(
+                languageCode: settings.preferredLocaleSubtag,
+              ),
+              localizationsDelegates: S.localizationsDelegates,
+            );
+          },
+        );
       },
-      child: GlobalSettingsBuilder(
-        builder: (context, settings) {
-          return DynamicColorBuilder(
-            builder: (lightDynamic, darkDynamic) {
-              return MaterialApp.router(
-                routerConfig: _router,
-                debugShowCheckedModeBanner: true,
-                title: "Paperless Mobile",
-                theme: buildTheme(
-                  brightness: Brightness.light,
-                  dynamicScheme: lightDynamic,
-                  preferredColorScheme: settings.preferredColorSchemeOption,
-                ),
-                darkTheme: buildTheme(
-                  brightness: Brightness.dark,
-                  dynamicScheme: darkDynamic,
-                  preferredColorScheme: settings.preferredColorSchemeOption,
-                ),
-                themeMode: settings.preferredThemeMode,
-                supportedLocales: S.supportedLocales,
-                locale: Locale.fromSubtags(
-                  languageCode: settings.preferredLocaleSubtag,
-                ),
-                localizationsDelegates: S.localizationsDelegates,
-              );
-            },
-          );
-        },
-      ),
     );
   }
 }

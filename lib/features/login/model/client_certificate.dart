@@ -12,5 +12,9 @@ class ClientCertificate {
   @HiveField(1)
   String? passphrase;
 
-  ClientCertificate({required this.bytes, this.passphrase});
+
+  ClientCertificate({
+    required this.bytes,
+    this.passphrase,
+  });
 }

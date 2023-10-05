@@ -7,34 +7,76 @@ sealed class AuthenticationState {
       switch (this) { AuthenticatedState() => true, _ => false };
 }
 
-class UnauthenticatedState extends AuthenticationState {
-  const UnauthenticatedState();
+class UnauthenticatedState extends AuthenticationState with EquatableMixin {
+  final bool redirectToAccountSelection;
+
+  const UnauthenticatedState({this.redirectToAccountSelection = false});
+
+  @override
+  List<Object?> get props => [redirectToAccountSelection];
 }
 
-class RequiresLocalAuthenticationState extends AuthenticationState {
-  const RequiresLocalAuthenticationState();
+class RestoringSessionState extends AuthenticationState {
+  const RestoringSessionState();
 }
 
-class CheckingLoginState extends AuthenticationState {
-  const CheckingLoginState();
+class VerifyIdentityState extends AuthenticationState {
+  final String userId;
+  const VerifyIdentityState({required this.userId});
 }
 
-class LogginOutState extends AuthenticationState {
-  const LogginOutState();
+class AuthenticatingState extends AuthenticationState with EquatableMixin {
+  final AuthenticatingStage currentStage;
+  const AuthenticatingState(this.currentStage);
+
+  @override
+  List<Object?> get props => [currentStage];
 }
 
-class AuthenticatedState extends AuthenticationState {
+class LoggingOutState extends AuthenticationState {
+  const LoggingOutState();
+}
+
+class AuthenticatedState extends AuthenticationState with EquatableMixin {
   final String localUserId;
 
-  const AuthenticatedState({
-    required this.localUserId,
-  });
+  const AuthenticatedState({required this.localUserId});
+
+  @override
+  List<Object?> get props => [localUserId];
 }
 
 class SwitchingAccountsState extends AuthenticationState {
   const SwitchingAccountsState();
 }
 
-class AuthenticationErrorState extends AuthenticationState {
-  const AuthenticationErrorState();
+class AuthenticationErrorState extends AuthenticationState with EquatableMixin {
+  final ErrorCode? errorCode;
+  final String serverUrl;
+  final ClientCertificate? clientCertificate;
+  final String username;
+  final String password;
+
+  const AuthenticationErrorState({
+    this.errorCode,
+    required this.serverUrl,
+    this.clientCertificate,
+    required this.username,
+    required this.password,
+  });
+
+  @override
+  List<Object?> get props => [
+        errorCode,
+        serverUrl,
+        clientCertificate,
+        username,
+        password,
+      ];
+}
+
+enum AuthenticatingStage {
+  authenticating,
+  persistingLocalUserData,
+  fetchingUserInformation,
 }

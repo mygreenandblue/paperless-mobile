@@ -21,6 +21,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'tr': LanguageOption('Türkçe', true),
     'pl': LanguageOption('Polska', true),
     'ca': LanguageOption('Catalan', true),
+    'ru': LanguageOption('Русский', true),
   };
 
   @override
@@ -34,9 +35,9 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
           onTap: () => showDialog<String>(
             context: context,
             builder: (_) => RadioSettingsDialog<String>(
-              footer: const Text(
-                "* Not fully translated yet. Some words may be displayed in English!",
-              ),
+              // footer: const Text(
+              //   "* Not fully translated yet. Some words may be displayed in English!",
+              // ),
               titleText: S.of(context)!.language,
               options: [
                 for (var language in _languageOptions.entries)

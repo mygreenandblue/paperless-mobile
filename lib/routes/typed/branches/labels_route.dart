@@ -49,7 +49,8 @@ class LabelsRoute extends GoRouteData {
 }
 
 class EditLabelRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   final Label $extra;
 
@@ -67,7 +68,8 @@ class EditLabelRoute extends GoRouteData {
 }
 
 class CreateLabelRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
   final LabelType $extra;
   final String? name;
 
@@ -88,7 +90,8 @@ class CreateLabelRoute extends GoRouteData {
 }
 
 class LinkedDocumentsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
   final DocumentFilter $extra;
 
   const LinkedDocumentsRoute(this.$extra);

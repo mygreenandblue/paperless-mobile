@@ -1,16 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
+import 'package:paperless_mobile/core/config/hive/hive_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/view/add_account_page.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
 import 'package:provider/provider.dart';
 
 class ManageAccountsPage extends StatelessWidget {
@@ -20,16 +17,15 @@ class ManageAccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlobalSettingsBuilder(
       builder: (context, globalSettings) {
-        // This is one of the few places where the currentLoggedInUser can be null
-        // (exactly after loggin out as the current user to be precise).
-        if (globalSettings.loggedInUserId == null) {
-          return const SizedBox.shrink();
-        }
+        // // This is one of the few places where the currentLoggedInUser can be null
+        // // (exactly after loggin out as the current user to be precise).
+
         return ValueListenableBuilder(
-          valueListenable:
-              Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
-                  .listenable(),
+          valueListenable: Hive.localUserAccountBox.listenable(),
           builder: (context, box, _) {
+            if (globalSettings.loggedInUserId == null) {
+              return const SizedBox.shrink();
+            }
             final userIds = box.keys.toList().cast<String>();
             final otherAccounts = userIds
                 .whereNot((element) => element == globalSettings.loggedInUserId)
@@ -70,6 +66,7 @@ class ManageAccountsPage extends StatelessWidget {
                       ],
                       onSelected: (value) async {
                         if (value == 0) {
+                          Navigator.of(context).pop();
                           await context
                               .read<AuthenticationCubit>()
                               .logout(true);
@@ -133,11 +130,12 @@ class ManageAccountsPage extends StatelessWidget {
                     _onAddAccount(context, globalSettings.loggedInUserId!);
                   },
                 ),
-                if (context.watch<LocalUserAccount>().hasMultiUserSupport)
-                  ListTile(
-                    leading: const Icon(Icons.admin_panel_settings),
-                    title: Text(S.of(context)!.managePermissions),
-                  ),
+                //TODO: Implement permission/user settings at some point...
+                // if (context.watch<LocalUserAccount>().hasMultiUserSupport)
+                //   ListTile(
+                //     leading: const Icon(Icons.admin_panel_settings),
+                //     title: Text(S.of(context)!.managePermissions),
+                //   ),
               ],
             );
           },
@@ -147,43 +145,43 @@ class ManageAccountsPage extends StatelessWidget {
   }
 
   Future<void> _onAddAccount(BuildContext context, String currentUser) async {
-    final userId = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddAccountPage(
-          titleString: S.of(context)!.addAccount,
-          onSubmit: (context, username, password, serverUrl,
-              clientCertificate) async {
-            final userId = await context.read<AuthenticationCubit>().addAccount(
-                  credentials: LoginFormCredentials(
-                    username: username,
-                    password: password,
-                  ),
-                  clientCertificate: clientCertificate,
-                  serverUrl: serverUrl,
-                  //TODO: Ask user whether to enable biometric authentication
-                  enableBiometricAuthentication: false,
-                );
-            Navigator.of(context).pop<String?>(userId);
-          },
-          submitText: S.of(context)!.addAccount,
-        ),
-      ),
-    );
-    if (userId != null) {
-      final shoudSwitch = await showDialog<bool>(
-            context: context,
-            builder: (context) => const SwitchAccountDialog(),
-          ) ??
-          false;
-      if (shoudSwitch) {
-        _onSwitchAccount(context, currentUser, userId);
-      }
-    }
+    Navigator.of(context).pop();
+    AddAccountRoute().push<String>(context);
+    // final userId = await Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => AddAccountPage(
+    //       titleText: S.of(context)!.addAccount,
+    //       onSubmit: (context, username, password, serverUrl,
+    //           clientCertificate) async {
+    //         try {
+    //           final userId =
+    //               await context.read<AuthenticationCubit>().addAccount(
+    //                     credentials: LoginFormCredentials(
+    //                       username: username,
+    //                       password: password,
+    //                     ),
+    //                     clientCertificate: clientCertificate,
+    //                     serverUrl: serverUrl,
+    //                     //TODO: Ask user whether to enable biometric authentication
+    //                     enableBiometricAuthentication: false,
+    //                   );
+
+    //           Navigator.of(context).pop<String?>(userId);
+    //         } on PaperlessFormValidationException catch (error) {}
+    //       },
+    //       submitText: S.of(context)!.addAccount,
+    //     ),
+    //   ),
+    // );
+
   }
 
   void _onSwitchAccount(
-      BuildContext context, String currentUser, String newUser) async {
+    BuildContext context,
+    String currentUser,
+    String newUser,
+  ) async {
     if (currentUser == newUser) return;
 
     Navigator.of(context).pop();

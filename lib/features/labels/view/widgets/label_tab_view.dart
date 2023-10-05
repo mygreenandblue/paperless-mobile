@@ -76,9 +76,7 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                     Text(
                       translateMatchingAlgorithmName(
                               context, l.matchingAlgorithm) +
-                          ((l.match?.isNotEmpty ?? false)
-                              ? ": ${l.match}"
-                              : ""),
+                          (l.match.isNotEmpty ? ": ${l.match}" : ""),
                       maxLines: 2,
                     ),
                 onOpenEditPage: canEdit ? onEdit : null,

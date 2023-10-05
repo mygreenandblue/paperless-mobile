@@ -20,13 +20,15 @@ class PaperlessAuthenticationApiImpl implements PaperlessAuthenticationApi {
           "password": password,
         },
         options: Options(
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
           followRedirects: false,
           headers: {
             "Accept": "application/json",
           },
-          validateStatus: (status) {
-            return status! == 200;
-          },
+          // validateStatus: (status) {
+          //   return status! == 200;
+          // },
         ),
       );
       return response.data['token'];

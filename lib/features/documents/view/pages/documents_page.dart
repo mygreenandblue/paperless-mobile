@@ -247,8 +247,13 @@ class _DocumentsPageState extends State<DocumentsPage> {
             resizeToAvoidBottomInset: true,
             body: WillPopScope(
               onWillPop: () async {
-                if (context.read<DocumentsCubit>().state.selection.isNotEmpty) {
-                  context.read<DocumentsCubit>().resetSelection();
+                final cubit = context.read<DocumentsCubit>();
+                if (cubit.state.selection.isNotEmpty) {
+                  cubit.resetSelection();
+                  return false;
+                }
+                if (cubit.state.filter.appliedFiltersCount > 0 || cubit.state.filter.selectedView != null) {
+                  await _onResetFilter();
                   return false;
                 }
                 return true;

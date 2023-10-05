@@ -2,9 +2,10 @@ class R {
   const R._();
   static const landing = "landing";
   static const login = "login";
+  static const loginToExistingAccount = 'loginToExistingAccount';
   static const documents = "documents";
   static const verifyIdentity = "verifyIdentity";
-  static const switchingAccounts = "switchingAccounts";
+  static const switchingAccount = "switchingAccount";
   static const savedView = "savedView";
   static const createSavedView = "createSavedView";
   static const editSavedView = "editSavedView";
@@ -21,6 +22,8 @@ class R {
   static const linkedDocuments = "linkedDocuments";
   static const bulkEditDocuments = "bulkEditDocuments";
   static const uploadQueue = "uploadQueue";
-  static const checkingLogin = "checkingLogin";
+  static const authenticating = "authenticating";
   static const loggingOut = "loggingOut";
+  static const restoringSession = "restoringSession";
+  static const addAccount = 'addAccount';
 }

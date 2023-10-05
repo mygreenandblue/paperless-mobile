@@ -52,7 +52,8 @@ class ScannerRoute extends GoRouteData {
 }
 
 class DocumentUploadRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
   final FutureOr<Uint8List> $extra;
   final String? title;
   final String? filename;
@@ -69,6 +70,7 @@ class DocumentUploadRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) {
     return BlocProvider(
       create: (_) => DocumentUploadCubit(
+        context.read(),
         context.read(),
         context.read(),
         context.read(),

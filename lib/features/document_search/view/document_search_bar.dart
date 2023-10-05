@@ -8,6 +8,8 @@ import 'package:paperless_mobile/features/document_search/cubit/document_search_
 import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
+import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +53,21 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.menu),
+                          icon: ListenableBuilder(
+                            listenable:
+                                context.read<ConsumptionChangeNotifier>(),
+                            builder: (context, child) {
+                              return Badge(
+                                isLabelVisible: context
+                                    .read<ConsumptionChangeNotifier>()
+                                    .pendingFiles
+                                    .isNotEmpty,
+                                child: const Icon(Icons.menu),
+                                backgroundColor: Colors.red,
+                                smallSize: 8,
+                              );
+                            },
+                          ),
                           onPressed: Scaffold.of(context).openDrawer,
                         ),
                         Flexible(
@@ -81,6 +97,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
             context.read(),
             Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState)
                 .get(context.read<LocalUserAccount>().id)!,
+            context.read(),
           ),
           child: const DocumentSearchPage(),
         );
@@ -95,10 +112,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
       onPressed: () {
         showDialog(
           context: context,
-          builder: (_) => Provider.value(
-            value: context.read<LocalUserAccount>(),
-            child: const ManageAccountsPage(),
-          ),
+          builder: (_) => const ManageAccountsPage(),
         );
       },
     );

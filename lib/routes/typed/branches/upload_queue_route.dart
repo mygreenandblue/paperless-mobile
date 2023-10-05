@@ -11,7 +11,8 @@ part 'upload_queue_route.g.dart';
   name: R.uploadQueue,
 )
 class UploadQueueRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = rootNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
