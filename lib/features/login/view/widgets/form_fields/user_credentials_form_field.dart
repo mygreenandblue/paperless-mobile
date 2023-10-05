@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:paperless_mobile/core/config/hive/hive_extensions.dart';
 
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/obscured_input_text_form_field.dart';
+import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class UserCredentialsFormField extends StatefulWidget {
   static const fkCredentials = 'credentials';
 
   final void Function() onFieldsSubmitted;
-
+  final String? initialUsername;
+  final String? initialPassword;
+  final GlobalKey<FormBuilderState> formKey;
   const UserCredentialsFormField({
     Key? key,
     required this.onFieldsSubmitted,
+    this.initialUsername,
+    this.initialPassword,
+    required this.formKey,
   }) : super(key: key);
 
   @override
@@ -28,6 +36,10 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
   @override
   Widget build(BuildContext context) {
     return FormBuilderField<LoginFormCredentials?>(
+      initialValue: LoginFormCredentials(
+        password: widget.initialPassword,
+        username: widget.initialUsername,
+      ),
       name: UserCredentialsFormField.fkCredentials,
       builder: (field) => AutofillGroup(
         child: Column(
@@ -49,6 +61,17 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
               validator: (value) {
                 if (value?.trim().isEmpty ?? true) {
                   return S.of(context)!.usernameMustNotBeEmpty;
+                }
+                final serverAddress = widget.formKey.currentState!
+                    .getRawValue<String>(
+                        ServerAddressFormField.fkServerAddress);
+                if (serverAddress != null) {
+                  final userExists = Hive.localUserAccountBox.values
+                      .map((e) => e.id)
+                      .contains('$value@$serverAddress');
+                  if (userExists) {
+                    return S.of(context)!.userAlreadyExists;
+                  }
                 }
                 return null;
               },

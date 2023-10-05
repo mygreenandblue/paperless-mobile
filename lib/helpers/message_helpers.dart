@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 
 class SnackBarActionConfig {
@@ -25,6 +26,7 @@ void showSnackBar(
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
+        behavior: SnackBarBehavior.floating,
         content: (details != null)
             ? RichText(
                 maxLines: 5,
@@ -105,5 +107,17 @@ void showErrorMessage(
     error: error,
     stackTrace: stackTrace,
     time: DateTime.now(),
+  );
+}
+
+void showInfoMessage(
+  BuildContext context,
+  InfoMessageException error, [
+  StackTrace? stackTrace,
+]) {
+  showSnackBar(
+    context,
+    translateError(context, error.code),
+    details: error.message,
   );
 }

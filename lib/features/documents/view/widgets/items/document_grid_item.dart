@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
@@ -26,6 +28,7 @@ class DocumentGridItem extends DocumentItem {
 
   @override
   Widget build(BuildContext context) {
+    var currentUser = context.watch<LocalUserAccount>().paperlessUser;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -64,15 +67,16 @@ class DocumentGridItem extends DocumentItem {
                               const SliverToBoxAdapter(
                                 child: SizedBox(width: 8),
                               ),
-                              TagsWidget.sliver(
-                                tags: document.tags
-                                    .map((e) => context
-                                        .watch<LabelRepository>()
-                                        .state
-                                        .tags[e]!)
-                                    .toList(),
-                                onTagSelected: onTagSelected,
-                              ),
+                              if (currentUser.canViewTags)
+                                TagsWidget.sliver(
+                                  tags: document.tags
+                                      .map((e) => context
+                                          .watch<LabelRepository>()
+                                          .state
+                                          .tags[e]!)
+                                      .toList(),
+                                  onTagSelected: onTagSelected,
+                                ),
                               const SliverToBoxAdapter(
                                 child: SizedBox(width: 8),
                               ),
@@ -90,20 +94,22 @@ class DocumentGridItem extends DocumentItem {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CorrespondentWidget(
-                        correspondent: context
-                            .watch<LabelRepository>()
-                            .state
-                            .correspondents[document.correspondent],
-                        onSelected: onCorrespondentSelected,
-                      ),
-                      DocumentTypeWidget(
-                        documentType: context
-                            .watch<LabelRepository>()
-                            .state
-                            .documentTypes[document.documentType],
-                        onSelected: onDocumentTypeSelected,
-                      ),
+                      if (currentUser.canViewCorrespondents)
+                        CorrespondentWidget(
+                          correspondent: context
+                              .watch<LabelRepository>()
+                              .state
+                              .correspondents[document.correspondent],
+                          onSelected: onCorrespondentSelected,
+                        ),
+                      if (currentUser.canViewDocumentTypes)
+                        DocumentTypeWidget(
+                          documentType: context
+                              .watch<LabelRepository>()
+                              .state
+                              .documentTypes[document.documentType],
+                          onSelected: onDocumentTypeSelected,
+                        ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(

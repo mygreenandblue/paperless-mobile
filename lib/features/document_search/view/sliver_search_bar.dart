@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/features/document_search/view/document_search_bar.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
@@ -25,14 +22,11 @@ class SliverSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (LocalUserAccount.current.paperlessUser.canViewDocuments) {
-      return SliverAppBar(
-        toolbarHeight: kToolbarHeight,
-        flexibleSpace: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: const DocumentSearchBar(),
-        ),
+    if (context.watch<LocalUserAccount>().paperlessUser.canViewDocuments) {
+      return const SliverAppBar(
+        titleSpacing: 8,
         automaticallyImplyLeading: false,
+        title: DocumentSearchBar(),
       );
     } else {
       return SliverAppBar(
@@ -49,18 +43,17 @@ class SliverSearchBar extends StatelessWidget {
                         Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
                             .listenable(),
                     builder: (context, box, _) {
-                      final account = box.get(settings.currentLoggedInUser!)!;
+                      final account = box.get(settings.loggedInUserId!)!;
                       return UserAvatar(account: account);
                     },
                   );
                 },
               ),
               onPressed: () {
-                final apiVersion = context.read<ApiVersion>();
                 showDialog(
                   context: context,
-                  builder: (context) => Provider.value(
-                    value: apiVersion,
+                  builder: (_) => Provider.value(
+                    value: context.read<LocalUserAccount>(),
                     child: const ManageAccountsPage(),
                   ),
                 );

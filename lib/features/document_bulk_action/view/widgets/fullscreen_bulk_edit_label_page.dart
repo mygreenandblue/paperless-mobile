@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_fields/fullscreen_selection_form.dart';
 import 'package:paperless_mobile/extensions/dart_extensions.dart';
@@ -86,6 +87,7 @@ class _FullscreenBulkEditLabelPageState<T extends Label>
       selectionCount: _labels.length,
       floatingActionButton: !hideFab
           ? FloatingActionButton.extended(
+              heroTag: "fab_fullscreen_bulk_edit_label",
               onPressed: _onSubmit,
               label: Text(S.of(context)!.apply),
               icon: const Icon(Icons.done),
@@ -122,7 +124,7 @@ class _FullscreenBulkEditLabelPageState<T extends Label>
 
   void _onSubmit() async {
     if (_selection == null) {
-      Navigator.pop(context);
+      context.pop();
     } else {
       bool shouldPerformAction;
       if (_selection!.label == null) {
@@ -148,7 +150,7 @@ class _FullscreenBulkEditLabelPageState<T extends Label>
       }
       if (shouldPerformAction) {
         widget.onSubmit(_selection!.label);
-        Navigator.pop(context);
+        context.pop();
       }
     }
   }

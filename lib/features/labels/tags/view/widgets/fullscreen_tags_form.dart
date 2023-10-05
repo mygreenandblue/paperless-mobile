@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -68,10 +69,12 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
 
   @override
   Widget build(BuildContext context) {
+    final showFab = MediaQuery.viewInsetsOf(context).bottom == 0;
     final theme = Theme.of(context);
     return Scaffold(
-      floatingActionButton: widget.allowCreation
+      floatingActionButton: widget.allowCreation && showFab
           ? FloatingActionButton(
+              heroTag: "fab_tags_form",
               onPressed: _onAddTag,
               child: const Icon(Icons.add),
             )
@@ -191,7 +194,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     final createdTag = await Navigator.of(context).push<Tag?>(
       MaterialPageRoute(
         builder: (context) => AddTagPage(
-          initialValue: _textEditingController.text,
+          initialName: _textEditingController.text,
         ),
       ),
     );
@@ -237,10 +240,16 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     var matches = _options
         .where((e) => e.name.trim().toLowerCase().contains(normalizedQuery));
     if (matches.isEmpty && widget.allowCreation) {
-      yield Text(S.of(context)!.noItemsFound);
-      yield TextButton(
-        child: Text(S.of(context)!.addTag),
-        onPressed: _onAddTag,
+      yield Center(
+        child: Column(
+          children: [
+            Text(S.of(context)!.noItemsFound).padded(),
+            TextButton(
+              child: Text(S.of(context)!.addTag),
+              onPressed: _onAddTag,
+            ),
+          ],
+        ),
       );
     }
     for (final tag in matches) {

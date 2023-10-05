@@ -2,7 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
+import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
@@ -32,6 +37,12 @@ class DocumentDetailedItem extends DocumentItem {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserId = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+        .getValue()!
+        .loggedInUserId;
+    final paperlessUser = Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount)
+        .get(currentUserId)!
+        .paperlessUser;
     final size = MediaQuery.of(context).size;
     final insets = MediaQuery.of(context).viewInsets;
     final padding = MediaQuery.of(context).viewPadding;
@@ -104,48 +115,51 @@ class DocumentDetailedItem extends DocumentItem {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ).paddedLTRB(8, 0, 8, 4),
-            Row(
-              children: [
-                const Icon(
-                  Icons.person_outline,
-                  size: 16,
-                ).paddedOnly(right: 4.0),
-                CorrespondentWidget(
-                  onSelected: onCorrespondentSelected,
-                  textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                  correspondent: context
-                      .watch<LabelRepository>()
-                      .state
-                      .correspondents[document.correspondent],
-                ),
-              ],
-            ).paddedLTRB(8, 0, 8, 4),
-            Row(
-              children: [
-                const Icon(
-                  Icons.description_outlined,
-                  size: 16,
-                ).paddedOnly(right: 4.0),
-                DocumentTypeWidget(
-                  onSelected: onDocumentTypeSelected,
-                  textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                  documentType: context
-                      .watch<LabelRepository>()
-                      .state
-                      .documentTypes[document.documentType],
-                ),
-              ],
-            ).paddedLTRB(8, 0, 8, 4),
-            TagsWidget(
-              tags: document.tags
-                  .map((e) => context.watch<LabelRepository>().state.tags[e]!)
-                  .toList(),
-              onTagSelected: onTagSelected,
-            ).padded(),
+            if (paperlessUser.canViewCorrespondents)
+              Row(
+                children: [
+                  const Icon(
+                    Icons.person_outline,
+                    size: 16,
+                  ).paddedOnly(right: 4.0),
+                  CorrespondentWidget(
+                    onSelected: onCorrespondentSelected,
+                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    correspondent: context
+                        .watch<LabelRepository>()
+                        .state
+                        .correspondents[document.correspondent],
+                  ),
+                ],
+              ).paddedLTRB(8, 0, 8, 4),
+            if (paperlessUser.canViewDocumentTypes)
+              Row(
+                children: [
+                  const Icon(
+                    Icons.description_outlined,
+                    size: 16,
+                  ).paddedOnly(right: 4.0),
+                  DocumentTypeWidget(
+                    onSelected: onDocumentTypeSelected,
+                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    documentType: context
+                        .watch<LabelRepository>()
+                        .state
+                        .documentTypes[document.documentType],
+                  ),
+                ],
+              ).paddedLTRB(8, 0, 8, 4),
+            if (paperlessUser.canViewTags)
+              TagsWidget(
+                tags: document.tags
+                    .map((e) => context.watch<LabelRepository>().state.tags[e]!)
+                    .toList(),
+                onTagSelected: onTagSelected,
+              ).padded(),
             if (highlights != null)
               Html(
                 data: '<p>${highlights!}</p>',

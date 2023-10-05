@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 
 class SubmitButtonConfig<T extends Label> {
@@ -34,6 +33,7 @@ class LabelForm<T extends Label> extends StatefulWidget {
   final List<Widget> additionalFields;
 
   final bool autofocusNameField;
+  final GlobalKey<FormBuilderState>? formKey;
 
   const LabelForm({
     Key? key,
@@ -42,6 +42,7 @@ class LabelForm<T extends Label> extends StatefulWidget {
     this.additionalFields = const [],
     required this.submitButtonConfig,
     required this.autofocusNameField,
+    this.formKey,
   }) : super(key: key);
 
   @override
@@ -49,7 +50,7 @@ class LabelForm<T extends Label> extends StatefulWidget {
 }
 
 class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  late final GlobalKey<FormBuilderState> _formKey;
 
   late bool _enableMatchFormField;
 
@@ -58,6 +59,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   @override
   void initState() {
     super.initState();
+    _formKey = widget.formKey ?? GlobalKey<FormBuilderState>();
     var matchingAlgorithm = (widget.initialValue?.matchingAlgorithm ??
         MatchingAlgorithm.defaultValue);
     _enableMatchFormField = matchingAlgorithm != MatchingAlgorithm.auto &&
@@ -68,11 +70,12 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   Widget build(BuildContext context) {
     List<MatchingAlgorithm> selectableMatchingAlgorithmValues =
         getSelectableMatchingAlgorithmValues(
-      context.watch<ApiVersion>().hasMultiUserSupport,
+      context.watch<LocalUserAccount>().hasMultiUserSupport,
     );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "fab_label_form",
         icon: widget.submitButtonConfig.icon,
         label: widget.submitButtonConfig.label,
         onPressed: _onSubmit,
@@ -134,10 +137,16 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                 initialValue: widget.initialValue?.match,
                 onChanged: (val) => setState(() => _errors = {}),
               ),
-            FormBuilderCheckbox(
+            FormBuilderField<bool>(
               name: Label.isInsensitiveKey,
               initialValue: widget.initialValue?.isInsensitive ?? true,
-              title: Text(S.of(context)!.caseIrrelevant),
+              builder: (field) {
+                return CheckboxListTile(
+                  value: field.value,
+                  title: Text(S.of(context)!.caseIrrelevant),
+                  onChanged: (value) => field.didChange(value),
+                );
+              },
             ),
             ...widget.additionalFields,
           ].padded(),
@@ -167,7 +176,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         };
         final parsed = widget.fromJsonT(mergedJson);
         final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
-        Navigator.pop(context, createdLabel);
+        context.pop(createdLabel);
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on PaperlessFormValidationException catch (exception) {

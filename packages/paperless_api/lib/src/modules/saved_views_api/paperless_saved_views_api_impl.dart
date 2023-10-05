@@ -16,7 +16,7 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
   @override
   Future<Iterable<SavedView>> findAll([Iterable<int>? ids]) async {
     final result = await getCollection(
-      "/api/saved_views/",
+      "/api/saved_views/?page_size=100000",
       SavedView.fromJson,
       ErrorCode.loadSavedViewsError,
       client: _client,
@@ -37,6 +37,22 @@ class PaperlessSavedViewsApiImpl implements PaperlessSavedViewsApi {
     } on DioException catch (exception) {
       throw exception.unravel(
         orElse: const PaperlessApiException(ErrorCode.createSavedViewError),
+      );
+    }
+  }
+
+  @override
+  Future<SavedView> update(SavedView view) async {
+    try {
+      final response = await _client.patch(
+        "/api/saved_views/${view.id}/",
+        data: view.toJson(),
+        options: Options(validateStatus: (status) => status == 200),
+      );
+      return SavedView.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.updateSavedViewError),
       );
     }
   }

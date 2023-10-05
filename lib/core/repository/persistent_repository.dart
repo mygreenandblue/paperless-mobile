@@ -8,25 +8,26 @@ abstract class PersistentRepository<T> extends HydratedCubit<T> {
   PersistentRepository(T initialState) : super(initialState);
 
   void addListener(
-    Object source, {
+    Object subscriber, {
     required void Function(T) onChanged,
   }) {
     onChanged(state);
-    _subscribers.putIfAbsent(source, () {
+    _subscribers.putIfAbsent(subscriber, () {
       return stream.listen((event) => onChanged(event));
     });
   }
 
   void removeListener(Object source) async {
-    await _subscribers[source]?.cancel();
-    _subscribers.remove(source);
+    _subscribers
+      ..[source]?.cancel()
+      ..remove(source);
   }
 
   @override
   Future<void> close() {
-    _subscribers.forEach((key, subscription) {
-      subscription.cancel();
-    });
+    for (final subscriber in _subscribers.values) {
+      subscriber.cancel();
+    }
     return super.close();
   }
 }

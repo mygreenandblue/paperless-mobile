@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class DocumentSelectionSliverAppBar extends StatelessWidget {
   final DocumentsState state;
@@ -65,24 +65,30 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 label: Text(S.of(context)!.correspondent),
                 avatar: const Icon(Icons.edit),
                 onPressed: () {
-                  pushBulkEditCorrespondentRoute(context,
-                      selection: state.selection);
+                  BulkEditDocumentsRoute(BulkEditExtraWrapper(
+                    state.selection,
+                    LabelType.correspondent,
+                  )).push(context);
                 },
               ).paddedOnly(left: 8, right: 4),
               ActionChip(
                 label: Text(S.of(context)!.documentType),
                 avatar: const Icon(Icons.edit),
                 onPressed: () async {
-                  pushBulkEditDocumentTypeRoute(context,
-                      selection: state.selection);
+                  BulkEditDocumentsRoute(BulkEditExtraWrapper(
+                    state.selection,
+                    LabelType.documentType,
+                  )).push(context);
                 },
               ).paddedOnly(left: 8, right: 4),
               ActionChip(
                 label: Text(S.of(context)!.storagePath),
                 avatar: const Icon(Icons.edit),
                 onPressed: () async {
-                  pushBulkEditStoragePathRoute(context,
-                      selection: state.selection);
+                  BulkEditDocumentsRoute(BulkEditExtraWrapper(
+                    state.selection,
+                    LabelType.storagePath,
+                  )).push(context);
                 },
               ).paddedOnly(left: 8, right: 4),
               _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
@@ -98,7 +104,10 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
       label: Text(S.of(context)!.tags),
       avatar: const Icon(Icons.edit),
       onPressed: () {
-        pushBulkEditTagsRoute(context, selection: state.selection);
+        BulkEditDocumentsRoute(BulkEditExtraWrapper(
+          state.selection,
+          LabelType.tag,
+        )).push(context);
       },
     );
   }

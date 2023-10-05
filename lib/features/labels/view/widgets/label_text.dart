@@ -8,7 +8,7 @@ class LabelText<T extends Label> extends StatelessWidget {
   const LabelText({
     super.key,
     this.style,
-    this.placeholder = "",
+    this.placeholder = "-",
     required this.label,
   });
 

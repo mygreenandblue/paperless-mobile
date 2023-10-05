@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
@@ -15,6 +16,8 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
     with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
+  @override
+  final ConnectivityStatusService connectivityStatusService;
 
   @override
   final DocumentChangedNotifier notifier;
@@ -24,8 +27,11 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
     this.api,
     this.notifier,
     this._userAppState,
-  ) : super(DocumentSearchState(
-            searchHistory: _userAppState.documentSearchHistory)) {
+    this.connectivityStatusService,
+  ) : super(
+          DocumentSearchState(
+              searchHistory: _userAppState.documentSearchHistory),
+        ) {
     notifier.addListener(
       this,
       onDeleted: remove,
@@ -34,22 +40,25 @@ class DocumentSearchCubit extends Cubit<DocumentSearchState>
   }
 
   Future<void> search(String query) async {
-    emit(state.copyWith(
-      isLoading: true,
-      suggestions: [],
-      view: SearchView.results,
-    ));
+    final normalizedQuery = query.trim();
+    emit(
+      state.copyWith(
+        isLoading: true,
+        suggestions: [],
+        view: SearchView.results,
+      ),
+    );
     final searchFilter = DocumentFilter(
-      query: TextQuery.extended(query),
+      query: TextQuery.extended(normalizedQuery),
     );
 
     await updateFilter(filter: searchFilter);
     emit(
       state.copyWith(
         searchHistory: [
-          query,
+          normalizedQuery,
           ...state.searchHistory
-              .whereNot((previousQuery) => previousQuery == query)
+              .whereNot((previousQuery) => previousQuery == normalizedQuery)
         ],
       ),
     );

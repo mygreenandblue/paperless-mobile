@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'paperless_server_exception.g.dart';
+part 'paperless_server_message_exception.g.dart';
 
 @JsonSerializable(createToJson: false)
 class PaperlessServerMessageException implements Exception {
@@ -8,10 +8,14 @@ class PaperlessServerMessageException implements Exception {
 
   PaperlessServerMessageException(this.detail);
 
-  static bool canParse(Map<String, dynamic> json) {
-    return json.containsKey('detail') && json.length == 1;
+  static bool canParse(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return json.containsKey('detail') && json.length == 1;
+    } else {
+      return false;
+    }
   }
 
   factory PaperlessServerMessageException.fromJson(Map<String, dynamic> json) =>
-      _$PaperlessServerExceptionFromJson(json);
+      _$PaperlessServerMessageExceptionFromJson(json);
 }

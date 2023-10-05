@@ -7,6 +7,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 
@@ -18,6 +19,9 @@ class InboxCubit extends HydratedCubit<InboxState>
   final LabelRepository _labelRepository;
 
   final PaperlessDocumentsApi _documentsApi;
+
+  @override
+  final ConnectivityStatusService connectivityStatusService;
 
   @override
   final DocumentChangedNotifier notifier;
@@ -32,21 +36,35 @@ class InboxCubit extends HydratedCubit<InboxState>
     this._statsApi,
     this._labelRepository,
     this.notifier,
-  ) : super(InboxState(
-          labels: _labelRepository.state,
-        )) {
+    this.connectivityStatusService,
+  ) : super(InboxState(labels: _labelRepository.state)) {
     notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: (document) {
-        if (document.tags
+        final hasInboxTag = document.tags
             .toSet()
             .intersection(state.inboxTags.toSet())
-            .isEmpty) {
+            .isNotEmpty;
+        final wasInInboxBeforeUpdate =
+            state.documents.map((e) => e.id).contains(document.id);
+        if (!hasInboxTag && wasInInboxBeforeUpdate) {
+          print(
+              "INBOX: Removing document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
           remove(document);
           emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
-        } else {
-          replace(document);
+        } else if (hasInboxTag) {
+          if (wasInInboxBeforeUpdate) {
+            print(
+                "INBOX: Replacing document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
+            replace(document);
+          } else {
+            print(
+                "INBOX: Adding document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
+            _addDocument(document);
+            emit(
+                state.copyWith(itemsInInboxCount: state.itemsInInboxCount + 1));
+          }
         }
       },
     );
@@ -58,22 +76,20 @@ class InboxCubit extends HydratedCubit<InboxState>
     );
   }
 
+  @override
   Future<void> initialize() async {
     await refreshItemsInInboxCount(false);
     await loadInbox();
   }
 
   Future<void> refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
+    debugPrint("Checking for new items in inbox...");
     final stats = await _statsApi.getServerStatistics();
 
     if (stats.documentsInInbox != state.itemsInInboxCount && shouldLoadInbox) {
       await loadInbox();
     }
-    emit(
-      state.copyWith(
-        itemsInInboxCount: stats.documentsInInbox,
-      ),
-    );
+    emit(state.copyWith(itemsInInboxCount: stats.documentsInInbox));
   }
 
   ///
@@ -82,7 +98,6 @@ class InboxCubit extends HydratedCubit<InboxState>
   Future<void> loadInbox() async {
     if (!isClosed) {
       debugPrint("Initializing inbox...");
-
       final inboxTags = await _labelRepository.findAllTags().then(
             (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
           );
@@ -110,11 +125,22 @@ class InboxCubit extends HydratedCubit<InboxState>
     }
   }
 
+  Future<void> _addDocument(DocumentModel document) async {
+    emit(state.copyWith(
+      value: [
+        ...state.value,
+        PagedSearchResult(
+          count: 1,
+          results: [document],
+        ),
+      ],
+    ));
+  }
+
   ///
   /// Fetches inbox tag ids and loads the inbox items (documents).
   ///
   Future<void> reloadInbox() async {
-    emit(state.copyWith(hasLoaded: false, isLoading: true));
     final inboxTags = await _labelRepository.findAllTags().then(
           (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
         );
@@ -131,6 +157,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     }
     emit(state.copyWith(inboxTags: inboxTags));
     updateFilter(
+      emitLoading: false,
       filter: DocumentFilter(
         sortField: SortField.added,
         tags: TagsQuery.ids(include: inboxTags.toList()),
@@ -151,7 +178,7 @@ class InboxCubit extends HydratedCubit<InboxState>
       document.copyWith(tags: updatedTags),
     );
     // Remove first so document is not replaced first.
-    remove(document);
+    // remove(document);
     notifier.notifyUpdated(updatedDocument);
     return tagsToRemove;
   }

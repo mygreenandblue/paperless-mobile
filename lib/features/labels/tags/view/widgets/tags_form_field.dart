@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -73,7 +74,7 @@ class TagsFormField extends StatelessWidget {
             initialValue: field.value,
             allowOnlySelection: allowOnlySelection,
             allowCreation: allowCreation &&
-                LocalUserAccount.current.paperlessUser.canCreateTags,
+                context.watch<LocalUserAccount>().paperlessUser.canCreateTags,
             allowExclude: allowExclude,
           ),
           onClosed: (data) {

@@ -44,7 +44,7 @@ class LabelTabView<T extends Label> extends StatelessWidget {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
       builder: (context, connectivityState) {
         if (!connectivityState.isConnected) {
-          return const OfflineWidget();
+          return const SliverFillRemaining(child: OfflineWidget());
         }
         final sortedLabels = labels.values.toList()..sort();
         if (labels.isEmpty) {
@@ -76,9 +76,7 @@ class LabelTabView<T extends Label> extends StatelessWidget {
                     Text(
                       translateMatchingAlgorithmName(
                               context, l.matchingAlgorithm) +
-                          ((l.match?.isNotEmpty ?? false)
-                              ? ": ${l.match}"
-                              : ""),
+                          (l.match.isNotEmpty ? ": ${l.match}" : ""),
                       maxLines: 2,
                     ),
                 onOpenEditPage: canEdit ? onEdit : null,

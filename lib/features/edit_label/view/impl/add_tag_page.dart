@@ -10,8 +10,8 @@ import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddTagPage extends StatelessWidget {
-  final String? initialValue;
-  const AddTagPage({Key? key, this.initialValue}) : super(key: key);
+  final String? initialName;
+  const AddTagPage({Key? key, this.initialName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class AddTagPage extends StatelessWidget {
       child: AddLabelPage<Tag>(
         pageTitle: Text(S.of(context)!.addTag),
         fromJsonT: Tag.fromJson,
-        initialName: initialValue,
+        initialName: initialName,
         onSubmit: (context, label) =>
             context.read<EditLabelCubit>().addTag(label),
         additionalFields: [
@@ -37,9 +37,16 @@ class AddTagPage extends StatelessWidget {
                 .withOpacity(1.0),
             readOnly: true,
           ),
-          FormBuilderCheckbox(
+          FormBuilderField<bool>(
             name: Tag.isInboxTagKey,
-            title: Text(S.of(context)!.inboxTag),
+            initialValue: false,
+            builder: (field) {
+              return CheckboxListTile(
+                value: field.value,
+                title: Text(S.of(context)!.inboxTag),
+                onChanged: (value) => field.didChange(value),
+              );
+            },
           ),
         ],
       ),

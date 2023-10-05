@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/empty_state.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -8,6 +8,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class DocumentsEmptyState extends StatelessWidget {
   final DocumentPagingState state;
   final VoidCallback? onReset;
+
   const DocumentsEmptyState({
     Key? key,
     required this.state,
@@ -17,18 +18,24 @@ class DocumentsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: EmptyState(
-        title: S.of(context)!.oops,
-        subtitle: S.of(context)!.thereSeemsToBeNothingHere,
-        bottomChild: state.filter != DocumentFilter.initial && onReset != null
-            ? TextButton(
-                onPressed: onReset,
-                child: Text(
-                  S.of(context)!.resetFilter,
-                ),
-              ).padded()
-            : null,
-      ),
+      child: Column(
+        children: [
+          Text(
+            S.of(context)!.noDocumentsFound,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          if (state.filter != DocumentFilter.initial && onReset != null)
+            TextButton(
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                onReset!();
+              },
+              child: Text(
+                S.of(context)!.resetFilter,
+              ),
+            ).padded(),
+        ],
+      ).padded(24),
     );
   }
 }

@@ -7,9 +7,16 @@ class ClientCertificateFormModel {
   final Uint8List bytes;
   final String? passphrase;
 
-  ClientCertificateFormModel({required this.bytes, this.passphrase});
+  ClientCertificateFormModel({
+    required this.bytes,
+    this.passphrase,
+  });
 
-  ClientCertificateFormModel copyWith({Uint8List? bytes, String? passphrase}) {
+  ClientCertificateFormModel copyWith({
+    Uint8List? bytes,
+    String? passphrase,
+    String? filePath,
+  }) {
     return ClientCertificateFormModel(
       bytes: bytes ?? this.bytes,
       passphrase: passphrase ?? this.passphrase,

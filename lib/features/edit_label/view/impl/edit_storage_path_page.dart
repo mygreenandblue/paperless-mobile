@@ -23,7 +23,10 @@ class EditStoragePathPage extends StatelessWidget {
             context.read<EditLabelCubit>().replaceStoragePath(label),
         onDelete: (context, label) =>
             context.read<EditLabelCubit>().removeStoragePath(label),
-        canDelete: LocalUserAccount.current.paperlessUser.canDeleteStoragePaths,
+        canDelete: context
+            .watch<LocalUserAccount>()
+            .paperlessUser
+            .canDeleteStoragePaths,
         additionalFields: [
           StoragePathAutofillFormBuilderField(
             name: StoragePath.pathKey,

@@ -52,10 +52,10 @@ class ColorSchemeOptionSetting extends StatelessWidget {
               initialValue: settings.preferredColorSchemeOption,
             ),
           ).then(
-            (value) {
+            (value) async {
               if (value != null) {
                 settings.preferredColorSchemeOption = value;
-                settings.save();
+                await settings.save();
               }
             },
           ),

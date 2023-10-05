@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,16 @@ import 'obscured_input_text_form_field.dart';
 class ClientCertificateFormField extends StatefulWidget {
   static const fkClientCertificate = 'clientCertificate';
 
+  final String? initialPassphrase;
+  final Uint8List? initialBytes;
+
   final void Function(ClientCertificateFormModel? cert) onChanged;
   const ClientCertificateFormField({
-    Key? key,
+    super.key,
     required this.onChanged,
-  }) : super(key: key);
+    this.initialPassphrase,
+    this.initialBytes,
+  });
 
   @override
   State<ClientCertificateFormField> createState() =>
@@ -31,7 +37,12 @@ class _ClientCertificateFormFieldState
     return FormBuilderField<ClientCertificateFormModel?>(
       key: const ValueKey('login-client-cert'),
       onChanged: widget.onChanged,
-      initialValue: null,
+      initialValue: widget.initialBytes != null
+          ? ClientCertificateFormModel(
+              bytes: widget.initialBytes!,
+              passphrase: widget.initialPassphrase,
+            )
+          : null,
       validator: (value) {
         if (value == null) {
           return null;
@@ -108,8 +119,7 @@ class _ClientCertificateFormFieldState
                         ),
                         label: S.of(context)!.passphrase,
                       ).padded(),
-                    ] else
-                      ...[]
+                    ]
                   ],
                 ),
               ),
@@ -122,20 +132,23 @@ class _ClientCertificateFormFieldState
   }
 
   Future<void> _onSelectFile(
-      FormFieldState<ClientCertificateFormModel?> field) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    FormFieldState<ClientCertificateFormModel?> field,
+  ) async {
+    final result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
     );
-    if (result != null && result.files.single.path != null) {
-      File file = File(result.files.single.path!);
-      setState(() {
-        _selectedFile = file;
-      });
-      final changedValue =
-          field.value?.copyWith(bytes: file.readAsBytesSync()) ??
-              ClientCertificateFormModel(bytes: file.readAsBytesSync());
-      field.didChange(changedValue);
+    if (result == null || result.files.single.path == null) {
+      return;
     }
+    File file = File(result.files.single.path!);
+    setState(() {
+      _selectedFile = file;
+    });
+    final bytes = await file.readAsBytes();
+
+    final changedValue = field.value?.copyWith(bytes: bytes) ??
+        ClientCertificateFormModel(bytes: bytes);
+    field.didChange(changedValue);
   }
 
   Widget _buildSelectedFileText(

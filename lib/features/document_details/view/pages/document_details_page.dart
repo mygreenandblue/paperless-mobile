@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
@@ -14,16 +15,14 @@ import 'package:paperless_mobile/features/document_details/view/widgets/document
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
-import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
-import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final bool isLabelClickable;
@@ -46,9 +45,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final apiVersion = context.watch<ApiVersion>();
-
-    final tabLength = 4 + (apiVersion.hasMultiUserSupport ? 1 : 0);
+    final hasMultiUserSupport =
+        context.watch<LocalUserAccount>().hasMultiUserSupport;
+    final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context)
@@ -86,45 +85,52 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     collapsedHeight: kToolbarHeight,
                     expandedHeight: 250.0,
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          BlocBuilder<DocumentDetailsCubit,
-                              DocumentDetailsState>(
-                            builder: (context, state) {
-                              return Positioned.fill(
-                                child: DocumentPreview(
-                                  document: state.document,
-                                  fit: BoxFit.cover,
-                                ),
-                              );
-                            },
-                          ),
-                          Positioned.fill(
-                            top: 0,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .background
-                                        .withOpacity(0.8),
-                                    Theme.of(context)
-                                        .colorScheme
-                                        .background
-                                        .withOpacity(0.5),
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                    Colors.transparent,
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
+                      background: BlocBuilder<DocumentDetailsCubit,
+                          DocumentDetailsState>(
+                        builder: (context, state) {
+                          return Hero(
+                            tag: "thumb_${state.document.id}",
+                            child: GestureDetector(
+                              onTap: () {
+                                DocumentPreviewRoute($extra: state.document)
+                                    .push(context);
+                              },
+                              child: Stack(
+                                alignment: Alignment.topCenter,
+                                children: [
+                                  Positioned.fill(
+                                    child: DocumentPreview(
+                                      enableHero: false,
+                                      document: state.document,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Positioned.fill(
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          stops: [0.2, 0.4],
+                                          colors: [
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .background
+                                                .withOpacity(0.6),
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .background
+                                                .withOpacity(0.3),
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                     bottom: ColoredTabBar(
@@ -171,7 +177,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ),
                           ),
-                          if (apiVersion.hasMultiUserSupport)
+                          if (hasMultiUserSupport && false)
                             Tab(
                               child: Text(
                                 "Permissions",
@@ -192,6 +198,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 builder: (context, state) {
                   return BlocProvider(
                     create: (context) => SimilarDocumentsCubit(
+                      context.read(),
                       context.read(),
                       context.read(),
                       context.read(),
@@ -259,7 +266,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               ),
                             ],
                           ),
-                          if (apiVersion.hasMultiUserSupport)
+                          if (hasMultiUserSupport && false)
                             CustomScrollView(
                               controller: _pagingScrollController,
                               slivers: [
@@ -286,8 +293,10 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   }
 
   Widget _buildEditButton() {
+    final currentUser = context.watch<LocalUserAccount>();
+
     bool canEdit = context.watchInternetConnection &&
-        LocalUserAccount.current.paperlessUser.canEditDocuments;
+        currentUser.paperlessUser.canEditDocuments;
     if (!canEdit) {
       return const SizedBox.shrink();
     }
@@ -301,8 +310,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
           preferBelow: false,
           verticalOffset: 40,
           child: FloatingActionButton(
+            heroTag: "fab_document_details",
             child: const Icon(Icons.edit),
-            onPressed: () => _onEdit(state.document),
+            onPressed: () => EditDocumentRoute(state.document).push(context),
           ),
         );
       },
@@ -315,38 +325,48 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         return BottomAppBar(
           child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectivityState) {
-              final isConnected = connectivityState.isConnected;
-
-              final canDelete = isConnected &&
-                  LocalUserAccount.current.paperlessUser.canDeleteDocuments;
+              final currentUser = context.watch<LocalUserAccount>();
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  IconButton(
-                    tooltip: S.of(context)!.deleteDocumentTooltip,
-                    icon: const Icon(Icons.delete),
-                    onPressed:
-                        canDelete ? () => _onDelete(state.document) : null,
-                  ).paddedSymmetrically(horizontal: 4),
-                  DocumentDownloadButton(
-                    document: state.document,
-                    enabled: isConnected,
+                  ConnectivityAwareActionWrapper(
+                    disabled: !currentUser.paperlessUser.canDeleteDocuments,
+                    offlineBuilder: (context, child) {
+                      return const IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: null,
+                      ).paddedSymmetrically(horizontal: 4);
+                    },
+                    child: IconButton(
+                      tooltip: S.of(context)!.deleteDocumentTooltip,
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => _onDelete(state.document),
+                    ).paddedSymmetrically(horizontal: 4),
                   ),
-                  //TODO: Enable again, need new pdf viewer package...
-                  IconButton(
-                    tooltip: S.of(context)!.previewTooltip,
-                    icon: const Icon(Icons.visibility),
-                    onPressed:
-                        (isConnected) ? () => _onOpen(state.document) : null,
-                  ).paddedOnly(right: 4.0),
-                  IconButton(
-                    tooltip: S.of(context)!.openInSystemViewer,
-                    icon: const Icon(Icons.open_in_new),
-                    onPressed: isConnected ? _onOpenFileInSystemViewer : null,
-                  ).paddedOnly(right: 4.0),
+                  ConnectivityAwareActionWrapper(
+                    offlineBuilder: (context, child) =>
+                        const DocumentDownloadButton(
+                      document: null,
+                      enabled: false,
+                    ),
+                    child: DocumentDownloadButton(
+                      document: state.document,
+                    ),
+                  ),
+                  ConnectivityAwareActionWrapper(
+                    offlineBuilder: (context, child) => const IconButton(
+                      icon: Icon(Icons.open_in_new),
+                      onPressed: null,
+                    ),
+                    child: IconButton(
+                      tooltip: S.of(context)!.openInSystemViewer,
+                      icon: const Icon(Icons.open_in_new),
+                      onPressed: _onOpenFileInSystemViewer,
+                    ).paddedOnly(right: 4.0),
+                  ),
                   DocumentShareButton(document: state.document),
                   IconButton(
-                    tooltip: S.of(context)!.print, //TODO: INTL
+                    tooltip: S.of(context)!.print,
                     onPressed: () =>
                         context.read<DocumentDetailsCubit>().printDocument(),
                     icon: const Icon(Icons.print),
@@ -358,47 +378,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         );
       },
     );
-  }
-
-  Future<void> _onEdit(DocumentModel document) async {
-    {
-      final cubit = context.read<DocumentDetailsCubit>();
-      Navigator.push<bool>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: DocumentEditCubit(
-                  context.read(),
-                  context.read(),
-                  context.read(),
-                  document: document,
-                ),
-              ),
-              BlocProvider<DocumentDetailsCubit>.value(
-                value: cubit,
-              ),
-            ],
-            child: BlocListener<DocumentEditCubit, DocumentEditState>(
-              listenWhen: (previous, current) =>
-                  previous.document != current.document,
-              listener: (context, state) {
-                cubit.replace(state.document);
-              },
-              child: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                builder: (context, state) {
-                  return DocumentEditPage(
-                    suggestions: state.suggestions,
-                  );
-                },
-              ),
-            ),
-          ),
-          maintainState: true,
-        ),
-      );
-    }
   }
 
   void _onOpenFileInSystemViewer() async {
@@ -427,25 +406,21 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     if (delete) {
       try {
         await context.read<DocumentDetailsCubit>().delete(document);
-        showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
+        // showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
       } on PaperlessApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
-        // Document deleted => go back to primary route
-        Navigator.popUntil(context, (route) => route.isFirst);
+        do {
+          context.pop();
+        } while (context.canPop());
       }
     }
   }
 
   Future<void> _onOpen(DocumentModel document) async {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => DocumentView(
-          documentBytes:
-              context.read<PaperlessDocumentsApi>().download(document),
-          title: document.title,
-        ),
-      ),
-    );
+    DocumentPreviewRoute(
+      $extra: document,
+      title: document.title,
+    ).push(context);
   }
 }

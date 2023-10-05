@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/navigation/push_routes.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -15,6 +14,8 @@ import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 
 class InboxItemPlaceholder extends StatelessWidget {
   const InboxItemPlaceholder({super.key});
@@ -150,11 +151,10 @@ class _InboxItemState extends State<InboxItem> {
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
-            pushDocumentDetailsRoute(
-              context,
-              document: widget.document,
+            DocumentDetailsRoute(
+              $extra: widget.document,
               isLabelClickable: false,
-            );
+            ).push(context);
           },
           child: SizedBox(
             height: 200,
@@ -227,7 +227,9 @@ class _InboxItemState extends State<InboxItem> {
                 ),
                 LimitedBox(
                   maxHeight: 56,
-                  child: _buildActions(context),
+                  child: ConnectivityAwareActionWrapper(
+                    child: _buildActions(context),
+                  ),
                 ),
               ],
             ).paddedOnly(left: 8, top: 8, bottom: 8),
@@ -238,8 +240,9 @@ class _InboxItemState extends State<InboxItem> {
   }
 
   Widget _buildActions(BuildContext context) {
-    final canEdit = LocalUserAccount.current.paperlessUser.canEditDocuments;
-    final canDelete = LocalUserAccount.current.paperlessUser.canDeleteDocuments;
+    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final canEdit = currentUser.canEditDocuments;
+    final canDelete = currentUser.canDeleteDocuments;
     final chipShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(32),
     );

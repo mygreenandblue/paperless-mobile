@@ -57,6 +57,11 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     }
   }
 
+  Future<void> loadFieldSuggestions() async {
+    final suggestions = await _docsApi.findSuggestions(state.document);
+    emit(state.copyWith(suggestions: suggestions));
+  }
+
   void replace(DocumentModel document) {
     emit(state.copyWith(document: document));
   }

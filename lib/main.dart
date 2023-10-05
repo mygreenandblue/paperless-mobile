@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mock_server/mock_server.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -30,19 +30,25 @@ import 'package:paperless_mobile/core/interceptor/language_header.interceptor.da
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/features/app_intro/application_intro_slideshow.dart';
-import 'package:paperless_mobile/features/home/view/home_route.dart';
-import 'package:paperless_mobile/features/home/view/widget/verify_identity_page.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/login/view/login_page.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/settings/view/pages/switching_accounts_page.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/navigation_keys.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -76,17 +82,17 @@ Future<void> _initHive() async {
 void main() async {
   runZonedGuarded(() async {
     Paint.enableDithering = true;
-    if (kDebugMode) {
-      // URL: http://localhost:3131
-      // Login: admin:test
-      await LocalMockApiServer(
-              // RandomDelayGenerator(
-              //   const Duration(milliseconds: 100),
-              //   const Duration(milliseconds: 800),
-              // ),
-              )
-          .start();
-    }
+    // if (kDebugMode) {
+    //   // URL: http://localhost:3131
+    //   // Login: admin:test
+    //   await LocalMockApiServer(
+    //           // RandomDelayGenerator(
+    //           //   const Duration(milliseconds: 100),
+    //           //   const Duration(milliseconds: 800),
+    //           // ),
+    //           )
+    //       .start();
+    // }
     await _initHive();
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     final globalSettingsBox =
@@ -95,18 +101,19 @@ void main() async {
 
     await findSystemLocale();
     packageInfo = await PackageInfo.fromPlatform();
+
     if (Platform.isAndroid) {
       androidInfo = await DeviceInfoPlugin().androidInfo;
     }
     if (Platform.isIOS) {
       iosInfo = await DeviceInfoPlugin().iosInfo;
     }
-
-    final connectivity = Connectivity();
-    final localAuthentication = LocalAuthentication();
-    final connectivityStatusService =
-        ConnectivityStatusServiceImpl(connectivity);
-    final localAuthService = LocalAuthenticationService(localAuthentication);
+    final connectivityStatusService = ConnectivityStatusServiceImpl(
+      Connectivity(),
+    );
+    final localAuthService = LocalAuthenticationService(
+      LocalAuthentication(),
+    );
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory(),
@@ -138,13 +145,18 @@ void main() async {
     });
 
     final apiFactory = PaperlessApiFactoryImpl(sessionManager);
-
+    final authenticationCubit = AuthenticationCubit(
+      localAuthService,
+      apiFactory,
+      sessionManager,
+      connectivityStatusService,
+      localNotificationService,
+    );
     runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: sessionManager),
           Provider<LocalAuthenticationService>.value(value: localAuthService),
-          Provider<Connectivity>.value(value: connectivity),
           Provider<ConnectivityStatusService>.value(
               value: connectivityStatusService),
           Provider<LocalNotificationService>.value(
@@ -154,18 +166,14 @@ void main() async {
         child: MultiBlocProvider(
           providers: [
             BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-            BlocProvider(
-              create: (context) => AuthenticationCubit(
-                  localAuthService, apiFactory, sessionManager),
-            ),
+            BlocProvider.value(value: authenticationCubit),
           ],
-          child: PaperlessMobileEntrypoint(
-            paperlessProviderFactory: apiFactory,
-          ),
+          child: GoRouterShell(apiFactory: apiFactory),
         ),
       ),
     );
   }, (error, stack) {
+    // Catches all unexpected/uncaught errors and prints them to the console.
     String message = switch (error) {
       PaperlessApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
@@ -174,34 +182,161 @@ void main() async {
     debugPrint("An unepxected exception has occured!");
     debugPrint(message);
     debugPrintStack(stackTrace: stack);
-    // if (_rootScaffoldKey.currentContext != null) {
-    //   ScaffoldMessenger.maybeOf(_rootScaffoldKey.currentContext!)
-    //     ?..hideCurrentSnackBar()
-    //     ..showSnackBar(SnackBar(content: Text(message)));
-    // }
   });
 }
 
-class PaperlessMobileEntrypoint extends StatefulWidget {
-  final PaperlessApiFactory paperlessProviderFactory;
-  const PaperlessMobileEntrypoint({
-    Key? key,
-    required this.paperlessProviderFactory,
-  }) : super(key: key);
+class GoRouterShell extends StatefulWidget {
+  final PaperlessApiFactory apiFactory;
+  const GoRouterShell({
+    super.key,
+    required this.apiFactory,
+  });
 
   @override
-  State<PaperlessMobileEntrypoint> createState() =>
-      _PaperlessMobileEntrypointState();
+  State<GoRouterShell> createState() => _GoRouterShellState();
 }
 
-class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
+class _GoRouterShellState extends State<GoRouterShell> {
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isAndroid) {
+      _setOptimalDisplayMode();
+    }
+    initializeDateFormatting();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.read<AuthenticationCubit>().restoreSession();
+      FlutterNativeSplash.remove();
+    });
+  }
+
+  /// Activates the highest supported refresh rate on the device.
+  Future<void> _setOptimalDisplayMode() async {
+    final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+    final DisplayMode active = await FlutterDisplayMode.active;
+
+    final List<DisplayMode> sameResolution = supported
+        .where((m) => m.width == active.width && m.height == active.height)
+        .toList()
+      ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
+
+    final DisplayMode mostOptimalMode =
+        sameResolution.isNotEmpty ? sameResolution.first : active;
+    debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
+
+    await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
+  }
+
+  late final _router = GoRouter(
+    debugLogDiagnostics: kDebugMode,
+    initialLocation: "/login",
+    routes: [
+      ShellRoute(
+        pageBuilder: (context, state, child) {
+          return MaterialPage(
+            child: BlocListener<AuthenticationCubit, AuthenticationState>(
+              listener: (context, state) {
+                switch (state) {
+                  case UnauthenticatedState(
+                      redirectToAccountSelection: var shouldRedirect
+                    ):
+                    if (shouldRedirect) {
+                      const LoginToExistingAccountRoute().go(context);
+                    } else {
+                      const LoginRoute().go(context);
+                    }
+                    break;
+                  case RestoringSessionState():
+                    const RestoringSessionRoute().go(context);
+                    break;
+                  case VerifyIdentityState(userId: var userId):
+                    VerifyIdentityRoute(userId: userId).go(context);
+                    break;
+                  case SwitchingAccountsState():
+                    const SwitchingAccountsRoute().push(context);
+                    break;
+                  case AuthenticatedState():
+                    const LandingRoute().go(context);
+                    break;
+                  case AuthenticatingState state:
+                    AuthenticatingRoute(state.currentStage.name).push(context);
+                    break;
+                  case LoggingOutState():
+                    const LoggingOutRoute().go(context);
+                    break;
+                  case AuthenticationErrorState():
+                    if (context.canPop()) {
+                      context.pop();
+                    }
+                    // LoginRoute(
+                    //   $extra: errorState.clientCertificate,
+                    //   password: errorState.password,
+                    //   serverUrl: errorState.serverUrl,
+                    //   username: errorState.username,
+                    // ).go(context);
+                    break;
+                }
+              },
+              child: child,
+            ),
+          );
+        },
+        navigatorKey: rootNavigatorKey,
+        routes: [
+          $loginRoute,
+          $loggingOutRoute,
+          $addAccountRoute,
+          ShellRoute(
+            navigatorKey: outerShellNavigatorKey,
+            builder: ProviderShellRoute(widget.apiFactory).build,
+            routes: [
+              $settingsRoute,
+              $savedViewsRoute,
+              $uploadQueueRoute,
+              StatefulShellRoute(
+                navigatorContainerBuilder:
+                    (context, navigationShell, children) {
+                  return children[navigationShell.currentIndex];
+                },
+                builder: const ScaffoldShellRoute().builder,
+                branches: [
+                  StatefulShellBranch(
+                    navigatorKey: landingNavigatorKey,
+                    routes: [$landingRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: documentsNavigatorKey,
+                    routes: [$documentsRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: scannerNavigatorKey,
+                    routes: [$scannerRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: labelsNavigatorKey,
+                    routes: [$labelsRoute],
+                  ),
+                  StatefulShellBranch(
+                    navigatorKey: inboxNavigatorKey,
+                    routes: [$inboxRoute],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
         return DynamicColorBuilder(
           builder: (lightDynamic, darkDynamic) {
-            return MaterialApp(
+            return MaterialApp.router(
+              routerConfig: _router,
               debugShowCheckedModeBanner: true,
               title: "Paperless Mobile",
               theme: buildTheme(
@@ -219,137 +354,11 @@ class _PaperlessMobileEntrypointState extends State<PaperlessMobileEntrypoint> {
               locale: Locale.fromSubtags(
                 languageCode: settings.preferredLocaleSubtag,
               ),
-              localizationsDelegates: const [
-                ...S.localizationsDelegates,
-              ],
-              home: AuthenticationWrapper(
-                paperlessProviderFactory: widget.paperlessProviderFactory,
-              ),
+              localizationsDelegates: S.localizationsDelegates,
             );
           },
         );
       },
     );
-  }
-}
-
-class AuthenticationWrapper extends StatefulWidget {
-  final PaperlessApiFactory paperlessProviderFactory;
-
-  const AuthenticationWrapper({
-    Key? key,
-    required this.paperlessProviderFactory,
-  }) : super(key: key);
-
-  @override
-  State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
-}
-
-class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    context.read<AuthenticationCubit>().restoreSessionState().then((value) {
-      FlutterNativeSplash.remove();
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Activate the highest supported refresh rate on the device
-    if (Platform.isAndroid) {
-      _setOptimalDisplayMode();
-    }
-    initializeDateFormatting();
-  }
-
-  Future<void> _setOptimalDisplayMode() async {
-    final List<DisplayMode> supported = await FlutterDisplayMode.supported;
-    final DisplayMode active = await FlutterDisplayMode.active;
-
-    final List<DisplayMode> sameResolution = supported
-        .where((m) => m.width == active.width && m.height == active.height)
-        .toList()
-      ..sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
-
-    final DisplayMode mostOptimalMode =
-        sameResolution.isNotEmpty ? sameResolution.first : active;
-    debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
-
-    await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
-      builder: (context, authentication) {
-        return authentication.when(
-          unauthenticated: () => LoginPage(
-            titleString: S.of(context)!.connectToPaperless,
-            submitText: S.of(context)!.signIn,
-            onSubmit: _onLogin,
-            showLocalAccounts: true,
-          ),
-          requriresLocalAuthentication: () => const VerifyIdentityPage(),
-          authenticated: (localUserId, apiVersion) => HomeRoute(
-            key: ValueKey(localUserId),
-            paperlessApiVersion: apiVersion,
-            paperlessProviderFactory: widget.paperlessProviderFactory,
-            localUserId: localUserId,
-          ),
-          switchingAccounts: () => const SwitchingAccountsPage(),
-        );
-      },
-    );
-  }
-
-  void _onLogin(
-    BuildContext context,
-    String username,
-    String password,
-    String serverUrl,
-    ClientCertificate? clientCertificate,
-  ) async {
-    try {
-      await context.read<AuthenticationCubit>().login(
-            credentials: LoginFormCredentials(
-              username: username,
-              password: password,
-            ),
-            serverUrl: serverUrl,
-            clientCertificate: clientCertificate,
-          );
-      // Show onboarding after first login!
-      final globalSettings =
-          Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-      if (globalSettings.showOnboarding) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ApplicationIntroSlideshow(),
-            fullscreenDialog: true,
-          ),
-        ).then((value) {
-          globalSettings.showOnboarding = false;
-          globalSettings.save();
-        });
-      }
-    } on PaperlessApiException catch (error, stackTrace) {
-      showErrorMessage(context, error, stackTrace);
-    } on PaperlessFormValidationException catch (exception, stackTrace) {
-      if (exception.hasUnspecificErrorMessage()) {
-        showLocalizedError(context, exception.unspecificErrorMessage()!);
-      } else {
-        showGenericError(
-          context,
-          exception.validationMessages.values.first,
-          stackTrace,
-        ); //TODO: Check if we can show error message directly on field here.
-      }
-    } catch (unknownError, stackTrace) {
-      showGenericError(context, unknownError.toString(), stackTrace);
-    }
   }
 }

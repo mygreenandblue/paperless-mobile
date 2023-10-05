@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -18,10 +19,12 @@ class DocumentFilterForm extends StatefulWidget {
   static const fkAddedAt = DocumentModel.addedKey;
 
   static DocumentFilter assembleFilter(
-      GlobalKey<FormBuilderState> formKey, DocumentFilter initialFilter) {
+    GlobalKey<FormBuilderState> formKey,
+    DocumentFilter initialFilter,
+  ) {
     formKey.currentState?.save();
     final v = formKey.currentState!.value;
-    return DocumentFilter(
+    return initialFilter.copyWith(
       correspondent:
           v[DocumentFilterForm.fkCorrespondent] as IdQueryParameter? ??
               DocumentFilter.initial.correspondent,
@@ -35,11 +38,7 @@ class DocumentFilterForm extends StatefulWidget {
           DocumentFilter.initial.query,
       created: (v[DocumentFilterForm.fkCreatedAt] as DateRangeQuery),
       added: (v[DocumentFilterForm.fkAddedAt] as DateRangeQuery),
-      asnQuery: initialFilter.asnQuery,
       page: 1,
-      pageSize: initialFilter.pageSize,
-      sortField: initialFilter.sortField,
-      sortOrder: initialFilter.sortOrder,
     );
   }
 
@@ -160,8 +159,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
       allowSelectUnassigned: false,
-      canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateDocumentTypes,
+      canCreateNewLabel: context
+          .watch<LocalUserAccount>()
+          .paperlessUser
+          .canCreateDocumentTypes,
     );
   }
 
@@ -173,8 +174,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
       allowSelectUnassigned: false,
-      canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateCorrespondents,
+      canCreateNewLabel: context
+          .watch<LocalUserAccount>()
+          .paperlessUser
+          .canCreateCorrespondents,
     );
   }
 
@@ -187,7 +190,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       prefixIcon: const Icon(Icons.folder_outlined),
       allowSelectUnassigned: false,
       canCreateNewLabel:
-          LocalUserAccount.current.paperlessUser.canCreateStoragePaths,
+          context.watch<LocalUserAccount>().paperlessUser.canCreateStoragePaths,
     );
   }
 

@@ -21,7 +21,7 @@ class GlobalSettings with HiveObjectMixin {
   bool showOnboarding;
 
   @HiveField(4)
-  String? currentLoggedInUser;
+  String? loggedInUserId;
 
   @HiveField(5)
   FileDownloadType defaultDownloadType;
@@ -32,14 +32,18 @@ class GlobalSettings with HiveObjectMixin {
   @HiveField(7, defaultValue: false)
   bool enforceSinglePagePdfUpload;
 
+  @HiveField(8, defaultValue: false)
+  bool skipDocumentPreprarationOnUpload;
+
   GlobalSettings({
     required this.preferredLocaleSubtag,
     this.preferredThemeMode = ThemeMode.system,
     this.preferredColorSchemeOption = ColorSchemeOption.classic,
     this.showOnboarding = true,
-    this.currentLoggedInUser,
+    this.loggedInUserId,
     this.defaultDownloadType = FileDownloadType.alwaysAsk,
     this.defaultShareType = FileDownloadType.alwaysAsk,
     this.enforceSinglePagePdfUpload = false,
+    this.skipDocumentPreprarationOnUpload = false,
   });
 }

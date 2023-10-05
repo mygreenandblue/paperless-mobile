@@ -29,7 +29,7 @@ abstract class PaperlessDocumentsApi {
     DocumentModel document,
     String localFilePath, {
     bool original = false,
-    void Function(double)? onProgressChanged,
+    void Function(double progress)? onProgressChanged,
   });
   Future<FieldSuggestions> findSuggestions(DocumentModel document);
 

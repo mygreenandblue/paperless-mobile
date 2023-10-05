@@ -1,16 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
-import 'package:paperless_mobile/features/settings/view/settings_page.dart';
+import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
-
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -21,6 +24,7 @@ class AppDrawer extends StatelessWidget {
     return SafeArea(
       child: Drawer(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -60,29 +64,65 @@ class AppDrawer extends StatelessWidget {
             ),
             ListTile(
               dense: true,
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 3),
-                child: SvgPicture.asset(
-                  'assets/images/bmc-logo.svg',
-                  width: 24,
-                  height: 24,
-                ),
+              leading: const Icon(Icons.favorite_outline),
+              title: Text(S.of(context)!.donate),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    icon: const Icon(Icons.favorite),
+                    title: Text(S.of(context)!.donate),
+                    content: Text(
+                      S.of(context)!.donationDialogContent,
+                    ),
+                    actions: const [
+                      Text("~ Anton"),
+                    ],
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: SvgPicture.asset(
+                "assets/images/github-mark.svg",
+                color: Theme.of(context).colorScheme.onBackground,
+                height: 24,
+                width: 24,
               ),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(S.of(context)!.donateCoffee),
-                  const Icon(
-                    Icons.open_in_new,
-                    size: 16,
-                  )
-                ],
+              title: Text(S.of(context)!.sourceCode),
+              trailing: const Icon(
+                Icons.open_in_new,
+                size: 16,
               ),
               onTap: () {
                 launchUrlString(
-                  "https://www.buymeacoffee.com/astubenbord",
+                  "https://github.com/astubenbord/paperless-mobile",
                   mode: LaunchMode.externalApplication,
                 );
+              },
+            ),
+            Consumer<ConsumptionChangeNotifier>(
+              builder: (context, value, child) {
+                final files = value.pendingFiles;
+                final child = ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.drive_folder_upload_outlined),
+                  title: const Text("Pending Files"),
+                  onTap: () {
+                    UploadQueueRoute().push(context);
+                  },
+                  trailing: Text(
+                    '${files.length}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                );
+                if (files.isEmpty) {
+                  return child;
+                }
+                return child
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .fade(duration: 1.seconds, begin: 1, end: 0.3);
               },
             ),
             ListTile(
@@ -91,23 +131,57 @@ class AppDrawer extends StatelessWidget {
               title: Text(
                 S.of(context)!.settings,
               ),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MultiProvider(
-                    providers: [
-                      Provider.value(
-                          value: context.read<PaperlessServerStatsApi>()),
-                      Provider.value(value: context.read<ApiVersion>()),
-                    ],
-                    child: const SettingsPage(),
-                  ),
-                ),
-              ),
+              onTap: () => SettingsRoute().push(context),
             ),
+            const Divider(),
+            Text(
+              S.of(context)!.views,
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.labelLarge,
+            ).padded(16),
+            _buildSavedViews(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSavedViews() {
+    return BlocBuilder<SavedViewCubit, SavedViewState>(
+        builder: (context, state) {
+      return state.when(
+        initial: () => const SizedBox.shrink(),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        loaded: (savedViews) {
+          final sidebarViews = savedViews.values
+              .where((element) => element.showInSidebar)
+              .toList();
+          if (sidebarViews.isEmpty) {
+            return Text("Nothing to show here.").paddedOnly(left: 16);
+          }
+          return Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                final view = sidebarViews[index];
+                return ListTile(
+                  title: Text(view.name),
+                  trailing: Icon(Icons.arrow_forward),
+                  onTap: () {
+                    Scaffold.of(context).closeDrawer();
+                    context
+                        .read<DocumentsCubit>()
+                        .updateFilter(filter: view.toDocumentFilter());
+                    DocumentsRoute().go(context);
+                  },
+                );
+              },
+              itemCount: sidebarViews.length,
+            ),
+          );
+        },
+        error: () => Text(S.of(context)!.couldNotLoadSavedViews),
+      );
+    });
   }
 
   void _showAboutDialog(BuildContext context) {

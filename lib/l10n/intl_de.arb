@@ -67,7 +67,7 @@
   "@startTyping": {},
   "doYouReallyWantToDeleteThisView": "Möchtest Du diese Ansicht wirklich löschen?",
   "@doYouReallyWantToDeleteThisView": {},
-  "deleteView": "Lösche Ansicht ",
+  "deleteView": "Ansicht {name} löschen?",
   "@deleteView": {},
   "addedAt": "Hinzugefügt am",
   "@addedAt": {},
@@ -837,7 +837,7 @@
   "@clearCache": {
     "description": "Title of the clear cache setting"
   },
-  "freeBytes": "{bytes} freigeben",
+  "freeBytes": "{byteString} freigeben",
   "@freeBytes": {
     "description": "Text shown for clear storage settings"
   },
@@ -860,5 +860,141 @@
   "loginRequiredPermissionsHint": "Die Verwendung von Paperless Mobile erfordert seit paperless-ngx 1.14.0 und höher ein Mindestmaß an Benutzerberechtigungen. Stelle deshalb bitte sicher, dass der anzumeldende Benutzer die Berechtigung hat, andere Benutzer (User → View) und die Einstellungen (UISettings → View) einzusehen. Falls du nicht über diese Berechtigungen verfügst, wende dich bitte an einen Administrator deines paperless-ngx Servers.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
+  },
+  "missingPermissions": "Sie besitzen nicht die benötigten Berechtigungen, um diese Aktion durchzuführen.",
+  "@missingPermissions": {
+    "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
+  },
+  "editView": "Ansicht bearbeiten",
+  "@editView": {
+    "description": "Title of the edit saved view page"
+  },
+  "donate": "Spenden",
+  "@donate": {
+    "description": "Label of the in-app donate button"
+  },
+  "donationDialogContent": "Vielen Dank, dass Du diese App unterstützen möchtest! Aufgrund der Zahlungsrichtlinien von Google und Apple dürfen keine Links, die zu Spendenseiten führen, in der App angezeigt werden. Nicht einmal die Verlinkung zur Repository-Seite des Projekts scheint in diesem Zusammenhang erlaubt zu sein. Werfe von daher vielleicht einen Blick auf den Abschnitt 'Donations' in der README des Projekts. Deine Unterstützung ist sehr willkommen und hält die Entwicklung dieser App am Leben. Vielen Dank!",
+  "@donationDialogContent": {
+    "description": "Text displayed in the donation dialog"
+  },
+  "noDocumentsFound": "Keine Dokumente gefunden.",
+  "@noDocumentsFound": {
+    "description": "Message shown when no documents were found."
+  },
+  "couldNotDeleteCorrespondent": "Korrespondent konnte nicht gelöscht werden, bitte versuche es erneut.",
+  "@couldNotDeleteCorrespondent": {
+    "description": "Message shown in snackbar when a correspondent could not be deleted."
+  },
+  "couldNotDeleteDocumentType": "Dokumenttyp konnten nicht gelöscht werden, bitte versuche es erneut.",
+  "@couldNotDeleteDocumentType": {
+    "description": "Message shown when a document type could not be deleted"
+  },
+  "couldNotDeleteTag": "Tag konnte nicht gelöscht werden, bitte versuche es erneut.",
+  "@couldNotDeleteTag": {
+    "description": "Message shown when a tag could not be deleted"
+  },
+  "couldNotDeleteStoragePath": "Speicherpfad konnte nicht gelöscht werden, bitte versuchen Sie es erneut.",
+  "@couldNotDeleteStoragePath": {
+    "description": "Message shown when a storage path could not be deleted"
+  },
+  "couldNotUpdateCorrespondent": "Korrespondent konnte nicht aktualisiert werden, bitte versuche es erneut.",
+  "@couldNotUpdateCorrespondent": {
+    "description": "Message shown when a correspondent could not be updated"
+  },
+  "couldNotUpdateDocumentType": "Dokumenttyp konnte nicht aktualisiert werden, bitte versuche es erneut.",
+  "@couldNotUpdateDocumentType": {
+    "description": "Message shown when a document type could not be updated"
+  },
+  "couldNotUpdateTag": "Tag konnte nicht aktualisiert werden, bitte versuche es erneut.",
+  "@couldNotUpdateTag": {
+    "description": "Message shown when a tag could not be updated"
+  },
+  "couldNotLoadServerInformation": "Serverinformationen konnten nicht geladen werden.",
+  "@couldNotLoadServerInformation": {
+    "description": "Message shown when the server information could not be loaded"
+  },
+  "couldNotLoadStatistics": "Serverstatistiken konnten nicht geladen werden.",
+  "@couldNotLoadStatistics": {
+    "description": "Message shown when the server statistics could not be loaded"
+  },
+  "couldNotLoadUISettings": "UI Einstellungen konnten nicht geladen werden.",
+  "@couldNotLoadUISettings": {
+    "description": "Message shown when the UI settings could not be loaded"
+  },
+  "couldNotLoadTasks": "Dateiaufgaben konnten nicht geladen werden.",
+  "@couldNotLoadTasks": {
+    "description": "Message shown when the tasks (e.g. document consumed) could not be loaded"
+  },
+  "userNotFound": "Der Nutzer konnte nicht gefunden werden.",
+  "@userNotFound": {
+    "description": "Message shown when the specified user (e.g. by id) could not be found"
+  },
+  "couldNotUpdateSavedView": "Ansicht konnte nicht aktualisiert werden, bitte versuche es erneut.",
+  "@couldNotUpdateSavedView": {
+    "description": "Message shown when a saved view could not be updated"
+  },
+  "couldNotUpdateStoragePath": "Speicherpfad konnte nicht aktualisiert werden, bitte versuchen Sie es erneut.",
+  "savedViewSuccessfullyUpdated": "Ansicht erfolgreich aktualisiert.",
+  "@savedViewSuccessfullyUpdated": {
+    "description": "Message shown when a saved view was successfully updated."
+  },
+  "discardChanges": "Änderungen verwerfen?",
+  "@discardChanges": {
+    "description": "Title of the alert dialog shown when a user tries to close a view with unsaved changes."
+  },
+  "savedViewChangedDialogContent": "Die Filterbedingungen der aktiven Ansicht haben sich geändert. Durch Zurücksetzen des aktuellen Filters gehen diese Änderungen verloren. Möchtest du trotzdem fortfahren?",
+  "@savedViewChangedDialogContent": {
+    "description": "Content of the alert dialog shown when all of the following applies:\r\n* User has saved view selected\r\n* User has performed changes to the current document filter\r\n* User now tries to reset this filter without having saved the changes to the view."
+  },
+  "createFromCurrentFilter": "Vom aktuellen Filter erstellen",
+  "@createFromCurrentFilter": {
+    "description": "Tooltip of the \"New saved view\" button"
+  },
+  "home": "Startseite",
+  "@home": {
+    "description": "Label of the \"Home\" route"
+  },
+  "welcomeUser": "Willkommen, {name}!",
+  "@welcomeUser": {
+    "description": "Top message shown on the home page"
+  },
+  "noSavedViewOnHomepageHint": "Konfiguriere eine Ansicht so, dass sie auf deiner Startseite angezeigt wird und sie wird hier erscheinen.",
+  "@noSavedViewOnHomepageHint": {
+    "description": "Message shown when there is no saved view to display on the home page."
+  },
+  "statistics": "Statistiken",
+  "documentsInInbox": "Dokumente im Posteingang",
+  "totalDocuments": "Dokumente insgesamt",
+  "totalCharacters": "Zeichen insgesamt",
+  "showAll": "Alle anzeigen",
+  "@showAll": {
+    "description": "Button label shown on a saved view preview to open this view in the documents page"
+  },
+  "userAlreadyExists": "Dieser Nutzer existiert bereits.",
+  "@userAlreadyExists": {
+    "description": "Error message shown when the user tries to add an already existing account."
+  },
+  "youDidNotSaveAnyViewsYet": "Du hast noch keine Ansichten gespeichert. Erstelle eine neue Ansicht, und sie wird hier angezeigt.",
+  "@youDidNotSaveAnyViewsYet": {
+    "description": "Message shown when there are no saved views yet."
+  },
+  "tryAgain": "Erneut versuchen",
+  "discardFile": "Datei verwerfen?",
+  "discard": "Verwerfen",
+  "backToLogin": "Zurück zur Anmeldung",
+  "skipEditingReceivedFiles": "Bearbeitung von empfangenen Dateien überspringen",
+  "uploadWithoutPromptingUploadForm": "Mit der App geteilte Dateien immer direkt hochladen, ohne das Upload-Formular anzuzeigen.",
+  "authenticatingDots": "Authentifizieren...",
+  "@authenticatingDots": {
+    "description": "Message shown when the app is authenticating the user"
+  },
+  "persistingUserInformation": "Nutzerinformationen werden gespeichert...",
+  "fetchingUserInformation": "Benutzerinformationen werden abgerufen...",
+  "@fetchingUserInformation": {
+    "description": "Message shown when the app loads user data from the server"
+  },
+  "restoringSession": "Sitzung wird wiederhergestellt...",
+  "@restoringSession": {
+    "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
   }
 }

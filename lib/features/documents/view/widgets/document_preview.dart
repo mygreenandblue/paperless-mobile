@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -12,6 +14,7 @@ class DocumentPreview extends StatelessWidget {
   final double borderRadius;
   final bool enableHero;
   final double scale;
+  final bool isClickable;
 
   const DocumentPreview({
     super.key,
@@ -21,15 +24,26 @@ class DocumentPreview extends StatelessWidget {
     this.borderRadius = 12.0,
     this.enableHero = true,
     this.scale = 1.1,
+    this.isClickable = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return HeroMode(
-      enabled: enableHero,
-      child: Hero(
-        tag: "thumb_${document.id}",
-        child: _buildPreview(context),
+    return ConnectivityAwareActionWrapper(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: isClickable
+            ? () => DocumentPreviewRoute($extra: document).push(context)
+            : null,
+        child: Builder(builder: (context) {
+          if (enableHero) {
+            return Hero(
+              tag: "thumb_${document.id}",
+              child: _buildPreview(context),
+            );
+          }
+          return _buildPreview(context);
+        }),
       ),
     );
   }

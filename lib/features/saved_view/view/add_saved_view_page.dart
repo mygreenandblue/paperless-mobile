@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_form.dart';
+import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
+const _fkName = 'name';
+const _fkShowOnDashboard = 'show_on_dashboard';
+const _fkShowInSidebar = 'show_in_sidebar';
+
 class AddSavedViewPage extends StatefulWidget {
-  final DocumentFilter currentFilter;
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
+  final DocumentFilter? initialFilter;
   const AddSavedViewPage({
     super.key,
-    required this.currentFilter,
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
+    this.initialFilter,
   });
 
   @override
@@ -26,12 +22,7 @@ class AddSavedViewPage extends StatefulWidget {
 }
 
 class _AddSavedViewPageState extends State<AddSavedViewPage> {
-  static const fkName = 'name';
-  static const fkShowOnDashboard = 'show_on_dashboard';
-  static const fkShowInSidebar = 'show_in_sidebar';
-
   final _savedViewFormKey = GlobalKey<FormBuilderState>();
-  final _filterFormKey = GlobalKey<FormBuilderState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +30,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
         title: Text(S.of(context)!.newView),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "fab_add_saved_view_page",
         icon: const Icon(Icons.add),
         onPressed: () => _onCreate(context),
         label: Text(S.of(context)!.create),
@@ -54,7 +46,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
               child: Column(
                 children: [
                   FormBuilderTextField(
-                    name: _AddSavedViewPageState.fkName,
+                    name: _fkName,
                     validator: (value) {
                       if (value?.trim().isEmpty ?? true) {
                         return S.of(context)!.thisFieldIsRequired;
@@ -65,33 +57,29 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                       label: Text(S.of(context)!.name),
                     ),
                   ),
-                  FormBuilderCheckbox(
-                    name: _AddSavedViewPageState.fkShowOnDashboard,
+                  FormBuilderField<bool>(
+                    name: _fkShowOnDashboard,
                     initialValue: false,
-                    title: Text(S.of(context)!.showOnDashboard),
+                    builder: (field) {
+                      return CheckboxListTile(
+                        value: field.value,
+                        title: Text(S.of(context)!.showOnDashboard),
+                        onChanged: (value) => field.didChange(value),
+                      );
+                    },
                   ),
-                  FormBuilderCheckbox(
-                    name: _AddSavedViewPageState.fkShowInSidebar,
+                  FormBuilderField<bool>(
+                    name: _fkShowInSidebar,
                     initialValue: false,
-                    title: Text(S.of(context)!.showInSidebar),
+                    builder: (field) {
+                      return CheckboxListTile(
+                        value: field.value,
+                        title: Text(S.of(context)!.showInSidebar),
+                        onChanged: (value) => field.didChange(value),
+                      );
+                    },
                   ),
                 ],
-              ),
-            ),
-            const Divider(),
-            Text(
-              "Review filter",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ).padded(),
-            Flexible(
-              child: DocumentFilterForm(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                formKey: _filterFormKey,
-                initialFilter: widget.currentFilter,
-                correspondents: widget.correspondents,
-                documentTypes: widget.documentTypes,
-                storagePaths: widget.storagePaths,
-                tags: widget.tags,
               ),
             ),
           ],
@@ -100,22 +88,22 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
     );
   }
 
-  void _onCreate(BuildContext context) {
+  void _onCreate(BuildContext context) async {
     if (_savedViewFormKey.currentState?.saveAndValidate() ?? false) {
-      Navigator.pop(
-        context,
-        SavedView.fromDocumentFilter(
-          DocumentFilterForm.assembleFilter(
-            _filterFormKey,
-            widget.currentFilter,
-          ),
-          name: _savedViewFormKey.currentState?.value[fkName] as String,
-          showOnDashboard:
-              _savedViewFormKey.currentState?.value[fkShowOnDashboard] as bool,
-          showInSidebar:
-              _savedViewFormKey.currentState?.value[fkShowInSidebar] as bool,
-        ),
+      final cubit = context.read<SavedViewCubit>();
+      var savedView = SavedView.fromDocumentFilter(
+        widget.initialFilter ?? const DocumentFilter(),
+        name: _savedViewFormKey.currentState?.value[_fkName] as String,
+        showOnDashboard:
+            _savedViewFormKey.currentState?.value[_fkShowOnDashboard] as bool,
+        showInSidebar:
+            _savedViewFormKey.currentState?.value[_fkShowInSidebar] as bool,
       );
+      final router = GoRouter.of(context);
+      await cubit.add(
+        savedView,
+      );
+      router.pop();
     }
   }
 }

@@ -1,11 +1,18 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
 
 const _classicThemeColorSeed = Colors.lightGreen;
 
 const _defaultListTileTheme = ListTileThemeData(
   tileColor: Colors.transparent,
+);
+
+final _defaultCardTheme = CardTheme(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
 );
 
 final _defaultInputDecorationTheme = InputDecorationTheme(
@@ -40,6 +47,13 @@ ThemeData buildTheme({
     colorScheme: colorScheme.harmonized(),
     useMaterial3: true,
   ).copyWith(
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: colorScheme.surface,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: colorScheme.surface,
+    ),
+    cardTheme: _defaultCardTheme,
     inputDecorationTheme: _defaultInputDecorationTheme,
     listTileTheme: _defaultListTileTheme,
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -52,4 +66,30 @@ ThemeData buildTheme({
       deleteIconColor: colorScheme.onSurfaceVariant,
     ),
   );
+}
+
+SystemUiOverlayStyle buildOverlayStyle(
+  ThemeData theme, {
+  Color? systemNavigationBarColor,
+}) {
+  final color = systemNavigationBarColor ??
+      ElevationOverlay.applySurfaceTint(
+        theme.colorScheme.surface,
+        theme.colorScheme.surfaceTint,
+        3,
+      );
+  return switch (theme.brightness) {
+    Brightness.light => SystemUiOverlayStyle.dark.copyWith(
+        systemNavigationBarColor: color,
+        systemNavigationBarDividerColor: color,
+        // statusBarColor: theme.colorScheme.background,
+        // systemNavigationBarDividerColor: theme.colorScheme.surface,
+      ),
+    Brightness.dark => SystemUiOverlayStyle.light.copyWith(
+        systemNavigationBarColor: color,
+        systemNavigationBarDividerColor: color,
+        // statusBarColor: theme.colorScheme.background,
+        // systemNavigationBarDividerColor: theme.colorScheme.surface,
+      ),
+  };
 }

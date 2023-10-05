@@ -80,6 +80,7 @@ class _DocumentFilterPanelState extends State<DocumentFilterPanel> {
         floatingActionButton: Visibility(
           visible: MediaQuery.of(context).viewInsets.bottom == 0,
           child: FloatingActionButton.extended(
+            heroTag: "fab_document_filter_panel",
             icon: const Icon(Icons.done),
             label: Text(S.of(context)!.apply),
             onPressed: _onApplyFilter,

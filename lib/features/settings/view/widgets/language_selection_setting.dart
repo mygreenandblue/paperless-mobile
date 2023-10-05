@@ -15,11 +15,13 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
     'en': LanguageOption('English', true),
     'de': LanguageOption('Deutsch', true),
+    'es': LanguageOption("Español", true),
+    'fr': LanguageOption('Français', true),
     'cs': LanguageOption('Česky', true),
     'tr': LanguageOption('Türkçe', true),
-    'fr': LanguageOption('Français', true),
     'pl': LanguageOption('Polska', true),
     'ca': LanguageOption('Catalan', true),
+    'ru': LanguageOption('Русский', true),
   };
 
   @override
@@ -33,9 +35,9 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
           onTap: () => showDialog<String>(
             context: context,
             builder: (_) => RadioSettingsDialog<String>(
-              footer: const Text(
-                "* Not fully translated yet. Some words may be displayed in English!",
-              ),
+              // footer: const Text(
+              //   "* Not fully translated yet. Some words may be displayed in English!",
+              // ),
               titleText: S.of(context)!.language,
               options: [
                 for (var language in _languageOptions.entries)

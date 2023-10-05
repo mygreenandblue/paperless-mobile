@@ -18,6 +18,8 @@ class LocalNotificationService {
 
   LocalNotificationService();
 
+  final Map<String, List<int>> _pendingNotifications = {};
+
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('paperless_logo_green');
@@ -51,6 +53,8 @@ class LocalNotificationService {
     required String filePath,
     required bool finished,
     required String locale,
+    required String userId,
+    double? progress,
   }) async {
     final tr = await S.delegate.load(Locale(locale));
 
@@ -65,8 +69,10 @@ class LocalNotificationService {
         android: AndroidNotificationDetails(
           NotificationChannel.documentDownload.id + "_${document.id}",
           NotificationChannel.documentDownload.name,
+          progress: ((progress ?? 0) * 100).toInt(),
+          maxProgress: 100,
+          indeterminate: progress == null && !finished,
           ongoing: !finished,
-          indeterminate: true,
           importance: Importance.max,
           priority: Priority.high,
           showProgress: !finished,
@@ -88,6 +94,15 @@ class LocalNotificationService {
         ).toJson(),
       ),
     ); //TODO: INTL
+    _addNotification(userId, id);
+  }
+
+  void _addNotification(String userId, int notificationId) {
+    _pendingNotifications.update(
+      userId,
+      (notifications) => [...notifications, notificationId],
+      ifAbsent: () => [notificationId],
+    );
   }
 
   Future<void> notifyFileSaved({
@@ -119,25 +134,20 @@ class LocalNotificationService {
         ),
         iOS: DarwinNotificationDetails(
           attachments: [
-            DarwinNotificationAttachment(
-              filePath,
-            ),
+            DarwinNotificationAttachment(filePath),
           ],
         ),
       ),
       payload: jsonEncode(
-        OpenDownloadedDocumentPayload(
-          filePath: filePath,
-        ).toJson(),
+        OpenDownloadedDocumentPayload(filePath: filePath).toJson(),
       ),
-    ); //TODO: INTL
+    );
   }
 
-
   //TODO: INTL
-  Future<void> notifyTaskChanged(Task task) {
+  Future<void> notifyTaskChanged(Task task, {required String userId}) async {
     log("[LocalNotificationService] notifyTaskChanged: ${task.toString()}");
-    int id = task.id;
+    int id = task.id + 1000;
     final status = task.status;
     late String title;
     late String? body;
@@ -158,7 +168,7 @@ class LocalNotificationService {
         break;
       case TaskStatus.failure:
         title = "Failed to process document";
-        body = "Document ${task.taskFileName} was rejected by the server.";
+        body = task.result ?? 'Rejected by the server.';
         timestampMillis = task.dateCreated.millisecondsSinceEpoch;
         break;
       case TaskStatus.success:
@@ -172,7 +182,7 @@ class LocalNotificationService {
       default:
         break;
     }
-    return _plugin.show(
+    await _plugin.show(
       id,
       title,
       body,
@@ -205,6 +215,13 @@ class LocalNotificationService {
       ),
       payload: jsonEncode(payload),
     );
+    _addNotification(userId, id);
+  }
+
+  Future<void> cancelUserNotifications(String userId) async {
+    await Future.wait([
+      for (var id in _pendingNotifications[userId] ?? []) _plugin.cancel(id),
+    ]);
   }
 
   void onDidReceiveLocalNotification(
@@ -273,6 +290,7 @@ class LocalNotificationService {
   }
 }
 
+@protected
 void onDidReceiveBackgroundNotificationResponse(NotificationResponse response) {
   //TODO: When periodic background inbox check is implemented, notification tap is handled here
   debugPrint(response.toString());

@@ -15,11 +15,9 @@ import 'package:paperless_mobile/features/settings/model/view_type.dart';
 class HiveBoxes {
   HiveBoxes._();
   static const globalSettings = 'globalSettings';
-  static const authentication = 'authentication';
   static const localUserCredentials = 'localUserCredentials';
   static const localUserAccount = 'localUserAccount';
   static const localUserAppState = 'localUserAppState';
-  static const localUserSettings = 'localUserSettings';
   static const hosts = 'hosts';
 }
 

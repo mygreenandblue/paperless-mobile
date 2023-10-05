@@ -23,6 +23,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     int? correspondent,
     Iterable<int> tags = const [],
     int? asn,
+    void Function(double progress)? onProgressChanged,
   }) async {
     final formData = FormData();
     formData.files.add(
@@ -55,7 +56,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
         '/api/documents/post_document/',
         data: formData,
         onSendProgress: (count, total) {
-          debugPrint("Uploading ${(count / total) * 100}%...");
+          onProgressChanged?.call(count.toDouble() / total.toDouble());
         },
         options: Options(validateStatus: (status) => status == 200),
       );
