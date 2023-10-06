@@ -96,7 +96,7 @@ Future<void> performMigrations() async {
 Future<void> _initHive() async {
   await Hive.initFlutter();
 
-  // await performMigrations();
+  await performMigrations();
   registerHiveAdapters();
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
