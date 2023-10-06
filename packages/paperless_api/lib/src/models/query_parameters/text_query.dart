@@ -1,5 +1,3 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
@@ -8,9 +6,7 @@ import 'query_type.dart';
 
 part 'text_query.g.dart';
 
-//TODO: Realize with freezed...
 @HiveType(typeId: PaperlessApiHiveTypeIds.textQuery)
-@JsonSerializable()
 class TextQuery {
   @HiveField(0)
   final QueryType queryType;
@@ -84,11 +80,6 @@ class TextQuery {
         return int.tryParse(queryText!) == asn;
     }
   }
-
-  Map<String, dynamic> toJson() => _$TextQueryToJson(this);
-
-  factory TextQuery.fromJson(Map<String, dynamic> json) =>
-      _$TextQueryFromJson(json);
 
   @override
   bool operator ==(Object? other) {

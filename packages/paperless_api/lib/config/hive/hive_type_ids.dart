@@ -3,7 +3,7 @@ import 'package:paperless_api/paperless_api.dart';
 
 class PaperlessApiHiveTypeIds {
   PaperlessApiHiveTypeIds._();
-  static const int documentFilter = 100;
+
   static const int idQueryParameter = 101;
   static const int tagsQuery = 102;
   static const int anyAssignedTagsQuery = 103;
@@ -31,6 +31,7 @@ class PaperlessApiHiveTypeIds {
   static const int permissions = 125;
   static const int userModelv2 = 126;
   static const int usersAndGroupsPermissions = 127;
+  static const int documentFilter = 128;
 }
 
 void registerPaperlessApiHiveTypeAdapters() {

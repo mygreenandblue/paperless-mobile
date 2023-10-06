@@ -64,9 +64,9 @@ String get defaultPreferredLocaleSubtag {
 }
 
 Map<String, Future<void> Function()> _migrations = {
-  '3.0.0': () {
+  '3.0.1': () async {
     // Remove all stored data due to updates in schema
-    return Future.wait([
+    await Future.wait([
       for (var box in HiveBoxes.all) Hive.deleteBoxFromDisk(box),
     ]);
   },
@@ -96,10 +96,8 @@ Future<void> performMigrations() async {
 Future<void> _initHive() async {
   await Hive.initFlutter();
 
-  await performMigrations();
+  // await performMigrations();
   registerHiveAdapters();
-
-  // await getApplicationDocumentsDirectory().then((value) => value.deleteSync(recursive: true));
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
   await Hive.openBox<String>(HiveBoxes.hosts);

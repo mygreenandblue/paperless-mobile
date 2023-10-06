@@ -1,7 +1,7 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
-part 'tags_query.freezed.dart';
+
 part 'tags_query.g.dart';
 
 sealed class TagsQuery {
@@ -10,11 +10,9 @@ sealed class TagsQuery {
   bool matches(Iterable<int> ids);
 }
 
-@HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedTagsQuery)
-@Freezed(toJson: false, fromJson: false)
-class NotAssignedTagsQuery extends TagsQuery with _$NotAssignedTagsQuery {
-  const NotAssignedTagsQuery._();
-  const factory NotAssignedTagsQuery() = _NotAssignedTagsQuery;
+// @HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedTagsQuery)
+class NotAssignedTagsQuery extends TagsQuery {
+  const NotAssignedTagsQuery();
   @override
   Map<String, String> toQueryParameter() {
     return {'is_tagged': '0'};
@@ -25,12 +23,13 @@ class NotAssignedTagsQuery extends TagsQuery with _$NotAssignedTagsQuery {
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedTagsQuery)
-@Freezed(toJson: false, fromJson: false)
-class AnyAssignedTagsQuery extends TagsQuery with _$AnyAssignedTagsQuery {
-  const AnyAssignedTagsQuery._();
-  const factory AnyAssignedTagsQuery({
-    @HiveField(0) @Default([]) List<int> tagIds,
-  }) = _AnyAssignedTagsQuery;
+class AnyAssignedTagsQuery extends TagsQuery with EquatableMixin {
+  @HiveField(0)
+  final List<int> tagIds;
+  const AnyAssignedTagsQuery({
+    this.tagIds = const [],
+  });
+
   @override
   Map<String, String> toQueryParameter() {
     if (tagIds.isEmpty) {
@@ -41,16 +40,29 @@ class AnyAssignedTagsQuery extends TagsQuery with _$AnyAssignedTagsQuery {
 
   @override
   bool matches(Iterable<int> ids) => ids.isNotEmpty;
+
+  AnyAssignedTagsQuery copyWith({
+    List<int>? tagIds,
+  }) {
+    return AnyAssignedTagsQuery(
+      tagIds: tagIds ?? this.tagIds,
+    );
+  }
+
+  @override
+  List<Object?> get props => [tagIds];
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.idsTagsQuery)
-@Freezed(toJson: false, fromJson: false)
-class IdsTagsQuery extends TagsQuery with _$IdsTagsQuery {
-  const IdsTagsQuery._();
-  const factory IdsTagsQuery({
-    @HiveField(0) @Default([]) List<int> include,
-    @HiveField(1) @Default([]) List<int> exclude,
-  }) = _IdsTagsQuery;
+class IdsTagsQuery extends TagsQuery with EquatableMixin {
+  @HiveField(0)
+  final List<int> include;
+  @HiveField(1)
+  final List<int> exclude;
+  const IdsTagsQuery({
+    this.include = const [],
+    this.exclude = const [],
+  });
   @override
   Map<String, String> toQueryParameter() {
     final Map<String, String> params = {};
@@ -68,4 +80,45 @@ class IdsTagsQuery extends TagsQuery with _$IdsTagsQuery {
     return include.toSet().difference(ids.toSet()).isEmpty &&
         exclude.toSet().intersection(ids.toSet()).isEmpty;
   }
+
+  IdsTagsQuery copyWith({
+    List<int>? include,
+    List<int>? exclude,
+  }) {
+    return IdsTagsQuery(
+      include: include ?? this.include,
+      exclude: exclude ?? this.exclude,
+    );
+  }
+
+  @override
+  List<Object?> get props => [include, exclude];
+}
+
+/// Custom adapters
+
+class NotAssignedTagsQueryAdapter extends TypeAdapter<NotAssignedTagsQuery> {
+  @override
+  final int typeId = PaperlessApiHiveTypeIds.notAssignedTagsQuery;
+
+  @override
+  NotAssignedTagsQuery read(BinaryReader reader) {
+    reader.readByte();
+    return const NotAssignedTagsQuery();
+  }
+
+  @override
+  void write(BinaryWriter writer, NotAssignedTagsQuery obj) {
+    writer.writeByte(0);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotAssignedTagsQueryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

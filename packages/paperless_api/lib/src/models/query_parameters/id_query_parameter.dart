@@ -1,11 +1,7 @@
-import 'dart:isolate';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-part 'id_query_parameter.freezed.dart';
+
 part 'id_query_parameter.g.dart';
 
 sealed class IdQueryParameter {
@@ -19,12 +15,9 @@ sealed class IdQueryParameter {
   bool get isOnlyAssigned => this is AnyAssignedIdQueryParameter;
 }
 
-@HiveType(typeId: PaperlessApiHiveTypeIds.unsetIdQueryParameter)
-@Freezed(toJson: false, fromJson: false)
-class UnsetIdQueryParameter extends IdQueryParameter
-    with _$UnsetIdQueryParameter {
-  const UnsetIdQueryParameter._();
-  const factory UnsetIdQueryParameter() = _UnsetIdQueryParameter;
+// @HiveType(typeId: PaperlessApiHiveTypeIds.unsetIdQueryParameter)
+class UnsetIdQueryParameter extends IdQueryParameter {
+  const UnsetIdQueryParameter();
   @override
   Map<String, String> toQueryParameter(String field) => {};
 
@@ -32,12 +25,10 @@ class UnsetIdQueryParameter extends IdQueryParameter
   bool matches(int? id) => true;
 }
 
-@HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedIdQueryParameter)
-@Freezed(toJson: false, fromJson: false)
-class NotAssignedIdQueryParameter extends IdQueryParameter
-    with _$NotAssignedIdQueryParameter {
-  const NotAssignedIdQueryParameter._();
-  const factory NotAssignedIdQueryParameter() = _NotAssignedIdQueryParameter;
+// @HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedIdQueryParameter)
+class NotAssignedIdQueryParameter extends IdQueryParameter {
+  const NotAssignedIdQueryParameter();
+
   @override
   Map<String, String> toQueryParameter(String field) {
     return {'${field}__isnull': '1'};
@@ -47,12 +38,9 @@ class NotAssignedIdQueryParameter extends IdQueryParameter
   bool matches(int? id) => id == null;
 }
 
-@HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
-@Freezed(toJson: false, fromJson: false)
-class AnyAssignedIdQueryParameter extends IdQueryParameter
-    with _$AnyAssignedIdQueryParameter {
-  const factory AnyAssignedIdQueryParameter() = _AnyAssignedIdQueryParameter;
-  const AnyAssignedIdQueryParameter._();
+// @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
+class AnyAssignedIdQueryParameter extends IdQueryParameter {
+  const AnyAssignedIdQueryParameter();
   @override
   Map<String, String> toQueryParameter(String field) {
     return {'${field}__isnull': '0'};
@@ -63,12 +51,12 @@ class AnyAssignedIdQueryParameter extends IdQueryParameter
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.setIdQueryParameter)
-@Freezed(toJson: false, fromJson: false)
-class SetIdQueryParameter extends IdQueryParameter with _$SetIdQueryParameter {
-  const SetIdQueryParameter._();
-  const factory SetIdQueryParameter({
-    @HiveField(0) required int id,
-  }) = _SetIdQueryParameter;
+class SetIdQueryParameter extends IdQueryParameter with EquatableMixin {
+  @HiveField(0)
+  final int id;
+
+  const SetIdQueryParameter({required this.id});
+
   @override
   Map<String, String> toQueryParameter(String field) {
     return {'${field}__id': '$id'};
@@ -76,4 +64,89 @@ class SetIdQueryParameter extends IdQueryParameter with _$SetIdQueryParameter {
 
   @override
   bool matches(int? id) => id == this.id;
+
+  @override
+  List<Object?> get props => [id];
+}
+
+/// Custom Adapters
+
+class UnsetIdQueryParameterAdapter extends TypeAdapter<UnsetIdQueryParameter> {
+  @override
+  final int typeId = 116;
+
+  @override
+  UnsetIdQueryParameter read(BinaryReader reader) {
+    reader.readByte();
+    return const UnsetIdQueryParameter();
+  }
+
+  @override
+  void write(BinaryWriter writer, UnsetIdQueryParameter obj) {
+    writer.writeByte(0);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UnsetIdQueryParameterAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class NotAssignedIdQueryParameterAdapter
+    extends TypeAdapter<NotAssignedIdQueryParameter> {
+  @override
+  final int typeId = 117;
+
+  @override
+  NotAssignedIdQueryParameter read(BinaryReader reader) {
+    reader.readByte();
+    return const NotAssignedIdQueryParameter();
+  }
+
+  @override
+  void write(BinaryWriter writer, NotAssignedIdQueryParameter obj) {
+    writer.writeByte(0);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotAssignedIdQueryParameterAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AnyAssignedIdQueryParameterAdapter
+    extends TypeAdapter<AnyAssignedIdQueryParameter> {
+  @override
+  final int typeId = 118;
+
+  @override
+  AnyAssignedIdQueryParameter read(BinaryReader reader) {
+    reader.readByte();
+    return const AnyAssignedIdQueryParameter();
+  }
+
+  @override
+  void write(BinaryWriter writer, AnyAssignedIdQueryParameter obj) {
+    writer.writeByte(0);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnyAssignedIdQueryParameterAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

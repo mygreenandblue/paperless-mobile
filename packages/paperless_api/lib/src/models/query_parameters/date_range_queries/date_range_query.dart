@@ -11,34 +11,27 @@ import 'date_range_unit.dart';
 
 part 'date_range_query.g.dart';
 
-sealed class DateRangeQuery extends Equatable {
+sealed class DateRangeQuery {
   const DateRangeQuery();
 
   Map<String, String> toQueryParameter(DateRangeQueryField field);
 
-  Map<String, dynamic> toJson();
-
   bool matches(DateTime dt);
 }
 
+// @HiveType(typeId: PaperlessApiHiveTypeIds.unsetDateRangeQuery)
 class UnsetDateRangeQuery extends DateRangeQuery {
   const UnsetDateRangeQuery();
-  @override
-  List<Object?> get props => [];
 
   @override
   Map<String, String> toQueryParameter(DateRangeQueryField field) => const {};
 
   @override
-  Map<String, dynamic> toJson() => const {};
-
-  @override
   bool matches(DateTime dt) => true;
 }
 
-@JsonSerializable()
 @HiveType(typeId: PaperlessApiHiveTypeIds.relativeDateRangeQuery)
-class RelativeDateRangeQuery extends DateRangeQuery {
+class RelativeDateRangeQuery extends DateRangeQuery with EquatableMixin {
   @HiveField(0)
   final int offset;
   @HiveField(1)
@@ -84,12 +77,6 @@ class RelativeDateRangeQuery extends DateRangeQuery {
   }
 
   @override
-  Map<String, dynamic> toJson() => _$RelativeDateRangeQueryToJson(this);
-
-  factory RelativeDateRangeQuery.fromJson(Map<String, dynamic> json) =>
-      _$RelativeDateRangeQueryFromJson(json);
-
-  @override
   bool matches(DateTime dt) {
     return dt.isAfter(dateTime) || dt == dateTime;
   }
@@ -97,7 +84,7 @@ class RelativeDateRangeQuery extends DateRangeQuery {
 
 @JsonSerializable()
 @HiveType(typeId: PaperlessApiHiveTypeIds.absoluteDateRangeQuery)
-class AbsoluteDateRangeQuery extends DateRangeQuery {
+class AbsoluteDateRangeQuery extends DateRangeQuery with EquatableMixin {
   @LocalDateTimeJsonConverter()
   @HiveField(0)
   final DateTime? after;
@@ -137,12 +124,6 @@ class AbsoluteDateRangeQuery extends DateRangeQuery {
       after: after ?? this.after,
     );
   }
-
-  factory AbsoluteDateRangeQuery.fromJson(json) =>
-      _$AbsoluteDateRangeQueryFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() => _$AbsoluteDateRangeQueryToJson(this);
 
   @override
   bool matches(DateTime dt) {
