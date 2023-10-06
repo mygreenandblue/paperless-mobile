@@ -1,5 +1,7 @@
 part of 'saved_view_repository.dart';
 
+
+
 @freezed
 class SavedViewRepositoryState with _$SavedViewRepositoryState {
   const factory SavedViewRepositoryState.initial({

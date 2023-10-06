@@ -12,10 +12,9 @@ import 'package:paperless_mobile/features/paged_document_view/cubit/document_pag
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/settings/model/view_type.dart';
 
-part 'documents_cubit.g.dart';
 part 'documents_state.dart';
 
-class DocumentsCubit extends HydratedCubit<DocumentsState>
+class DocumentsCubit extends Cubit<DocumentsState>
     with DocumentPagingBlocMixin {
   @override
   final PaperlessDocumentsApi api;
@@ -135,13 +134,13 @@ class DocumentsCubit extends HydratedCubit<DocumentsState>
     await _userState.save();
   }
 
-  @override
-  DocumentsState? fromJson(Map<String, dynamic> json) {
-    return DocumentsState.fromJson(json);
-  }
+  // @override
+  // DocumentsState? fromJson(Map<String, dynamic> json) {
+  //   return DocumentsState.fromJson(json);
+  // }
 
-  @override
-  Map<String, dynamic>? toJson(DocumentsState state) {
-    return state.toJson();
-  }
+  // @override
+  // Map<String, dynamic>? toJson(DocumentsState state) {
+  //   return state.toJson();
+  // }
 }

@@ -116,16 +116,16 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
             icon: const Icon(Icons.done),
             onPressed: () {
               if (widget.allowOnlySelection) {
-                widget.onSubmit(returnValue: TagsQuery.ids(include: _include));
+                widget.onSubmit(returnValue: IdsTagsQuery(include: _include));
                 return;
               }
               late final TagsQuery query;
               if (_notAssigned) {
-                query = const TagsQuery.notAssigned();
+                query = const NotAssignedTagsQuery();
               } else if (_anyAssigned) {
-                query = TagsQuery.anyAssigned(tagIds: _include);
+                query = AnyAssignedTagsQuery(tagIds: _include);
               } else {
-                query = TagsQuery.ids(include: _include, exclude: _exclude);
+                query = IdsTagsQuery(include: _include, exclude: _exclude);
               }
               widget.onSubmit(returnValue: query);
             },

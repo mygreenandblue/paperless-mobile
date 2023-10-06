@@ -118,7 +118,7 @@ class InboxCubit extends HydratedCubit<InboxState>
         updateFilter(
           filter: DocumentFilter(
             sortField: SortField.added,
-            tags: TagsQuery.ids(include: inboxTags.toList()),
+            tags: IdsTagsQuery(include: inboxTags.toList()),
           ),
         );
       }
@@ -160,7 +160,7 @@ class InboxCubit extends HydratedCubit<InboxState>
       emitLoading: false,
       filter: DocumentFilter(
         sortField: SortField.added,
-        tags: TagsQuery.ids(include: inboxTags.toList()),
+        tags: IdsTagsQuery(include: inboxTags.toList()),
       ),
     );
   }

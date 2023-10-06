@@ -344,20 +344,29 @@ class _DocumentUploadPreparationPageState
       final cubit = context.read<DocumentUploadCubit>();
       try {
         setState(() => _isUploadLoading = true);
+        final formValues = _formKey.currentState!.value;
 
-        final fv = _formKey.currentState!.value;
+        final correspondentParam =
+            formValues[DocumentModel.correspondentKey] as IdQueryParameter?;
+        final docTypeParam =
+            formValues[DocumentModel.documentTypeKey] as IdQueryParameter?;
+        final tagsParam = formValues[DocumentModel.tagsKey] as TagsQuery?;
+        final createdAt = formValues[DocumentModel.createdKey] as DateTime?;
+        final title = formValues[DocumentModel.titleKey] as String;
+        final correspondent = switch (correspondentParam) {
+          SetIdQueryParameter(id: var id) => id,
+          _ => null,
+        };
+        final docType = switch (docTypeParam) {
+          SetIdQueryParameter(id: var id) => id,
+          _ => null,
+        };
+        final tags = switch (tagsParam) {
+          IdsTagsQuery(include: var ids) => ids,
+          _ => const <int>[],
+        };
 
-        final createdAt = fv[DocumentModel.createdKey] as DateTime?;
-        final title = fv[DocumentModel.titleKey] as String;
-        final docType = (fv[DocumentModel.documentTypeKey] as IdQueryParameter?)
-            ?.whenOrNull(fromId: (id) => id);
-        final tags = (fv[DocumentModel.tagsKey] as TagsQuery?)
-                ?.whenOrNull(ids: (include, exclude) => include) ??
-            [];
-        final correspondent =
-            (fv[DocumentModel.correspondentKey] as IdQueryParameter?)
-                ?.whenOrNull(fromId: (id) => id);
-        final asn = fv[DocumentModel.asnKey] as int?;
+        final asn = formValues[DocumentModel.asnKey] as int?;
         final taskId = await cubit.upload(
           await widget.fileBytes,
           filename: _padWithExtension(

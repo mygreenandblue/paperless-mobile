@@ -52,6 +52,7 @@ import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String get defaultPreferredLocaleSubtag {
   String preferredLocale = Platform.localeName.split("_").first;
@@ -62,9 +63,42 @@ String get defaultPreferredLocaleSubtag {
   return preferredLocale;
 }
 
+Map<String, Future<void> Function()> _migrations = {
+  '3.0.0': () {
+    // Remove all stored data due to updates in schema
+    return Future.wait([
+      for (var box in HiveBoxes.all) Hive.deleteBoxFromDisk(box),
+    ]);
+  },
+};
+
+Future<void> performMigrations() async {
+  final sp = await SharedPreferences.getInstance();
+  final currentVersion = packageInfo.version;
+  final migrationExists = _migrations.containsKey(currentVersion);
+  if (!migrationExists) {
+    return;
+  }
+  final migrationProcedure = _migrations[currentVersion]!;
+  final performedMigrations = sp.getStringList("performed_migrations") ?? [];
+  final requiresMigrationForCurrentVersion =
+      !performedMigrations.contains(currentVersion);
+  if (requiresMigrationForCurrentVersion) {
+    debugPrint("Applying migration scripts for version $currentVersion");
+    await migrationProcedure();
+    await sp.setStringList(
+      'performed_migrations',
+      [...performedMigrations, currentVersion],
+    );
+  }
+}
+
 Future<void> _initHive() async {
   await Hive.initFlutter();
+
+  await performMigrations();
   registerHiveAdapters();
+
   // await getApplicationDocumentsDirectory().then((value) => value.deleteSync(recursive: true));
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
@@ -81,6 +115,7 @@ Future<void> _initHive() async {
 
 void main() async {
   runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
     Paint.enableDithering = true;
     // if (kDebugMode) {
     //   // URL: http://localhost:3131
@@ -93,13 +128,6 @@ void main() async {
     //           )
     //       .start();
     // }
-    await _initHive();
-    final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-    final globalSettingsBox =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings);
-    final globalSettings = globalSettingsBox.getValue()!;
-
-    await findSystemLocale();
     packageInfo = await PackageInfo.fromPlatform();
 
     if (Platform.isAndroid) {
@@ -108,6 +136,14 @@ void main() async {
     if (Platform.isIOS) {
       iosInfo = await DeviceInfoPlugin().iosInfo;
     }
+    await _initHive();
+    final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    final globalSettingsBox =
+        Hive.box<GlobalSettings>(HiveBoxes.globalSettings);
+    final globalSettings = globalSettingsBox.getValue()!;
+
+    await findSystemLocale();
+
     final connectivityStatusService = ConnectivityStatusServiceImpl(
       Connectivity(),
     );

@@ -65,10 +65,10 @@ void main() {
         }).toDocumentFilter(),
         equals(
           DocumentFilter.initial.copyWith(
-            correspondent: const IdQueryParameter.fromId(42),
-            documentType: const IdQueryParameter.fromId(69),
-            storagePath: const IdQueryParameter.fromId(14),
-            tags: const TagsQuery.ids(
+            correspondent: const SetIdQueryParameter(id: 42),
+            documentType: const SetIdQueryParameter(id: 69),
+            storagePath: const SetIdQueryParameter(id: 14),
+            tags: const IdsTagsQuery(
               include: [1, 2],
               exclude: [3, 4],
             ),
@@ -131,10 +131,10 @@ void main() {
         ],
       }).toDocumentFilter();
       final expected = DocumentFilter.initial.copyWith(
-        correspondent: const IdQueryParameter.notAssigned(),
-        documentType: const IdQueryParameter.notAssigned(),
-        storagePath: const IdQueryParameter.notAssigned(),
-        tags: const TagsQuery.notAssigned(),
+        correspondent: const NotAssignedIdQueryParameter(),
+        documentType: const NotAssignedIdQueryParameter(),
+        storagePath: const NotAssignedIdQueryParameter(),
+        tags: const NotAssignedTagsQuery(),
       );
       expect(
         actual,
@@ -148,10 +148,10 @@ void main() {
       expect(
         SavedView.fromDocumentFilter(
           DocumentFilter(
-            correspondent: const IdQueryParameter.fromId(1),
-            documentType: const IdQueryParameter.fromId(2),
-            storagePath: const IdQueryParameter.fromId(3),
-            tags: const TagsQuery.ids(
+            correspondent: const SetIdQueryParameter(id: 1),
+            documentType: const SetIdQueryParameter(id: 2),
+            storagePath: const SetIdQueryParameter(id: 3),
+            tags: const IdsTagsQuery(
               include: [4, 5],
               exclude: [6, 7, 8],
             ),
@@ -202,9 +202,9 @@ void main() {
       expect(
         SavedView.fromDocumentFilter(
           const DocumentFilter(
-            correspondent: IdQueryParameter.unset(),
-            documentType: IdQueryParameter.unset(),
-            storagePath: IdQueryParameter.unset(),
+            correspondent: UnsetIdQueryParameter(),
+            documentType: UnsetIdQueryParameter(),
+            storagePath: UnsetIdQueryParameter(),
             tags: IdsTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.descending,
@@ -233,10 +233,10 @@ void main() {
       expect(
         SavedView.fromDocumentFilter(
           const DocumentFilter(
-            correspondent: IdQueryParameter.notAssigned(),
-            documentType: IdQueryParameter.notAssigned(),
-            storagePath: IdQueryParameter.notAssigned(),
-            tags: TagsQuery.notAssigned(),
+            correspondent: NotAssignedIdQueryParameter(),
+            documentType: NotAssignedIdQueryParameter(),
+            storagePath: NotAssignedIdQueryParameter(),
+            tags: NotAssignedTagsQuery(),
             sortField: SortField.created,
             sortOrder: SortOrder.ascending,
           ),

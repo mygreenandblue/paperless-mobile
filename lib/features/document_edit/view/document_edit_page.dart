@@ -109,11 +109,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                         .watch<DocumentEditCubit>()
                                         .state
                                         .correspondents,
-                                    initialValue:
-                                        state.document.correspondent != null
-                                            ? IdQueryParameter.fromId(
-                                                state.document.correspondent!)
-                                            : const IdQueryParameter.unset(),
+                                    initialValue: state
+                                                .document.correspondent !=
+                                            null
+                                        ? SetIdQueryParameter(
+                                            id: state.document.correspondent!)
+                                        : const UnsetIdQueryParameter(),
                                     name: fkCorrespondent,
                                     prefixIcon:
                                         const Icon(Icons.person_outlined),
@@ -135,7 +136,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                           _formKey.currentState
                                               ?.fields[fkCorrespondent]
                                               ?.didChange(
-                                            IdQueryParameter.fromId(itemData),
+                                            SetIdQueryParameter(id: itemData),
                                           );
                                         },
                                       ),
@@ -161,11 +162,11 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     addLabelText:
                                         S.of(context)!.addDocumentType,
                                     labelText: S.of(context)!.documentType,
-                                    initialValue:
-                                        state.document.documentType != null
-                                            ? IdQueryParameter.fromId(
-                                                state.document.documentType!)
-                                            : const IdQueryParameter.unset(),
+                                    initialValue: state.document.documentType !=
+                                            null
+                                        ? SetIdQueryParameter(
+                                            id: state.document.documentType!)
+                                        : const UnsetIdQueryParameter(),
                                     options: state.documentTypes,
                                     name: _DocumentEditPageState.fkDocumentType,
                                     prefixIcon:
@@ -185,7 +186,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                         onPressed: () => _formKey.currentState
                                             ?.fields[fkDocumentType]
                                             ?.didChange(
-                                          IdQueryParameter.fromId(itemData),
+                                          SetIdQueryParameter(id: itemData),
                                         ),
                                       ),
                                     ),
@@ -211,9 +212,9 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                     options: state.storagePaths,
                                     initialValue:
                                         state.document.storagePath != null
-                                            ? IdQueryParameter.fromId(
-                                                state.document.storagePath!)
-                                            : const IdQueryParameter.unset(),
+                                            ? SetIdQueryParameter(
+                                                id: state.document.storagePath!)
+                                            : const UnsetIdQueryParameter(),
                                     name: fkStoragePath,
                                     prefixIcon:
                                         const Icon(Icons.folder_outlined),
@@ -229,7 +230,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                 allowOnlySelection: true,
                                 allowCreation: true,
                                 allowExclude: false,
-                                initialValue: TagsQuery.ids(
+                                initialValue: IdsTagsQuery(
                                   include: state.document.tags.toList(),
                                 ),
                               ).padded(),
@@ -254,15 +255,17 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                           ?.fields[fkTags]?.value as TagsQuery;
                                       _formKey.currentState?.fields[fkTags]
                                           ?.didChange(
-                                        currentTags.maybeWhen(
-                                          ids: (include, exclude) =>
-                                              TagsQuery.ids(include: [
-                                            ...include,
-                                            itemData
-                                          ], exclude: exclude),
-                                          orElse: () => TagsQuery.ids(
-                                              include: [itemData]),
-                                        ),
+                                        switch (currentTags) {
+                                          IdsTagsQuery(
+                                            include: var i,
+                                            exclude: var e
+                                          ) =>
+                                            IdsTagsQuery(
+                                              include: [...i, itemData],
+                                              exclude: e,
+                                            ),
+                                          _ => IdsTagsQuery(include: [itemData])
+                                        },
                                       );
                                     },
                                   );
@@ -301,16 +304,35 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Future<void> _onSubmit(DocumentModel document) async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
+
+      final correspondentParam = values[fkCorrespondent] as IdQueryParameter?;
+      final documentTypeParam = values[fkDocumentType] as IdQueryParameter?;
+      final storagePathParam = values[fkStoragePath] as IdQueryParameter?;
+      final tagsParam = values[fkTags] as TagsQuery?;
+
+      final correspondent = switch (correspondentParam) {
+        SetIdQueryParameter(id: var id) => id,
+        _ => null,
+      };
+      final documentType = switch (documentTypeParam) {
+        SetIdQueryParameter(id: var id) => id,
+        _ => null,
+      };
+      final storagePath = switch (storagePathParam) {
+        SetIdQueryParameter(id: var id) => id,
+        _ => null,
+      };
+      final tags = switch (tagsParam) {
+        IdsTagsQuery(include: var i) => i,
+        _ => null,
+      };
       var mergedDocument = document.copyWith(
         title: values[fkTitle],
         created: values[fkCreatedDate],
-        documentType: () => (values[fkDocumentType] as IdQueryParameter?)
-            ?.whenOrNull(fromId: (id) => id),
-        correspondent: () => (values[fkCorrespondent] as IdQueryParameter?)
-            ?.whenOrNull(fromId: (id) => id),
-        storagePath: () => (values[fkStoragePath] as IdQueryParameter?)
-            ?.whenOrNull(fromId: (id) => id),
-        tags: (values[fkTags] as IdsTagsQuery?)?.include,
+        correspondent: () => correspondent,
+        documentType: () => documentType,
+        storagePath: () => storagePath,
+        tags: tags,
         content: values[fkContent],
       );
 

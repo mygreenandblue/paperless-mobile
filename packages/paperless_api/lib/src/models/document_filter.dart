@@ -3,13 +3,12 @@ import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_api/src/models/query_parameters/date_range_queries/date_range_query.dart';
 import 'package:paperless_api/src/models/query_parameters/date_range_queries/date_range_query_field.dart';
 
 part 'document_filter.g.dart';
 
 @DateRangeQueryJsonConverter()
-@JsonSerializable(explicitToJson: true)
+// @JsonSerializable(explicitToJson: true)
 @HiveType(typeId: PaperlessApiHiveTypeIds.documentFilter)
 class DocumentFilter extends Equatable {
   static const DocumentFilter initial = DocumentFilter();
@@ -67,11 +66,11 @@ class DocumentFilter extends Equatable {
   final int? selectedView;
 
   const DocumentFilter({
-    this.documentType = const IdQueryParameter.unset(),
-    this.correspondent = const IdQueryParameter.unset(),
-    this.storagePath = const IdQueryParameter.unset(),
-    this.asnQuery = const IdQueryParameter.unset(),
-    this.tags = const TagsQuery.ids(),
+    this.documentType = const UnsetIdQueryParameter(),
+    this.correspondent = const UnsetIdQueryParameter(),
+    this.storagePath = const UnsetIdQueryParameter(),
+    this.asnQuery = const UnsetIdQueryParameter(),
+    this.tags = const IdsTagsQuery(),
     this.sortField = SortField.created,
     this.sortOrder = SortOrder.descending,
     this.page = 1,
@@ -164,7 +163,8 @@ class DocumentFilter extends Equatable {
       created: created ?? this.created,
       modified: modified ?? this.modified,
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
-      selectedView: selectedView != null ? selectedView.call() : this.selectedView,
+      selectedView:
+          selectedView != null ? selectedView.call() : this.selectedView,
     );
     if (query?.queryType != QueryType.extended &&
         newFilter.forceExtendedQuery) {
@@ -195,24 +195,23 @@ class DocumentFilter extends Equatable {
   }
 
   int get appliedFiltersCount => [
-        documentType.maybeWhen(
-          unset: () => 0,
-          orElse: () => 1,
-        ),
-        correspondent.maybeWhen(
-          unset: () => 0,
-          orElse: () => 1,
-        ),
-        storagePath.maybeWhen(
-          unset: () => 0,
-          orElse: () => 1,
-        ),
-        tags.maybeWhen(
-          ids: (include, exclude) => include.length + exclude.length,
-          anyAssigned: (tagIds) => tagIds.length,
-          notAssigned: () => 1,
-          orElse: () => 0,
-        ),
+        switch (documentType) {
+          UnsetIdQueryParameter() => 0,
+          _ => 1,
+        },
+        switch (correspondent) {
+          UnsetIdQueryParameter() => 0,
+          _ => 1,
+        },
+        switch (storagePath) {
+          UnsetIdQueryParameter() => 0,
+          _ => 1,
+        },
+        switch (tags) {
+          NotAssignedTagsQuery() => 1,
+          AnyAssignedTagsQuery(tagIds: var tags) => tags.length,
+          IdsTagsQuery(include: var i, exclude: var e) => e.length + i.length,
+        },
         switch (added) {
           RelativeDateRangeQuery() => 1,
           AbsoluteDateRangeQuery() => 1,
@@ -228,10 +227,10 @@ class DocumentFilter extends Equatable {
           AbsoluteDateRangeQuery() => 1,
           UnsetDateRangeQuery() => 0,
         },
-        asnQuery.maybeWhen(
-          unset: () => 0,
-          orElse: () => 1,
-        ),
+        switch (asnQuery) {
+          UnsetIdQueryParameter() => 0,
+          _ => 1,
+        },
         (query.queryText?.isNotEmpty ?? false) ? 1 : 0,
       ].fold(0, (previousValue, element) => previousValue + element);
 
@@ -254,8 +253,8 @@ class DocumentFilter extends Equatable {
         selectedView,
       ];
 
-  factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
-      _$DocumentFilterFromJson(json);
+  // factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
+  //     _$DocumentFilterFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
+  // Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
 }

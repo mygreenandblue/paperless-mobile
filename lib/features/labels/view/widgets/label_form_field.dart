@@ -47,13 +47,13 @@ class LabelFormField<T extends Label> extends StatelessWidget {
   }) : super(key: key);
 
   String _buildText(BuildContext context, IdQueryParameter? value) {
-    return value?.when(
-          unset: () => '',
-          notAssigned: () => S.of(context)!.notAssigned,
-          anyAssigned: () => S.of(context)!.anyAssigned,
-          fromId: (id) => options[id]?.name,
-        ) ??
-        '';
+    return switch (value) {
+      UnsetIdQueryParameter() => '',
+      NotAssignedIdQueryParameter() => S.of(context)!.notAssigned,
+      AnyAssignedIdQueryParameter() => S.of(context)!.anyAssigned,
+      SetIdQueryParameter(id: var id) => options[id]?.name ?? '',
+      _ => '',
+    };
   }
 
   @override
@@ -70,9 +70,14 @@ class LabelFormField<T extends Label> extends StatelessWidget {
           text: _buildText(context, field.value),
         );
         final displayedSuggestions = suggestions
-            .whereNot((e) =>
-                e.id ==
-                field.value?.maybeWhen(fromId: (id) => id, orElse: () => -1))
+            .whereNot(
+              (e) =>
+                  e.id ==
+                  switch (field.value) {
+                    SetIdQueryParameter(id: var id) => id,
+                    _ => -1,
+                  },
+            )
             .toList();
 
         return Column(
@@ -98,7 +103,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                         ? IconButton(
                             icon: const Icon(Icons.clear),
                             onPressed: () =>
-                                field.didChange(const IdQueryParameter.unset()),
+                                field.didChange(const UnsetIdQueryParameter()),
                           )
                         : null,
                   ),
@@ -151,7 +156,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                           child: ActionChip(
                             label: Text(suggestion.name),
                             onPressed: () => field.didChange(
-                              IdQueryParameter.fromId(suggestion.id!),
+                              SetIdQueryParameter(id: suggestion.id!),
                             ),
                           ),
                         );

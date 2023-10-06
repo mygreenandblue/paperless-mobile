@@ -2,32 +2,36 @@ import 'package:paperless_api/paperless_api.dart';
 
 extension UserPermissionExtension on UserModel {
   bool hasPermission(PermissionAction action, PermissionTarget target) {
-    return map(
-      v3: (user) {
-        final permission = [action.value, target.value].join("_");
-        return user.userPermissions.any((element) => element == permission) ||
-            user.inheritedPermissions
-                .any((element) => element.split(".").last == permission);
-      },
-      v2: (_) => true,
-    );
+    final permission = [action.value, target.value].join("_");
+    return switch (this) {
+      UserModelV2() => true,
+      UserModelV3(
+        userPermissions: var userPermissions,
+        inheritedPermissions: var inheritedPermissions,
+      ) =>
+        userPermissions.any((p) => p == permission) ||
+            inheritedPermissions.any((p) => p.split(".").last == permission)
+    };
   }
 
   bool hasPermissions(
-      List<PermissionAction> actions, List<PermissionTarget> targets) {
-    return map(
-      v3: (user) {
-        final permissions = [
-          for (var action in actions)
-            for (var target in targets) [action, target].join("_")
-        ];
-        return permissions.every((requestedPermission) =>
-            user.userPermissions.contains(requestedPermission) ||
-            user.inheritedPermissions.any(
-                (element) => element.split(".").last == requestedPermission));
-      },
-      v2: (_) => true,
-    );
+    List<PermissionAction> actions,
+    List<PermissionTarget> targets,
+  ) {
+    final permissions = [
+      for (var action in actions)
+        for (var target in targets) [action, target].join("_")
+    ];
+    return switch (this) {
+      UserModelV2() => true,
+      UserModelV3(
+        userPermissions: var userPermissions,
+        inheritedPermissions: var inheritedPermissions,
+      ) =>
+        permissions.every((p) =>
+            userPermissions.contains(p) ||
+            inheritedPermissions.any((ip) => ip.split(".").last == p))
+    };
   }
 
   bool get canViewDocuments =>

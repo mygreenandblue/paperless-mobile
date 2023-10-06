@@ -32,11 +32,10 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
     this.allowSelectUnassigned = true,
     required this.canCreateNewLabel,
   })  : assert(
-          !(initialValue?.isOnlyAssigned() ?? false) || showAnyAssignedOption,
+          !(initialValue?.isOnlyAssigned ?? false) || showAnyAssignedOption,
         ),
         assert(
-          !(initialValue?.isOnlyNotAssigned() ?? false) ||
-              showNotAssignedOption,
+          !(initialValue?.isOnlyNotAssigned ?? false) || showNotAssignedOption,
         ),
         assert((addNewLabelText != null) == (onCreateNewLabel != null));
 
@@ -87,11 +86,10 @@ class _FullscreenLabelFormState<T extends Label>
             final index = AutocompleteHighlightedOption.of(context);
             final value = index.isNegative ? null : options.elementAt(index);
             widget.onSubmit(
-              returnValue: value?.maybeWhen(
-                    fromId: (id) => IdQueryParameter.fromId(id),
-                    orElse: () => const IdQueryParameter.unset(),
-                  ) ??
-                  const IdQueryParameter.unset(),
+              returnValue: switch (value) {
+                SetIdQueryParameter query => query,
+                _ => const UnsetIdQueryParameter(),
+              },
             );
           },
           autofocus: true,
@@ -169,7 +167,7 @@ class _FullscreenLabelFormState<T extends Label>
     final label = await widget.onCreateNewLabel!(_textEditingController.text);
     if (label?.id != null) {
       widget.onSubmit(
-        returnValue: IdQueryParameter.fromId(label!.id!),
+        returnValue: SetIdQueryParameter(id: label!.id!),
       );
     }
   }
@@ -184,21 +182,21 @@ class _FullscreenLabelFormState<T extends Label>
       if (widget.initialValue == null) {
         // If nothing is selected yet, show all options first.
         for (final option in widget.options.values) {
-          yield IdQueryParameter.fromId(option.id!);
+          yield SetIdQueryParameter(id: option.id!);
         }
         if (widget.showNotAssignedOption) {
-          yield const IdQueryParameter.notAssigned();
+          yield const NotAssignedIdQueryParameter();
         }
         if (widget.showAnyAssignedOption) {
-          yield const IdQueryParameter.anyAssigned();
+          yield const AnyAssignedIdQueryParameter();
         }
       } else {
         // If an initial value is given, show not assigned first, which will be selected by default when pressing "done" on keyboard.
         if (widget.showNotAssignedOption) {
-          yield const IdQueryParameter.notAssigned();
+          yield const NotAssignedIdQueryParameter();
         }
         if (widget.showAnyAssignedOption) {
-          yield const IdQueryParameter.anyAssigned();
+          yield const AnyAssignedIdQueryParameter();
         }
         for (final option in widget.options.values) {
           // Don't include the initial value in the selection
@@ -207,7 +205,7 @@ class _FullscreenLabelFormState<T extends Label>
               option.id == initialValue.id) {
             continue;
           }
-          yield IdQueryParameter.fromId(option.id!);
+          yield SetIdQueryParameter(id: option.id!);
         }
       }
     } else {
@@ -216,77 +214,76 @@ class _FullscreenLabelFormState<T extends Label>
           .where((e) => e.name.trim().toLowerCase().contains(normalizedQuery));
       if (matches.isNotEmpty) {
         for (final match in matches) {
-          yield IdQueryParameter.fromId(match.id!);
+          yield SetIdQueryParameter(id: match.id!);
         }
         if (widget.showNotAssignedOption) {
-          yield const IdQueryParameter.notAssigned();
+          yield const NotAssignedIdQueryParameter();
         }
         if (widget.showAnyAssignedOption) {
-          yield const IdQueryParameter.anyAssigned();
+          yield const AnyAssignedIdQueryParameter();
         }
       } else {
         if (widget.showNotAssignedOption) {
-          yield const IdQueryParameter.notAssigned();
+          yield const NotAssignedIdQueryParameter();
         }
         if (widget.showAnyAssignedOption) {
-          yield const IdQueryParameter.anyAssigned();
+          yield const AnyAssignedIdQueryParameter();
         }
         if (!(widget.showAnyAssignedOption || widget.showNotAssignedOption)) {
-          yield const IdQueryParameter.unset();
+          yield const UnsetIdQueryParameter();
         }
       }
     }
   }
 
   String? _buildHintText() {
-    return widget.initialValue?.when(
-      unset: () => S.of(context)!.startTyping,
-      notAssigned: () => S.of(context)!.notAssigned,
-      anyAssigned: () => S.of(context)!.anyAssigned,
-      fromId: (id) => widget.options[id]?.name ?? S.of(context)!.startTyping,
-    );
+    return switch (widget.initialValue) {
+      UnsetIdQueryParameter() => S.of(context)!.startTyping,
+      NotAssignedIdQueryParameter() => S.of(context)!.notAssigned,
+      AnyAssignedIdQueryParameter() => S.of(context)!.anyAssigned,
+      SetIdQueryParameter(id: var id) =>
+        widget.options[id]?.name ?? S.of(context)!.startTyping,
+      _ => null,
+    };
   }
 
   Widget _buildOptionWidget(IdQueryParameter option, bool highlight) {
     void onTap() => widget.onSubmit(returnValue: option);
 
-    if (option.isUnset()) {
-      return Center(
-        child: Column(
-          children: [
-            Text(S.of(context)!.noItemsFound).padded(),
-            if (widget.onCreateNewLabel != null)
-              TextButton(
-                child: Text(widget.addNewLabelText!),
-                onPressed: _onCreateNewLabel,
-              ),
-          ],
+    return switch (option) {
+      NotAssignedIdQueryParameter() => ListTile(
+          selected: highlight,
+          selectedTileColor: Theme.of(context).focusColor,
+          title: Text(S.of(context)!.notAssigned),
+          onTap: onTap,
         ),
-      );
-    }
-
-    return option.whenOrNull(
-      notAssigned: () => ListTile(
-        selected: highlight,
-        selectedTileColor: Theme.of(context).focusColor,
-        title: Text(S.of(context)!.notAssigned),
-        onTap: onTap,
-      ),
-      anyAssigned: () => ListTile(
-        selected: highlight,
-        selectedTileColor: Theme.of(context).focusColor,
-        title: Text(S.of(context)!.anyAssigned),
-        onTap: onTap,
-      ),
-      fromId: (id) => ListTile(
-        selected: highlight,
-        selectedTileColor: Theme.of(context).focusColor,
-        title: Text(widget.options[id]!.name),
-        onTap: onTap,
-        enabled: widget.allowSelectUnassigned
-            ? true
-            : widget.options[id]!.documentCount != 0,
-      ),
-    )!; // Never null, since we already return on unset before
+      AnyAssignedIdQueryParameter() => ListTile(
+          selected: highlight,
+          selectedTileColor: Theme.of(context).focusColor,
+          title: Text(S.of(context)!.anyAssigned),
+          onTap: onTap,
+        ),
+      SetIdQueryParameter(id: var id) => ListTile(
+          selected: highlight,
+          selectedTileColor: Theme.of(context).focusColor,
+          title: Text(widget.options[id]!.name),
+          onTap: onTap,
+          enabled: widget.allowSelectUnassigned
+              ? true
+              : widget.options[id]!.documentCount != 0,
+        ),
+      UnsetIdQueryParameter() => Center(
+          child: Column(
+            children: [
+              Text(S.of(context)!.noItemsFound).padded(),
+              if (widget.onCreateNewLabel != null)
+                TextButton(
+                  child: Text(widget.addNewLabelText!),
+                  onPressed: _onCreateNewLabel,
+                ),
+            ],
+          ),
+        ),
+    };
   }
 }

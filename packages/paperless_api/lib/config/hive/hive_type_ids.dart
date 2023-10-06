@@ -36,9 +36,9 @@ class PaperlessApiHiveTypeIds {
 void registerPaperlessApiHiveTypeAdapters() {
   Hive.registerAdapter(DocumentFilterAdapter());
   // TagsQuery
-  Hive.registerAdapter(AnyAssignedTagsQueryImplAdapter());
-  Hive.registerAdapter(NotAssignedTagsQueryImplAdapter());
-  Hive.registerAdapter(IdsTagsQueryImplAdapter());
+  Hive.registerAdapter(AnyAssignedTagsQueryAdapter());
+  Hive.registerAdapter(NotAssignedTagsQueryAdapter());
+  Hive.registerAdapter(IdsTagsQueryAdapter());
 
   Hive.registerAdapter(SortFieldAdapter());
   Hive.registerAdapter(SortOrderAdapter());
@@ -49,13 +49,13 @@ void registerPaperlessApiHiveTypeAdapters() {
   Hive.registerAdapter(TextQueryAdapter());
   Hive.registerAdapter(QueryTypeAdapter());
   // IdQueryParameter
-  Hive.registerAdapter(SetIdQueryParameterImplAdapter());
-  Hive.registerAdapter(UnsetIdQueryParameterImplAdapter());
-  Hive.registerAdapter(AnyAssignedIdQueryParameterImplAdapter());
-  Hive.registerAdapter(NotAssignedIdQueryParameterImplAdapter());
+  Hive.registerAdapter(SetIdQueryParameterAdapter());
+  Hive.registerAdapter(UnsetIdQueryParameterAdapter());
+  Hive.registerAdapter(AnyAssignedIdQueryParameterAdapter());
+  Hive.registerAdapter(NotAssignedIdQueryParameterAdapter());
   // Users and permissions
-  Hive.registerAdapter(UserModelV3ImplAdapter());
-  Hive.registerAdapter(UserModelV2ImplAdapter());
+  Hive.registerAdapter(UserModelV3Adapter());
+  Hive.registerAdapter(UserModelV2Adapter());
   Hive.registerAdapter(GroupModelAdapter());
   Hive.registerAdapter(PermissionsAdapter());
 }

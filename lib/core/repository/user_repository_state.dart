@@ -1,11 +1,19 @@
 part of 'user_repository.dart';
 
-@freezed
-class UserRepositoryState with _$UserRepositoryState {
-  const factory UserRepositoryState({
-    @Default({}) Map<int, UserModel> users,
-  }) = _UserRepositoryState;
+class UserRepositoryState with EquatableMixin {
+  final Map<int, UserModel> users;
+  const UserRepositoryState({
+    this.users = const {},
+  });
 
-  factory UserRepositoryState.fromJson(Map<String, dynamic> json) =>
-      _$UserRepositoryStateFromJson(json);
+  UserRepositoryState copyWith({
+    Map<int, UserModel>? users,
+  }) {
+    return UserRepositoryState(
+      users: users ?? this.users,
+    );
+  }
+
+  @override
+  List<Object?> get props => [users];
 }

@@ -96,19 +96,17 @@ class TagsFormField extends StatelessWidget {
     if (query == null) {
       yield Container();
     } else {
-      final widgets = query.map(
-        ids: (value) => [
-          for (var inc in value.include)
-            _buildTagIdQueryWidget(context, inc, field, false),
-          for (var exc in value.exclude)
-            _buildTagIdQueryWidget(context, exc, field, true),
-        ],
-        anyAssigned: (value) => [
-          for (var id in value.tagIds)
-            _buildAnyAssignedTagWidget(context, id, field, value),
-        ],
-        notAssigned: (value) => [_buildNotAssignedTagWidget(context, field)],
-      );
+      final widgets = switch (query) {
+        IdsTagsQuery(include: var inc, exclude: var exc) => [
+            for (var i in inc) _buildTagIdQueryWidget(context, i, field, false),
+            for (var e in exc) _buildTagIdQueryWidget(context, e, field, true),
+          ],
+        AnyAssignedTagsQuery query => [
+            for (var id in query.tagIds)
+              _buildAnyAssignedTagWidget(context, id, field, query),
+          ],
+        NotAssignedTagsQuery() => [_buildNotAssignedTagWidget(context, field)],
+      };
       for (var child in widgets) {
         yield child;
       }
@@ -185,7 +183,7 @@ class TagsFormField extends StatelessWidget {
           tagIds: query.tagIds.whereNot((element) => element == e).toList(),
         );
         if (updatedQuery.tagIds.isEmpty) {
-          field.didChange(const TagsQuery.ids());
+          field.didChange(const IdsTagsQuery());
         } else {
           field.didChange(updatedQuery);
         }

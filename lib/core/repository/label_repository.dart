@@ -200,19 +200,13 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
     return updated;
   }
 
-  @override
-  Future<void> clear() async {
-    await super.clear();
-    emit(const LabelRepositoryState());
-  }
+  // @override
+  // LabelRepositoryState? fromJson(Map<String, dynamic> json) {
+  //   return LabelRepositoryState.fromJson(json);
+  // }
 
-  @override
-  LabelRepositoryState? fromJson(Map<String, dynamic> json) {
-    return LabelRepositoryState.fromJson(json);
-  }
-
-  @override
-  Map<String, dynamic>? toJson(LabelRepositoryState state) {
-    return state.toJson();
-  }
+  // @override
+  // Map<String, dynamic>? toJson(LabelRepositoryState state) {
+  //   return state.toJson();
+  // }
 }

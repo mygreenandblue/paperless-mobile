@@ -1,110 +1,79 @@
+import 'dart:isolate';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'id_query_parameter.freezed.dart';
 part 'id_query_parameter.g.dart';
 
-@freezed
-class IdQueryParameter with _$IdQueryParameter {
-  const IdQueryParameter._();
-  @HiveType(typeId: PaperlessApiHiveTypeIds.unsetIdQueryParameter)
-  const factory IdQueryParameter.unset() = UnsetIdQueryParameter;
-  @HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedIdQueryParameter)
-  const factory IdQueryParameter.notAssigned() = NotAssignedIdQueryParameter;
-  @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
-  const factory IdQueryParameter.anyAssigned() = AnyAssignedIdQueryParameter;
-  @HiveType(typeId: PaperlessApiHiveTypeIds.setIdQueryParameter)
-  const factory IdQueryParameter.fromId(@HiveField(0) int id) = SetIdQueryParameter;
+sealed class IdQueryParameter {
+  const IdQueryParameter();
+  Map<String, String> toQueryParameter(String field);
+  bool matches(int? id);
 
-  Map<String, String> toQueryParameter(String field) {
-    return when(
-      unset: () => {},
-      notAssigned: () => {
-        '${field}__isnull': '1',
-      },
-      anyAssigned: () => {
-        '${field}__isnull': '0',
-      },
-      fromId: (id) {
-        return {'${field}__id': '$id'};
-      },
-    );
-  }
-
-  bool isOnlyNotAssigned() => this is NotAssignedIdQueryParameter;
-
-  bool isOnlyAssigned() => this is AnyAssignedIdQueryParameter;
-
-  bool isSet() => this is SetIdQueryParameter;
-
-  bool isUnset() => this is UnsetIdQueryParameter;
-
-  bool matches(int? id) {
-    return when(
-      unset: () => true,
-      notAssigned: () => id == null,
-      anyAssigned: () => id != null,
-      fromId: (id_) => id == id_,
-    );
-  }
-
-  factory IdQueryParameter.fromJson(Map<String, dynamic> json) => _$IdQueryParameterFromJson(json);
+  bool get isUnset => this is UnsetIdQueryParameter;
+  bool get isSet => this is SetIdQueryParameter;
+  bool get isOnlyNotAssigned => this is NotAssignedIdQueryParameter;
+  bool get isOnlyAssigned => this is AnyAssignedIdQueryParameter;
 }
 
-// @JsonSerializable()
-// @HiveType(typeId: PaperlessApiHiveTypeIds.idQueryParameter)
-// class IdQueryParameter extends Equatable {
-//   @HiveField(0)
-//   final int? assignmentStatus;
-//   @HiveField(1)
-//   final int? id;
+@HiveType(typeId: PaperlessApiHiveTypeIds.unsetIdQueryParameter)
+@Freezed(toJson: false, fromJson: false)
+class UnsetIdQueryParameter extends IdQueryParameter
+    with _$UnsetIdQueryParameter {
+  const UnsetIdQueryParameter._();
+  const factory UnsetIdQueryParameter() = _UnsetIdQueryParameter;
+  @override
+  Map<String, String> toQueryParameter(String field) => {};
 
-//   @Deprecated("Use named constructors, this is only meant for code generation")
-//   const IdQueryParameter(this.assignmentStatus, this.id);
+  @override
+  bool matches(int? id) => true;
+}
 
-//   const IdQueryParameter.notAssigned()
-//       : assignmentStatus = 1,
-//         id = null;
+@HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedIdQueryParameter)
+@Freezed(toJson: false, fromJson: false)
+class NotAssignedIdQueryParameter extends IdQueryParameter
+    with _$NotAssignedIdQueryParameter {
+  const NotAssignedIdQueryParameter._();
+  const factory NotAssignedIdQueryParameter() = _NotAssignedIdQueryParameter;
+  @override
+  Map<String, String> toQueryParameter(String field) {
+    return {'${field}__isnull': '1'};
+  }
 
-//   const IdQueryParameter.anyAssigned()
-//       : assignmentStatus = 0,
-//         id = null;
+  @override
+  bool matches(int? id) => id == null;
+}
 
-//   const IdQueryParameter.fromId(this.id) : assignmentStatus = null;
+@HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
+@Freezed(toJson: false, fromJson: false)
+class AnyAssignedIdQueryParameter extends IdQueryParameter
+    with _$AnyAssignedIdQueryParameter {
+  const factory AnyAssignedIdQueryParameter() = _AnyAssignedIdQueryParameter;
+  const AnyAssignedIdQueryParameter._();
+  @override
+  Map<String, String> toQueryParameter(String field) {
+    return {'${field}__isnull': '0'};
+  }
 
-//   const IdQueryParameter.unset() : this.fromId(null);
+  @override
+  bool matches(int? id) => id != null;
+}
 
-//   bool get isUnset => id == null && assignmentStatus == null;
+@HiveType(typeId: PaperlessApiHiveTypeIds.setIdQueryParameter)
+@Freezed(toJson: false, fromJson: false)
+class SetIdQueryParameter extends IdQueryParameter with _$SetIdQueryParameter {
+  const SetIdQueryParameter._();
+  const factory SetIdQueryParameter({
+    @HiveField(0) required int id,
+  }) = _SetIdQueryParameter;
+  @override
+  Map<String, String> toQueryParameter(String field) {
+    return {'${field}__id': '$id'};
+  }
 
-//   bool get isSet => id != null && assignmentStatus == null;
-
-//   bool get onlyNotAssigned => assignmentStatus == 1;
-
-//   bool get onlyAssigned => assignmentStatus == 0;
-
-//   Map<String, String> toQueryParameter(String field) {
-//     final Map<String, String> params = {};
-//     if (onlyNotAssigned || onlyAssigned) {
-//       params.putIfAbsent('${field}__isnull', () => assignmentStatus!.toString());
-//     }
-//     if (isSet) {
-//       params.putIfAbsent("${field}__id", () => id!.toString());
-//     }
-//     return params;
-//   }
-
-//   bool matches(int? id) {
-//     return onlyAssigned && id != null ||
-//         onlyNotAssigned && id == null ||
-//         isSet && id == this.id ||
-//         isUnset;
-//   }
-
-//   @override
-//   List<Object?> get props => [assignmentStatus, id];
-
-//   Map<String, dynamic> toJson() => _$IdQueryParameterToJson(this);
-
-//   factory IdQueryParameter.fromJson(Map<String, dynamic> json) => _$IdQueryParameterFromJson(json);
-// }
-
+  @override
+  bool matches(int? id) => id == this.id;
+}

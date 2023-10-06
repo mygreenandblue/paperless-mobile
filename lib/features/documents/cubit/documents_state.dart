@@ -1,17 +1,10 @@
 part of 'documents_cubit.dart';
 
-@JsonSerializable()
 class DocumentsState extends DocumentPagingState {
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final List<DocumentModel> selection;
-
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, Correspondent> correspondents;
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, DocumentType> documentTypes;
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, Tag> tags;
-  @JsonKey(includeToJson: false, includeFromJson: false)
   final Map<int, StoragePath> storagePaths;
 
   final ViewType viewType;
@@ -85,9 +78,4 @@ class DocumentsState extends DocumentPagingState {
       value: value,
     );
   }
-
-  factory DocumentsState.fromJson(Map<String, dynamic> json) =>
-      _$DocumentsStateFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DocumentsStateToJson(this);
 }

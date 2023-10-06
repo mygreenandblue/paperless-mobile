@@ -76,20 +76,20 @@ class SavedViewRepository
     return found;
   }
 
-  @override
-  Future<void> clear() async {
-    await _initialized.future;
-    await super.clear();
-    emit(const SavedViewRepositoryState.initial());
-  }
+  // @override
+  // Future<void> clear() async {
+  //   await _initialized.future;
+  //   await super.clear();
+  //   emit(const SavedViewRepositoryState.initial());
+  // }
 
-  @override
-  SavedViewRepositoryState? fromJson(Map<String, dynamic> json) {
-    return SavedViewRepositoryState.fromJson(json);
-  }
+  // @override
+  // SavedViewRepositoryState? fromJson(Map<String, dynamic> json) {
+  //   return SavedViewRepositoryState.fromJson(json);
+  // }
 
-  @override
-  Map<String, dynamic>? toJson(SavedViewRepositoryState state) {
-    return state.toJson();
-  }
+  // @override
+  // Map<String, dynamic>? toJson(SavedViewRepositoryState state) {
+  //   return state.toJson();
+  // }
 }

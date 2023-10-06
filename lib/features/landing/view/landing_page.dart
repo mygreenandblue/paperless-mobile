@@ -44,7 +44,8 @@ class _LandingPageState extends State<LandingPage> {
               SliverToBoxAdapter(
                 child: Text(
                   S.of(context)!.welcomeUser(
-                      currentUser.fullName ?? currentUser.username),
+                        currentUser.fullName ?? currentUser.username,
+                      ),
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme

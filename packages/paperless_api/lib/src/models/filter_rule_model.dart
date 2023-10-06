@@ -5,9 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/constants.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
-import 'package:paperless_api/src/models/query_parameters/date_range_queries/date_range_query.dart';
 import 'package:paperless_api/src/models/query_parameters/date_range_queries/date_range_query_field.dart';
-import 'package:paperless_api/src/models/query_parameters/date_range_queries/date_range_unit.dart';
 
 part 'filter_rule_model.g.dart';
 
@@ -59,48 +57,49 @@ class FilterRule with EquatableMixin {
       case documentTypeRule:
         return filter.copyWith(
           documentType: value == null
-              ? const IdQueryParameter.notAssigned()
-              : IdQueryParameter.fromId(int.parse(value!)),
+              ? const NotAssignedIdQueryParameter()
+              : SetIdQueryParameter(id: int.parse(value!)),
         );
       case correspondentRule:
         return filter.copyWith(
           correspondent: value == null
-              ? const IdQueryParameter.notAssigned()
-              : IdQueryParameter.fromId(int.parse(value!)),
+              ? const NotAssignedIdQueryParameter()
+              : SetIdQueryParameter(id: int.parse(value!)),
         );
       case storagePathRule:
         return filter.copyWith(
           storagePath: value == null
-              ? const IdQueryParameter.notAssigned()
-              : IdQueryParameter.fromId(int.parse(value!)),
+              ? const NotAssignedIdQueryParameter()
+              : SetIdQueryParameter(id: int.parse(value!)),
         );
       case hasAnyTag:
         return filter.copyWith(
           tags: value == "true"
-              ? const TagsQuery.anyAssigned()
-              : const TagsQuery.notAssigned(),
+              ? const AnyAssignedTagsQuery()
+              : const NotAssignedTagsQuery(),
         );
       case includeTagsRule:
         assert(filter.tags is IdsTagsQuery);
         return filter.copyWith(
-          tags: filter.tags.maybeWhen(
-            ids: (include, exclude) => TagsQuery.ids(
-              include: [...include, int.parse(value!)],
-              exclude: exclude,
-            ),
-            orElse: () => filter.tags,
-          ),
+          tags: switch (filter.tags) {
+            // TODO: Handle this case.
+            IdsTagsQuery(include: var i, exclude: var e) => IdsTagsQuery(
+                include: [...i, int.parse(value!)],
+                exclude: e,
+              ),
+            _ => filter.tags,
+          },
         );
       case excludeTagsRule:
         assert(filter.tags is IdsTagsQuery);
         return filter.copyWith(
-          tags: filter.tags.maybeWhen(
-            ids: (include, exclude) => TagsQuery.ids(
-              include: include,
-              exclude: [...exclude, int.parse(value!)],
-            ),
-            orElse: () => filter.tags,
-          ),
+          tags: switch (filter.tags) {
+            IdsTagsQuery(include: var i, exclude: var e) => IdsTagsQuery(
+                include: i,
+                exclude: [...e, int.parse(value!)],
+              ),
+            _ => filter.tags,
+          },
         );
       case createdBeforeRule:
         if (filter.created is AbsoluteDateRangeQuery) {
@@ -245,37 +244,46 @@ class FilterRule with EquatableMixin {
   ///
   static List<FilterRule> fromFilter(final DocumentFilter filter) {
     List<FilterRule> filterRules = [];
-    final corrRule = filter.correspondent.whenOrNull(
-      notAssigned: () => FilterRule(correspondentRule, null),
-      fromId: (id) => FilterRule(correspondentRule, id.toString()),
-    );
+    final corrRule = switch (filter.correspondent) {
+      NotAssignedIdQueryParameter() => FilterRule(correspondentRule, null),
+      SetIdQueryParameter(id: var id) =>
+        FilterRule(correspondentRule, id.toString()),
+      _ => null,
+    };
     if (corrRule != null) {
       filterRules.add(corrRule);
     }
 
-    final docTypeRule = filter.documentType.whenOrNull(
-      notAssigned: () => FilterRule(documentTypeRule, null),
-      fromId: (id) => FilterRule(documentTypeRule, id.toString()),
-    );
+    final docTypeRule = switch (filter.documentType) {
+      NotAssignedIdQueryParameter() => FilterRule(documentTypeRule, null),
+      SetIdQueryParameter(id: var id) =>
+        FilterRule(documentTypeRule, id.toString()),
+      _ => null,
+    };
+
     if (docTypeRule != null) {
       filterRules.add(docTypeRule);
     }
 
-    final sPathRule = filter.storagePath.whenOrNull(
-      notAssigned: () => FilterRule(storagePathRule, null),
-      fromId: (id) => FilterRule(storagePathRule, id.toString()),
-    );
+    final sPathRule = switch (filter.storagePath) {
+      NotAssignedIdQueryParameter() => FilterRule(storagePathRule, null),
+      SetIdQueryParameter(id: var id) =>
+        FilterRule(storagePathRule, id.toString()),
+      _ => null,
+    };
+
     if (sPathRule != null) {
       filterRules.add(sPathRule);
     }
-    final tagRules = filter.tags.when(
-      notAssigned: () => [FilterRule(hasAnyTag, 'false')],
-      anyAssigned: (_) => [FilterRule(hasAnyTag, 'true')],
-      ids: (include, exclude) => [
-        ...include.map((id) => FilterRule(includeTagsRule, id.toString())),
-        ...exclude.map((id) => FilterRule(excludeTagsRule, id.toString())),
-      ],
-    );
+    final tagRules = switch (filter.tags) {
+      NotAssignedTagsQuery() => [FilterRule(hasAnyTag, 'false')],
+      AnyAssignedTagsQuery() => [FilterRule(hasAnyTag, 'true')],
+      IdsTagsQuery(include: var i, exclude: var e) => [
+          ...i.map((id) => FilterRule(includeTagsRule, id.toString())),
+          ...e.map((id) => FilterRule(excludeTagsRule, id.toString())),
+        ],
+    };
+
     filterRules.addAll(tagRules);
 
     if (filter.query.queryText != null) {

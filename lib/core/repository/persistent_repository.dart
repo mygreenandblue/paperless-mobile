@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-abstract class PersistentRepository<T> extends HydratedCubit<T> {
+abstract class PersistentRepository<T> extends Cubit<T> {
   final Map<Object, StreamSubscription> _subscribers = {};
 
   PersistentRepository(T initialState) : super(initialState);

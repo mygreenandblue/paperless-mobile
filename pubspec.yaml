@@ -96,6 +96,7 @@ dependencies:
   defer_pointer: ^0.0.2
   transparent_image: ^2.0.1
   flutter_animate: ^4.2.0+1
+  shared_preferences: ^2.2.1
 
 dependency_overrides:
   intl: ^0.18.1

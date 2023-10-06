@@ -19,6 +19,14 @@ class HiveBoxes {
   static const localUserAccount = 'localUserAccount';
   static const localUserAppState = 'localUserAppState';
   static const hosts = 'hosts';
+
+  static List<String> get all => [
+        globalSettings,
+        localUserCredentials,
+        localUserAccount,
+        localUserAppState,
+        hosts,
+      ];
 }
 
 class HiveTypeIds {
