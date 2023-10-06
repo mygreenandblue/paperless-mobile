@@ -192,25 +192,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final sessionManager = SessionManager([
       LanguageHeaderInterceptor(locale),
     ]);
-    try {
-      await _addUser(
-        localUserId,
-        serverUrl,
-        credentials,
-        clientCertificate,
-        sessionManager,
-        // onPerformLogin: () async {
-        //   emit(AuthenticatingState(AuthenticatingStage.authenticating));
-        //   await Future.delayed(const Duration(milliseconds: 500));
-        // },
-      );
+    await _addUser(
+      localUserId,
+      serverUrl,
+      credentials,
+      clientCertificate,
+      sessionManager,
+    );
 
-      return localUserId;
-    } catch (error, stackTrace) {
-      print(error);
-      debugPrintStack(stackTrace: stackTrace);
-      rethrow;
-    }
+    return localUserId;
   }
 
   Future<void> removeAccount(String userId) async {

@@ -36,7 +36,8 @@ class UserModel with _$UserModel {
     @HiveField(2) String? displayName,
   }) = UserModelV2;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 
   String? get fullName => map(
         v2: (value) => value.displayName,

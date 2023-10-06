@@ -232,53 +232,51 @@ class _GoRouterShellState extends State<GoRouterShell> {
     initialLocation: "/login",
     routes: [
       ShellRoute(
-        pageBuilder: (context, state, child) {
-          return MaterialPage(
-            child: BlocListener<AuthenticationCubit, AuthenticationState>(
-              listener: (context, state) {
-                switch (state) {
-                  case UnauthenticatedState(
-                      redirectToAccountSelection: var shouldRedirect
-                    ):
-                    if (shouldRedirect) {
-                      const LoginToExistingAccountRoute().go(context);
-                    } else {
-                      const LoginRoute().go(context);
-                    }
-                    break;
-                  case RestoringSessionState():
-                    const RestoringSessionRoute().go(context);
-                    break;
-                  case VerifyIdentityState(userId: var userId):
-                    VerifyIdentityRoute(userId: userId).go(context);
-                    break;
-                  case SwitchingAccountsState():
-                    const SwitchingAccountsRoute().push(context);
-                    break;
-                  case AuthenticatedState():
-                    const LandingRoute().go(context);
-                    break;
-                  case AuthenticatingState state:
-                    AuthenticatingRoute(state.currentStage.name).push(context);
-                    break;
-                  case LoggingOutState():
-                    const LoggingOutRoute().go(context);
-                    break;
-                  case AuthenticationErrorState():
-                    if (context.canPop()) {
-                      context.pop();
-                    }
-                    // LoginRoute(
-                    //   $extra: errorState.clientCertificate,
-                    //   password: errorState.password,
-                    //   serverUrl: errorState.serverUrl,
-                    //   username: errorState.username,
-                    // ).go(context);
-                    break;
-                }
-              },
-              child: child,
-            ),
+        builder: (context, state, child) {
+          return BlocListener<AuthenticationCubit, AuthenticationState>(
+            listener: (context, state) {
+              switch (state) {
+                case UnauthenticatedState(
+                    redirectToAccountSelection: var shouldRedirect
+                  ):
+                  if (shouldRedirect) {
+                    const LoginToExistingAccountRoute().go(context);
+                  } else {
+                    const LoginRoute().go(context);
+                  }
+                  break;
+                case RestoringSessionState():
+                  const RestoringSessionRoute().go(context);
+                  break;
+                case VerifyIdentityState(userId: var userId):
+                  VerifyIdentityRoute(userId: userId).go(context);
+                  break;
+                case SwitchingAccountsState():
+                  const SwitchingAccountsRoute().push(context);
+                  break;
+                case AuthenticatedState():
+                  const LandingRoute().go(context);
+                  break;
+                case AuthenticatingState state:
+                  AuthenticatingRoute(state.currentStage.name).push(context);
+                  break;
+                case LoggingOutState():
+                  const LoggingOutRoute().go(context);
+                  break;
+                case AuthenticationErrorState():
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                  // LoginRoute(
+                  //   $extra: errorState.clientCertificate,
+                  //   password: errorState.password,
+                  //   serverUrl: errorState.serverUrl,
+                  //   username: errorState.username,
+                  // ).go(context);
+                  break;
+              }
+            },
+            child: child,
           );
         },
         navigatorKey: rootNavigatorKey,
