@@ -16,7 +16,7 @@ body:
         #### Have a question? 👉 [Start a new discussion](https://github.com/astubenbord/paperless-mobile/discussions/new)
         #### Have a feature request? 👉 [Use another form](https://github.com/astubenbord/paperless-mobile/issues/new/choose)
         
-        #### Before opening an issue, please double check [existing issues and discussions](https://github.com/paperless-ngx/paperless-ngx/search?q=&type=issues).
+        #### Before opening an issue, please double check [existing issues](https://github.com/astubenbord/paperless-mobile/issues).
   - type: textarea
     id: what-happened
     attributes:
