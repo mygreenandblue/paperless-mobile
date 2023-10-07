@@ -1,0 +1,21 @@
+---
+name: Feature Request
+description: Suggest an idea to help us improve W&B
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks :heart: for taking the time to fill out this feature request report!**
+        Please first check if a similar feature request [already exists](https://github.com/astubenbord/paperless-mobile/labels/enhancement). If this is the case, give a thumbs up so we know what the community is most interested in!
+
+        Want to contribute a new feature? Feel free to submit a PR!
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        A clear and concise description of the feature you're interested in.
+    validations:
+      required: true
