@@ -1,0 +1,71 @@
+name: Bug Report
+description: Report an issue you encountered while using the app
+title: "[BUG]: "
+labels: ["bug", "triage"]
+assignees:
+  - astubenbord
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Thank you for taking the time to fill out this bug report! 
+        If you want to request a feature or have general questions, please refer to one of the options below:
+  - type: markdown
+    attributes:
+      value: |
+        #### Have a question? 👉 [Start a new discussion](https://github.com/astubenbord/paperless-mobile/discussions/new)
+        #### Have a feature request? 👉 [Use another form](https://github.com/astubenbord/paperless-mobile/issues/new/choose)
+        
+        #### Before opening an issue, please double check [existing issues and discussions](https://github.com/paperless-ngx/paperless-ngx/search?q=&type=issues).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A concise description of what you see. Also describe the expected behavior.
+      placeholder: When I open the app, ...      
+      value: "Describe what happened!"
+    validations:
+      required: true
+  - type: input
+    id: server-version
+    attributes:
+      label: Paperless-ng*x Version
+      description: What version of paperless are you running?
+      placeholder: e.g. 1.17.4
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version
+      description: What version of the app are you using?
+      placeholder: e.g. 3.0.1
+    validations: 
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output from the app.
+      description: Logs can be acquired by running `flutter logs` or `adb logcat | grep flutter` while your phone is connected to the computer. Providing logs significantly increases the chance of quickly finding and fixing the issue.
+      render: shell
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Login with '...'
+        2. Click on '....'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Screenshots helping to better understand the issue.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other relevant details.
