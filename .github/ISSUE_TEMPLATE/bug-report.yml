@@ -40,7 +40,7 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Log output from the app.
+      label: Log output from the app
       description: Logs can be acquired by running `flutter logs` or `adb logcat | grep flutter` while your phone is connected to the computer. Providing logs significantly increases the chance of quickly finding and fixing the issue.
       render: shell
   - type: textarea
@@ -59,8 +59,8 @@ body:
   - type: input
     id: app-version
     attributes:
-      label: App Version
-      description: What version of the app are you using?
+      label: Paperless-Mobile Version
+      description: What version of the app are you using? The app version can be found in the "About this app" dialog located in the app drawer.
       placeholder: e.g. 3.0.1
     validations: 
       required: true
