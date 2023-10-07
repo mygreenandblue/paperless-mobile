@@ -366,7 +366,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "2e6c7396e13c2c6ecd0a704d2322b349a7a21584"
+      resolved-ref: "8eae877b37d4634f1b636e48ebffd9066b0cb47d"
       url: "https://github.com/sawankumarbundelkhandi/edge_detection"
     source: git
     version: "1.1.2"
