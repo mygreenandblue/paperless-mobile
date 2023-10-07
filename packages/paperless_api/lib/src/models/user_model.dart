@@ -7,14 +7,11 @@ import 'package:paperless_api/config/hive/hive_type_ids.dart';
 part 'user_model.g.dart';
 
 sealed class UserModel {
-  @HiveField(0)
-  final int id;
-  @HiveField(1)
-  final String username;
-  const UserModel({
-    required this.id,
-    required this.username,
-  });
+  int get id;
+
+  String get username;
+
+  const UserModel();
 
   String? get fullName;
 }
@@ -22,11 +19,18 @@ sealed class UserModel {
 @JsonSerializable(fieldRename: FieldRename.snake)
 @HiveType(typeId: PaperlessApiHiveTypeIds.userModelv2)
 class UserModelV2 extends UserModel {
+  @override
+  @HiveField(0)
+  @JsonKey(name: 'user_id')
+  final int id;
+  @override
+  @HiveField(1)
+  final String username;
   @HiveField(2)
   final String? displayName;
   const UserModelV2({
-    required super.id,
-    required super.username,
+    required this.id,
+    required this.username,
     this.displayName,
   });
   Map<String, dynamic> toJson() => _$UserModelV2ToJson(this);
@@ -40,6 +44,12 @@ class UserModelV2 extends UserModel {
 @JsonSerializable(fieldRename: FieldRename.snake)
 @HiveType(typeId: PaperlessApiHiveTypeIds.userModelv3)
 class UserModelV3 extends UserModel {
+  @override
+  @HiveField(0)
+  final int id;
+  @override
+  @HiveField(1)
+  final String username;
   @HiveField(2)
   final String? email;
   @HiveField(3)
@@ -76,8 +86,8 @@ class UserModelV3 extends UserModel {
   }
 
   const UserModelV3({
-    required super.id,
-    required super.username,
+    required this.id,
+    required this.username,
     this.email,
     this.firstName,
     this.lastName,
