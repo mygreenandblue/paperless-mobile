@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report an issue you encountered while using the app
-title: "[BUG]: "
+title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees:
   - astubenbord
