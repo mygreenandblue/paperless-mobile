@@ -26,6 +26,28 @@ body:
       value: "Describe what happened!"
     validations:
       required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Login with '...'
+        2. Click on '....'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output from the app.
+      description: Logs can be acquired by running `flutter logs` or `adb logcat | grep flutter` while your phone is connected to the computer. Providing logs significantly increases the chance of quickly finding and fixing the issue.
+      render: shell
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Screenshots helping to better understand the issue.
   - type: input
     id: server-version
     attributes:
@@ -42,28 +64,6 @@ body:
       placeholder: e.g. 3.0.1
     validations: 
       required: true
-  - type: textarea
-    id: logs
-    attributes:
-      label: Log output from the app.
-      description: Logs can be acquired by running `flutter logs` or `adb logcat | grep flutter` while your phone is connected to the computer. Providing logs significantly increases the chance of quickly finding and fixing the issue.
-      render: shell
-  - type: textarea
-    id: reproduction
-    attributes:
-      label: Steps to reproduce
-      description: Steps to reproduce the behavior.
-      placeholder: |
-        1. Login with '...'
-        2. Click on '....'
-        3. See error
-    validations:
-      required: true
-  - type: textarea
-    id: screenshots
-    attributes:
-      label: Screenshots
-      description: Screenshots helping to better understand the issue.
   - type: textarea
     id: context
     attributes:
