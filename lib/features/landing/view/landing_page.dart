@@ -35,7 +35,6 @@ class _LandingPageState extends State<LandingPage> {
             SliverOverlapAbsorber(
               handle: _searchBarHandle,
               sliver: SliverSearchBar(
-                floating: true,
                 titleText: S.of(context)!.documents,
               ),
             ),

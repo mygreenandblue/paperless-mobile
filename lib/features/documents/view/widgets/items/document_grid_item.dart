@@ -121,7 +121,9 @@ class DocumentGridItem extends DocumentItem {
                       ),
                       const Spacer(),
                       Text(
-                        DateFormat.yMMMd().format(document.created),
+                        DateFormat.yMMMMd(
+                                Localizations.localeOf(context).toString())
+                            .format(document.created),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

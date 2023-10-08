@@ -146,7 +146,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
                   )
                 : null,
           ),
-          format: DateFormat.yMd(),
+          format: DateFormat.yMd(Localizations.localeOf(context).toString()),
           lastDate: _dateTimeMax(_before, DateTime.now()),
           inputType: InputType.date,
           onChanged: (after) {
@@ -174,7 +174,7 @@ class _ExtendedDateRangeDialogState extends State<ExtendedDateRangeDialog> {
                   )
                 : null,
           ),
-          format: DateFormat.yMd(),
+          format: DateFormat.yMd(Localizations.localeOf(context).toString()),
           firstDate: _after,
           lastDate: DateTime.now(),
           onChanged: (before) {

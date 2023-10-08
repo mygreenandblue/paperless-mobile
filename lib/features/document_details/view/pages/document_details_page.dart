@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
@@ -43,6 +45,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   static const double _itemSpacing = 24;
 
   final _pagingScrollController = ScrollController();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    initializeDateFormatting(Localizations.localeOf(context).toString());
+  }
 
   @override
   Widget build(BuildContext context) {

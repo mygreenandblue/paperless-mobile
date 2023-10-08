@@ -89,7 +89,8 @@ class DocumentDetailedItem extends DocumentItem {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat.yMMMMd().format(document.created),
+                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                      .format(document.created),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall

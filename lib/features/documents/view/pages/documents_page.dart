@@ -177,13 +177,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
                                 child: _showExtendedFab
                                     ? Row(
                                         children: [
-                                          const Icon(
-                                            Icons.filter_alt_outlined,
-                                          ),
+                                          const Icon(Icons.filter_alt_outlined),
                                           const SizedBox(width: 8),
-                                          Text(
-                                            S.of(context)!.filterDocuments,
-                                          ),
+                                          Text(S.of(context)!.filterDocuments),
                                         ],
                                       )
                                     : const Icon(Icons.filter_alt_outlined),
@@ -270,7 +266,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                       builder: (context, state) {
                         if (state.selection.isEmpty) {
                           return SliverSearchBar(
-                            floating: true,
                             titleText: S.of(context)!.documents,
                           );
                         } else {

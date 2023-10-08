@@ -331,7 +331,8 @@ class _InboxPageState extends State<InboxPage>
         if (doc.added.isYesterday) {
           return S.of(context)!.yesterday;
         }
-        return DateFormat.yMMMMd().format(doc.added);
+        return DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+            .format(doc.added);
       },
     );
   }

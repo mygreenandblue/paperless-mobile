@@ -39,7 +39,8 @@ class DocumentOverviewWidget extends StatelessWidget {
             ),
           ).paddedOnly(bottom: itemSpacing),
         DetailsItem.text(
-          DateFormat.yMMMMd().format(document.created),
+          DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+              .format(document.created),
           context: context,
           label: S.of(context)!.createdAt,
         ).paddedOnly(bottom: itemSpacing),

@@ -15,16 +15,26 @@ class UserAvatar extends StatelessWidget {
         Colors.primaries[account.id.hashCode % Colors.primaries.length];
     final foregroundColor =
         backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-    return CircleAvatar(
-      child: Text(
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: backgroundColor.shade900.withOpacity(0.4),
+          width: 2,
+        ),
+      ),
+      child: CircleAvatar(
+        child: Text(
           (account.paperlessUser.fullName ?? account.paperlessUser.username)
               .split(" ")
               .take(2)
               .map((e) => e.substring(0, 1))
               .map((e) => e.toUpperCase())
-              .join("")),
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
+              .join(""),
+        ),
+        backgroundColor: backgroundColor,
+        foregroundColor: foregroundColor,
+      ),
     );
   }
 }

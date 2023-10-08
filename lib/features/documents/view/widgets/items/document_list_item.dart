@@ -81,7 +81,8 @@ class DocumentListItem extends DocumentItem {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           text: TextSpan(
-            text: DateFormat.yMMMd().format(document.created),
+            text: DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                .format(document.created),
             style: Theme.of(context)
                 .textTheme
                 .labelSmall

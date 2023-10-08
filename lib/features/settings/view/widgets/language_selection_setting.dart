@@ -13,7 +13,8 @@ class LanguageSelectionSetting extends StatefulWidget {
 
 class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
-    'en': LanguageOption('English', true),
+    'en': LanguageOption('English (US)', true),
+    'en_GB': LanguageOption('English (GB)', true),
     'de': LanguageOption('Deutsch', true),
     'es': LanguageOption("Español", true),
     'fr': LanguageOption('Français', true),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
@@ -39,7 +40,7 @@ class AddAccountRoute extends GoRouteData {
                   clientCertificate: clientCertificate,
                   serverUrl: serverUrl,
                   enableBiometricAuthentication: false,
-                  locale: Localizations.localeOf(context).languageCode,
+                  locale: Intl.getCurrentLocale(),
                 );
             final shoudSwitch = await showDialog<bool>(
                   context: context,
