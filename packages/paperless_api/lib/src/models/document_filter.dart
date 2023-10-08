@@ -185,7 +185,7 @@ class DocumentFilter extends Equatable {
         added.matches(document.added) &&
         modified.matches(document.modified) &&
         query.matches(
-          title: document.title,
+          title: document.title ?? '',
           content: document.content,
           asn: document.archiveSerialNumber,
         );

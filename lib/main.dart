@@ -36,15 +36,8 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
@@ -197,12 +190,14 @@ void main() async {
               value: localNotificationService),
           Provider.value(value: DocumentChangedNotifier()),
         ],
-        child: MultiBlocProvider(
+        child: MultiProvider(
           providers: [
-            BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-            BlocProvider.value(value: authenticationCubit),
+            Provider<ConnectivityCubit>.value(value: connectivityCubit),
+            Provider.value(value: authenticationCubit),
           ],
-          child: GoRouterShell(apiFactory: apiFactory),
+          child: GoRouterShell(
+            apiFactory: apiFactory,
+          ),
         ),
       ),
     );
@@ -221,10 +216,7 @@ void main() async {
 
 class GoRouterShell extends StatefulWidget {
   final PaperlessApiFactory apiFactory;
-  const GoRouterShell({
-    super.key,
-    required this.apiFactory,
-  });
+  const GoRouterShell({super.key, required this.apiFactory});
 
   @override
   State<GoRouterShell> createState() => _GoRouterShellState();
@@ -267,50 +259,53 @@ class _GoRouterShellState extends State<GoRouterShell> {
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          return BlocListener<AuthenticationCubit, AuthenticationState>(
-            listener: (context, state) {
-              switch (state) {
-                case UnauthenticatedState(
-                    redirectToAccountSelection: var shouldRedirect
-                  ):
-                  if (shouldRedirect) {
-                    const LoginToExistingAccountRoute().go(context);
-                  } else {
-                    const LoginRoute().go(context);
-                  }
-                  break;
-                case RestoringSessionState():
-                  const RestoringSessionRoute().go(context);
-                  break;
-                case VerifyIdentityState(userId: var userId):
-                  VerifyIdentityRoute(userId: userId).go(context);
-                  break;
-                case SwitchingAccountsState():
-                  const SwitchingAccountsRoute().push(context);
-                  break;
-                case AuthenticatedState():
-                  const LandingRoute().go(context);
-                  break;
-                case AuthenticatingState state:
-                  AuthenticatingRoute(state.currentStage.name).push(context);
-                  break;
-                case LoggingOutState():
-                  const LoggingOutRoute().go(context);
-                  break;
-                case AuthenticationErrorState():
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                  // LoginRoute(
-                  //   $extra: errorState.clientCertificate,
-                  //   password: errorState.password,
-                  //   serverUrl: errorState.serverUrl,
-                  //   username: errorState.username,
-                  // ).go(context);
-                  break;
-              }
-            },
-            child: child,
+          return Provider.value(
+            value: widget.apiFactory,
+            child: BlocListener<AuthenticationCubit, AuthenticationState>(
+              listener: (context, state) {
+                switch (state) {
+                  case UnauthenticatedState(
+                      redirectToAccountSelection: var shouldRedirect
+                    ):
+                    if (shouldRedirect) {
+                      const LoginToExistingAccountRoute().go(context);
+                    } else {
+                      const LoginRoute().go(context);
+                    }
+                    break;
+                  case RestoringSessionState():
+                    const RestoringSessionRoute().go(context);
+                    break;
+                  case VerifyIdentityState(userId: var userId):
+                    VerifyIdentityRoute(userId: userId).go(context);
+                    break;
+                  case SwitchingAccountsState():
+                    const SwitchingAccountsRoute().push(context);
+                    break;
+                  case AuthenticatedState():
+                    const LandingRoute().go(context);
+                    break;
+                  case AuthenticatingState state:
+                    AuthenticatingRoute(state.currentStage.name).push(context);
+                    break;
+                  case LoggingOutState():
+                    const LoggingOutRoute().go(context);
+                    break;
+                  case AuthenticationErrorState():
+                    if (context.canPop()) {
+                      context.pop();
+                    }
+                    // LoginRoute(
+                    //   $extra: errorState.clientCertificate,
+                    //   password: errorState.password,
+                    //   serverUrl: errorState.serverUrl,
+                    //   username: errorState.username,
+                    // ).go(context);
+                    break;
+                }
+              },
+              child: child,
+            ),
           );
         },
         navigatorKey: rootNavigatorKey,
@@ -318,44 +313,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loginRoute,
           $loggingOutRoute,
           $addAccountRoute,
-          ShellRoute(
-            navigatorKey: outerShellNavigatorKey,
-            builder: ProviderShellRoute(widget.apiFactory).build,
-            routes: [
-              $settingsRoute,
-              $savedViewsRoute,
-              $uploadQueueRoute,
-              StatefulShellRoute(
-                navigatorContainerBuilder:
-                    (context, navigationShell, children) {
-                  return children[navigationShell.currentIndex];
-                },
-                builder: const ScaffoldShellRoute().builder,
-                branches: [
-                  StatefulShellBranch(
-                    navigatorKey: landingNavigatorKey,
-                    routes: [$landingRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: documentsNavigatorKey,
-                    routes: [$documentsRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: scannerNavigatorKey,
-                    routes: [$scannerRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: labelsNavigatorKey,
-                    routes: [$labelsRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: inboxNavigatorKey,
-                    routes: [$inboxRoute],
-                  ),
-                ],
-              ),
-            ],
-          ),
+          $providerShellRoute,
         ],
       ),
     ],

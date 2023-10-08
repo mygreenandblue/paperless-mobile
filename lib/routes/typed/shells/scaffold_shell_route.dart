@@ -8,6 +8,12 @@ import 'package:paperless_mobile/features/home/view/scaffold_with_navigation_bar
 
 class ScaffoldShellRoute extends StatefulShellRouteData {
   const ScaffoldShellRoute();
+
+  static Widget $navigatorContainerBuilder(BuildContext context,
+      StatefulNavigationShell navigationShell, List<Widget> children) {
+    return children[navigationShell.currentIndex];
+  }
+
   @override
   Widget builder(
     BuildContext context,

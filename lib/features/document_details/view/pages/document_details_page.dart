@@ -23,6 +23,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final bool isLabelClickable;
@@ -48,6 +49,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
     final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
+    final title = context.watch<DocumentDetailsCubit>().state.document.title;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context)
@@ -74,11 +76,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   handle:
                       NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
-                    title: Text(context
-                        .watch<DocumentDetailsCubit>()
-                        .state
-                        .document
-                        .title),
+                    title: title != null ? Text(title) : null,
                     leading: const BackButton(),
                     pinned: true,
                     forceElevated: innerBoxIsScrolled,
@@ -103,6 +101,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                       enableHero: false,
                                       document: state.document,
                                       fit: BoxFit.cover,
+                                      alignment: Alignment.topCenter,
                                     ),
                                   ),
                                   Positioned.fill(
@@ -221,10 +220,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 document: state.document,
                                 itemSpacing: _itemSpacing,
                                 queryString: widget.titleAndContentQueryString,
-                                availableCorrespondents: state.correspondents,
-                                availableDocumentTypes: state.documentTypes,
-                                availableTags: state.tags,
-                                availableStoragePaths: state.storagePaths,
                               ),
                             ],
                           ),

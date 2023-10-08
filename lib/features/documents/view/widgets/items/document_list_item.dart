@@ -58,7 +58,7 @@ class DocumentListItem extends DocumentItem {
             ],
           ),
           Text(
-            document.title,
+            document.title ?? '-',
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),

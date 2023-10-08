@@ -14,7 +14,6 @@ import 'package:paperless_mobile/features/login/view/widgets/login_transition_pa
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/routes.dart';
-
 part 'login_route.g.dart';
 
 @TypedGoRoute<LoginRoute>(
@@ -80,10 +79,13 @@ class SwitchingAccountsRoute extends GoRouteData {
   static final $parentNavigatorKey = rootNavigatorKey;
 
   const SwitchingAccountsRoute();
+
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return LoginTransitionPage(
-      text: S.of(context)!.switchingAccountsPleaseWait,
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return NoTransitionPage(
+      child: LoginTransitionPage(
+        text: S.of(context)!.switchingAccountsPleaseWait,
+      ),
     );
   }
 }
@@ -93,8 +95,9 @@ class AuthenticatingRoute extends GoRouteData {
 
   final String checkLoginStageName;
   const AuthenticatingRoute(this.checkLoginStageName);
+
   @override
-  Widget build(BuildContext context, GoRouterState state) {
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
     final stage = AuthenticatingStage.values.byName(checkLoginStageName);
     final text = switch (stage) {
       AuthenticatingStage.authenticating => S.of(context)!.authenticatingDots,
@@ -103,8 +106,11 @@ class AuthenticatingRoute extends GoRouteData {
       AuthenticatingStage.fetchingUserInformation =>
         S.of(context)!.fetchingUserInformation,
     };
-
-    return LoginTransitionPage(text: text);
+    return NoTransitionPage(
+      child: LoginTransitionPage(
+        text: text,
+      ),
+    );
   }
 }
 
@@ -115,8 +121,10 @@ class VerifyIdentityRoute extends GoRouteData {
   const VerifyIdentityRoute({required this.userId});
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return VerifyIdentityPage(userId: userId);
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return NoTransitionPage(
+      child: VerifyIdentityPage(userId: userId),
+    );
   }
 }
 
@@ -134,8 +142,10 @@ class LoginToExistingAccountRoute extends GoRouteData {
   }
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const LoginToExistingAccountPage();
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return const NoTransitionPage(
+      child: LoginToExistingAccountPage(),
+    );
   }
 }
 
@@ -145,7 +155,11 @@ class RestoringSessionRoute extends GoRouteData {
   const RestoringSessionRoute();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return LoginTransitionPage(text: S.of(context)!.restoringSession);
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return NoTransitionPage(
+      child: LoginTransitionPage(
+        text: S.of(context)!.restoringSession,
+      ),
+    );
   }
 }

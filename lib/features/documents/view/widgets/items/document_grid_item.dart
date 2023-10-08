@@ -113,7 +113,7 @@ class DocumentGridItem extends DocumentItem {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
-                          document.title,
+                          document.title ?? '-',
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium,

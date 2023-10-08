@@ -10,38 +10,12 @@ import 'package:paperless_mobile/features/document_upload/view/document_upload_p
 import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/routes.dart';
 
-part 'scanner_route.g.dart';
-
-// @TypedStatefulShellBranch<ScannerBranch>(
-//   routes: [
-//     TypedGoRoute<ScannerRoute>(
-//       path: "/scanner",
-//       name: R.scanner,
-//       routes: [
-//         TypedGoRoute<DocumentUploadRoute>(
-//           path: "upload",
-//           name: R.uploadDocument,
-//         ),
-//       ],
-//     ),
-//   ],
-// )
 class ScannerBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = scannerNavigatorKey;
 
   const ScannerBranch();
 }
 
-@TypedGoRoute<ScannerRoute>(
-  path: "/scanner",
-  name: R.scanner,
-  routes: [
-    TypedGoRoute<DocumentUploadRoute>(
-      path: "upload",
-      name: R.uploadDocument,
-    ),
-  ],
-)
 class ScannerRoute extends GoRouteData {
   const ScannerRoute();
 

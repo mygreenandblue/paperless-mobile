@@ -25,6 +25,7 @@ import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dar
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class DocumentFilterIntent {
@@ -620,9 +621,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
     final cubit = context.read<DocumentsCubit>();
 
     try {
-      switch (cubit.state.filter.storagePath){
-           case SetIdQueryParameter(id: var id):
-            if (id == pathId) {
+      switch (cubit.state.filter.storagePath) {
+        case SetIdQueryParameter(id: var id):
+          if (id == pathId) {
             cubit.updateCurrentFilter(
               (filter) =>
                   filter.copyWith(storagePath: const UnsetIdQueryParameter()),
@@ -634,14 +635,13 @@ class _DocumentsPageState extends State<DocumentsPage> {
             );
           }
           break;
-          default: 
-            cubit.updateCurrentFilter(
+        default:
+          cubit.updateCurrentFilter(
             (filter) =>
-                filter.copyWith(storagePath:  SetIdQueryParameter(id: pathId)),
+                filter.copyWith(storagePath: SetIdQueryParameter(id: pathId)),
           );
           break;
       }
-
     } on PaperlessApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }

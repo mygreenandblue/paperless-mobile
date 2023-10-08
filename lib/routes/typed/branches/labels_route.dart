@@ -14,33 +14,12 @@ import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
-
-part 'labels_route.g.dart';
 
 class LabelsBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = labelsNavigatorKey;
   const LabelsBranch();
 }
 
-@TypedGoRoute<LabelsRoute>(
-  path: "/labels",
-  name: R.labels,
-  routes: [
-    TypedGoRoute<EditLabelRoute>(
-      path: "edit",
-      name: R.editLabel,
-    ),
-    TypedGoRoute<CreateLabelRoute>(
-      path: "create",
-      name: R.createLabel,
-    ),
-    TypedGoRoute<LinkedDocumentsRoute>(
-      path: "linked-documents",
-      name: R.linkedDocuments,
-    ),
-  ],
-)
 class LabelsRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
