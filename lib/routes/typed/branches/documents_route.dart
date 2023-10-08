@@ -17,35 +17,11 @@ import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/theme.dart';
 
-part 'documents_route.g.dart';
-
 class DocumentsBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = documentsNavigatorKey;
   const DocumentsBranch();
 }
 
-@TypedGoRoute<DocumentsRoute>(
-  path: "/documents",
-  name: R.documents,
-  routes: [
-    TypedGoRoute<EditDocumentRoute>(
-      path: "edit",
-      name: R.editDocument,
-    ),
-    TypedGoRoute<DocumentDetailsRoute>(
-      path: "details",
-      name: R.documentDetails,
-    ),
-    TypedGoRoute<DocumentPreviewRoute>(
-      path: "preview",
-      name: R.documentPreview,
-    ),
-    TypedGoRoute<BulkEditDocumentsRoute>(
-      path: "bulk-edit",
-      name: R.bulkEditDocuments,
-    ),
-  ],
-)
 class DocumentsRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {

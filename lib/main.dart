@@ -36,31 +36,27 @@ import 'package:paperless_mobile/features/notifications/services/local_notificat
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/provider_shell_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String get defaultPreferredLocaleSubtag {
-  String preferredLocale = Platform.localeName.split("_").first;
-  if (!S.supportedLocales
-      .any((locale) => locale.languageCode == preferredLocale)) {
-    preferredLocale = 'en';
+Locale get defaultPreferredLocale {
+  final deviceLocale = _stringToLocale(Platform.localeName);
+  if (S.supportedLocales.contains(deviceLocale)) {
+    return deviceLocale;
+  } else if (S.supportedLocales
+      .map((e) => e.languageCode)
+      .contains(deviceLocale.languageCode)) {
+    return Locale(deviceLocale.languageCode);
+  } else {
+    return const Locale('en');
   }
-  return preferredLocale;
 }
 
 Map<String, Future<void> Function()> _migrations = {
@@ -106,7 +102,7 @@ Future<void> _initHive() async {
 
   if (!globalSettingsBox.hasValue) {
     await globalSettingsBox.setValue(
-      GlobalSettings(preferredLocaleSubtag: defaultPreferredLocaleSubtag),
+      GlobalSettings(preferredLocaleSubtag: defaultPreferredLocale.toString()),
     );
   }
 }
@@ -197,12 +193,14 @@ void main() async {
               value: localNotificationService),
           Provider.value(value: DocumentChangedNotifier()),
         ],
-        child: MultiBlocProvider(
+        child: MultiProvider(
           providers: [
-            BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
-            BlocProvider.value(value: authenticationCubit),
+            Provider<ConnectivityCubit>.value(value: connectivityCubit),
+            Provider.value(value: authenticationCubit),
           ],
-          child: GoRouterShell(apiFactory: apiFactory),
+          child: GoRouterShell(
+            apiFactory: apiFactory,
+          ),
         ),
       ),
     );
@@ -221,10 +219,7 @@ void main() async {
 
 class GoRouterShell extends StatefulWidget {
   final PaperlessApiFactory apiFactory;
-  const GoRouterShell({
-    super.key,
-    required this.apiFactory,
-  });
+  const GoRouterShell({super.key, required this.apiFactory});
 
   @override
   State<GoRouterShell> createState() => _GoRouterShellState();
@@ -267,50 +262,53 @@ class _GoRouterShellState extends State<GoRouterShell> {
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          return BlocListener<AuthenticationCubit, AuthenticationState>(
-            listener: (context, state) {
-              switch (state) {
-                case UnauthenticatedState(
-                    redirectToAccountSelection: var shouldRedirect
-                  ):
-                  if (shouldRedirect) {
-                    const LoginToExistingAccountRoute().go(context);
-                  } else {
-                    const LoginRoute().go(context);
-                  }
-                  break;
-                case RestoringSessionState():
-                  const RestoringSessionRoute().go(context);
-                  break;
-                case VerifyIdentityState(userId: var userId):
-                  VerifyIdentityRoute(userId: userId).go(context);
-                  break;
-                case SwitchingAccountsState():
-                  const SwitchingAccountsRoute().push(context);
-                  break;
-                case AuthenticatedState():
-                  const LandingRoute().go(context);
-                  break;
-                case AuthenticatingState state:
-                  AuthenticatingRoute(state.currentStage.name).push(context);
-                  break;
-                case LoggingOutState():
-                  const LoggingOutRoute().go(context);
-                  break;
-                case AuthenticationErrorState():
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                  // LoginRoute(
-                  //   $extra: errorState.clientCertificate,
-                  //   password: errorState.password,
-                  //   serverUrl: errorState.serverUrl,
-                  //   username: errorState.username,
-                  // ).go(context);
-                  break;
-              }
-            },
-            child: child,
+          return Provider.value(
+            value: widget.apiFactory,
+            child: BlocListener<AuthenticationCubit, AuthenticationState>(
+              listener: (context, state) {
+                switch (state) {
+                  case UnauthenticatedState(
+                      redirectToAccountSelection: var shouldRedirect
+                    ):
+                    if (shouldRedirect) {
+                      const LoginToExistingAccountRoute().go(context);
+                    } else {
+                      const LoginRoute().go(context);
+                    }
+                    break;
+                  case RestoringSessionState():
+                    const RestoringSessionRoute().go(context);
+                    break;
+                  case VerifyIdentityState(userId: var userId):
+                    VerifyIdentityRoute(userId: userId).go(context);
+                    break;
+                  case SwitchingAccountsState():
+                    const SwitchingAccountsRoute().push(context);
+                    break;
+                  case AuthenticatedState():
+                    const LandingRoute().go(context);
+                    break;
+                  case AuthenticatingState state:
+                    AuthenticatingRoute(state.currentStage.name).push(context);
+                    break;
+                  case LoggingOutState():
+                    const LoggingOutRoute().go(context);
+                    break;
+                  case AuthenticationErrorState():
+                    if (context.canPop()) {
+                      context.pop();
+                    }
+                    // LoginRoute(
+                    //   $extra: errorState.clientCertificate,
+                    //   password: errorState.password,
+                    //   serverUrl: errorState.serverUrl,
+                    //   username: errorState.username,
+                    // ).go(context);
+                    break;
+                }
+              },
+              child: child,
+            ),
           );
         },
         navigatorKey: rootNavigatorKey,
@@ -318,44 +316,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loginRoute,
           $loggingOutRoute,
           $addAccountRoute,
-          ShellRoute(
-            navigatorKey: outerShellNavigatorKey,
-            builder: ProviderShellRoute(widget.apiFactory).build,
-            routes: [
-              $settingsRoute,
-              $savedViewsRoute,
-              $uploadQueueRoute,
-              StatefulShellRoute(
-                navigatorContainerBuilder:
-                    (context, navigationShell, children) {
-                  return children[navigationShell.currentIndex];
-                },
-                builder: const ScaffoldShellRoute().builder,
-                branches: [
-                  StatefulShellBranch(
-                    navigatorKey: landingNavigatorKey,
-                    routes: [$landingRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: documentsNavigatorKey,
-                    routes: [$documentsRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: scannerNavigatorKey,
-                    routes: [$scannerRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: labelsNavigatorKey,
-                    routes: [$labelsRoute],
-                  ),
-                  StatefulShellBranch(
-                    navigatorKey: inboxNavigatorKey,
-                    routes: [$inboxRoute],
-                  ),
-                ],
-              ),
-            ],
-          ),
+          $providerShellRoute,
         ],
       ),
     ],
@@ -365,6 +326,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
   Widget build(BuildContext context) {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
+        final locale = _stringToLocale(settings.preferredLocaleSubtag);
         return DynamicColorBuilder(
           builder: (lightDynamic, darkDynamic) {
             return MaterialApp.router(
@@ -382,10 +344,41 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 preferredColorScheme: settings.preferredColorSchemeOption,
               ),
               themeMode: settings.preferredThemeMode,
-              supportedLocales: S.supportedLocales,
-              locale: Locale.fromSubtags(
-                languageCode: settings.preferredLocaleSubtag,
-              ),
+              supportedLocales: const [
+                Locale('en'),
+                Locale('de'),
+                Locale('en', 'GB'),
+                Locale('ca'),
+                Locale('cs'),
+                Locale('es'),
+                Locale('fr'),
+                Locale('pl'),
+                Locale('ru'),
+                Locale('tr'),
+              ],
+              localeResolutionCallback: (locale, supportedLocales) {
+                if (locale == null) {
+                  return supportedLocales.first;
+                }
+
+                final exactMatch = supportedLocales
+                    .where((element) =>
+                        element.languageCode == locale.languageCode &&
+                        element.countryCode == locale.countryCode)
+                    .toList();
+                if (exactMatch.isNotEmpty) {
+                  return exactMatch.first;
+                }
+                final superLanguageMatch = supportedLocales
+                    .where((element) =>
+                        element.languageCode == locale.languageCode)
+                    .toList();
+                if (superLanguageMatch.isNotEmpty) {
+                  return superLanguageMatch.first;
+                }
+                return supportedLocales.first;
+              },
+              locale: locale,
               localizationsDelegates: S.localizationsDelegates,
             );
           },
@@ -393,4 +386,11 @@ class _GoRouterShellState extends State<GoRouterShell> {
       },
     );
   }
+}
+
+Locale _stringToLocale(String code) {
+  final codes = code.split("_");
+  final languageCode = codes[0];
+  final countryCode = codes.length > 1 ? codes[1] : null;
+  return Locale(languageCode, countryCode);
 }

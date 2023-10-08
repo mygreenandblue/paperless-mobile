@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:provider/provider.dart';
 

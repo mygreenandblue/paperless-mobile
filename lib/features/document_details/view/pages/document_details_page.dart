@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
@@ -23,6 +25,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final bool isLabelClickable;
@@ -42,12 +45,18 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
   static const double _itemSpacing = 24;
 
   final _pagingScrollController = ScrollController();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    initializeDateFormatting(Localizations.localeOf(context).toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
     final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
+    final title = context.watch<DocumentDetailsCubit>().state.document.title;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context)
@@ -74,11 +83,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   handle:
                       NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
-                    title: Text(context
-                        .watch<DocumentDetailsCubit>()
-                        .state
-                        .document
-                        .title),
+                    title: title != null ? Text(title) : null,
                     leading: const BackButton(),
                     pinned: true,
                     forceElevated: innerBoxIsScrolled,
@@ -103,6 +108,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                       enableHero: false,
                                       document: state.document,
                                       fit: BoxFit.cover,
+                                      alignment: Alignment.topCenter,
                                     ),
                                   ),
                                   Positioned.fill(
@@ -221,10 +227,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 document: state.document,
                                 itemSpacing: _itemSpacing,
                                 queryString: widget.titleAndContentQueryString,
-                                availableCorrespondents: state.correspondents,
-                                availableDocumentTypes: state.documentTypes,
-                                availableTags: state.tags,
-                                availableStoragePaths: state.storagePaths,
                               ),
                             ],
                           ),

@@ -1,14 +1,14 @@
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_mobile/features/inbox/view/pages/inbox_page.dart';
-import 'package:paperless_mobile/routes/routes.dart';
+import 'package:paperless_mobile/routes/navigation_keys.dart';
 
-part 'inbox_route.g.dart';
+class InboxBranch extends StatefulShellBranchData {
+  static final GlobalKey<NavigatorState> $navigatorKey = inboxNavigatorKey;
 
-@TypedGoRoute<InboxRoute>(
-  path: "/inbox",
-  name: R.inbox,
-)
+  const InboxBranch();
+}
+
 class InboxRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {

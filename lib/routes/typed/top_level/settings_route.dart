@@ -6,14 +6,9 @@ import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/theme.dart';
 
-part 'settings_route.g.dart';
-
-@TypedGoRoute<SettingsRoute>(
-  path: "/settings",
-  name: R.settings,
-)
 class SettingsRoute extends GoRouteData {
-  static final GlobalKey<NavigatorState> $parentNavigatorKey = outerShellNavigatorKey;
+  static final GlobalKey<NavigatorState> $parentNavigatorKey =
+      outerShellNavigatorKey;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {

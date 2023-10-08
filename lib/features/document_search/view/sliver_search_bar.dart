@@ -10,12 +10,10 @@ import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart
 import 'package:provider/provider.dart';
 
 class SliverSearchBar extends StatelessWidget {
-  final bool floating;
   final bool pinned;
   final String titleText;
   const SliverSearchBar({
     super.key,
-    this.floating = false,
     this.pinned = false,
     required this.titleText,
   });

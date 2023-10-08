@@ -13,6 +13,7 @@ import 'package:paperless_mobile/features/login/model/login_form_credentials.dar
 import 'package:paperless_mobile/features/login/view/add_account_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 
 class LoginPage extends StatelessWidget {

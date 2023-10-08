@@ -68,7 +68,6 @@ class _DocumentUploadPreparationPageState
   void initState() {
     super.initState();
     _syncTitleAndFilename = widget.filename == null && widget.title == null;
-    initializeDateFormatting();
   }
 
   @override
@@ -219,7 +218,8 @@ class _DocumentUploadPreparationPageState
                             // Created at
                             FormBuilderDateTimePicker(
                               autovalidateMode: AutovalidateMode.always,
-                              format: DateFormat.yMMMMd(),
+                              format: DateFormat.yMMMMd(
+                                  Localizations.localeOf(context).toString()),
                               inputType: InputType.date,
                               name: DocumentModel.createdKey,
                               initialValue: null,

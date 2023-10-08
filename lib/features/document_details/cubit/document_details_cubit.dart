@@ -218,7 +218,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       throw Exception("An error occurred while downloading the document.");
     }
     Printing.layoutPdf(
-      name: state.document.title,
+      name: state.document.title ?? 'Document',
       onLayout: (format) => file.readAsBytesSync(),
     );
   }

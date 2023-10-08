@@ -15,6 +15,7 @@ import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dar
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class LabelsPage extends StatefulWidget {
   const LabelsPage({Key? key}) : super(key: key);

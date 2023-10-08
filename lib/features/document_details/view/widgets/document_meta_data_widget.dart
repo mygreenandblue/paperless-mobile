@@ -44,12 +44,14 @@ class _DocumentMetaDataWidgetState extends State<DocumentMetaDataWidget> {
                   document: widget.document,
                 ).paddedOnly(bottom: widget.itemSpacing),
               DetailsItem.text(
-                DateFormat().format(widget.document.modified),
+                DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                    .format(widget.document.modified),
                 context: context,
                 label: S.of(context)!.modifiedAt,
               ).paddedOnly(bottom: widget.itemSpacing),
               DetailsItem.text(
-                DateFormat().format(widget.document.added),
+                DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                    .format(widget.document.added),
                 context: context,
                 label: S.of(context)!.addedAt,
               ).paddedOnly(bottom: widget.itemSpacing),

@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
+import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -21,6 +23,10 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentAccount = context.watch<LocalUserAccount>();
+    final username = currentAccount.paperlessUser.username;
+    final serverUrl =
+        currentAccount.serverUrl.replaceAll(RegExp(r'https?://'), '');
     return SafeArea(
       child: Drawer(
         child: Column(
@@ -28,19 +34,74 @@ class AppDrawer extends StatelessWidget {
           children: [
             Row(
               children: [
-                const PaperlessLogo.green(),
+                const PaperlessLogo.green(
+                  width: 32,
+                  height: 32,
+                ),
                 Text(
                   "Paperless Mobile",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
-            ).padded(),
+            ).paddedLTRB(8, 8, 8, 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  S.of(context)!.loggedInAs(username),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.5),
+                      ),
+                ),
+                Text(
+                  serverUrl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.5),
+                      ),
+                ),
+              ],
+            ).paddedSymmetrically(horizontal: 16),
             const Divider(),
             ListTile(
               dense: true,
               title: Text(S.of(context)!.aboutThisApp),
               leading: const Icon(Icons.info_outline),
               onTap: () => _showAboutDialog(context),
+            ),
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.favorite_outline),
+              title: Text(S.of(context)!.donate),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    icon: const Icon(Icons.favorite),
+                    title: Text(S.of(context)!.donate),
+                    content: Text(
+                      S.of(context)!.donationDialogContent,
+                    ),
+                    actionsAlignment: MainAxisAlignment.spaceBetween,
+                    actions: [
+                      Text("~ Anton"),
+                      TextButton(
+                        onPressed: Navigator.of(context).pop,
+                        child: Text(S.of(context)!.gotIt),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             ListTile(
               dense: true,
@@ -59,26 +120,6 @@ class AppDrawer extends StatelessWidget {
                 launchUrlString(
                   'https://github.com/astubenbord/paperless-mobile/issues/new',
                   mode: LaunchMode.externalApplication,
-                );
-              },
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.favorite_outline),
-              title: Text(S.of(context)!.donate),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    icon: const Icon(Icons.favorite),
-                    title: Text(S.of(context)!.donate),
-                    content: Text(
-                      S.of(context)!.donationDialogContent,
-                    ),
-                    actions: const [
-                      Text("~ Anton"),
-                    ],
-                  ),
                 );
               },
             ),

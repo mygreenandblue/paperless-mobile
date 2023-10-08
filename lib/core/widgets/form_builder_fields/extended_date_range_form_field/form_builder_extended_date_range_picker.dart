@@ -79,7 +79,7 @@ class _FormBuilderExtendedDateRangePickerState
   }
 
   String _dateRangeQueryToString(DateRangeQuery query) {
-    final df = DateFormat.yMd();
+    final df = DateFormat.yMd(Localizations.localeOf(context).toString());
     if (query is UnsetDateRangeQuery) {
       return '';
     } else if (query is AbsoluteDateRangeQuery) {

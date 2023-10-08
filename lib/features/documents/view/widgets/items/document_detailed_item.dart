@@ -89,7 +89,8 @@ class DocumentDetailedItem extends DocumentItem {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat.yMMMMd().format(document.created),
+                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                      .format(document.created),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -110,7 +111,7 @@ class DocumentDetailedItem extends DocumentItem {
               ],
             ).paddedLTRB(8, 8, 8, 4),
             Text(
-              document.title,
+              document.title ?? '-',
               style: Theme.of(context).textTheme.titleMedium,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

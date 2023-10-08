@@ -376,14 +376,16 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
             label: Text(S.of(context)!.createdAt),
           ),
           initialValue: initialCreatedAtDate,
-          format: DateFormat.yMMMMd(),
+          format: DateFormat.yMMMMd(Localizations.localeOf(context).toString()),
           initialEntryMode: DatePickerEntryMode.calendar,
         ),
         if (filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(
             suggestions: filteredSuggestions!.dates,
             itemBuilder: (context, itemData) => ActionChip(
-              label: Text(DateFormat.yMMMd().format(itemData)),
+              label: Text(
+                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                      .format(itemData)),
               onPressed: () => _formKey.currentState?.fields[fkCreatedDate]
                   ?.didChange(itemData),
             ),
