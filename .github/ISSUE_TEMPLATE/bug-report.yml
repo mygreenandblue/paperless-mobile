@@ -9,6 +9,7 @@ body:
     attributes:
       value: |
         ###  Thank you for taking the time to fill out this bug report! 
+        ---
         #### Before opening an issue, please double check [existing issues](https://github.com/astubenbord/paperless-mobile/issues).
         #### Have a question? 👉 [Start a new discussion](https://github.com/astubenbord/paperless-mobile/discussions/new)
         #### Have a feature request? 👉 [Use another form](https://github.com/astubenbord/paperless-mobile/issues/new/choose)
