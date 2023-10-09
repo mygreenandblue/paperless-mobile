@@ -64,6 +64,46 @@ body:
       placeholder: e.g. 3.0.1
     validations: 
       required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: What device are you running Paperless Mobile on?
+      placeholder: e.g. Google Pixel 7 or iPhone 12 Pro
+    validations: 
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: Operating System Version
+      description: What OS is installed on your device?
+      placeholder: e.g. Android 13 or iOS 16.6
+    validations: 
+      required: true
+  - type: input
+    id: device-locale
+    attributes:
+      label: Device Locale
+      description: What is the locale of your device?
+      placeholder: e.g. german
+    validations: 
+      required: true
+  - type: dropdown
+    id: selected-locale
+    attributes:
+      label: Selected Locale
+      description: What is the locale you have selected? If you have localization issues, please provide this information.
+      options:
+        - German
+        - English (US)
+        - English (UK)
+        - French
+        - Spanish
+        - Catalan
+        - Polish 
+        - Russian
+        - Turkish
+        - Czech
   - type: textarea
     id: context
     attributes:
