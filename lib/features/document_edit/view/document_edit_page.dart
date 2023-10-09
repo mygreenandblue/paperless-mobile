@@ -10,6 +10,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
+import 'package:paperless_mobile/core/widgets/form_builder_fields/localized_form_builder_date_picker.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
@@ -364,21 +365,28 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   }
 
   Widget _buildCreatedAtFormField(
-      DateTime? initialCreatedAtDate, FieldSuggestions? filteredSuggestions) {
+    DateTime? initialCreatedAtDate,
+    FieldSuggestions? filteredSuggestions,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FormBuilderDateTimePicker(
-          inputType: InputType.date,
+        LocalizedFormBuilderDatePicker(
           name: fkCreatedDate,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.calendar_month_outlined),
-            label: Text(S.of(context)!.createdAt),
-          ),
+          label: S.of(context)!.createdAt,
           initialValue: initialCreatedAtDate,
-          format: DateFormat.yMMMMd(Localizations.localeOf(context).toString()),
-          initialEntryMode: DatePickerEntryMode.calendar,
         ),
+        // FormBuilderDateTimePicker(
+        //   inputType: InputType.date,
+        //   name: fkCreatedDate,
+        //   decoration: InputDecoration(
+        //     prefixIcon: const Icon(Icons.calendar_month_outlined),
+        //     label: Text(S.of(context)!.createdAt),
+        //   ),
+        //   initialValue: initialCreatedAtDate,
+        //   format: DateFormat.yMMMMd(Localizations.localeOf(context).toString()),
+        //   initialEntryMode: DatePickerEntryMode.calendar,
+        // ),
         if (filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(
             suggestions: filteredSuggestions!.dates,
