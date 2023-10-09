@@ -44,6 +44,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     Iterable<int> tags = const [],
     DateTime? createdAt,
     int? asn,
+    void Function(double)? onProgressChanged,
   }) async {
     final taskId = await _documentApi.create(
       bytes,
@@ -54,6 +55,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       tags: tags,
       createdAt: createdAt,
       asn: asn,
+      onProgressChanged: onProgressChanged,
     );
     if (taskId != null) {
       _tasksNotifier.listenToTaskChanges(taskId);

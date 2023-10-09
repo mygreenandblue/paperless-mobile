@@ -20,6 +20,7 @@ import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,10 @@ part 'authenticated_route.g.dart';
     TypedGoRoute<SettingsRoute>(
       path: "/settings",
       name: R.settings,
+    ),
+    TypedGoRoute<UploadQueueRoute>(
+      path: "/upload-queue",
+      name: R.uploadQueue,
     ),
     TypedStatefulShellRoute<ScaffoldShellRoute>(
       branches: [
