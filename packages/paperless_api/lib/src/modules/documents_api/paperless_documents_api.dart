@@ -14,6 +14,7 @@ abstract class PaperlessDocumentsApi {
     int? correspondent,
     Iterable<int> tags = const [],
     int? asn,
+    void Function(double progress)? onProgressChanged,
   });
   Future<DocumentModel> update(DocumentModel doc);
   Future<int> findNextAsn();

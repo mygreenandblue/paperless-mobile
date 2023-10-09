@@ -141,13 +141,13 @@ class _EventListenerShellState extends State<EventListenerShell>
     if (files.isNotEmpty) {
       final userId = context.read<LocalUserAccount>().id;
       final notifier = context.read<ConsumptionChangeNotifier>();
-      await notifier.addFiles(
+      final addedLocalFiles = await notifier.addFiles(
         files: files,
         userId: userId,
       );
       consumeLocalFiles(
         context,
-        files: files,
+        files: addedLocalFiles,
         userId: userId,
         exitAppAfterConsumed: true,
       );

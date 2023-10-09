@@ -23,27 +23,28 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
   }
 
   /// Creates a local copy of all shared files and reloads all files
-  /// from the user's consumption directory.
-  Future<void> addFiles({
+  /// from the user's consumption directory. Returns the newly added files copied to the consumption directory.
+  Future<List<File>> addFiles({
     required List<File> files,
     required String userId,
   }) async {
     if (files.isEmpty) {
-      return;
+      return [];
     }
     final consumptionDirectory =
         await FileService.getConsumptionDirectory(userId: userId);
+    final List<File> localFiles = [];
     for (final file in files) {
-      File localFile;
-      if (file.path.startsWith(consumptionDirectory.path)) {
-        localFile = file;
+      if (!file.path.startsWith(consumptionDirectory.path)) {
+        final localFile = await file
+            .copy(p.join(consumptionDirectory.path, p.basename(file.path)));
+        localFiles.add(localFile);
       } else {
-        final fileName = p.basename(file.path);
-        localFile = File(p.join(consumptionDirectory.path, fileName));
-        await file.copy(localFile.path);
+        localFiles.add(file);
       }
     }
-    return loadFromConsumptionDirectory(userId: userId);
+    await loadFromConsumptionDirectory(userId: userId);
+    return localFiles;
   }
 
   /// Marks a file as processed by removing it from the queue and deleting the local copy of the file.
