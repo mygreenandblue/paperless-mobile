@@ -5,7 +5,8 @@ import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class FullscreenLabelForm<T extends Label> extends StatefulWidget {
-  final IdQueryParameter? initialValue;
+  /// If null, this will resolve to [UnsetIdQueryParameter].
+  final IdQueryParameter initialValue;
 
   final Map<int, T> options;
   final Future<T?> Function(String? initialName)? onCreateNewLabel;
@@ -20,7 +21,7 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
 
   FullscreenLabelForm({
     super.key,
-    this.initialValue,
+    this.initialValue = const UnsetIdQueryParameter(),
     required this.options,
     required this.onCreateNewLabel,
     this.showNotAssignedOption = true,
@@ -31,12 +32,8 @@ class FullscreenLabelForm<T extends Label> extends StatefulWidget {
     this.autofocus = true,
     this.allowSelectUnassigned = true,
     required this.canCreateNewLabel,
-  })  : assert(
-          !(initialValue?.isOnlyAssigned ?? false) || showAnyAssignedOption,
-        ),
-        assert(
-          !(initialValue?.isOnlyNotAssigned ?? false) || showNotAssignedOption,
-        ),
+  })  : assert(!(initialValue.isOnlyAssigned) || showAnyAssignedOption),
+        assert(!(initialValue.isOnlyNotAssigned) || showNotAssignedOption),
         assert((addNewLabelText != null) == (onCreateNewLabel != null));
 
   @override
@@ -52,9 +49,9 @@ class _FullscreenLabelFormState<T extends Label>
   @override
   void initState() {
     super.initState();
-    _textEditingController.addListener(() => setState(() {
-          _showClearIcon = _textEditingController.text.isNotEmpty;
-        }));
+    _textEditingController.addListener(() {
+      setState(() => _showClearIcon = _textEditingController.text.isNotEmpty);
+    });
     if (widget.autofocus) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         //Delay keyboard popup to ensure open animation is finished before.
@@ -130,36 +127,42 @@ class _FullscreenLabelFormState<T extends Label>
               child: const Icon(Icons.add),
             )
           : null,
-      body: Builder(
-        builder: (context) {
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  itemCount: options.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final option = options.elementAt(index);
-                    final highlight =
-                        AutocompleteHighlightedOption.of(context) == index;
-                    if (highlight) {
-                      SchedulerBinding.instance
-                          .addPostFrameCallback((Duration timeStamp) {
-                        Scrollable.ensureVisible(
-                          context,
-                          alignment: 0,
-                        );
-                      });
-                    }
-                    return _buildOptionWidget(option, highlight);
-                  },
-                ),
+      body: Builder(builder: (context) {
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final option = options.elementAt(index);
+                  final shouldHighlight = switch (option) {
+                    NotAssignedIdQueryParameter() => true,
+                    AnyAssignedIdQueryParameter() => true,
+                    SetIdQueryParameter(id: var id) =>
+                      (widget.options[id]?.documentCount ?? 0) > 0,
+                    _ => false,
+                  };
+                  final highlight =
+                      AutocompleteHighlightedOption.of(context) == index;
+                  if (highlight && shouldHighlight) {
+                    SchedulerBinding.instance
+                        .addPostFrameCallback((Duration timeStamp) {
+                      Scrollable.ensureVisible(
+                        context,
+                        alignment: 0,
+                      );
+                    });
+                  }
+                  return _buildOptionWidget(
+                      option, highlight && shouldHighlight);
+                },
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      }),
     );
   }
 
@@ -179,8 +182,12 @@ class _FullscreenLabelFormState<T extends Label>
   Iterable<IdQueryParameter> _filterOptionsByQuery(String query) sync* {
     final normalizedQuery = query.trim().toLowerCase();
     if (normalizedQuery.isEmpty) {
-      if (widget.initialValue == null) {
-        // If nothing is selected yet, show all options first.
+      if ((widget.initialValue.isUnset)) {
+        if (widget.options.isEmpty) {
+          yield const UnsetIdQueryParameter();
+          return;
+        }
+        // If nothing is selected yet (==> UnsetIdQueryParameter), show all options first.
         for (final option in widget.options.values) {
           yield SetIdQueryParameter(id: option.id!);
         }
@@ -243,12 +250,17 @@ class _FullscreenLabelFormState<T extends Label>
       AnyAssignedIdQueryParameter() => S.of(context)!.anyAssigned,
       SetIdQueryParameter(id: var id) =>
         widget.options[id]?.name ?? S.of(context)!.startTyping,
-      _ => null,
     };
   }
 
   Widget _buildOptionWidget(IdQueryParameter option, bool highlight) {
     void onTap() => widget.onSubmit(returnValue: option);
+    final hasNoAssignedDocumentsTextStyle = Theme.of(context)
+        .textTheme
+        .labelMedium
+        ?.apply(color: Theme.of(context).disabledColor);
+    final hasAssignedDocumentsTextStyle =
+        Theme.of(context).textTheme.labelMedium;
 
     return switch (option) {
       NotAssignedIdQueryParameter() => ListTile(
@@ -266,11 +278,20 @@ class _FullscreenLabelFormState<T extends Label>
       SetIdQueryParameter(id: var id) => ListTile(
           selected: highlight,
           selectedTileColor: Theme.of(context).focusColor,
-          title: Text(widget.options[id]!.name),
+          title: Text(
+            widget.options[id]!.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           onTap: onTap,
-          enabled: widget.allowSelectUnassigned
-              ? true
-              : widget.options[id]!.documentCount != 0,
+          trailing: Text(
+            S
+                .of(context)!
+                .documentsAssigned(widget.options[id]!.documentCount ?? 0),
+            style: (widget.options[id]!.documentCount ?? 0) > 0
+                ? hasAssignedDocumentsTextStyle
+                : hasNoAssignedDocumentsTextStyle,
+          ),
         ),
       UnsetIdQueryParameter() => Center(
           child: Column(

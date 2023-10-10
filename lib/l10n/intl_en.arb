@@ -348,49 +348,49 @@
   "@after": {},
   "before": "Before",
   "@before": {},
-  "days": "{count, plural, one{day} other{days}}",
+  "days": "{count, plural, zero{days} one{day} other{days}}",
   "@days": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNDays": "{count, plural, one{Yesterday} other{Last {count} days}}",
+  "lastNDays": "{count, plural, zero{} one{Yesterday} other{Last {count} days}}",
   "@lastNDays": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNMonths": "{count, plural, one{Last month} other{Last {count} months}}",
+  "lastNMonths": "{count, plural, zero{} one{Last month} other{Last {count} months}}",
   "@lastNMonths": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNWeeks": "{count, plural, one{Last week} other{Last {count} weeks}}",
+  "lastNWeeks": "{count, plural, zero{} one{Last week} other{Last {count} weeks}}",
   "@lastNWeeks": {
     "placeholders": {
       "count": {}
     }
   },
-  "lastNYears": "{count, plural, one{Last year} other{Last {count} years}}",
+  "lastNYears": "{count, plural, zero{} one{Last year} other{Last {count} years}}",
   "@lastNYears": {
     "placeholders": {
       "count": {}
     }
   },
-  "months": "{count, plural, one{month} other{months}}",
+  "months": "{count, plural, zero{} one{month} other{months}}",
   "@months": {
     "placeholders": {
       "count": {}
     }
   },
-  "weeks": "{count, plural, one{week} other{weeks}}",
+  "weeks": "{count, plural, zero{} one{week} other{weeks}}",
   "@weeks": {
     "placeholders": {
       "count": {}
     }
   },
-  "years": "{count, plural, one{year} other{years}}",
+  "years": "{count, plural, zero{} one{year} other{years}}",
   "@years": {
     "placeholders": {
       "count": {}
@@ -588,7 +588,7 @@
   "@createsASavedViewBasedOnTheCurrentFilterCriteria": {},
   "createViewsToQuicklyFilterYourDocuments": "Create views to quickly filter your documents.",
   "@createViewsToQuicklyFilterYourDocuments": {},
-  "nFiltersSet": "{count, plural, one{{count} filter set} other{{count} filters set}}",
+  "nFiltersSet": "{count, plural, zero{{count} filters set} one{{count} filter set} other{{count} filters set}}",
   "@nFiltersSet": {
     "placeholders": {
       "count": {}
@@ -996,5 +996,13 @@
   "restoringSession": "Restoring session...",
   "@restoringSession": {
     "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
+  },
+  "documentsAssigned": "{count, plural, zero{No documents} one{1 document} other{{count} documents}}",
+  "@documentsAssigned": {
+    "description": "Text shown with a correspondent, document type etc. to indicate the number of documents this filter will maximally yield."
+  },
+  "discardChangesWarning": "You have unsaved changes. By continuing, all changes will be lost. Do you want to discard these changes?",
+  "@discardChangesWarning": {
+    "description": "Warning message shown when the user tries to close a route without saving the changes."
   }
 }

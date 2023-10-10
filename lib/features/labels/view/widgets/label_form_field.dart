@@ -19,11 +19,11 @@ class LabelFormField<T extends Label> extends StatelessWidget {
   final String name;
   final String labelText;
   final FormFieldValidator? validator;
-  final Widget Function(String? initialName)? addLabelPageBuilder;
+  final Future<T?> Function(String? initialName)? onAddLabel;
   final void Function(IdQueryParameter?)? onChanged;
   final bool showNotAssignedOption;
   final bool showAnyAssignedOption;
-  final List<T> suggestions;
+  final Iterable<int> suggestions;
   final String? addLabelText;
   final bool allowSelectUnassigned;
   final bool canCreateNewLabel;
@@ -36,7 +36,7 @@ class LabelFormField<T extends Label> extends StatelessWidget {
     required this.prefixIcon,
     this.initialValue,
     this.validator,
-    this.addLabelPageBuilder,
+    this.onAddLabel,
     this.onChanged,
     this.showNotAssignedOption = true,
     this.showAnyAssignedOption = true,
@@ -58,21 +58,21 @@ class LabelFormField<T extends Label> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isEnabled = options.values.any((e) => (e.documentCount ?? 0) > 0) ||
-        addLabelPageBuilder != null;
+    final enabled = options.values.isNotEmpty || onAddLabel != null;
+
     return FormBuilderField<IdQueryParameter>(
       name: name,
       initialValue: initialValue,
       onChanged: onChanged,
-      enabled: isEnabled,
+      enabled: enabled,
       builder: (field) {
         final controller = TextEditingController(
           text: _buildText(context, field.value),
         );
         final displayedSuggestions = suggestions
             .whereNot(
-              (e) =>
-                  e.id ==
+              (id) =>
+                  id ==
                   switch (field.value) {
                     SetIdQueryParameter(id: var id) => id,
                     _ => -1,
@@ -89,13 +89,14 @@ class LabelFormField<T extends Label> extends StatelessWidget {
               closedShape: InputBorder.none,
               openElevation: 0,
               closedElevation: 0,
+              tappable: enabled,
               closedBuilder: (context, openForm) => Container(
                 margin: const EdgeInsets.only(top: 6),
                 child: TextField(
                   controller: controller,
                   onTap: openForm,
                   readOnly: true,
-                  enabled: isEnabled,
+                  enabled: enabled,
                   decoration: InputDecoration(
                     prefixIcon: prefixIcon,
                     labelText: labelText,
@@ -114,19 +115,10 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                 canCreateNewLabel: canCreateNewLabel,
                 addNewLabelText: addLabelText,
                 leadingIcon: prefixIcon,
-                onCreateNewLabel: addLabelPageBuilder != null
-                    ? (initialName) {
-                        return Navigator.of(context).push<T>(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                addLabelPageBuilder!(initialName),
-                          ),
-                        );
-                      }
-                    : null,
+                onCreateNewLabel: onAddLabel,
                 options: options,
                 onSubmit: closeForm,
-                initialValue: field.value,
+                initialValue: field.value ?? const UnsetIdQueryParameter(),
                 showAnyAssignedOption: showAnyAssignedOption,
                 showNotAssignedOption: showNotAssignedOption,
               ),
@@ -151,7 +143,8 @@ class LabelFormField<T extends Label> extends StatelessWidget {
                       itemCount: displayedSuggestions.length,
                       itemBuilder: (context, index) {
                         final suggestion =
-                            displayedSuggestions.elementAt(index);
+                            options[displayedSuggestions.elementAt(index)]!;
+
                         return ColoredChipWrapper(
                           child: ActionChip(
                             label: Text(suggestion.name),

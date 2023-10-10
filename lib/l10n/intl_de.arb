@@ -996,5 +996,13 @@
   "restoringSession": "Sitzung wird wiederhergestellt...",
   "@restoringSession": {
     "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
+  },
+  "documentsAssigned": "{count, plural, zero{Keine Dokumente} one{1 Dokument} other{{count} Dokumente}}",
+  "@documentsAssigned": {
+    "description": "Text shown with a correspondent, document type etc. to indicate the number of documents this filter will maximally yield."
+  },
+  "discardChangesWarning": "Du hast ungespeicherte Änderungen. Diese gehen verloren, falls du fortfährst. Möchtest du die Änderungen verwerfen?",
+  "@discardChangesWarning": {
+    "description": "Warning message shown when the user tries to close a route without saving the changes."
   }
 }

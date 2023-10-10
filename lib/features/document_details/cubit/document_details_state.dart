@@ -6,7 +6,6 @@ class DocumentDetailsState with _$DocumentDetailsState {
     required DocumentModel document,
     DocumentMetaData? metaData,
     @Default(false) bool isFullContentLoaded,
-    String? fullContent,
     @Default({}) Map<int, Correspondent> correspondents,
     @Default({}) Map<int, DocumentType> documentTypes,
     @Default({}) Map<int, Tag> tags,

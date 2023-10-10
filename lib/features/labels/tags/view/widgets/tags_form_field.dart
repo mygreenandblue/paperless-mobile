@@ -6,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
+import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/fullscreen_tags_form.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -16,6 +17,7 @@ class TagsFormField extends StatelessWidget {
   final bool allowOnlySelection;
   final bool allowCreation;
   final bool allowExclude;
+  final Iterable<int> suggestions;
 
   const TagsFormField({
     super.key,
@@ -25,63 +27,120 @@ class TagsFormField extends StatelessWidget {
     required this.allowOnlySelection,
     required this.allowCreation,
     required this.allowExclude,
+    this.suggestions = const [],
   });
 
   @override
   Widget build(BuildContext context) {
+    final enabled = options.values.isNotEmpty || allowCreation;
+
     return FormBuilderField<TagsQuery?>(
       initialValue: initialValue,
+      enabled: enabled,
       builder: (field) {
         final values = _generateOptions(context, field.value, field).toList();
         final isEmpty = (field.value is IdsTagsQuery &&
                 (field.value as IdsTagsQuery).include.isEmpty) ||
             field.value == null;
         bool anyAssigned = field.value is AnyAssignedTagsQuery;
-        return OpenContainer<TagsQuery>(
-          middleColor: Theme.of(context).colorScheme.background,
-          closedColor: Theme.of(context).colorScheme.background,
-          openColor: Theme.of(context).colorScheme.background,
-          closedShape: InputBorder.none,
-          openElevation: 0,
-          closedElevation: 0,
-          closedBuilder: (context, openForm) => Container(
-              margin: const EdgeInsets.only(top: 6),
-              child: GestureDetector(
-                onTap: openForm,
-                child: InputDecorator(
-                  isEmpty: isEmpty,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(12),
-                    labelText:
-                        '${S.of(context)!.tags}${anyAssigned ? ' (${S.of(context)!.anyAssigned})' : ''}',
-                    prefixIcon: const Icon(Icons.label_outline),
-                  ),
-                  child: SizedBox(
-                    height: 32,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 4),
-                      itemBuilder: (context, index) => values[index],
-                      itemCount: values.length,
+
+        final displayedSuggestions = switch (field.value) {
+          IdsTagsQuery(include: var include) =>
+            suggestions.toSet().difference(include.toSet()).toList(),
+          _ => <int>[],
+        };
+        return Column(
+          children: [
+            OpenContainer<TagsQuery>(
+              middleColor: Theme.of(context).colorScheme.background,
+              closedColor: Theme.of(context).colorScheme.background,
+              openColor: Theme.of(context).colorScheme.background,
+              closedShape: InputBorder.none,
+              openElevation: 0,
+              closedElevation: 0,
+              tappable: enabled,
+              closedBuilder: (context, openForm) => Container(
+                margin: const EdgeInsets.only(top: 6),
+                child: GestureDetector(
+                  onTap: openForm,
+                  child: InputDecorator(
+                    isEmpty: isEmpty,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(12),
+                      labelText:
+                          '${S.of(context)!.tags}${anyAssigned ? ' (${S.of(context)!.anyAssigned})' : ''}',
+                      prefixIcon: const Icon(Icons.label_outline),
+                      enabled: enabled,
+                    ),
+                    child: SizedBox(
+                      height: 32,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 4),
+                        itemBuilder: (context, index) => values[index],
+                        itemCount: values.length,
+                      ),
                     ),
                   ),
                 ),
-              )),
-          openBuilder: (context, closeForm) => FullscreenTagsForm(
-            options: options,
-            onSubmit: closeForm,
-            initialValue: field.value,
-            allowOnlySelection: allowOnlySelection,
-            allowCreation: allowCreation &&
-                context.watch<LocalUserAccount>().paperlessUser.canCreateTags,
-            allowExclude: allowExclude,
-          ),
-          onClosed: (data) {
-            if (data != null) {
-              field.didChange(data);
-            }
-          },
+              ),
+              openBuilder: (context, closeForm) => FullscreenTagsForm(
+                options: options,
+                onSubmit: closeForm,
+                initialValue: field.value,
+                allowOnlySelection: allowOnlySelection,
+                allowCreation: allowCreation &&
+                    context
+                        .watch<LocalUserAccount>()
+                        .paperlessUser
+                        .canCreateTags,
+                allowExclude: allowExclude,
+              ),
+              onClosed: (data) {
+                if (data != null) {
+                  field.didChange(data);
+                }
+              },
+            ),
+            if (displayedSuggestions.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    S.of(context)!.suggestions,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SizedBox(
+                    height: kMinInteractiveDimension,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: displayedSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final suggestion =
+                            options[displayedSuggestions.elementAt(index)]!;
+                        return ColoredChipWrapper(
+                          child: ActionChip(
+                            label: Text(suggestion.name),
+                            onPressed: () {
+                              field.didChange(switch (field.value) {
+                                IdsTagsQuery(include: var include) =>
+                                  IdsTagsQuery(
+                                    include: [...include, suggestion.id!],
+                                  ),
+                                _ => IdsTagsQuery(include: [suggestion.id!]),
+                              });
+                            },
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const SizedBox(width: 4.0),
+                    ),
+                  ),
+                ],
+              ).padded(),
+          ],
         );
       },
       name: name,

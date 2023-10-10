@@ -239,7 +239,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                               DocumentContentWidget(
                                 isFullContentLoaded: state.isFullContentLoaded,
                                 document: state.document,
-                                fullContent: state.fullContent,
                                 queryString: widget.titleAndContentQueryString,
                               ),
                             ],
@@ -302,22 +301,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     if (!canEdit) {
       return const SizedBox.shrink();
     }
-    return BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-      builder: (context, state) {
-        // final _filteredSuggestions =
-        //     state.suggestions?.documentDifference(state.document);
-
-        return Tooltip(
-          message: S.of(context)!.editDocumentTooltip,
-          preferBelow: false,
-          verticalOffset: 40,
-          child: FloatingActionButton(
-            heroTag: "fab_document_details",
-            child: const Icon(Icons.edit),
-            onPressed: () => EditDocumentRoute(state.document).push(context),
-          ),
-        );
-      },
+    final document = context.read<DocumentDetailsCubit>().state.document;
+    return Tooltip(
+      message: S.of(context)!.editDocumentTooltip,
+      preferBelow: false,
+      verticalOffset: 40,
+      child: FloatingActionButton(
+        heroTag: "fab_document_details",
+        child: const Icon(Icons.edit),
+        onPressed: () => EditDocumentRoute(document).push(context),
+      ),
     );
   }
 

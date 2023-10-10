@@ -203,7 +203,7 @@ class StoragePath extends Label {
   const StoragePath({
     super.id,
     required super.name,
-    required this.path,
+    this.path = '',
     super.slug,
     super.match,
     super.matchingAlgorithm,

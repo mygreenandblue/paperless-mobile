@@ -1,8 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class FullscreenTagsForm extends StatefulWidget {
   final TagsQuery? initialValue;
@@ -46,7 +49,7 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
     final value = widget.initialValue;
     if (value is IdsTagsQuery) {
       _include = value.include.toList();
-      _exclude = value.include.toList();
+      _exclude = value.exclude.toList();
     } else if (value is AnyAssignedTagsQuery) {
       _include = value.tagIds.toList();
       _anyAssigned = true;
@@ -116,16 +119,26 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
             icon: const Icon(Icons.done),
             onPressed: () {
               if (widget.allowOnlySelection) {
-                widget.onSubmit(returnValue: IdsTagsQuery(include: _include));
+                widget.onSubmit(
+                  returnValue: IdsTagsQuery(
+                    include:
+                        _include.sortedBy((id) => widget.options[id]!.name),
+                  ),
+                );
                 return;
               }
               late final TagsQuery query;
               if (_notAssigned) {
                 query = const NotAssignedTagsQuery();
               } else if (_anyAssigned) {
-                query = AnyAssignedTagsQuery(tagIds: _include);
+                query = AnyAssignedTagsQuery(
+                  tagIds: _include.sortedBy((id) => widget.options[id]!.name),
+                );
               } else {
-                query = IdsTagsQuery(include: _include, exclude: _exclude);
+                query = IdsTagsQuery(
+                  include: _include.sortedBy((id) => widget.options[id]!.name),
+                  exclude: _exclude.sortedBy((id) => widget.options[id]!.name),
+                );
               }
               widget.onSubmit(returnValue: query);
             },
@@ -191,13 +204,9 @@ class _FullscreenTagsFormState extends State<FullscreenTagsForm> {
   }
 
   void _onAddTag() async {
-    final createdTag = await Navigator.of(context).push<Tag?>(
-      MaterialPageRoute(
-        builder: (context) => AddTagPage(
-          initialName: _textEditingController.text,
-        ),
-      ),
-    );
+    final createdTag =
+        await CreateLabelRoute(LabelType.tag, name: _textEditingController.text)
+            .push<Tag>(context);
     _textEditingController.clear();
     if (createdTag != null) {
       setState(() {
@@ -308,21 +317,21 @@ class SelectableTagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final includeColor = Colors.green.withOpacity(0.3);
+    final excludeColor = Colors.red.withOpacity(0.3);
     return ListTile(
       title: Text(tag.name),
-      trailing: excluded
-          ? const Icon(Icons.close)
-          : (selected ? const Icon(Icons.done) : null),
+      trailing: Text(S.of(context)!.documentsAssigned(tag.documentCount ?? 0)),
       leading: CircleAvatar(
         backgroundColor: tag.color,
-        child: (tag.isInboxTag)
-            ? Icon(
-                Icons.inbox,
-                color: tag.textColor,
-              )
-            : null,
+        child: tag.isInboxTag ? Icon(Icons.inbox, color: tag.textColor) : null,
       ),
       onTap: onTap,
+      tileColor: excluded
+          ? excludeColor
+          : selected
+              ? includeColor
+              : null,
     );
   }
 }

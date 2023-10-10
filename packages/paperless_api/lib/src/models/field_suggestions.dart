@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/models/document_model.dart';
@@ -6,7 +7,7 @@ part 'field_suggestions.g.dart';
 
 @LocalDateTimeJsonConverter()
 @JsonSerializable(fieldRename: FieldRename.snake)
-class FieldSuggestions {
+class FieldSuggestions with EquatableMixin {
   final int? documentId;
   final Iterable<int> correspondents;
   final Iterable<int> tags;
@@ -95,4 +96,13 @@ class FieldSuggestions {
       _$FieldSuggestionsFromJson(json);
 
   Map<String, dynamic> toJson() => _$FieldSuggestionsToJson(this);
+
+  @override
+  List<Object?> get props => [
+        documentId,
+        correspondents,
+        tags,
+        documentTypes,
+        dates,
+      ];
 }
