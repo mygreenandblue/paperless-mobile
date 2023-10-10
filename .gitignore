@@ -74,3 +74,5 @@ docker/
 
 crowdin_credentials.yml
 
+# Changelogs
+assets/changelogs/*.md

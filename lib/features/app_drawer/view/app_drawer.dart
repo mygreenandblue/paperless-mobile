@@ -5,17 +5,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/global/asset_images.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:paperless_mobile/generated/assets.gen.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -95,7 +98,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                     actionsAlignment: MainAxisAlignment.spaceBetween,
                     actions: [
-                      Text("~ Anton"),
+                      const Text("~ Anton"),
                       TextButton(
                         onPressed: Navigator.of(context).pop,
                         child: Text(S.of(context)!.gotIt),
@@ -103,6 +106,14 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                 );
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.history),
+              title: Text(S.of(context)!.changelog),
+              onTap: () {
+                ChangelogRoute().push(context);
               },
             ),
             ListTile(
@@ -127,9 +138,11 @@ class AppDrawer extends StatelessWidget {
             ),
             ListTile(
               dense: true,
-              leading: SvgPicture.asset(
-                "assets/images/github-mark.svg",
-                color: Theme.of(context).colorScheme.onBackground,
+              leading: Assets.images.githubMark.svg(
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onBackground,
+                  BlendMode.srcIn,
+                ),
                 height: 24,
                 width: 24,
               ),
@@ -215,7 +228,7 @@ class AppDrawer extends StatelessWidget {
                     const CreateSavedViewRoute(showInSidebar: true)
                         .push(context);
                   },
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   label: Text(S.of(context)!.newView),
                 ),
               ],
@@ -227,7 +240,7 @@ class AppDrawer extends StatelessWidget {
                 final view = sidebarViews[index];
                 return ListTile(
                   title: Text(view.name),
-                  trailing: Icon(Icons.arrow_forward),
+                  trailing: const Icon(Icons.arrow_forward),
                   onTap: () {
                     Scaffold.of(context).closeDrawer();
                     context

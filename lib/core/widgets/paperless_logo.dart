@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:paperless_mobile/generated/assets.gen.dart';
 
 class PaperlessLogo extends StatelessWidget {
   static const _paperlessGreen = Color(0xFF18541F);
@@ -25,15 +26,16 @@ class PaperlessLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: height ?? Theme.of(context).iconTheme.size ?? 32,
-        maxWidth: width ?? Theme.of(context).iconTheme.size ?? 32,
-      ),
-      padding: const EdgeInsets.only(right: 8),
-      child: SvgPicture.asset(
-        "assets/logos/paperless_logo_white.svg",
-        color: _color,
-      ),
-    );
+        constraints: BoxConstraints(
+          maxHeight: height ?? Theme.of(context).iconTheme.size ?? 32,
+          maxWidth: width ?? Theme.of(context).iconTheme.size ?? 32,
+        ),
+        padding: const EdgeInsets.only(right: 8),
+        child: Assets.logos.paperlessLogoWhiteSvg.svg(
+          colorFilter: ColorFilter.mode(
+            _color,
+            BlendMode.srcIn,
+          ),
+        ));
   }
 }
