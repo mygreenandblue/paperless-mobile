@@ -10,7 +10,6 @@ import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/features/home/view/home_shell_widget.dart';
-import 'package:paperless_mobile/features/home/view/scaffold_with_navigation_bar.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
