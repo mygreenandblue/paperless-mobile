@@ -45,6 +45,7 @@ jobs:
       - name: Get packages and run codegen
         run: |
           bash install_dependencies.sh
+          bash update_changelogs.sh
         working-directory: scripts
 
       - name: Setup Fastlane

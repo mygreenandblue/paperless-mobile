@@ -1000,5 +1000,6 @@
   "discardChangesWarning": "Tens canvis sense desar. Si continues es perdran. Vols descartar els canvis?",
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
-  }
+  },
+  "changelog": "Changelog"
 }

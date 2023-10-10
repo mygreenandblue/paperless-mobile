@@ -6,6 +6,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -39,6 +40,7 @@ import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:paperless_mobile/theme.dart';
@@ -88,6 +90,7 @@ Future<void> performMigrations() async {
     );
   }
 }
+
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
@@ -316,6 +319,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loginRoute,
           $loggingOutRoute,
           $addAccountRoute,
+          $changelogRoute,
           $authenticatedRoute,
         ],
       ),

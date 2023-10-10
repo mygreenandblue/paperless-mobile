@@ -1,5 +1,4 @@
-DISCLAIMER: Major Update mit potentiellen breaking changes - eine Neuinstallation wird dringend empfohlen!
-
+### DISCLAIMER: Major Update mit potentiellen breaking changes - eine Neuinstallation wird dringend empfohlen!
 * Neue Startseite hinzugefügt
 * Viele Fehlerbehebungen
 * Verbesserte Unterstützung für mehrere Accounts/Benutzer

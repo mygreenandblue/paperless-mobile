@@ -1,5 +1,4 @@
-DISCLAIMER: Major update with possibly breaking changes - a fresh install is highly recommended!
-
+### DISCLAIMER: Major update with possibly breaking changes - a fresh install is highly recommended!
 * Added new home page
 * Tons of bugfixes
 * Improved support for multiple accounts/users

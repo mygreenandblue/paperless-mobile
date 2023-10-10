@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
@@ -14,6 +15,14 @@ import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Changelog {
+  final int buildNumber;
+  final String? changelog;
+  Changelog(this.buildNumber, this.changelog);
+}
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -24,6 +33,34 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
+
+  Future<bool> get _shouldShowChangelog async {
+    try {
+      final sp = await SharedPreferences.getInstance();
+      final currentBuild = packageInfo.buildNumber;
+      final _existingVersions =
+          sp.getStringList('changelogSeenForBuilds') ?? [];
+      if (_existingVersions.contains(currentBuild)) {
+        return false;
+      } else {
+        _existingVersions.add(currentBuild);
+        await sp.setStringList('changelogSeenForBuilds', _existingVersions);
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (await _shouldShowChangelog) {
+        ChangelogRoute().push(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,18 +224,19 @@ class _LandingPageState extends State<LandingPage> {
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
                   title: Text(S.of(context)!.totalCharacters),
                   trailing: Text(
-                    stats.totalChars.toString(),
+                    (stats.totalChars ?? 0).toString(),
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ),
               ),
-              AspectRatio(
-                aspectRatio: 1.3,
-                child: SizedBox(
-                  width: 300,
-                  child: MimeTypesPieChart(statistics: stats),
+              if (stats.fileTypeCounts.isNotEmpty)
+                AspectRatio(
+                  aspectRatio: 1.3,
+                  child: SizedBox(
+                    width: 300,
+                    child: MimeTypesPieChart(statistics: stats),
+                  ),
                 ),
-              ),
             ],
           ).padded(16);
         },
