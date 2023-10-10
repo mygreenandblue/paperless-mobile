@@ -127,8 +127,10 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                   .maybeMap(
                     loaded: (value) {
                       if (value.savedViews.isEmpty) {
-                        return Text(S.of(context)!.youDidNotSaveAnyViewsYet)
-                            .paddedOnly(left: 16);
+                        return Text(
+                          S.of(context)!.youDidNotSaveAnyViewsYet,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ).paddedOnly(left: 16);
                       }
 
                       return SizedBox(
@@ -173,8 +175,9 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                         ),
                       );
                     },
-                    error: (_) => Text(S.of(context)!.couldNotLoadSavedViews)
-                        .paddedOnly(left: 16),
+                    error: (_) => Text(
+                      S.of(context)!.couldNotLoadSavedViews,
+                    ).paddedOnly(left: 16),
                     orElse: _buildLoadingState,
                   )
                   .paddedOnly(top: 16),

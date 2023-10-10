@@ -958,10 +958,6 @@
   "@welcomeUser": {
     "description": "Top message shown on the home page"
   },
-  "noSavedViewOnHomepageHint": "Configure una vista guardada para que sea mostrada en su página de inicio y aparecerá aquí.",
-  "@noSavedViewOnHomepageHint": {
-    "description": "Message shown when there is no saved view to display on the home page."
-  },
   "statistics": "Estadísticas",
   "documentsInInbox": "Documentos en el buzón",
   "totalDocuments": "Total de documentos",

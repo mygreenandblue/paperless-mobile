@@ -85,8 +85,10 @@ class _LandingPageState extends State<LandingPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(S.of(context)!.noSavedViewOnHomepageHint)
-                                    .padded(),
+                                Text(
+                                  S.of(context)!.youDidNotSaveAnyViewsYet,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ).padded(),
                                 TextButton.icon(
                                   onPressed: () {
                                     const CreateSavedViewRoute(

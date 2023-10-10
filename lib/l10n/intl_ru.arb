@@ -958,10 +958,6 @@
   "@welcomeUser": {
     "description": "Top message shown on the home page"
   },
-  "noSavedViewOnHomepageHint": "Настройте сохраненный вид для отображения на вашей домашней страница и он будет отображаться здесь.",
-  "@noSavedViewOnHomepageHint": {
-    "description": "Message shown when there is no saved view to display on the home page."
-  },
   "statistics": "Статистика",
   "documentsInInbox": "Документы во входящих",
   "totalDocuments": "Всего документов",

@@ -873,7 +873,7 @@
   "@donate": {
     "description": "Label of the in-app donate button"
   },
-  "donationDialogContent": "Thank you for considering to support this app! Due to both Google's and Apple's Payment Policies, no links leading to donations may be displayed in-app. Not even linking to the project's repository page appears to be allowed in this context. Therefore, maybe have a look at the 'Donations' section in the project's README. Your support is much appreciated and keeps the development of this app alive. Thanks!",
+  "donationDialogContent": "Gràcies per considerar donar suport a aquesta aplicació! A causa de les polítiques de pagament de Google i d'Apple, no es pot mostrar cap enllaç a les donacions a l'aplicació. Ni tan sols l'enllaç a la pàgina del repositori del projecte sembla que estigui permès en aquest context. Per tant, potser feu una ullada a la secció 'Donacions' del README del projecte. El vostre suport és molt apreciat i manté viu el desenvolupament d'aquesta aplicació. Gràcies!",
   "@donationDialogContent": {
     "description": "Text displayed in the donation dialog"
   },
@@ -897,44 +897,44 @@
   "@couldNotDeleteStoragePath": {
     "description": "Message shown when a storage path could not be deleted"
   },
-  "couldNotUpdateCorrespondent": "Could not update correspondent, please try again.",
+  "couldNotUpdateCorrespondent": "No es pot actualitzar corresponsal, prova de nou.",
   "@couldNotUpdateCorrespondent": {
     "description": "Message shown when a correspondent could not be updated"
   },
-  "couldNotUpdateDocumentType": "Could not update document type, please try again.",
+  "couldNotUpdateDocumentType": "No es pot actualitzar tipus de document, prova de nou.",
   "@couldNotUpdateDocumentType": {
     "description": "Message shown when a document type could not be updated"
   },
-  "couldNotUpdateTag": "Could not update tag, please try again.",
+  "couldNotUpdateTag": "No es pot actualitzar etiqueta, prova de nou.",
   "@couldNotUpdateTag": {
     "description": "Message shown when a tag could not be updated"
   },
-  "couldNotLoadServerInformation": "Could not load server information.",
+  "couldNotLoadServerInformation": "No es pot carregar informació del servidor.",
   "@couldNotLoadServerInformation": {
     "description": "Message shown when the server information could not be loaded"
   },
-  "couldNotLoadStatistics": "Could not load server statistics.",
+  "couldNotLoadStatistics": "No es poden carregar estadístiques del servidor.",
   "@couldNotLoadStatistics": {
     "description": "Message shown when the server statistics could not be loaded"
   },
-  "couldNotLoadUISettings": "Could not load UI settings.",
+  "couldNotLoadUISettings": "No es pot carregar l'interfície.",
   "@couldNotLoadUISettings": {
     "description": "Message shown when the UI settings could not be loaded"
   },
-  "couldNotLoadTasks": "Could not load tasks.",
+  "couldNotLoadTasks": "No es poden carregar les tasques.",
   "@couldNotLoadTasks": {
     "description": "Message shown when the tasks (e.g. document consumed) could not be loaded"
   },
-  "userNotFound": "User could not be found.",
+  "userNotFound": "Usuari no trobat.",
   "@userNotFound": {
     "description": "Message shown when the specified user (e.g. by id) could not be found"
   },
-  "couldNotUpdateSavedView": "Could not update saved view, please try again.",
+  "couldNotUpdateSavedView": "No es poden acualitzar les vistes desades, prova de nou.",
   "@couldNotUpdateSavedView": {
     "description": "Message shown when a saved view could not be updated"
   },
-  "couldNotUpdateStoragePath": "Could not update storage path, please try again.",
-  "savedViewSuccessfullyUpdated": "Saved view successfully updated.",
+  "couldNotUpdateStoragePath": "No es pot actualitzar la ruta emmagatzematge, prova de nou.",
+  "savedViewSuccessfullyUpdated": "Vista desada actualitzada correctament.",
   "@savedViewSuccessfullyUpdated": {
     "description": "Message shown when a saved view was successfully updated."
   },
@@ -942,11 +942,11 @@
   "@discardChanges": {
     "description": "Title of the alert dialog shown when a user tries to close a view with unsaved changes."
   },
-  "savedViewChangedDialogContent": "The filter conditions of the active view have changed. By resetting the filter, these changes will be lost. Do you still wish to continue?",
+  "savedViewChangedDialogContent": "Les condicions del filtre de la vista activa han canviat. En restablir el filtre, aquests canvis es perdran. Encara vols continuar?",
   "@savedViewChangedDialogContent": {
     "description": "Content of the alert dialog shown when all of the following applies:\r\n* User has saved view selected\r\n* User has performed changes to the current document filter\r\n* User now tries to reset this filter without having saved the changes to the view."
   },
-  "createFromCurrentFilter": "Create from current filter",
+  "createFromCurrentFilter": "Crear desde filtre actual",
   "@createFromCurrentFilter": {
     "description": "Tooltip of the \"New saved view\" button"
   },
@@ -957,10 +957,6 @@
   "welcomeUser": "Benvingut {name}!",
   "@welcomeUser": {
     "description": "Top message shown on the home page"
-  },
-  "noSavedViewOnHomepageHint": "Configure a saved view to be displayed on your home page and it will show up here.",
-  "@noSavedViewOnHomepageHint": {
-    "description": "Message shown when there is no saved view to display on the home page."
   },
   "statistics": "Estadí­stiques",
   "documentsInInbox": "Document safata",
@@ -974,26 +970,26 @@
   "@userAlreadyExists": {
     "description": "Error message shown when the user tries to add an already existing account."
   },
-  "youDidNotSaveAnyViewsYet": "You did not save any views yet, create one and it will be shown here.",
+  "youDidNotSaveAnyViewsYet": "Encara no has desat cap visualització, crea'n una i es mostrarà aquí.",
   "@youDidNotSaveAnyViewsYet": {
     "description": "Message shown when there are no saved views yet."
   },
-  "tryAgain": "Try again",
-  "discardFile": "Discard file?",
-  "discard": "Discard",
-  "backToLogin": "Back to login",
-  "skipEditingReceivedFiles": "Skip editing received files",
-  "uploadWithoutPromptingUploadForm": "Always upload without prompting the upload form when sharing files with the app.",
-  "authenticatingDots": "Authenticating...",
+  "tryAgain": "Torna a provar",
+  "discardFile": "Desestimar arxiu?",
+  "discard": "Descarta",
+  "backToLogin": "Torna a inici de sessió",
+  "skipEditingReceivedFiles": "Salta l'edició de fitxers rebuts",
+  "uploadWithoutPromptingUploadForm": "Pengeu sempre sense demanar el formulari de càrrega quan compartiu fitxers amb l'aplicació.",
+  "authenticatingDots": "Autenticant…",
   "@authenticatingDots": {
     "description": "Message shown when the app is authenticating the user"
   },
-  "persistingUserInformation": "Persisting user information...",
-  "fetchingUserInformation": "Fetching user information...",
+  "persistingUserInformation": "Informació de l'usuari persistent...",
+  "fetchingUserInformation": "Obtenint dades d'usuari...",
   "@fetchingUserInformation": {
     "description": "Message shown when the app loads user data from the server"
   },
-  "restoringSession": "Restoring session...",
+  "restoringSession": "Restaurant sessió...",
   "@restoringSession": {
     "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
   },
@@ -1001,7 +997,7 @@
   "@documentsAssigned": {
     "description": "Text shown with a correspondent, document type etc. to indicate the number of documents this filter will maximally yield."
   },
-  "discardChangesWarning": "You have unsaved changes. By continuing, all changes will be lost. Do you want to discard these changes?",
+  "discardChangesWarning": "Tens canvis sense desar. Si continues es perdran. Vols descartar els canvis?",
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
   }

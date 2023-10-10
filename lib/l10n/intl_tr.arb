@@ -958,10 +958,6 @@
   "@welcomeUser": {
     "description": "Top message shown on the home page"
   },
-  "noSavedViewOnHomepageHint": "Configure a saved view to be displayed on your home page and it will show up here.",
-  "@noSavedViewOnHomepageHint": {
-    "description": "Message shown when there is no saved view to display on the home page."
-  },
   "statistics": "Statistics",
   "documentsInInbox": "Documents in inbox",
   "totalDocuments": "Total documents",
