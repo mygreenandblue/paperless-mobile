@@ -351,7 +351,7 @@ class _InboxItemState extends State<InboxItem> {
 
   Text _buildTitle() {
     return Text(
-      widget.document.title ?? '-',
+      widget.document.title.isEmpty ? '-' : widget.document.title,
       overflow: TextOverflow.ellipsis,
       maxLines: 2,
       style: Theme.of(context).textTheme.titleSmall,

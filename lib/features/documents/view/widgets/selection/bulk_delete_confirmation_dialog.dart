@@ -44,7 +44,7 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
     return ListTile(
       dense: true,
       title: Text(
-        doc.title ?? doc.originalFileName ?? '-',
+        doc.title.isEmpty ? '-' : doc.title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(

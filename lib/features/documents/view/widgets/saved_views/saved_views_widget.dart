@@ -8,6 +8,7 @@ import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class SavedViewsWidget extends StatefulWidget {
   final void Function(SavedView view) onViewSelected;
@@ -184,7 +185,8 @@ class _SavedViewsWidgetState extends State<SavedViewsWidget>
                   child: ConnectivityAwareActionWrapper(
                     child: TextButton.icon(
                       onPressed: () {
-                        CreateSavedViewRoute(widget.filter).push(context);
+                        CreateSavedViewRoute($extra: widget.filter)
+                            .push(context);
                       },
                       icon: const Icon(Icons.add),
                       label: Text(S.of(context)!.newView),

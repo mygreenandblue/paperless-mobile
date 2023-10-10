@@ -26,6 +26,7 @@ import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart'
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/theme.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final bool isLabelClickable;
@@ -57,136 +58,100 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         context.watch<LocalUserAccount>().hasMultiUserSupport;
     final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
     final title = context.watch<DocumentDetailsCubit>().state.document.title;
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context)
-            .pop(context.read<DocumentDetailsCubit>().state.document);
-        return false;
-      },
-      child: DefaultTabController(
-        length: tabLength,
-        child: BlocListener<ConnectivityCubit, ConnectivityState>(
-          listenWhen: (previous, current) =>
-              !previous.isConnected && current.isConnected,
-          listener: (context, state) {
-            context.read<DocumentDetailsCubit>().loadMetaData();
-          },
-          child: Scaffold(
-            extendBodyBehindAppBar: false,
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endDocked,
-            floatingActionButton: _buildEditButton(),
-            bottomNavigationBar: _buildBottomAppBar(),
-            body: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverOverlapAbsorber(
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                  sliver: SliverAppBar(
-                    title: title != null ? Text(title) : null,
-                    leading: const BackButton(),
-                    pinned: true,
-                    forceElevated: innerBoxIsScrolled,
-                    collapsedHeight: kToolbarHeight,
-                    expandedHeight: 250.0,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: BlocBuilder<DocumentDetailsCubit,
-                          DocumentDetailsState>(
-                        builder: (context, state) {
-                          return Hero(
-                            tag: "thumb_${state.document.id}",
-                            child: GestureDetector(
-                              onTap: () {
-                                DocumentPreviewRoute($extra: state.document)
-                                    .push(context);
-                              },
-                              child: Stack(
-                                alignment: Alignment.topCenter,
-                                children: [
-                                  Positioned.fill(
-                                    child: DocumentPreview(
-                                      enableHero: false,
-                                      document: state.document,
-                                      fit: BoxFit.cover,
-                                      alignment: Alignment.topCenter,
+    return AnnotatedRegion(
+      value: buildOverlayStyle(
+        Theme.of(context),
+        systemNavigationBarColor: Theme.of(context).bottomAppBarTheme.color,
+      ),
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.of(context)
+              .pop(context.read<DocumentDetailsCubit>().state.document);
+          return false;
+        },
+        child: DefaultTabController(
+          length: tabLength,
+          child: BlocListener<ConnectivityCubit, ConnectivityState>(
+            listenWhen: (previous, current) =>
+                !previous.isConnected && current.isConnected,
+            listener: (context, state) {
+              context.read<DocumentDetailsCubit>().loadMetaData();
+            },
+            child: Scaffold(
+              extendBodyBehindAppBar: false,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endDocked,
+              floatingActionButton: _buildEditButton(),
+              bottomNavigationBar: _buildBottomAppBar(),
+              body: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context),
+                    sliver: SliverAppBar(
+                      title: Text(title),
+                      leading: const BackButton(),
+                      pinned: true,
+                      forceElevated: innerBoxIsScrolled,
+                      collapsedHeight: kToolbarHeight,
+                      expandedHeight: 250.0,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: BlocBuilder<DocumentDetailsCubit,
+                            DocumentDetailsState>(
+                          builder: (context, state) {
+                            return Hero(
+                              tag: "thumb_${state.document.id}",
+                              child: GestureDetector(
+                                onTap: () {
+                                  DocumentPreviewRoute($extra: state.document)
+                                      .push(context);
+                                },
+                                child: Stack(
+                                  alignment: Alignment.topCenter,
+                                  children: [
+                                    Positioned.fill(
+                                      child: DocumentPreview(
+                                        enableHero: false,
+                                        document: state.document,
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.topCenter,
+                                      ),
                                     ),
-                                  ),
-                                  Positioned.fill(
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          stops: [0.2, 0.4],
-                                          colors: [
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .background
-                                                .withOpacity(0.6),
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .background
-                                                .withOpacity(0.3),
-                                          ],
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
+                                    Positioned.fill(
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            stops: [0.2, 0.4],
+                                            colors: [
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .background
+                                                  .withOpacity(0.6),
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .background
+                                                  .withOpacity(0.3),
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    bottom: ColoredTabBar(
-                      tabBar: TabBar(
-                        isScrollable: true,
-                        tabs: [
-                          Tab(
-                            child: Text(
-                              S.of(context)!.overview,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              S.of(context)!.content,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              S.of(context)!.metaData,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              S.of(context)!.similarDocuments,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          if (hasMultiUserSupport && false)
+                      bottom: ColoredTabBar(
+                        tabBar: TabBar(
+                          isScrollable: true,
+                          tabs: [
                             Tab(
                               child: Text(
-                                "Permissions",
+                                S.of(context)!.overview,
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -194,80 +159,111 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 ),
                               ),
                             ),
-                        ],
+                            Tab(
+                              child: Text(
+                                S.of(context)!.content,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              child: Text(
+                                S.of(context)!.metaData,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            Tab(
+                              child: Text(
+                                S.of(context)!.similarDocuments,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                ),
+                              ),
+                            ),
+                            if (hasMultiUserSupport && false)
+                              Tab(
+                                child: Text(
+                                  "Permissions",
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-              body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
-                builder: (context, state) {
-                  return BlocProvider(
-                    create: (context) => SimilarDocumentsCubit(
-                      context.read(),
-                      context.read(),
-                      context.read(),
-                      context.read(),
-                      documentId: state.document.id,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 16,
+                ],
+                body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
+                  builder: (context, state) {
+                    return BlocProvider(
+                      create: (context) => SimilarDocumentsCubit(
+                        context.read(),
+                        context.read(),
+                        context.read(),
+                        context.read(),
+                        documentId: state.document.id,
                       ),
-                      child: TabBarView(
-                        children: [
-                          CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              DocumentOverviewWidget(
-                                document: state.document,
-                                itemSpacing: _itemSpacing,
-                                queryString: widget.titleAndContentQueryString,
-                              ),
-                            ],
-                          ),
-                          CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              DocumentContentWidget(
-                                isFullContentLoaded: state.isFullContentLoaded,
-                                document: state.document,
-                                queryString: widget.titleAndContentQueryString,
-                              ),
-                            ],
-                          ),
-                          CustomScrollView(
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              DocumentMetaDataWidget(
-                                document: state.document,
-                                itemSpacing: _itemSpacing,
-                              ),
-                            ],
-                          ),
-                          CustomScrollView(
-                            controller: _pagingScrollController,
-                            slivers: [
-                              SliverOverlapInjector(
-                                handle: NestedScrollView
-                                    .sliverOverlapAbsorberHandleFor(context),
-                              ),
-                              SimilarDocumentsView(
-                                pagingScrollController: _pagingScrollController,
-                              ),
-                            ],
-                          ),
-                          if (hasMultiUserSupport && false)
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 16,
+                        ),
+                        child: TabBarView(
+                          children: [
+                            CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView
+                                      .sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                DocumentOverviewWidget(
+                                  document: state.document,
+                                  itemSpacing: _itemSpacing,
+                                  queryString:
+                                      widget.titleAndContentQueryString,
+                                ),
+                              ],
+                            ),
+                            CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView
+                                      .sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                DocumentContentWidget(
+                                  isFullContentLoaded:
+                                      state.isFullContentLoaded,
+                                  document: state.document,
+                                  queryString:
+                                      widget.titleAndContentQueryString,
+                                ),
+                              ],
+                            ),
+                            CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView
+                                      .sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                DocumentMetaDataWidget(
+                                  document: state.document,
+                                  itemSpacing: _itemSpacing,
+                                ),
+                              ],
+                            ),
                             CustomScrollView(
                               controller: _pagingScrollController,
                               slivers: [
@@ -275,16 +271,32 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                DocumentPermissionsWidget(
-                                  document: state.document,
+                                SimilarDocumentsView(
+                                  pagingScrollController:
+                                      _pagingScrollController,
                                 ),
                               ],
                             ),
-                        ],
+                            if (hasMultiUserSupport && false)
+                              CustomScrollView(
+                                controller: _pagingScrollController,
+                                slivers: [
+                                  SliverOverlapInjector(
+                                    handle: NestedScrollView
+                                        .sliverOverlapAbsorberHandleFor(
+                                            context),
+                                  ),
+                                  DocumentPermissionsWidget(
+                                    document: state.document,
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

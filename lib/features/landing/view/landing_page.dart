@@ -12,6 +12,7 @@ import 'package:paperless_mobile/features/saved_view_details/view/saved_view_pre
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 
 class LandingPage extends StatefulWidget {
@@ -87,7 +88,11 @@ class _LandingPageState extends State<LandingPage> {
                                 Text(S.of(context)!.noSavedViewOnHomepageHint)
                                     .padded(),
                                 TextButton.icon(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    const CreateSavedViewRoute(
+                                      showOnDashboard: true,
+                                    ).push(context);
+                                  },
                                   icon: const Icon(Icons.add),
                                   label: Text(S.of(context)!.newView),
                                 )
