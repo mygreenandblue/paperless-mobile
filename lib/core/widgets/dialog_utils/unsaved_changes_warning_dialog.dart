@@ -9,14 +9,12 @@ class UnsavedChangesWarningDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Discard changes?"),
-      content: Text(
-        "You have unsaved changes. Do you want to continue without saving? Your changes will be discarded.",
-      ),
+      title: Text(S.of(context)!.discardChanges),
+      content: Text(S.of(context)!.discardChangesWarning),
       actions: [
-        DialogCancelButton(),
+        const DialogCancelButton(),
         DialogConfirmButton(
-          label: S.of(context)!.continueLabel,
+          label: S.of(context)!.discard,
         ),
       ],
     );

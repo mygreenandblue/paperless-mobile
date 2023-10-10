@@ -44,7 +44,6 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         ),
       ),
     );
-    loadMetaData();
   }
 
   Future<void> delete(DocumentModel document) async {
@@ -60,13 +59,10 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   Future<void> loadFullContent() async {
+    await Future.delayed(const Duration(seconds: 5));
     final doc = await _api.find(state.document.id);
-    emit(
-      state.copyWith(
-        isFullContentLoaded: true,
-        fullContent: doc.content,
-      ),
-    );
+    _notifier.notifyUpdated(doc);
+    emit(state.copyWith(isFullContentLoaded: true));
   }
 
   Future<void> assignAsn(

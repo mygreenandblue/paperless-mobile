@@ -25,12 +25,19 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     _notifier.addListener(this, onUpdated: replace);
     _labelRepository.addListener(
       this,
-      onChanged: (labels) => emit(state.copyWith(
-        correspondents: labels.correspondents,
-        documentTypes: labels.documentTypes,
-        storagePaths: labels.storagePaths,
-        tags: labels.tags,
-      )),
+      onChanged: (labels) {
+        if (isClosed) {
+          return;
+        }
+        emit(
+          state.copyWith(
+            correspondents: labels.correspondents,
+            documentTypes: labels.documentTypes,
+            storagePaths: labels.storagePaths,
+            tags: labels.tags,
+          ),
+        );
+      },
     );
   }
 

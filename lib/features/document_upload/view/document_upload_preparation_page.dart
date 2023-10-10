@@ -24,6 +24,8 @@ import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.d
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
+import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:provider/provider.dart';
 
 class DocumentUploadResult {
@@ -251,19 +253,10 @@ class _DocumentUploadPreparationPageState
                               LabelFormField<Correspondent>(
                                 showAnyAssignedOption: false,
                                 showNotAssignedOption: false,
-                                addLabelPageBuilder: (initialName) =>
-                                    MultiProvider(
-                                  providers: [
-                                    Provider.value(
-                                      value: context.read<LabelRepository>(),
-                                    ),
-                                    Provider.value(
-                                      value: context.read<ApiVersion>(),
-                                    )
-                                  ],
-                                  child: AddCorrespondentPage(
-                                      initialName: initialName),
-                                ),
+                                onAddLabel: (initialName) => CreateLabelRoute(
+                                  LabelType.correspondent,
+                                  name: initialName,
+                                ).push<Correspondent>(context),
                                 addLabelText: S.of(context)!.addCorrespondent,
                                 labelText: S.of(context)!.correspondent + " *",
                                 name: DocumentModel.correspondentKey,
@@ -283,19 +276,10 @@ class _DocumentUploadPreparationPageState
                               LabelFormField<DocumentType>(
                                 showAnyAssignedOption: false,
                                 showNotAssignedOption: false,
-                                addLabelPageBuilder: (initialName) =>
-                                    MultiProvider(
-                                  providers: [
-                                    Provider.value(
-                                      value: context.read<LabelRepository>(),
-                                    ),
-                                    Provider.value(
-                                      value: context.read<ApiVersion>(),
-                                    )
-                                  ],
-                                  child: AddDocumentTypePage(
-                                      initialName: initialName),
-                                ),
+                                onAddLabel: (initialName) => CreateLabelRoute(
+                                  LabelType.documentType,
+                                  name: initialName,
+                                ).push<DocumentType>(context),
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType + " *",
                                 name: DocumentModel.documentTypeKey,

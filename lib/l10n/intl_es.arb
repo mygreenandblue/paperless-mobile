@@ -865,7 +865,7 @@
   "@missingPermissions": {
     "description": "Message shown in a snackbar when a user without the reequired permissions performs an action."
   },
-  "editView": "Edit View",
+  "editView": "Editar Vista",
   "@editView": {
     "description": "Title of the edit saved view page"
   },
@@ -873,128 +873,136 @@
   "@donate": {
     "description": "Label of the in-app donate button"
   },
-  "donationDialogContent": "Thank you for considering to support this app! Due to both Google's and Apple's Payment Policies, no links leading to donations may be displayed in-app. Not even linking to the project's repository page appears to be allowed in this context. Therefore, maybe have a look at the 'Donations' section in the project's README. Your support is much appreciated and keeps the development of this app alive. Thanks!",
+  "donationDialogContent": "¡Gracias por querer apoyar esta aplicación!\nDebido a las políticas de pago, tanto de Google como de Apple, no se puede mostrar ningún enlace que lo dirija a las donaciones. En este contexto, ni siquiera es posible enlazar la página del repositorio del proyecto. Por lo tanto, puedes visitar la sección \"Donations\" en el archivo README de este proyecto. Tu apoyo es valorado gratamente y ayuda a mantener con vida el desarrollo de esta aplicación.\n¡Muchas gracias!",
   "@donationDialogContent": {
     "description": "Text displayed in the donation dialog"
   },
-  "noDocumentsFound": "No documents found.",
+  "noDocumentsFound": "No se han encontrado documentos.",
   "@noDocumentsFound": {
     "description": "Message shown when no documents were found."
   },
-  "couldNotDeleteCorrespondent": "Could not delete correspondent, please try again.",
+  "couldNotDeleteCorrespondent": "No se pudo remover el interlocutor, intente nuevamente.",
   "@couldNotDeleteCorrespondent": {
     "description": "Message shown in snackbar when a correspondent could not be deleted."
   },
-  "couldNotDeleteDocumentType": "Could not delete document type, please try again.",
+  "couldNotDeleteDocumentType": "No se pudo remover el tipo de documento, intente nuevamente.",
   "@couldNotDeleteDocumentType": {
     "description": "Message shown when a document type could not be deleted"
   },
-  "couldNotDeleteTag": "Could not delete tag, please try again.",
+  "couldNotDeleteTag": "No se pudo borrar la etiqueta, intente nuevamente.",
   "@couldNotDeleteTag": {
     "description": "Message shown when a tag could not be deleted"
   },
-  "couldNotDeleteStoragePath": "Could not delete storage path, please try again.",
+  "couldNotDeleteStoragePath": "No se pudo remover la ruta de almacenamiento, intente nuevamente.",
   "@couldNotDeleteStoragePath": {
     "description": "Message shown when a storage path could not be deleted"
   },
-  "couldNotUpdateCorrespondent": "Could not update correspondent, please try again.",
+  "couldNotUpdateCorrespondent": "No se pudo actualizar el interlocutor, intente nuevamente.",
   "@couldNotUpdateCorrespondent": {
     "description": "Message shown when a correspondent could not be updated"
   },
-  "couldNotUpdateDocumentType": "Could not update document type, please try again.",
+  "couldNotUpdateDocumentType": "No se pudo actualizar el tipo de documento, intente nuevamente.",
   "@couldNotUpdateDocumentType": {
     "description": "Message shown when a document type could not be updated"
   },
-  "couldNotUpdateTag": "Could not update tag, please try again.",
+  "couldNotUpdateTag": "No se pudo actualizar la etiqueta, intente nuevamente.",
   "@couldNotUpdateTag": {
     "description": "Message shown when a tag could not be updated"
   },
-  "couldNotLoadServerInformation": "Could not load server information.",
+  "couldNotLoadServerInformation": "No se pudo cargar la información del servidor.",
   "@couldNotLoadServerInformation": {
     "description": "Message shown when the server information could not be loaded"
   },
-  "couldNotLoadStatistics": "Could not load server statistics.",
+  "couldNotLoadStatistics": "No se pudieron cargar las estadísticas del servidor.",
   "@couldNotLoadStatistics": {
     "description": "Message shown when the server statistics could not be loaded"
   },
-  "couldNotLoadUISettings": "Could not load UI settings.",
+  "couldNotLoadUISettings": "No se pudieron cargar los ajustes de UI.",
   "@couldNotLoadUISettings": {
     "description": "Message shown when the UI settings could not be loaded"
   },
-  "couldNotLoadTasks": "Could not load tasks.",
+  "couldNotLoadTasks": "No se pudieron cargar tareas.",
   "@couldNotLoadTasks": {
     "description": "Message shown when the tasks (e.g. document consumed) could not be loaded"
   },
-  "userNotFound": "User could not be found.",
+  "userNotFound": "Usuario no encontrado.",
   "@userNotFound": {
     "description": "Message shown when the specified user (e.g. by id) could not be found"
   },
-  "couldNotUpdateSavedView": "Could not update saved view, please try again.",
+  "couldNotUpdateSavedView": "No se pudo actualizar la vista guardada, intente nuevamente.",
   "@couldNotUpdateSavedView": {
     "description": "Message shown when a saved view could not be updated"
   },
-  "couldNotUpdateStoragePath": "Could not update storage path, please try again.",
-  "savedViewSuccessfullyUpdated": "Saved view successfully updated.",
+  "couldNotUpdateStoragePath": "No se pudo actualizar la ruta de almacenamiento, intente nuevamente.",
+  "savedViewSuccessfullyUpdated": "La vista guardada se actualizó correctamente.",
   "@savedViewSuccessfullyUpdated": {
     "description": "Message shown when a saved view was successfully updated."
   },
-  "discardChanges": "Discard changes?",
+  "discardChanges": "¿Descartar cambios?",
   "@discardChanges": {
     "description": "Title of the alert dialog shown when a user tries to close a view with unsaved changes."
   },
-  "savedViewChangedDialogContent": "The filter conditions of the active view have changed. By resetting the filter, these changes will be lost. Do you still wish to continue?",
+  "savedViewChangedDialogContent": "Han cambiado las condiciones de filtrado de la vista activa. Al reiniciar el filtro se perderán estos cambios. ¿Desea continuar?",
   "@savedViewChangedDialogContent": {
     "description": "Content of the alert dialog shown when all of the following applies:\r\n* User has saved view selected\r\n* User has performed changes to the current document filter\r\n* User now tries to reset this filter without having saved the changes to the view."
   },
-  "createFromCurrentFilter": "Create from current filter",
+  "createFromCurrentFilter": "Crear desde el filtro actual",
   "@createFromCurrentFilter": {
     "description": "Tooltip of the \"New saved view\" button"
   },
-  "home": "Home",
+  "home": "Inicio",
   "@home": {
     "description": "Label of the \"Home\" route"
   },
-  "welcomeUser": "Welcome, {name}!",
+  "welcomeUser": "¡Bienvenido, {name}!",
   "@welcomeUser": {
     "description": "Top message shown on the home page"
   },
-  "noSavedViewOnHomepageHint": "Configure a saved view to be displayed on your home page and it will show up here.",
+  "noSavedViewOnHomepageHint": "Configure una vista guardada para que sea mostrada en su página de inicio y aparecerá aquí.",
   "@noSavedViewOnHomepageHint": {
     "description": "Message shown when there is no saved view to display on the home page."
   },
-  "statistics": "Statistics",
-  "documentsInInbox": "Documents in inbox",
-  "totalDocuments": "Total documents",
-  "totalCharacters": "Total characters",
-  "showAll": "Show all",
+  "statistics": "Estadísticas",
+  "documentsInInbox": "Documentos en el buzón",
+  "totalDocuments": "Total de documentos",
+  "totalCharacters": "Total de caracteres",
+  "showAll": "Mostrar todo",
   "@showAll": {
     "description": "Button label shown on a saved view preview to open this view in the documents page"
   },
-  "userAlreadyExists": "This user already exists.",
+  "userAlreadyExists": "Este usuario ya existe.",
   "@userAlreadyExists": {
     "description": "Error message shown when the user tries to add an already existing account."
   },
-  "youDidNotSaveAnyViewsYet": "You did not save any views yet, create one and it will be shown here.",
+  "youDidNotSaveAnyViewsYet": "Aún no guardaste ninguna vista, crea una y aparecerá aquí.",
   "@youDidNotSaveAnyViewsYet": {
     "description": "Message shown when there are no saved views yet."
   },
-  "tryAgain": "Try again",
-  "discardFile": "Discard file?",
-  "discard": "Discard",
-  "backToLogin": "Back to login",
-  "skipEditingReceivedFiles": "Skip editing received files",
-  "uploadWithoutPromptingUploadForm": "Always upload without prompting the upload form when sharing files with the app.",
-  "authenticatingDots": "Authenticating...",
+  "tryAgain": "Intente nuevamente",
+  "discardFile": "¿Descartar archivo?",
+  "discard": "Descartar",
+  "backToLogin": "Volver al inicio de sesión",
+  "skipEditingReceivedFiles": "Omitir edición de archivos recibidos",
+  "uploadWithoutPromptingUploadForm": "Subir automáticamente sin mostrar el formulario de subida al compartir archivos con la app.",
+  "authenticatingDots": "Autenticando...",
   "@authenticatingDots": {
     "description": "Message shown when the app is authenticating the user"
   },
-  "persistingUserInformation": "Persisting user information...",
-  "fetchingUserInformation": "Fetching user information...",
+  "persistingUserInformation": "Manteniendo información del usuario...",
+  "fetchingUserInformation": "Obteniendo información del usuario...",
   "@fetchingUserInformation": {
     "description": "Message shown when the app loads user data from the server"
   },
-  "restoringSession": "Restoring session...",
+  "restoringSession": "Restaurando sesión...",
   "@restoringSession": {
     "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
+  },
+  "documentsAssigned": "{count, plural, zero{No documents} one{1 document} other{{count} documents}}",
+  "@documentsAssigned": {
+    "description": "Text shown with a correspondent, document type etc. to indicate the number of documents this filter will maximally yield."
+  },
+  "discardChangesWarning": "You have unsaved changes. By continuing, all changes will be lost. Do you want to discard these changes?",
+  "@discardChangesWarning": {
+    "description": "Warning message shown when the user tries to close a route without saving the changes."
   }
 }

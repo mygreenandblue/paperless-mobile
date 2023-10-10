@@ -52,7 +52,9 @@ class DocumentDetailsRoute extends GoRouteData {
         context.read(),
         context.read(),
         initialDocument: $extra,
-      ),
+      )
+        ..loadFullContent()
+        ..loadMetaData(),
       lazy: false,
       child: DocumentDetailsPage(
         isLabelClickable: isLabelClickable,
