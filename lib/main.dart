@@ -316,7 +316,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loginRoute,
           $loggingOutRoute,
           $addAccountRoute,
-          $providerShellRoute,
+          $authenticatedRoute,
         ],
       ),
     ],

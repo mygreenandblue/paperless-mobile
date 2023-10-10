@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
@@ -12,9 +13,13 @@ const _fkShowInSidebar = 'show_in_sidebar';
 
 class AddSavedViewPage extends StatefulWidget {
   final DocumentFilter? initialFilter;
+  final bool? showOnDashboard;
+  final bool? showInSidebar;
   const AddSavedViewPage({
     super.key,
     this.initialFilter,
+    this.showOnDashboard,
+    this.showInSidebar,
   });
 
   @override
@@ -59,7 +64,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                   ),
                   FormBuilderField<bool>(
                     name: _fkShowOnDashboard,
-                    initialValue: false,
+                    initialValue: widget.showOnDashboard ?? false,
                     builder: (field) {
                       return CheckboxListTile(
                         value: field.value,
@@ -70,7 +75,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                   ),
                   FormBuilderField<bool>(
                     name: _fkShowInSidebar,
-                    initialValue: false,
+                    initialValue: widget.showInSidebar ?? false,
                     builder: (field) {
                       return CheckboxListTile(
                         value: field.value,
@@ -81,6 +86,14 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
                   ),
                 ],
               ),
+            ),
+            //TODO: INTL or remove
+            HintCard(
+              hintText:
+                  "Saved views can currently only be edited by changing the "
+                  "document filter. Therefore, go to the documents page, select "
+                  "this view, add the filters you want this view to have and "
+                  "save it by pressing 'Save changes' in the view menu.",
             ),
           ],
         ),

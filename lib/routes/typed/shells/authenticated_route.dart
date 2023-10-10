@@ -19,6 +19,7 @@ import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
@@ -29,7 +30,7 @@ import 'package:provider/provider.dart';
 
 part 'authenticated_route.g.dart';
 
-@TypedShellRoute<ProviderShellRoute>(
+@TypedShellRoute<AuthenticatedRoute>(
   routes: [
     TypedGoRoute<SettingsRoute>(
       path: "/settings",
@@ -38,6 +39,19 @@ part 'authenticated_route.g.dart';
     TypedGoRoute<UploadQueueRoute>(
       path: "/upload-queue",
       name: R.uploadQueue,
+    ),
+    TypedGoRoute<SavedViewsRoute>(
+      path: "/saved-views",
+      routes: [
+        TypedGoRoute<CreateSavedViewRoute>(
+          path: "create",
+          name: R.createSavedView,
+        ),
+        TypedGoRoute<EditSavedViewRoute>(
+          path: "edit",
+          name: R.editSavedView,
+        ),
+      ],
     ),
     TypedStatefulShellRoute<ScaffoldShellRoute>(
       branches: [
@@ -122,10 +136,10 @@ part 'authenticated_route.g.dart';
     ),
   ],
 )
-class ProviderShellRoute extends ShellRouteData {
+class AuthenticatedRoute extends ShellRouteData {
   static final GlobalKey<NavigatorState> $navigatorKey = outerShellNavigatorKey;
 
-  const ProviderShellRoute();
+  const AuthenticatedRoute();
 
   @override
   Widget builder(

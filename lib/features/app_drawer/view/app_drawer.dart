@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
+import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
@@ -198,7 +200,26 @@ class AppDrawer extends StatelessWidget {
               .where((element) => element.showInSidebar)
               .toList();
           if (sidebarViews.isEmpty) {
-            return Text("Nothing to show here.").paddedOnly(left: 16);
+            return Column(
+              children: [
+                Text(
+                  S.of(context)!.youDidNotSaveAnyViewsYet,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ).paddedOnly(
+                  left: 16,
+                  right: 16,
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Scaffold.of(context).closeDrawer();
+                    const CreateSavedViewRoute(showInSidebar: true)
+                        .push(context);
+                  },
+                  icon: Icon(Icons.add),
+                  label: Text(S.of(context)!.newView),
+                ),
+              ],
+            );
           }
           return Expanded(
             child: ListView.builder(

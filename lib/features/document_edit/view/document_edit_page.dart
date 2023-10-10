@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -9,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
@@ -21,6 +21,7 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/theme.dart';
 
 class DocumentEditPage extends StatefulWidget {
   const DocumentEditPage({
@@ -41,12 +42,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   static const fkContent = 'content';
 
   final _formKey = GlobalKey<FormBuilderState>();
-
-  @override
-  void didUpdateWidget(covariant DocumentEditPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("WIDGET CONFIGURATION CHANGED?!?!?");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -404,12 +399,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   Widget _buildTitleFormField(String? initialTitle) {
     return FormBuilderTextField(
       name: fkTitle,
-      validator: (value) {
-        if (value?.trim().isEmpty ?? true) {
-          return S.of(context)!.thisFieldIsRequired;
-        }
-        return null;
-      },
       decoration: InputDecoration(
         label: Text(S.of(context)!.title),
       ),
@@ -478,55 +467,3 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     ).padded();
   }
 }
-
-// class SampleWidget extends StatefulWidget {
-//   const SampleWidget({super.key});
-
-//   @override
-//   State<SampleWidget> createState() => _SampleWidgetState();
-// }
-
-// class _SampleWidgetState extends State<SampleWidget> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<OptionsBloc, OptionsState>(
-//       builder: (context, state) {
-//         return OptionsFormField(
-//           options: state.options,
-//           onAddOption: (option) {
-//             // This will call the repository and will cause a new state containing the new option to be emitted.
-//             context.read<OptionsBloc>().addOption(option);
-//           },
-//         );
-//       },
-//     );
-//   }
-// }
-
-// class OptionsFormField extends StatefulWidget {
-//   final List<Option> options;
-//   final void Function(Option option) onAddOption;
-
-//   const OptionsFormField({
-//     super.key,
-//     required this.options,
-//     required this.onAddOption,
-//   });
-
-//   @override
-//   State<OptionsFormField> createState() => _OptionsFormFieldState();
-// }
-
-// class _OptionsFormFieldState extends State<OptionsFormField> {
-//   final TextEditingController _controller;
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextFormField(
-//       onTap: () async {
-//         // User creates new option...
-//         final Option option = await showOptionCreationForm();
-//         widget.onAddOption(option);
-//       },
-//     );
-//   }
-// }

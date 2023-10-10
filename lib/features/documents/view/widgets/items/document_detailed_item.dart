@@ -111,7 +111,7 @@ class DocumentDetailedItem extends DocumentItem {
               ],
             ).paddedLTRB(8, 8, 8, 4),
             Text(
-              document.title ?? '-',
+              document.title.isEmpty ? '-' : document.title,
               style: Theme.of(context).textTheme.titleMedium,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

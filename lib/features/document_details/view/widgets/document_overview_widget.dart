@@ -29,11 +29,11 @@ class DocumentOverviewWidget extends StatelessWidget {
     final availableLabels = context.watch<LabelRepository>().state;
     return SliverList.list(
       children: [
-        if (document.title != null)
+        if (document.title.isNotEmpty)
           DetailsItem(
             label: S.of(context)!.title,
             content: HighlightedText(
-              text: document.title!,
+              text: document.title,
               highlights: queryString?.split(" ") ?? [],
               style: Theme.of(context).textTheme.bodyLarge,
             ),

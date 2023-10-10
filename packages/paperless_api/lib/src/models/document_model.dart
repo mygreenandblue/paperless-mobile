@@ -26,7 +26,7 @@ class DocumentModel extends Equatable {
   static const storagePathKey = 'storage_path';
 
   final int id;
-  final String? title;
+  final String title;
   final String? content;
   final Iterable<int> tags;
   final int? documentType;

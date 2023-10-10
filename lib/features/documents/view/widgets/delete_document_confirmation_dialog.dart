@@ -20,7 +20,7 @@ class DeleteDocumentConfirmationDialog extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            document.title ?? document.originalFileName ?? '-',
+            document.title.isEmpty ? '(no title)' : document.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
