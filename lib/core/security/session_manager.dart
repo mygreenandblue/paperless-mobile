@@ -39,14 +39,6 @@ class SessionManager extends ValueNotifier<Dio> {
       DioUnauthorizedInterceptor(),
       DioHttpErrorInterceptor(),
       DioOfflineInterceptor(),
-      PrettyDioLogger(
-        compact: true,
-        responseBody: false,
-        responseHeader: false,
-        request: false,
-        requestBody: false,
-        requestHeader: false,
-      ),
       RetryOnConnectionChangeInterceptor(dio: dio)
     ]);
     return dio;

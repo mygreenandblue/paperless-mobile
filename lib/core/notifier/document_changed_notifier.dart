@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -17,12 +16,10 @@ class DocumentChangedNotifier {
   Stream<DocumentModel> get $deleted => _deleted.asBroadcastStream();
 
   void notifyUpdated(DocumentModel updated) {
-    debugPrint("Notifying updated document ${updated.id}");
     _updated.add(updated);
   }
 
   void notifyDeleted(DocumentModel deleted) {
-    debugPrint("Notifying deleted document ${deleted.id}");
     _deleted.add(deleted);
   }
 

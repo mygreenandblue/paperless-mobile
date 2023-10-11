@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
@@ -18,13 +19,13 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
       : super(const InitialDocumentScannerState());
 
   Future<void> initialize() async {
-    debugPrint("Restoring scans...");
+    logger.t("Restoring scans...");
     emit(const RestoringDocumentScannerState());
     final tempDir = await FileService.temporaryScansDirectory;
     final allFiles = tempDir.list().whereType<File>();
     final scans =
         await allFiles.where((event) => event.path.endsWith(".jpeg")).toList();
-    debugPrint("Restored ${scans.length} scans.");
+    logger.t("Restored ${scans.length} scans.");
     emit(
       scans.isEmpty
           ? const InitialDocumentScannerState()

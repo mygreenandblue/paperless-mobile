@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
+import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
@@ -54,9 +56,24 @@ class FileService {
     }
   }
 
+  static Future<Directory> get logDirectory async {
+    if (Platform.isAndroid) {
+      return getExternalStorageDirectories(type: StorageDirectory.documents)
+          .then((directory) async =>
+              directory?.firstOrNull ??
+              await getApplicationDocumentsDirectory())
+          .then((directory) =>
+              Directory('${directory.path}/logs').create(recursive: true));
+    } else if (Platform.isIOS) {
+      return getApplicationDocumentsDirectory().then(
+          (value) => Directory('${value.path}/logs').create(recursive: true));
+    }
+    throw UnsupportedError("Platform not supported.");
+  }
+
   static Future<Directory> get downloadsDirectory async {
     if (Platform.isAndroid) {
-      Directory directory = Directory('/storage/emulated/0/Download');
+      var directory = Directory('/storage/emulated/0/Download');
       if (!directory.existsSync()) {
         final downloadsDir = await getExternalStorageDirectories(
           type: StorageDirectory.downloads,
@@ -93,12 +110,30 @@ class FileService {
   }
 
   static Future<void> clearUserData({required String userId}) async {
+    logger.t("FileService#clearUserData(): Clearing data for user $userId...");
+
     final scanDir = await temporaryScansDirectory;
+    final scanDirSize = formatBytes(await getDirSizeInBytes(scanDir));
     final tempDir = await temporaryDirectory;
+    final tempDirSize = formatBytes(await getDirSizeInBytes(tempDir));
     final consumptionDir = await getConsumptionDirectory(userId: userId);
+    final consumptionDirSize =
+        formatBytes(await getDirSizeInBytes(consumptionDir));
+
+    logger.t("FileService#clearUserData(): Removing scans...");
     await scanDir.delete(recursive: true);
+    logger.t("FileService#clearUserData(): Removed $scanDirSize...");
+
+    logger.t(
+        "FileService#clearUserData(): Removing temporary files and cache content...");
+
     await tempDir.delete(recursive: true);
+    logger.t("FileService#clearUserData(): Removed $tempDirSize...");
+
+    logger.t(
+        "FileService#clearUserData(): Removing files waiting for consumption...");
     await consumptionDir.delete(recursive: true);
+    logger.t("FileService#clearUserData(): Removed $consumptionDirSize...");
   }
 
   static Future<void> clearDirectoryContent(PaperlessDirectoryType type) async {
@@ -119,6 +154,12 @@ class FileService {
 
   static Future<List<Directory>> getAllSubdirectories(Directory directory) {
     return directory.list().whereType<Directory>().toList();
+  }
+
+  static Future<int> getDirSizeInBytes(Directory dir) async {
+    return dir
+        .list(recursive: true)
+        .fold(0, (previous, element) => previous + element.statSync().size);
   }
 }
 

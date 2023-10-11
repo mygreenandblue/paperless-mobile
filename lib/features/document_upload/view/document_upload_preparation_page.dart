@@ -12,6 +12,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -376,10 +377,17 @@ class _DocumentUploadPreparationPageState
         showErrorMessage(context, error, stackTrace);
       } on PaperlessFormValidationException catch (exception) {
         setState(() => _errors = exception.validationMessages);
-      } catch (unknownError, stackTrace) {
-        debugPrint(unknownError.toString());
+      } catch (error, stackTrace) {
+        logger.e(
+          "An unknown error occurred during document upload.",
+          error: error,
+          stackTrace: stackTrace,
+        );
         showErrorMessage(
-            context, const PaperlessApiException.unknown(), stackTrace);
+          context,
+          const PaperlessApiException.unknown(),
+          stackTrace,
+        );
       } finally {
         setState(() {
           _isUploadLoading = false;

@@ -74,7 +74,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   Future<void> bulkDelete(List<DocumentModel> documents) async {
-    debugPrint("[DocumentsCubit] bulkRemove");
     await api.bulkAction(
       BulkDeleteAction(documents.map((doc) => doc.id)),
     );
@@ -85,7 +84,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   void toggleDocumentSelection(DocumentModel model) {
-    debugPrint("[DocumentsCubit] toggleSelection");
     if (state.selectedIds.contains(model.id)) {
       emit(
         state.copyWith(
@@ -100,12 +98,10 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   void resetSelection() {
-    debugPrint("[DocumentsCubit] resetSelection");
     emit(state.copyWith(selection: []));
   }
 
   void reset() {
-    debugPrint("[DocumentsCubit] reset");
     emit(const DocumentsState());
   }
 

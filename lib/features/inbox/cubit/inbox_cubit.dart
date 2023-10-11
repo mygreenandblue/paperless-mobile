@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
@@ -83,11 +84,17 @@ class InboxCubit extends HydratedCubit<InboxState>
   }
 
   Future<void> refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
-    debugPrint("Checking for new items in inbox...");
+    logger.t(
+        "InboxCubit#refreshItemsInInboxCount(): Checking for new documents in inbox...");
     final stats = await _statsApi.getServerStatistics();
 
     if (stats.documentsInInbox != state.itemsInInboxCount && shouldLoadInbox) {
+      logger.t(
+          "InboxCubit#refreshItemsInInboxCount(): New documents found in inbox, reloading inbox.");
       await loadInbox();
+    } else {
+      logger.t(
+          "InboxCubit#refreshItemsInInboxCount(): No new documents found in inbox.");
     }
     emit(state.copyWith(itemsInInboxCount: stats.documentsInInbox));
   }
@@ -97,7 +104,6 @@ class InboxCubit extends HydratedCubit<InboxState>
   ///
   Future<void> loadInbox() async {
     if (!isClosed) {
-      debugPrint("Initializing inbox...");
       final inboxTags = await _labelRepository.findAllTags().then(
             (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
           );

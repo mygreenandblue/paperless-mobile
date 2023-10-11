@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/global/asset_images.dart';
+import 'package:paperless_mobile/core/logging/view/app_logs_page.dart';
 import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
@@ -179,6 +180,17 @@ class AppDrawer extends StatelessWidget {
                 return child
                     .animate(onPlay: (c) => c.repeat(reverse: true))
                     .fade(duration: 1.seconds, begin: 1, end: 0.3);
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.subject),
+              title: const Text('Logs'), //TODO: INTL
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const AppLogsPage();
+                }));
               },
             ),
             ListTile(

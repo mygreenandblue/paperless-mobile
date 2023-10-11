@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
@@ -169,7 +170,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       locale: locale,
       userId: userId,
     );
-    debugPrint("Downloaded file to $targetPath");
+    logger.i("Document '${state.document.title}' saved to $targetPath.");
   }
 
   Future<void> shareDocument({bool shareOriginal = false}) async {

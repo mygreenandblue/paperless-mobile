@@ -13,6 +13,7 @@ import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
 import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -55,10 +56,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
     emit(const AuthenticatingState(AuthenticatingStage.authenticating));
     final localUserId = "${credentials.username}@$serverUrl";
-    _debugPrintMessage(
-      "login",
-      "Trying to login $localUserId...",
-    );
+    logger.t("AuthenticationCubit#login(): Trying to log in $localUserId...");
     try {
       await _addUser(
         localUserId,
@@ -97,35 +95,26 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     await globalSettings.save();
 
     emit(AuthenticatedState(localUserId: localUserId));
-    _debugPrintMessage(
-      "login",
-      "User successfully logged in.",
-    );
+    logger.t(
+        'AuthenticationCubit#login(): User $localUserId successfully logged in.');
   }
 
   /// Switches to another account if it exists.
   Future<void> switchAccount(String localUserId) async {
     emit(const SwitchingAccountsState());
-    _debugPrintMessage(
-      "switchAccount",
-      "Trying to switch to user $localUserId...",
-    );
+    logger.t(
+        'AuthenticationCubit#switchAccount(): Trying to switch to user $localUserId...');
 
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-    // if (globalSettings.loggedInUserId == localUserId) {
-    //   _debugPrintMessage(
-    //     "switchAccount",
-    //     "User $localUserId is already logged in.",
-    //   );
-    //   emit(AuthenticatedState(localUserId: localUserId));
-    //   return;
-    // }
 
     final userAccountBox = Hive.localUserAccountBox;
 
     if (!userAccountBox.containsKey(localUserId)) {
-      debugPrint("User $localUserId not yet registered.");
+      logger.w(
+        'AuthenticationCubit#switchAccount(): User $localUserId not yet registered. '
+        'This should never be the case!',
+      );
       return;
     }
 
@@ -135,10 +124,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       final authenticated = await _localAuthService
           .authenticateLocalUser("Authenticate to switch your account.");
       if (!authenticated) {
-        _debugPrintMessage(
-          "switchAccount",
-          "User could not be authenticated.",
-        );
+        logger.w(
+            "AuthenticationCubit#switchAccount(): User could not be authenticated.");
         emit(VerifyIdentityState(userId: localUserId));
         return;
       }
@@ -151,7 +138,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         HiveBoxes.localUserCredentials, (credentialsBox) async {
       if (!credentialsBox.containsKey(localUserId)) {
         await credentialsBox.close();
-        debugPrint("Invalid authentication for $localUserId");
+        logger.w(
+            "AuthenticationCubit#switchAccount(): Invalid authentication for $localUserId.");
         return;
       }
       final credentials = credentialsBox.get(localUserId);
@@ -188,6 +176,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }) async {
     assert(credentials.password != null && credentials.username != null);
     final localUserId = "${credentials.username}@$serverUrl";
+    logger
+        .d("AuthenticationCubit#addAccount(): Adding account $localUserId...");
 
     final sessionManager = SessionManager([
       LanguageHeaderInterceptor(locale),
@@ -204,8 +194,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> removeAccount(String userId) async {
+    logger
+        .t("AuthenticationCubit#removeAccount(): Removing account $userId...");
     final userAccountBox = Hive.localUserAccountBox;
     final userAppStateBox = Hive.localUserAppStateBox;
+
     await FileService.clearUserData(userId: userId);
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
@@ -220,19 +213,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   ///
   Future<void> restoreSession([String? userId]) async {
     emit(const RestoringSessionState());
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Trying to restore previous session...",
-    );
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Trying to restore previous session...");
     final globalSettings =
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     final restoreSessionForUser = userId ?? globalSettings.loggedInUserId;
     // final localUserId = globalSettings.loggedInUserId;
     if (restoreSessionForUser == null) {
-      _debugPrintMessage(
-        "restoreSessionState",
-        "There is nothing to restore.",
-      );
+      logger.t(
+          "AuthenticationCubit#restoreSessionState(): There is nothing to restore.");
       final otherAccountsExist = Hive.localUserAccountBox.isNotEmpty;
       // If there is nothing to restore, we can quit here.
       emit(
@@ -243,42 +232,25 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final localUserAccountBox =
         Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount);
     final localUserAccount = localUserAccountBox.get(restoreSessionForUser)!;
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Checking if biometric authentication is required...",
-    );
     if (localUserAccount.settings.isBiometricAuthenticationEnabled) {
-      _debugPrintMessage(
-        "restoreSessionState",
-        "Biometric authentication required, waiting for user to authenticate...",
-      );
+      logger.t(
+          "AuthenticationCubit#restoreSessionState(): Verifying user identity...");
       final authenticationMesage =
           (await S.delegate.load(Locale(globalSettings.preferredLocaleSubtag)))
               .verifyYourIdentity;
       final localAuthSuccess =
           await _localAuthService.authenticateLocalUser(authenticationMesage);
       if (!localAuthSuccess) {
+        logger.w(
+            "AuthenticationCubit#restoreSessionState(): Identity could not be verified.");
         emit(VerifyIdentityState(userId: restoreSessionForUser));
-        _debugPrintMessage(
-          "restoreSessionState",
-          "User could not be authenticated.",
-        );
         return;
       }
-      _debugPrintMessage(
-        "restoreSessionState",
-        "User successfully autheticated.",
-      );
-    } else {
-      _debugPrintMessage(
-        "restoreSessionState",
-        "Biometric authentication not configured, skipping.",
-      );
+      logger.t(
+          "AuthenticationCubit#restoreSessionState(): Identity successfully verified.");
     }
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Trying to retrieve authentication credentials...",
-    );
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Reading encrypted credentials...");
     final authentication =
         await withEncryptedBox<UserCredentials, UserCredentials>(
             HiveBoxes.localUserCredentials, (box) {
@@ -286,80 +258,62 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     });
 
     if (authentication == null) {
-      _debugPrintMessage(
-        "restoreSessionState",
-        "Could not retrieve existing authentication credentials.",
-      );
+      logger.e(
+          "AuthenticationCubit#restoreSessionState(): Credentials could not be read!");
       throw Exception(
         "User should be authenticated but no authentication information was found.",
       );
     }
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Credentials successfully retrieved.");
 
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Authentication credentials successfully retrieved.",
-    );
-
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Updating current session state...",
-    );
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Updating security context...");
 
     _sessionManager.updateSettings(
       clientCertificate: authentication.clientCertificate,
       authToken: authentication.token,
       baseUrl: localUserAccount.serverUrl,
     );
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Current session state successfully updated.",
-    );
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Security context successfully updated.");
     final isPaperlessServerReachable =
         await _connectivityService.isPaperlessServerReachable(
               localUserAccount.serverUrl,
               authentication.clientCertificate,
             ) ==
             ReachabilityStatus.reachable;
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Trying to update remote paperless user...");
     if (isPaperlessServerReachable) {
-      _debugPrintMessage(
-        "restoreSessionMState",
-        "Updating server user...",
-      );
       final apiVersion = await _getApiVersion(_sessionManager.client);
       await _updateRemoteUser(
         _sessionManager,
         localUserAccount,
         apiVersion,
       );
-      _debugPrintMessage(
-        "restoreSessionMState",
-        "Successfully updated server user.",
-      );
+      logger.t(
+          "AuthenticationCubit#restoreSessionState(): Successfully updated remote paperless user.");
     } else {
-      _debugPrintMessage(
-        "restoreSessionMState",
-        "Skipping update of server user (server could not be reached).",
-      );
+      logger.w(
+          "AuthenticationCubit#restoreSessionState(): Could not update remote paperless user. Server could not be reached. The app might behave unexpected!");
     }
     globalSettings.loggedInUserId = restoreSessionForUser;
     await globalSettings.save();
     emit(AuthenticatedState(localUserId: restoreSessionForUser));
 
-    _debugPrintMessage(
-      "restoreSessionState",
-      "Session was successfully restored.",
-    );
+    logger.t(
+        "AuthenticationCubit#restoreSessionState(): Previous session successfully restored.");
   }
 
   Future<void> logout([bool removeAccount = false]) async {
     emit(const LoggingOutState());
-    _debugPrintMessage(
-      "logout",
-      "Trying to log out current user...",
-    );
-    await _resetExternalState();
     final globalSettings = Hive.globalSettingsBox.getValue()!;
     final userId = globalSettings.loggedInUserId!;
+    logger.t(
+        "AuthenticationCubit#logout(): Logging out current user ($userId)...");
+
+    await _resetExternalState();
     await _notificationService.cancelUserNotifications(userId);
 
     final otherAccountsExist = Hive.localUserAccountBox.length > 1;
@@ -370,15 +324,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     globalSettings.loggedInUserId = null;
     await globalSettings.save();
 
-    _debugPrintMessage(
-      "logout",
-      "User successfully logged out.",
-    );
+    logger.t("AuthenticationCubit#logout(): User successfully logged out.");
   }
 
   Future<void> _resetExternalState() async {
+    logger.t(
+        "AuthenticationCubit#_resetExternalState(): Resetting security context...");
     _sessionManager.resetSettings();
+    logger.t(
+        "AuthenticationCubit#_resetExternalState(): Security context reset.");
+    logger.t(
+        "AuthenticationCubit#_resetExternalState(): Clearing local state...");
     await HydratedBloc.storage.clear();
+    logger.t("AuthenticationCubit#_resetExternalState(): Local state cleard.");
   }
 
   Future<int> _addUser(
@@ -392,7 +350,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     _FutureVoidCallback? onFetchUserInformation,
   }) async {
     assert(credentials.username != null && credentials.password != null);
-    _debugPrintMessage("_addUser", "Adding new user $localUserId...");
+    logger
+        .t("AuthenticationCubit#_addUser(): Adding new user $localUserId....");
 
     sessionManager.updateSettings(
       baseUrl: serverUrl,
@@ -401,10 +360,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     final authApi = _apiFactory.createAuthenticationApi(sessionManager.client);
 
-    _debugPrintMessage(
-      "_addUser",
-      "Trying to login user ${credentials.username} on $serverUrl...",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): Fetching bearer token from the server...");
 
     await onPerformLogin?.call();
 
@@ -413,10 +370,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       password: credentials.password!,
     );
 
-    _debugPrintMessage(
-      "_addUser",
-      "Successfully acquired token.",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): Bearer token successfully retrieved.");
 
     sessionManager.updateSettings(
       baseUrl: serverUrl,
@@ -430,18 +385,15 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         Hive.box<LocalUserAppState>(HiveBoxes.localUserAppState);
 
     if (userAccountBox.containsKey(localUserId)) {
-      _debugPrintMessage(
-        "_addUser",
-        "An error occurred! The user $localUserId already exists.",
-      );
+      logger.w(
+          "AuthenticationCubit#_addUser(): The user $localUserId already exists.");
       throw InfoMessageException(code: ErrorCode.userAlreadyExists);
     }
     await onFetchUserInformation?.call();
     final apiVersion = await _getApiVersion(sessionManager.client);
-    _debugPrintMessage(
-      "_addUser",
-      "Trying to fetch user object for $localUserId...",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): Trying to fetch remote paperless user for $localUserId.");
+
     late UserModel serverUser;
     try {
       serverUser = await _apiFactory
@@ -451,21 +403,20 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           )
           .findCurrentUser();
     } on DioException catch (error, stackTrace) {
-      _debugPrintMessage(
-        "_addUser",
-        "An error occurred: ${error.message}",
+      logger.e(
+        "AuthenticationCubit#_addUser(): An error occurred while fetching the remote paperless user.",
+        error: error,
         stackTrace: stackTrace,
       );
+
       rethrow;
     }
-    _debugPrintMessage(
-      "_addUser",
-      "User object successfully fetched.",
-    );
-    _debugPrintMessage(
-      "_addUser",
-      "Persisting local user account...",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): Remote paperless user successfully fetched.");
+
+    logger.t(
+        "AuthenticationCubit#_addUser(): Persisting user account information...");
+
     await onPersistLocalUserData?.call();
     // Create user account
     await userAccountBox.put(
@@ -478,29 +429,21 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         apiVersion: apiVersion,
       ),
     );
-    _debugPrintMessage(
-      "_addUser",
-      "Local user account successfully persisted.",
-    );
-    _debugPrintMessage(
-      "_addUser",
-      "Persisting user state...",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): User account information successfully persisted.");
+    logger.t("AuthenticationCubit#_addUser(): Persisting user app state...");
     // Create user state
     await userStateBox.put(
       localUserId,
       LocalUserAppState(userId: localUserId),
     );
-    _debugPrintMessage(
-      "_addUser",
-      "User state successfully persisted.",
-    );
+    logger.t(
+        "AuthenticationCubit#_addUser(): User state successfully persisted.");
     // Save credentials in encrypted box
     await withEncryptedBox(HiveBoxes.localUserCredentials, (box) async {
-      _debugPrintMessage(
-        "_addUser",
-        "Saving user credentials inside encrypted storage...",
-      );
+      logger.t(
+          "AuthenticationCubit#_addUser(): Saving user credentials inside encrypted storage...");
+
       await box.put(
         localUserId,
         UserCredentials(
@@ -508,10 +451,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           clientCertificate: clientCert,
         ),
       );
-      _debugPrintMessage(
-        "_addUser",
-        "User credentials successfully saved.",
-      );
+      logger.t(
+          "AuthenticationCubit#_addUser(): User credentials successfully saved.");
     });
     final hostsBox = Hive.box<String>(HiveBoxes.hosts);
     if (!hostsBox.values.contains(serverUrl)) {
@@ -526,10 +467,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     Duration? timeout,
     int defaultValue = 2,
   }) async {
-    _debugPrintMessage(
-      "_getApiVersion",
-      "Trying to fetch API version...",
-    );
+    logger.t(
+        "AuthenticationCubit#_getApiVersion(): Trying to fetch API version...");
     try {
       final response = await dio.get(
         "/api/",
@@ -539,12 +478,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       );
       final apiVersion =
           int.parse(response.headers.value('x-api-version') ?? "3");
-      _debugPrintMessage(
-        "_getApiVersion",
-        "API version ($apiVersion) successfully retrieved.",
-      );
+      logger.t(
+          "AuthenticationCubit#_getApiVersion(): Successfully retrieved API version ($apiVersion).");
+
       return apiVersion;
     } on DioException catch (_) {
+      logger.w(
+          "AuthenticationCubit#_getApiVersion(): Could not retrieve API version.");
       return defaultValue;
     }
   }
@@ -555,10 +495,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     LocalUserAccount localUserAccount,
     int apiVersion,
   ) async {
-    _debugPrintMessage(
-      "_updateRemoteUser",
-      "Updating paperless user object...",
-    );
+    logger.t(
+        "AuthenticationCubit#_updateRemoteUser(): Trying to update remote user object...");
     final updatedPaperlessUser = await _apiFactory
         .createUserApi(
           sessionManager.client,
@@ -568,24 +506,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     localUserAccount.paperlessUser = updatedPaperlessUser;
     await localUserAccount.save();
-    _debugPrintMessage(
-      "_updateRemoteUser",
-      "Paperless user object successfully updated.",
-    );
-  }
-
-  void _debugPrintMessage(
-    String methodName,
-    String message, {
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    debugPrint("AuthenticationCubit#$methodName: $message");
-    if (error != null) {
-      debugPrint(error.toString());
-    }
-    if (stackTrace != null) {
-      debugPrintStack(stackTrace: stackTrace);
-    }
+    logger.t(
+        "AuthenticationCubit#_updateRemoteUser(): Successfully updated remote user object.");
   }
 }

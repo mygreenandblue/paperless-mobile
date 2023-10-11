@@ -18,12 +18,6 @@ import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Changelog {
-  final int buildNumber;
-  final String? changelog;
-  Changelog(this.buildNumber, this.changelog);
-}
-
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
 

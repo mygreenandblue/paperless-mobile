@@ -16,6 +16,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:logger/logger.dart' as l;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
@@ -28,6 +29,7 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/logging/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -45,6 +47,7 @@ import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -82,7 +85,7 @@ Future<void> performMigrations() async {
   final requiresMigrationForCurrentVersion =
       !performedMigrations.contains(currentVersion);
   if (requiresMigrationForCurrentVersion) {
-    debugPrint("Applying migration scripts for version $currentVersion");
+    logger.t("Applying migration scripts for version $currentVersion");
     await migrationProcedure();
     await sp.setStringList(
       'performed_migrations',
@@ -90,7 +93,6 @@ Future<void> performMigrations() async {
     );
   }
 }
-
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
@@ -125,6 +127,13 @@ void main() async {
     //           )
     //       .start();
     // }
+
+    logger = l.Logger(
+      output: MirroredFileOutput(),
+      printer: SpringBootLikePrinter(),
+      level: l.Level.trace,
+    );
+
     packageInfo = await PackageInfo.fromPlatform();
 
     if (Platform.isAndroid) {
@@ -160,6 +169,15 @@ void main() async {
     // Manages security context, required for self signed client certificates
     final sessionManager = SessionManager([
       languageHeaderInterceptor,
+      PrettyDioLogger(
+        compact: true,
+        responseBody: false,
+        responseHeader: false,
+        request: false,
+        requestBody: false,
+        requestHeader: false,
+        logPrint: (object) => logger.t,
+      ),
     ]);
 
     // Initialize Blocs/Cubits
@@ -214,9 +232,7 @@ void main() async {
       ServerMessageException e => e.message,
       _ => error.toString()
     };
-    debugPrint("An unepxected exception has occured!");
-    debugPrint(message);
-    debugPrintStack(stackTrace: stack);
+    logger.e(message, stackTrace: stack);
   });
 }
 
@@ -254,7 +270,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
     final DisplayMode mostOptimalMode =
         sameResolution.isNotEmpty ? sameResolution.first : active;
-    debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
+    logger.d('Setting refresh rate to ${mostOptimalMode.refreshRate}');
 
     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
   }
