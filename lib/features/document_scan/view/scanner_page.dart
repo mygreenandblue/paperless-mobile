@@ -227,9 +227,10 @@ class _ScannerPageState extends State<ScannerPage>
     if (!isGranted) {
       return;
     }
-    final file = await FileService.allocateTemporaryFile(
+    final file = await FileService.instance.allocateTemporaryFile(
       PaperlessDirectoryType.scans,
       extension: 'jpeg',
+      create: true,
     );
     if (kDebugMode) {
       dev.log('[ScannerPage] Created temporary file: ${file.path}');

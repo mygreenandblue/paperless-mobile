@@ -32,7 +32,7 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
       return [];
     }
     final consumptionDirectory =
-        await FileService.getConsumptionDirectory(userId: userId);
+        await FileService.instance.getConsumptionDirectory(userId: userId);
     final List<File> localFiles = [];
     for (final file in files) {
       if (!file.path.startsWith(consumptionDirectory.path)) {
@@ -53,7 +53,7 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
     required String userId,
   }) async {
     final consumptionDirectory =
-        await FileService.getConsumptionDirectory(userId: userId);
+        await FileService.instance.getConsumptionDirectory(userId: userId);
     if (file.path.startsWith(consumptionDirectory.path)) {
       await file.delete();
     }
@@ -70,8 +70,8 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
   }
 
   Future<List<File>> _getCurrentFiles(String userId) async {
-    final directory = await FileService.getConsumptionDirectory(userId: userId);
-    final files = await FileService.getAllFiles(directory);
-    return files;
+    final directory =
+        await FileService.instance.getConsumptionDirectory(userId: userId);
+    return await FileService.instance.getAllFiles(directory);
   }
 }

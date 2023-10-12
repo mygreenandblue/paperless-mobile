@@ -7,7 +7,7 @@ import 'package:paperless_mobile/core/config/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
-import 'package:paperless_mobile/core/logging/logger.dart';
+import 'package:paperless_mobile/core/logging/data/logger.dart';
 import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
@@ -213,16 +213,18 @@ class _LabelsPageState extends State<LabelsPage>
                                 ][_currentIndex]
                                     .call();
                               } catch (error, stackTrace) {
-                                logger.e(
-                                  "An error ocurred while reloading "
-                                  "${[
-                                    "correspondents",
-                                    "document types",
-                                    "tags",
-                                    "storage paths"
-                                  ][_currentIndex]}: ${error.toString()}",
-                                  stackTrace: stackTrace,
-                                );
+                                logger.fe(
+                                    "An error ocurred while reloading "
+                                    "${[
+                                      "correspondents",
+                                      "document types",
+                                      "tags",
+                                      "storage paths"
+                                    ][_currentIndex]}.",
+                                    error: error,
+                                    stackTrace: stackTrace,
+                                    className: runtimeType.toString(),
+                                    methodName: 'onRefresh');
                               }
                             },
                             child: TabBarView(

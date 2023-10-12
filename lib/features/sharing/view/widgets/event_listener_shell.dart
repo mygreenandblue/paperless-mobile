@@ -85,7 +85,6 @@ class _EventListenerShellState extends State<EventListenerShell>
     if (!currentUser.paperlessUser.canViewInbox || _inboxTimer != null) {
       return;
     }
-    cubit.refreshItemsInInboxCount(false);
     _inboxTimer = Timer.periodic(30.seconds, (_) {
       cubit.refreshItemsInInboxCount(false);
     });

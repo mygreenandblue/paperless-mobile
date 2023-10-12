@@ -2,12 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/global/asset_images.dart';
 import 'package:paperless_mobile/core/logging/view/app_logs_page.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
 import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
 import 'package:paperless_mobile/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
@@ -19,6 +16,7 @@ import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/app_logs_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
@@ -185,12 +183,9 @@ class AppDrawer extends StatelessWidget {
             ListTile(
               dense: true,
               leading: const Icon(Icons.subject),
-              title: const Text('Logs'), //TODO: INTL
+              title: Text(S.of(context)!.appLogs('')),
               onTap: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return const AppLogsPage();
-                }));
+                AppLogsRoute().push(context);
               },
             ),
             ListTile(

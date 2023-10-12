@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/logging/logger.dart';
+import 'package:paperless_mobile/core/logging/data/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
@@ -85,7 +85,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   Future<ResultType> openDocumentInSystemViewer() async {
-    final cacheDir = await FileService.temporaryDirectory;
+    final cacheDir = FileService.instance.temporaryDirectory;
     if (state.metaData == null) {
       await loadMetaData();
     }
@@ -121,7 +121,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     }
     String targetPath = _buildDownloadFilePath(
       downloadOriginal,
-      await FileService.downloadsDirectory,
+      FileService.instance.downloadsDirectory,
     );
 
     if (!await File(targetPath).exists()) {
@@ -170,7 +170,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       locale: locale,
       userId: userId,
     );
-    logger.i("Document '${state.document.title}' saved to $targetPath.");
+    logger.fi("Document '${state.document.title}' saved to $targetPath.");
   }
 
   Future<void> shareDocument({bool shareOriginal = false}) async {
@@ -179,7 +179,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     }
     String filePath = _buildDownloadFilePath(
       shareOriginal,
-      await FileService.temporaryDirectory,
+      FileService.instance.temporaryDirectory,
     );
     await _api.downloadToFile(
       state.document,
@@ -204,7 +204,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       await loadMetaData();
     }
     final filePath =
-        _buildDownloadFilePath(false, await FileService.temporaryDirectory);
+        _buildDownloadFilePath(false, FileService.instance.temporaryDirectory);
     await _api.downloadToFile(
       state.document,
       filePath,

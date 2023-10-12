@@ -35,6 +35,10 @@ extension DateHelpers on DateTime {
         yesterday.month == month &&
         yesterday.year == year;
   }
+
+  bool isOnSameDayAs(DateTime other) {
+    return other.day == day && other.month == month && other.year == year;
+  }
 }
 
 extension StringNormalizer on String {

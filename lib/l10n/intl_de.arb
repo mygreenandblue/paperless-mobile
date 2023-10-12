@@ -1001,5 +1001,13 @@
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
   },
-  "changelog": "Changelog"
+  "changelog": "Changelog",
+  "noLogsFoundOn": "Keine Logs am {date} gefunden.",
+  "logfileBottomReached": "Du hast das Ende dieser Logdatei erreicht.",
+  "appLogs": "App Logs {date}",
+  "saveLogsToFile": "Logs in Datei speichern",
+  "copyToClipboard": "In Zwischenablage kopieren",
+  "couldNotLoadLogfileFrom": "Logs vom {date} konnten nicht geladen werden.",
+  "loadingLogsFrom": "Lade Logs vom {date}...",
+  "clearLogs": "Logs vom {date} leeren"
 }

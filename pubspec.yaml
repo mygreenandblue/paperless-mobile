@@ -99,6 +99,7 @@ dependencies:
   shared_preferences: ^2.2.1
   flutter_markdown: ^0.6.18
   logger: ^2.0.2+1
+  synchronized: ^3.1.0
   # camerawesome: ^2.0.0-dev.1
 
 dependency_overrides:

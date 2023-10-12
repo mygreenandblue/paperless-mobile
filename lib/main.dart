@@ -29,10 +29,13 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/logging/logger.dart';
+import 'package:paperless_mobile/core/logging/data/formatted_printer.dart';
+import 'package:paperless_mobile/core/logging/data/logger.dart';
+import 'package:paperless_mobile/core/logging/data/mirrored_file_output.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
@@ -42,6 +45,7 @@ import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/app_logs_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
@@ -85,7 +89,11 @@ Future<void> performMigrations() async {
   final requiresMigrationForCurrentVersion =
       !performedMigrations.contains(currentVersion);
   if (requiresMigrationForCurrentVersion) {
-    logger.t("Applying migration scripts for version $currentVersion");
+    logger.fd(
+      "Applying migration scripts for version $currentVersion",
+      className: "",
+      methodName: "performMigrations",
+    );
     await migrationProcedure();
     await sp.setStringList(
       'performed_migrations',
@@ -115,7 +123,15 @@ Future<void> _initHive() async {
 void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    await FileService.instance.initialize();
+
+    logger = l.Logger(
+      output: MirroredFileOutput(),
+      printer: FormattedPrinter(),
+      level: l.Level.trace,
+    );
     Paint.enableDithering = true;
+
     // if (kDebugMode) {
     //   // URL: http://localhost:3131
     //   // Login: admin:test
@@ -127,12 +143,6 @@ void main() async {
     //           )
     //       .start();
     // }
-
-    logger = l.Logger(
-      output: MirroredFileOutput(),
-      printer: SpringBootLikePrinter(),
-      level: l.Level.trace,
-    );
 
     packageInfo = await PackageInfo.fromPlatform();
 
@@ -168,7 +178,6 @@ void main() async {
     );
     // Manages security context, required for self signed client certificates
     final sessionManager = SessionManager([
-      languageHeaderInterceptor,
       PrettyDioLogger(
         compact: true,
         responseBody: false,
@@ -178,6 +187,7 @@ void main() async {
         requestHeader: false,
         logPrint: (object) => logger.t,
       ),
+      languageHeaderInterceptor,
     ]);
 
     // Initialize Blocs/Cubits
@@ -225,14 +235,19 @@ void main() async {
         ),
       ),
     );
-  }, (error, stack) {
+  }, (error, stackTrace) {
     // Catches all unexpected/uncaught errors and prints them to the console.
-    String message = switch (error) {
+    final message = switch (error) {
       PaperlessApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
-      _ => error.toString()
+      _ => null
     };
-    logger.e(message, stackTrace: stack);
+    logger.fe(
+      "An unexpected error occurred${message != null ? "- $message" : ""}",
+      error: message == null ? error : null,
+      methodName: "main",
+      stackTrace: stackTrace,
+    );
   });
 }
 
@@ -270,7 +285,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
     final DisplayMode mostOptimalMode =
         sameResolution.isNotEmpty ? sameResolution.first : active;
-    logger.d('Setting refresh rate to ${mostOptimalMode.refreshRate}');
+    logger.fi('Setting refresh rate to ${mostOptimalMode.refreshRate}');
 
     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
   }
@@ -336,6 +351,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loggingOutRoute,
           $addAccountRoute,
           $changelogRoute,
+          $appLogsRoute,
           $authenticatedRoute,
         ],
       ),
