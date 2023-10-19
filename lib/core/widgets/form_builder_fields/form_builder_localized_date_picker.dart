@@ -1,41 +1,26 @@
 import 'dart:collection';
-import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:extended_masked_text/extended_masked_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:synchronized/extension.dart';
+import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
-final class NeighbourAwareDateInputSegmentControls
-    with LinkedListEntry<NeighbourAwareDateInputSegmentControls> {
-  final FocusNode node;
-  final TextEditingController controller;
-  final int position;
-  final String format;
-  final DateTime? initialDate;
-
-  NeighbourAwareDateInputSegmentControls({
-    required this.node,
-    required this.controller,
-    required this.format,
-    this.initialDate,
-    required this.position,
-  });
-}
-
+/// A localized, segmented date input field.
 class FormBuilderLocalizedDatePicker extends StatefulWidget {
   final String name;
+  final Locale locale;
   final String labelText;
   final Widget? prefixIcon;
   final DateTime? initialValue;
   final DateTime firstDate;
   final DateTime lastDate;
-  final Locale locale;
+
+  /// If set to true, the field will not throw any validation errors when empty.
+  final bool allowUnset;
 
   const FormBuilderLocalizedDatePicker({
     super.key,
@@ -46,6 +31,7 @@ class FormBuilderLocalizedDatePicker extends StatefulWidget {
     required this.locale,
     required this.labelText,
     this.prefixIcon,
+    this.allowUnset = false,
   });
 
   @override
@@ -59,8 +45,9 @@ class _FormBuilderLocalizedDatePickerState
   late final String _format;
 
   final _textFieldControls =
-      LinkedList<NeighbourAwareDateInputSegmentControls>();
-
+      LinkedList<_NeighbourAwareDateInputSegmentControls>();
+  String? _error;
+  bool _temporarilyDisableListeners = false;
   @override
   void initState() {
     super.initState();
@@ -78,27 +65,42 @@ class _FormBuilderLocalizedDatePickerState
       final initialText = widget.initialValue != null
           ? DateFormat(formatString).format(widget.initialValue!)
           : null;
-      final item = NeighbourAwareDateInputSegmentControls(
+      final controls = _NeighbourAwareDateInputSegmentControls(
         node: FocusNode(debugLabel: formatString),
         controller: TextEditingController(text: initialText),
         format: formatString,
         position: i,
+        type: _DateInputSegment.fromPattern(formatString),
       );
-      item.controller.addListener(() {
-        if (item.controller.text.length == item.format.length) {
-          // _textFieldControls.elementAt(i).next?.node.requestFocus();
-          // _textFieldControls.elementAt(i).next?.controller.selection =
-          //     const TextSelection.collapsed(offset: 0);
-          // return;
+      _textFieldControls.add(controls);
+      controls.controller.addListener(() {
+        if (_temporarilyDisableListeners) {
+          return;
+        }
+        if (controls.controller.selection.isCollapsed &&
+            controls.controller.text.length == controls.format.length) {
+          controls.next?.node.requestFocus();
         }
       });
-      item.node.addListener(() {
-        if (item.node.hasFocus) {
-          item.controller.selection = const TextSelection.collapsed(offset: 0);
+      controls.node.addListener(() {
+        if (_temporarilyDisableListeners || !controls.node.hasFocus) {
+          return;
         }
+        controls.controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controls.controller.text.length,
+        );
       });
-      _textFieldControls.add(item);
     }
+  }
+
+  @override
+  void dispose() {
+    for (var controls in _textFieldControls) {
+      controls.node.dispose();
+      controls.controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -123,27 +125,50 @@ class _FormBuilderLocalizedDatePickerState
         }
       },
       child: FormBuilderField<DateTime>(
-        name: widget.name,
-        initialValue: widget.initialValue,
-        validator: (value) {
+        validator: _validateDate,
+        onChanged: (value) {
+          // We have to temporarily disable our listeners on the TextEditingController here
+          // since otherwise the listeners get notified of the change and
+          // the fields get focused and highlighted/selected (as defined in the
+          // listeners above).
+          _temporarilyDisableListeners = true;
+          for (var control in _textFieldControls) {
+            control.controller.text = DateFormat(control.format).format(value!);
+          }
+          _temporarilyDisableListeners = false;
+
+          final error = _validateDate(value);
+          setState(() {
+            _error = error;
+          });
+
           if (value?.isBefore(widget.firstDate) ?? false) {
-            return "Date must be before " +
+            setState(() => _error = "Date must be after " +
                 DateFormat.yMd(widget.locale.toString())
-                    .format(widget.firstDate);
+                    .format(widget.firstDate) +
+                ".");
+            return;
           }
           if (value?.isAfter(widget.lastDate) ?? false) {
-            return "Date must be after " +
+            setState(() => _error = "Date must be before " +
                 DateFormat.yMd(widget.locale.toString())
-                    .format(widget.lastDate);
+                    .format(widget.lastDate) +
+                ".");
+            return;
           }
-          return null;
         },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        name: widget.name,
+        initialValue: widget.initialValue,
         builder: (field) {
-          return SizedBox(
-            height: 56,
+          return GestureDetector(
+            onTap: () {
+              _textFieldControls.first.node.requestFocus();
+            },
             child: InputDecorator(
               textAlignVertical: TextAlignVertical.bottom,
               decoration: InputDecoration(
+                errorText: _error,
                 labelText: widget.labelText,
                 prefixIcon: widget.prefixIcon,
                 suffixIcon: Row(
@@ -168,11 +193,11 @@ class _FormBuilderLocalizedDatePickerState
                     ),
                     IconButton(
                       onPressed: () {
-                        field.didChange(null);
                         for (var c in _textFieldControls) {
                           c.controller.clear();
                         }
                         _textFieldControls.first.node.requestFocus();
+                        field.didChange(null);
                       },
                       icon: const Icon(Icons.clear),
                     ),
@@ -182,16 +207,9 @@ class _FormBuilderLocalizedDatePickerState
               child: Row(
                 children: [
                   for (var s in _textFieldControls) ...[
-                    SizedBox(
-                      width: switch (s.format) {
-                        == "dd" => 32,
-                        == "MM" => 32,
-                        == "yyyy" => 48,
-                        _ => 0,
-                      },
+                    IntrinsicWidth(
                       child: _buildDateSegmentInput(s, context, field),
                     ),
-                    if (s.position < 2) Text(_separator).paddedOnly(right: 4),
                   ],
                 ],
               ),
@@ -200,6 +218,26 @@ class _FormBuilderLocalizedDatePickerState
         },
       ),
     );
+  }
+
+  String? _validateDate(DateTime? date) {
+    if (widget.allowUnset && date == null) {
+      return null;
+    }
+    if (date == null) {
+      return S.of(context)!.thisFieldIsRequired;
+    }
+    if (date.isBefore(widget.firstDate)) {
+      final formattedDateHint =
+          DateFormat.yMd(widget.locale.toString()).format(widget.firstDate);
+      return "Date must be after $formattedDateHint.";
+    }
+    if (date.isAfter(widget.lastDate)) {
+      final formattedDateHint =
+          DateFormat.yMd(widget.locale.toString()).format(widget.lastDate);
+      return "Date must be before $formattedDateHint.";
+    }
+    return null;
   }
 
   void _updateInputsWithDate(DateTime date) {
@@ -212,38 +250,69 @@ class _FormBuilderLocalizedDatePickerState
   }
 
   Widget _buildDateSegmentInput(
-    NeighbourAwareDateInputSegmentControls controls,
+    _NeighbourAwareDateInputSegmentControls controls,
     BuildContext context,
     FormFieldState<DateTime> field,
   ) {
     return TextFormField(
       onFieldSubmitted: (value) {
+        if (value.length < controls.format.length) {
+          controls.controller.text = value.padLeft(controls.format.length, '0');
+        }
         _textFieldControls
             .elementAt(controls.position)
             .next
             ?.node
             .requestFocus();
       },
-      // onTap: () {
-      //   controls.controller.clear();
-      // },
-      canRequestFocus: true,
+      style: const TextStyle(fontFamily: 'RobotoMono'),
       keyboardType: TextInputType.datetime,
-      textInputAction: TextInputAction.done,
+      textInputAction:
+          controls.position < 2 ? TextInputAction.next : TextInputAction.done,
       controller: controls.controller,
       focusNode: _textFieldControls.elementAt(controls.position).node,
       maxLength: controls.format.length,
-      maxLengthEnforcement: MaxLengthEnforcement.truncateAfterCompositionEnds,
+      maxLengthEnforcement: MaxLengthEnforcement.enforced,
       enableInteractiveSelection: false,
+      onChanged: (value) {
+        if (value.length == controls.format.length && field.value != null) {
+          final number = int.tryParse(value);
+          if (number == null) {
+            return;
+          }
+          final newValue = switch (controls.type) {
+            _DateInputSegment.day => field.value!.copyWith(day: number),
+            _DateInputSegment.month => field.value!.copyWith(month: number),
+            _DateInputSegment.year => field.value!.copyWith(year: number),
+          };
+          field.didChange(newValue);
+        }
+      },
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        ReplacingTextFormatter(),
+        RangeLimitedInputFormatter(
+          1,
+          switch (controls.type) {
+            _DateInputSegment.day => 31,
+            _DateInputSegment.month => 12,
+            _DateInputSegment.year => 9999,
+          },
+        ),
       ],
       decoration: InputDecoration(
         isDense: true,
-        contentPadding: EdgeInsets.zero,
+        suffixIcon: controls.position < 2
+            ? Text(
+                _separator,
+                style: const TextStyle(fontFamily: 'RobotoMono'),
+              ).paddedSymmetrically(horizontal: 2)
+            : null,
+        suffixIconConstraints: const BoxConstraints.tightFor(),
+        fillColor: Colors.blue.values[controls.position],
         counterText: '',
+        contentPadding: EdgeInsets.zero,
         hintText: controls.format,
+        hintStyle: const TextStyle(fontFamily: "RobotoMono"),
         border: Theme.of(context).inputDecorationTheme.border?.copyWith(
               borderSide: const BorderSide(
                 width: 0,
@@ -255,31 +324,64 @@ class _FormBuilderLocalizedDatePickerState
   }
 }
 
-class ReplacingTextFormatter extends TextInputFormatter {
+enum _DateInputSegment {
+  day,
+  month,
+  year;
+
+  static _DateInputSegment fromPattern(String pattern) {
+    final char = pattern.characters.first;
+    return switch (char) {
+      'd' => day,
+      'M' => month,
+      'y' => year,
+      _ => throw ArgumentError.value(pattern),
+    };
+  }
+}
+
+final class _NeighbourAwareDateInputSegmentControls
+    with LinkedListEntry<_NeighbourAwareDateInputSegmentControls> {
+  final FocusNode node;
+  final TextEditingController controller;
+  final int position;
+  final String format;
+  final _DateInputSegment type;
+
+  _NeighbourAwareDateInputSegmentControls({
+    required this.node,
+    required this.controller,
+    required this.format,
+    required this.position,
+    required this.type,
+  });
+}
+
+class RangeLimitedInputFormatter extends TextInputFormatter {
+  RangeLimitedInputFormatter(
+    this.minimum,
+    this.maximum,
+  ) : assert(minimum < maximum);
+
+  final int minimum;
+  final int maximum;
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final oldOffset = oldValue.selection.baseOffset;
-    final newOffset = newValue.selection.baseOffset;
-    final replacement = newValue.text.substring(oldOffset, newOffset);
-    print(
-        "DBG: Received ${oldValue.text} -> ${newValue.text}. New char = $replacement");
-    if (oldOffset < newOffset) {
-      final oldText = oldValue.text;
-      final newText = oldText.replaceRange(
-        oldOffset,
-        newOffset,
-        newValue.text.substring(oldOffset, newOffset),
-      );
-      print("DBG: Replacing $oldText -> $newText");
-      return newValue.copyWith(
-        text: newText,
-        selection: TextSelection.collapsed(offset: newOffset),
+    if (newValue.text.length < 2) {
+      return newValue;
+    }
+    var value = int.parse(newValue.text);
+    final lastCharacter = newValue.text.characters.last;
+    if (value < minimum || value > maximum) {
+      return TextEditingValue(
+        text: lastCharacter,
+        selection: TextSelection.collapsed(offset: 1),
       );
     }
-
     return newValue;
   }
 }

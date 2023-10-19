@@ -413,28 +413,16 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
 
   Widget _buildCreatedAtFormField(
       DateTime? initialCreatedAtDate, FieldSuggestions? filteredSuggestions) {
-    // return FormBuilderLocalizedDatePicker(
-    //   name: fkCreatedDate,
-    //   initialValue: initialCreatedAtDate,
-    //   labelText: S.of(context)!.createdAt,
-    //   firstDate: DateTime(1970, 1, 1),
-    //   lastDate: DateTime.now(),
-    //   locale: Localizations.localeOf(context),
-    //   prefixIcon: Icon(Icons.calendar_today),
-    // );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FormBuilderDateTimePicker(
-          inputType: InputType.date,
+        FormBuilderLocalizedDatePicker(
           name: fkCreatedDate,
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.calendar_month_outlined),
-            label: Text(S.of(context)!.createdAt),
-          ),
           initialValue: initialCreatedAtDate,
-          format: DateFormat.yMMMMd(Localizations.localeOf(context).toString()),
-          initialEntryMode: DatePickerEntryMode.calendar,
+          labelText: S.of(context)!.createdAt,
+          firstDate: DateTime(1970, 1, 1),
+          lastDate: DateTime.now(),
+          locale: Localizations.localeOf(context),
+          prefixIcon: Icon(Icons.calendar_today),
         ),
         if (filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(

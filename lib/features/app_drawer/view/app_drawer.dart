@@ -129,7 +129,7 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () {
                 launchUrlString(
-                  'https://github.com/astubenbord/paperless-mobile/issues/new',
+                  'https://github.com/astubenbord/paperless-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
                   mode: LaunchMode.externalApplication,
                 );
               },
