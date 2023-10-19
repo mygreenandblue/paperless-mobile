@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:paperless_mobile/core/logging/data/logger.dart';
-import 'package:paperless_mobile/core/logging/utils/redaction_utils.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:paperless_mobile/features/logging/utils/redaction_utils.dart';
 import 'package:paperless_mobile/helpers/format_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -231,9 +231,9 @@ class FileService {
           type: StorageDirectory.downloads,
         );
         directory = await downloadsDir!.first.create(recursive: true);
-        return;
       }
       _downloadsDirectory = directory;
+      return;
     } else if (Platform.isIOS) {
       final appDir = await getApplicationDocumentsDirectory();
       final dir = Directory('${appDir.path}/downloads');

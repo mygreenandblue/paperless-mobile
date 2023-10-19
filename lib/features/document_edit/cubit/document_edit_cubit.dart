@@ -22,7 +22,11 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     required DocumentModel document,
   })  : _initialDocument = document,
         super(DocumentEditState(document: document)) {
-    _notifier.addListener(this, onUpdated: replace);
+    _notifier.addListener(this, onUpdated: (doc) {
+      if (doc.id == document.id) {
+        emit(state.copyWith(document: doc));
+      }
+    });
     _labelRepository.addListener(
       this,
       onChanged: (labels) {
@@ -67,10 +71,6 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
   Future<void> loadFieldSuggestions() async {
     final suggestions = await _docsApi.findSuggestions(state.document);
     emit(state.copyWith(suggestions: suggestions));
-  }
-
-  void replace(DocumentModel document) {
-    emit(state.copyWith(document: document));
   }
 
   @override

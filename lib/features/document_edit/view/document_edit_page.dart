@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -12,8 +11,9 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
+import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
@@ -21,7 +21,6 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:paperless_mobile/theme.dart';
 
 class DocumentEditPage extends StatefulWidget {
   const DocumentEditPage({
@@ -401,6 +400,12 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       name: fkTitle,
       decoration: InputDecoration(
         label: Text(S.of(context)!.title),
+        suffixIcon: IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            _formKey.currentState?.fields[fkTitle]?.didChange(null);
+          },
+        ),
       ),
       initialValue: initialTitle,
     );
@@ -408,6 +413,15 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
 
   Widget _buildCreatedAtFormField(
       DateTime? initialCreatedAtDate, FieldSuggestions? filteredSuggestions) {
+    // return FormBuilderLocalizedDatePicker(
+    //   name: fkCreatedDate,
+    //   initialValue: initialCreatedAtDate,
+    //   labelText: S.of(context)!.createdAt,
+    //   firstDate: DateTime(1970, 1, 1),
+    //   lastDate: DateTime.now(),
+    //   locale: Localizations.localeOf(context),
+    //   prefixIcon: Icon(Icons.calendar_today),
+    // );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

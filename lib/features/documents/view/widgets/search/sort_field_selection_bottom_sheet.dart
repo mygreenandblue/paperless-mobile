@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class SortFieldSelectionBottomSheet extends StatefulWidget {

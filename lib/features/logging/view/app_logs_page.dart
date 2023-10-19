@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:paperless_mobile/core/logging/cubit/app_logs_cubit.dart';
-import 'package:paperless_mobile/core/logging/models/parsed_log_message.dart';
-import 'package:paperless_mobile/extensions/dart_extensions.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/logging/cubit/app_logs_cubit.dart';
+import 'package:paperless_mobile/features/logging/models/parsed_log_message.dart';
+import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AppLogsPage extends StatefulWidget {
@@ -134,9 +134,8 @@ class _AppLogsPageState extends State<AppLogsPage> {
                 },
               ),
             AppLogsStateError() => Center(
-                child: Text(
-                  S.of(context)!.couldNotLoadLogfileFrom(formattedDate),
-                ),
+                child:
+                    Text(S.of(context)!.couldNotLoadLogfileFrom(formattedDate)),
               ),
             _ => _buildLoadingLogs(state.date)
           },

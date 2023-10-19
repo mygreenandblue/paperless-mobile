@@ -40,12 +40,13 @@ class ParsedErrorLogMessage {
   static bool canConsumeFirstLine(String line) =>
       _errorBeginPattern.hasMatch(line);
 
-  static (int consumedLines, ParsedErrorLogMessage result) consume(
+  static (int consumedLines, ParsedErrorLogMessage? result) consume(
       List<String> log) {
     assert(log.isNotEmpty && canConsumeFirstLine(log.first));
     String errorText = "";
     int currentLine =
         1; // Skip first because we know that the first line is ---BEGIN ERROR---
+    
     while (!_errorEndPattern.hasMatch(log[currentLine])) {
       errorText += log[currentLine] + _newLine;
       currentLine++;

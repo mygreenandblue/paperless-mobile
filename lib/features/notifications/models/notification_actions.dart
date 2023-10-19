@@ -7,5 +7,5 @@ enum NotificationResponseButtonAction {
 
 @JsonEnum()
 enum NotificationResponseOpenAction {
-  openDownloadedDocumentPath;
+  openDirectory;
 }

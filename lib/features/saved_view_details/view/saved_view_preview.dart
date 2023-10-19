@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
 import 'package:paperless_mobile/features/landing/view/widgets/expansion_card.dart';
@@ -24,6 +24,7 @@ class SavedViewPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider(
       create: (context) => SavedViewPreviewCubit(
+        context.read(),
         context.read(),
         context.read(),
         view: savedView,

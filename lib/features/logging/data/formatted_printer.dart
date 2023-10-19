@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:paperless_mobile/core/logging/models/formatted_log_message.dart';
+import 'package:paperless_mobile/features/logging/models/formatted_log_message.dart';
 
 class FormattedPrinter extends LogPrinter {
   static final _timestampFormat = DateFormat("yyyy-MM-dd HH:mm:ss.SSS");

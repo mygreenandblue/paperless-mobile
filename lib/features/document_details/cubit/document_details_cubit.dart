@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/logging/data/logger.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
@@ -30,10 +30,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     this._notifier,
     this._notificationService, {
     required DocumentModel initialDocument,
-  }) : super(DocumentDetailsState(
-          document: initialDocument,
-        )) {
-    _notifier.addListener(this, onUpdated: replace);
+  }) : super(DocumentDetailsState(document: initialDocument)) {
+    _notifier.addListener(this, onUpdated: (document) {
+      if (document.id == state.document.id) {
+        replace(document);
+      }
+    });
     _labelRepository.addListener(
       this,
       onChanged: (labels) => emit(
@@ -127,7 +129,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (!await File(targetPath).exists()) {
       await File(targetPath).create();
     } else {
-      await _notificationService.notifyFileDownload(
+      await _notificationService.notifyDocumentDownload(
         document: state.document,
         filename: p.basename(targetPath),
         filePath: targetPath,
@@ -151,7 +153,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       targetPath,
       original: downloadOriginal,
       onProgressChanged: (progress) {
-        _notificationService.notifyFileDownload(
+        _notificationService.notifyDocumentDownload(
           document: state.document,
           filename: p.basename(targetPath),
           filePath: targetPath,
@@ -162,7 +164,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         );
       },
     );
-    await _notificationService.notifyFileDownload(
+    await _notificationService.notifyDocumentDownload(
       document: state.document,
       filename: p.basename(targetPath),
       filePath: targetPath,

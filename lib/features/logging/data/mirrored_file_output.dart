@@ -9,8 +9,9 @@ import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:synchronized/synchronized.dart';
 
+typedef f = FileOutput;
+
 class MirroredFileOutput extends LogOutput {
-  final Completer _initCompleter = Completer();
   var lock = Lock();
   MirroredFileOutput();
 
@@ -22,7 +23,6 @@ class MirroredFileOutput extends LogOutput {
     final logDir = FileService.instance.logDirectory;
     file = File(p.join(logDir.path, '$today.log'));
     debugPrint("Logging files to ${file.path}.");
-    _initCompleter.complete();
     try {
       final oldLogs = await FileService.instance.getAllFiles(logDir);
       if (oldLogs.length > 10) {
@@ -42,12 +42,10 @@ class MirroredFileOutput extends LogOutput {
     await lock.synchronized(() async {
       for (var line in event.lines) {
         debugPrint(line);
-        if (_initCompleter.isCompleted) {
-          await file.writeAsString(
-            "$line${Platform.lineTerminator}",
-            mode: FileMode.append,
-          );
-        }
+        await file.writeAsString(
+          "$line${Platform.lineTerminator}",
+          mode: FileMode.append,
+        );
       }
     });
   }

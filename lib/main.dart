@@ -21,7 +21,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
@@ -29,9 +29,9 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/logging/data/formatted_printer.dart';
-import 'package:paperless_mobile/core/logging/data/logger.dart';
-import 'package:paperless_mobile/core/logging/data/mirrored_file_output.dart';
+import 'package:paperless_mobile/features/logging/data/formatted_printer.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:paperless_mobile/features/logging/data/mirrored_file_output.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -129,6 +129,7 @@ void main() async {
       output: MirroredFileOutput(),
       printer: FormattedPrinter(),
       level: l.Level.trace,
+      filter: l.ProductionFilter(),
     );
     Paint.enableDithering = true;
 
@@ -236,6 +237,12 @@ void main() async {
       ),
     );
   }, (error, stackTrace) {
+    if (error is StateError &&
+        error.message.contains("Cannot emit new states")) {
+      {
+        return;
+      }
+    }
     // Catches all unexpected/uncaught errors and prints them to the console.
     final message = switch (error) {
       PaperlessApiException e => e.details ?? error.toString(),
@@ -332,12 +339,6 @@ class _GoRouterShellState extends State<GoRouterShell> {
                     if (context.canPop()) {
                       context.pop();
                     }
-                    // LoginRoute(
-                    //   $extra: errorState.clientCertificate,
-                    //   password: errorState.password,
-                    //   serverUrl: errorState.serverUrl,
-                    //   username: errorState.username,
-                    // ).go(context);
                     break;
                 }
               },

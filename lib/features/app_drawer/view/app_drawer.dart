@@ -4,9 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/logging/view/app_logs_page.dart';
-import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/logging/view/app_logs_page.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
@@ -38,10 +37,10 @@ class AppDrawer extends StatelessWidget {
           children: [
             Row(
               children: [
-                const PaperlessLogo.green(
-                  width: 32,
-                  height: 32,
-                ),
+                const $AssetsLogosGen()
+                    .paperlessLogoGreenSvg
+                    .svg(width: 32, height: 32),
+                SizedBox(width: 8),
                 Text(
                   "Paperless Mobile",
                   style: Theme.of(context).textTheme.titleMedium,
