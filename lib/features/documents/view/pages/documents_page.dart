@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
@@ -404,7 +405,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 return SliverAdaptiveDocumentsView(
                   viewType: state.viewType,
                   onTap: (document) {
-                    DocumentDetailsRoute($extra: document).push(context);
+                    DocumentDetailsRoute(
+                      title: document.title,
+                      id: document.id,
+                      thumbnailUrl: document.buildThumbnailUrl(context),
+                    ).push(context);
                   },
                   onSelected:
                       context.read<DocumentsCubit>().toggleDocumentSelection,

@@ -27,22 +27,6 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
         emit(state.copyWith(document: doc));
       }
     });
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        if (isClosed) {
-          return;
-        }
-        emit(
-          state.copyWith(
-            correspondents: labels.correspondents,
-            documentTypes: labels.documentTypes,
-            storagePaths: labels.storagePaths,
-            tags: labels.tags,
-          ),
-        );
-      },
-    );
   }
 
   Future<void> updateDocument(DocumentModel document) async {
@@ -76,7 +60,6 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
   @override
   Future<void> close() {
     _notifier.removeListener(this);
-    _labelRepository.removeListener(this);
     return super.close();
   }
 }

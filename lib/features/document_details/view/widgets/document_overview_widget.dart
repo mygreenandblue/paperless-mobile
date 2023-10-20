@@ -6,6 +6,7 @@ import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
@@ -27,6 +28,7 @@ class DocumentOverviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.watch<LocalUserAccount>().paperlessUser;
     final availableLabels = context.watch<LabelRepository>().state;
+
     return SliverList.list(
       children: [
         if (document.title.isNotEmpty)

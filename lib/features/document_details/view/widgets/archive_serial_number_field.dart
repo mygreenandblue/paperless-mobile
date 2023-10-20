@@ -50,11 +50,16 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
         context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
+          previous is DocumentDetailsLoaded &&
+          current is DocumentDetailsLoaded &&
           previous.document.archiveSerialNumber !=
-          current.document.archiveSerialNumber,
+              current.document.archiveSerialNumber,
       listener: (context, state) {
-        _asnEditingController.text =
-            state.document.archiveSerialNumber?.toString() ?? '';
+        _asnEditingController.text = (state as DocumentDetailsLoaded)
+                .document
+                .archiveSerialNumber
+                ?.toString() ??
+            '';
         setState(() {
           _canUpdate = false;
         });

@@ -75,31 +75,34 @@ class DocumentListItem extends DocumentItem {
           ),
         ],
       ),
-      subtitle: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: RichText(
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-            text: DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                .format(document.created),
-            style: Theme.of(context)
-                .textTheme
-                .labelSmall
-                ?.apply(color: Colors.grey),
-            children: document.documentType != null
-                ? [
-                    const TextSpan(text: '\u30FB'),
-                    TextSpan(
-                      text: labels.documentTypes[document.documentType]?.name,
-                      recognizer: onDocumentTypeSelected != null
-                          ? (TapGestureRecognizer()
-                            ..onTap = () =>
-                                onDocumentTypeSelected!(document.documentType))
-                          : null,
-                    ),
-                  ]
-                : null,
+      subtitle: IntrinsicWidth(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+              text:
+                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+                      .format(document.created),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.apply(color: Colors.grey),
+              children: document.documentType != null
+                  ? [
+                      const TextSpan(text: '\u30FB'),
+                      TextSpan(
+                        text: labels.documentTypes[document.documentType]?.name,
+                        recognizer: onDocumentTypeSelected != null
+                            ? (TapGestureRecognizer()
+                              ..onTap = () => onDocumentTypeSelected!(
+                                  document.documentType))
+                            : null,
+                      ),
+                    ]
+                  : null,
+            ),
           ),
         ),
       ),
@@ -108,7 +111,7 @@ class DocumentListItem extends DocumentItem {
         aspectRatio: _a4AspectRatio,
         child: GestureDetector(
           child: DocumentPreview(
-            document: document,
+            documentId: document.id,
             fit: BoxFit.cover,
             alignment: Alignment.topCenter,
             enableHero: enableHeroAnimation,

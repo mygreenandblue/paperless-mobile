@@ -2,23 +2,23 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:path/path.dart' as p;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
-import 'package:path/path.dart' as p;
-part 'document_details_cubit.freezed.dart';
+
 part 'document_details_state.dart';
 
 class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
+  final int id;
   final PaperlessDocumentsApi _api;
   final DocumentChangedNotifier _notifier;
   final LocalNotificationService _notificationService;
@@ -29,43 +29,51 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     this._labelRepository,
     this._notifier,
     this._notificationService, {
-    required DocumentModel initialDocument,
-  }) : super(DocumentDetailsState(document: initialDocument)) {
+    required this.id,
+  }) : super(const DocumentDetailsInitial()) {
     _notifier.addListener(this, onUpdated: (document) {
-      if (document.id == state.document.id) {
-        replace(document);
+      if (state is DocumentDetailsLoaded) {
+        final currentState = state as DocumentDetailsLoaded;
+        if (document.id == currentState.document.id) {
+          replace(document);
+        }
       }
     });
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) => emit(
-        state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          tags: labels.tags,
-          storagePaths: labels.storagePaths,
-        ),
-      ),
-    );
+  }
+
+  Future<void> initialize() async {
+    debugPrint("Initialize called");
+    emit(const DocumentDetailsLoading());
+    try {
+      final (document, metaData) = await Future.wait([
+        _api.find(id),
+        _api.getMetaData(id),
+      ]).then((value) => (
+            value[0] as DocumentModel,
+            value[1] as DocumentMetaData,
+          ));
+      // final document = await _api.find(id);
+      // final metaData = await _api.getMetaData(id);
+      debugPrint("Document data loaded for $id");
+      emit(DocumentDetailsLoaded(
+        document: document,
+        metaData: metaData,
+      ));
+    } catch (error, stackTrace) {
+      logger.fe(
+        "An error occurred while loading data for document $id.",
+        className: runtimeType.toString(),
+        methodName: 'initialize',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(const DocumentDetailsError());
+    }
   }
 
   Future<void> delete(DocumentModel document) async {
     await _api.delete(document);
     _notifier.notifyDeleted(document);
-  }
-
-  Future<void> loadMetaData() async {
-    final metaData = await _api.getMetaData(state.document);
-    if (!isClosed) {
-      emit(state.copyWith(metaData: metaData));
-    }
-  }
-
-  Future<void> loadFullContent() async {
-    await Future.delayed(const Duration(seconds: 5));
-    final doc = await _api.find(state.document.id);
-    _notifier.notifyUpdated(doc);
-    emit(state.copyWith(isFullContentLoaded: true));
   }
 
   Future<void> assignAsn(
@@ -87,11 +95,15 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   Future<ResultType> openDocumentInSystemViewer() async {
-    final cacheDir = FileService.instance.temporaryDirectory;
-    if (state.metaData == null) {
-      await loadMetaData();
+    final s = state;
+    if (s is! DocumentDetailsLoaded) {
+      throw Exception(
+        "Document cannot be opened in system viewer "
+        "if document information has not yet been loaded.",
+      );
     }
-    final filePath = state.metaData!.mediaFilename.replaceAll("/", " ");
+    final cacheDir = FileService.instance.temporaryDirectory;
+    final filePath = s.metaData.mediaFilename.replaceAll("/", " ");
 
     final fileName = "${p.basenameWithoutExtension(filePath)}.pdf";
     final file = File("${cacheDir.path}/$fileName");
@@ -99,7 +111,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (!file.existsSync()) {
       file.createSync();
       await _api.downloadToFile(
-        state.document,
+        s.document,
         file.path,
       );
     }
@@ -110,7 +122,14 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   }
 
   void replace(DocumentModel document) {
-    emit(state.copyWith(document: document));
+    final s = state;
+    if (s is! DocumentDetailsLoaded) {
+      return;
+    }
+    emit(DocumentDetailsLoaded(
+      document: document,
+      metaData: s.metaData,
+    ));
   }
 
   Future<void> downloadDocument({
@@ -118,10 +137,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     required String locale,
     required String userId,
   }) async {
-    if (state.metaData == null) {
-      await loadMetaData();
+    final s = state;
+    if (s is! DocumentDetailsLoaded) {
+      return;
     }
     String targetPath = _buildDownloadFilePath(
+      s.metaData,
       downloadOriginal,
       FileService.instance.downloadsDirectory,
     );
@@ -130,7 +151,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       await File(targetPath).create();
     } else {
       await _notificationService.notifyDocumentDownload(
-        document: state.document,
+        document: s.document,
         filename: p.basename(targetPath),
         filePath: targetPath,
         finished: true,
@@ -149,12 +170,12 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     // );
 
     await _api.downloadToFile(
-      state.document,
+      s.document,
       targetPath,
       original: downloadOriginal,
       onProgressChanged: (progress) {
         _notificationService.notifyDocumentDownload(
-          document: state.document,
+          document: s.document,
           filename: p.basename(targetPath),
           filePath: targetPath,
           finished: true,
@@ -165,26 +186,28 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       },
     );
     await _notificationService.notifyDocumentDownload(
-      document: state.document,
+      document: s.document,
       filename: p.basename(targetPath),
       filePath: targetPath,
       finished: true,
       locale: locale,
       userId: userId,
     );
-    logger.fi("Document '${state.document.title}' saved to $targetPath.");
+    logger.fi("Document '${s.document.title}' saved to $targetPath.");
   }
 
   Future<void> shareDocument({bool shareOriginal = false}) async {
-    if (state.metaData == null) {
-      await loadMetaData();
+    final s = state;
+    if (s is! DocumentDetailsLoaded) {
+      return;
     }
     String filePath = _buildDownloadFilePath(
+      s.metaData,
       shareOriginal,
       FileService.instance.temporaryDirectory,
     );
     await _api.downloadToFile(
-      state.document,
+      s.document,
       filePath,
       original: shareOriginal,
     );
@@ -192,23 +215,27 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       [
         XFile(
           filePath,
-          name: state.document.originalFileName,
+          name: s.document.originalFileName,
           mimeType: "application/pdf",
-          lastModified: state.document.modified,
+          lastModified: s.document.modified,
         ),
       ],
-      subject: state.document.title,
+      subject: s.document.title,
     );
   }
 
   Future<void> printDocument() async {
-    if (state.metaData == null) {
-      await loadMetaData();
+    final s = state;
+    if (s is! DocumentDetailsLoaded) {
+      return;
     }
-    final filePath =
-        _buildDownloadFilePath(false, FileService.instance.temporaryDirectory);
+    final filePath = _buildDownloadFilePath(
+      s.metaData,
+      false,
+      FileService.instance.temporaryDirectory,
+    );
     await _api.downloadToFile(
-      state.document,
+      s.document,
       filePath,
       original: false,
     );
@@ -217,13 +244,14 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       throw Exception("An error occurred while downloading the document.");
     }
     Printing.layoutPdf(
-      name: state.document.title,
+      name: s.document.title,
       onLayout: (format) => file.readAsBytesSync(),
     );
   }
 
-  String _buildDownloadFilePath(bool original, Directory dir) {
-    final normalizedPath = state.metaData!.mediaFilename.replaceAll("/", " ");
+  String _buildDownloadFilePath(
+      DocumentMetaData meta, bool original, Directory dir) {
+    final normalizedPath = meta.mediaFilename.replaceAll("/", " ");
     final extension = original ? p.extension(normalizedPath) : '.pdf';
     return "${dir.path}/${p.basenameWithoutExtension(normalizedPath)}$extension";
   }

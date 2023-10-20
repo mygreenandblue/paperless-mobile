@@ -49,7 +49,7 @@ class DocumentGridItem extends DocumentItem {
                   children: [
                     Positioned.fill(
                       child: DocumentPreview(
-                        document: document,
+                        documentId: document.id,
                         borderRadius: 12.0,
                         enableHero: enableHeroAnimation,
                       ),

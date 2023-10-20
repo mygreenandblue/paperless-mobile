@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
@@ -153,7 +154,9 @@ class _InboxItemState extends State<InboxItem> {
           behavior: HitTestBehavior.translucent,
           onTap: () {
             DocumentDetailsRoute(
-              $extra: widget.document,
+              title: widget.document.title,
+              id: widget.document.id,
+              thumbnailUrl: widget.document.buildThumbnailUrl(context),
               isLabelClickable: false,
             ).push(context);
           },
@@ -168,7 +171,8 @@ class _InboxItemState extends State<InboxItem> {
                       AspectRatio(
                         aspectRatio: InboxItem.a4AspectRatio,
                         child: DocumentPreview(
-                          document: widget.document,
+                          documentId: widget.document.id,
+                          title: widget.document.title,
                           fit: BoxFit.cover,
                           alignment: Alignment.topCenter,
                           enableHero: false,

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
@@ -45,39 +46,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<LocalUserAccount>().paperlessUser;
-    return BlocConsumer<DocumentEditCubit, DocumentEditState>(
-      listenWhen: (previous, current) =>
-          previous.document.content != current.document.content,
-      listener: (context, state) {
-        final contentField = _formKey.currentState?.fields[fkContent];
-        if (contentField == null) {
-          return;
-        }
-        if (contentField.isDirty) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              //TODO: INTL
-              title: Text("Content has changed!"),
-              content: Text(
-                "The content of this document has changed. This can happen if the full content was not yet loaded. By accepting the incoming changes, your changes will be overwritten and therefore lost! Do you want to discard your changes in favor of the full content?",
-              ),
-              actions: [
-                DialogCancelButton(),
-                ElevatedButton(
-                  onPressed: () {
-                    contentField.didChange(state.document.content);
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(S.of(context)!.discard),
-                ),
-              ],
-            ),
-          );
-        } else {
-          contentField.didChange(state.document.content);
-        }
-      },
+    return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
         final filteredSuggestions = state.suggestions;
         return PopWithUnsavedChanges(
@@ -160,7 +129,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                         S.of(context)!.addCorrespondent,
                                     labelText: S.of(context)!.correspondent,
                                     options: context
-                                        .watch<DocumentEditCubit>()
+                                        .watch<LabelRepository>()
                                         .state
                                         .correspondents,
                                     initialValue: state
@@ -203,7 +172,10 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                         ? SetIdQueryParameter(
                                             id: state.document.documentType!)
                                         : const UnsetIdQueryParameter(),
-                                    options: state.documentTypes,
+                                    options: context
+                                        .watch<LabelRepository>()
+                                        .state
+                                        .documentTypes,
                                     name: _DocumentEditPageState.fkDocumentType,
                                     prefixIcon:
                                         const Icon(Icons.description_outlined),
@@ -230,7 +202,10 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                                         currentUser.canCreateStoragePaths,
                                     addLabelText: S.of(context)!.addStoragePath,
                                     labelText: S.of(context)!.storagePath,
-                                    options: state.storagePaths,
+                                    options: context
+                                        .watch<LabelRepository>()
+                                        .state
+                                        .storagePaths,
                                     initialValue:
                                         state.document.storagePath != null
                                             ? SetIdQueryParameter(
@@ -246,7 +221,8 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                             // Tag form field
                             if (currentUser.canViewTags)
                               TagsFormField(
-                                options: state.tags,
+                                options:
+                                    context.watch<LabelRepository>().state.tags,
                                 name: fkTags,
                                 allowOnlySelection: true,
                                 allowCreation: true,
@@ -290,30 +266,6 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
     );
   }
 
-  bool _isFieldDirty(DocumentModel document) {
-    final fkState = _formKey.currentState;
-    if (fkState == null) {
-      return false;
-    }
-    fkState.save();
-    final (
-      title,
-      correspondent,
-      documentType,
-      storagePath,
-      tags,
-      createdAt,
-      content
-    ) = _currentValues;
-    return document.title != title ||
-        document.correspondent != correspondent ||
-        document.documentType != documentType ||
-        document.storagePath != storagePath ||
-        const UnorderedIterableEquality().equals(document.tags, tags) ||
-        document.created != createdAt ||
-        document.content != content;
-  }
-
   (
     String? title,
     int? correspondent,
@@ -333,7 +285,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
         fkState.getRawValue<IdQueryParameter?>(fkStoragePath);
     final tagsParam = fkState.getRawValue<TagsQuery?>(fkTags);
     final title = fkState.getRawValue<String?>(fkTitle);
-    final created = fkState.getRawValue<DateTime?>(fkCreatedDate);
+    final created = fkState.getRawValue<FormDateTime?>(fkCreatedDate);
     final correspondent = switch (correspondentParam) {
       SetIdQueryParameter(id: var id) => id,
       _ => null,
@@ -358,7 +310,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
       documentType,
       storagePath,
       tags,
-      created,
+      created?.toDateTime(),
       content
     );
   }
@@ -432,7 +384,7 @@ class _DocumentEditPageState extends State<DocumentEditPage> {
                   DateFormat.yMMMMd(Localizations.localeOf(context).toString())
                       .format(itemData)),
               onPressed: () => _formKey.currentState?.fields[fkCreatedDate]
-                  ?.didChange(itemData),
+                  ?.didChange(FormDateTime.fromDateTime(itemData)),
             ),
           ),
       ],

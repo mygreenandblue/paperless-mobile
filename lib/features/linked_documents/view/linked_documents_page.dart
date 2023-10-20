@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
@@ -53,8 +54,10 @@ class _LinkedDocumentsPageState extends State<LinkedDocumentsPage>
                     hasLoaded: state.hasLoaded,
                     onTap: (document) {
                       DocumentDetailsRoute(
-                        $extra: document,
+                        title: document.title,
+                        id: document.id,
                         isLabelClickable: false,
+                        thumbnailUrl: document.buildThumbnailUrl(context),
                       ).push(context);
                     },
                   ),

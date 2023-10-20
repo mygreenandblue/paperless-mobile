@@ -6,28 +6,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
+import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:provider/provider.dart';
 
 class DocumentUploadResult {
   final bool success;
@@ -62,7 +58,6 @@ class _DocumentUploadPreparationPageState
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey();
   Map<String, String> _errors = {};
-  bool _isUploadLoading = false;
   late bool _syncTitleAndFilename;
   bool _showDatePickerDeleteIcon = false;
   final _now = DateTime.now();
@@ -75,21 +70,32 @@ class _DocumentUploadPreparationPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: false,
-      resizeToAvoidBottomInset: true,
-      floatingActionButton: Visibility(
-        visible: MediaQuery.of(context).viewInsets.bottom == 0,
-        child: FloatingActionButton.extended(
-          heroTag: "fab_document_upload",
-          onPressed: _onSubmit,
-          label: Text(S.of(context)!.upload),
-          icon: const Icon(Icons.upload),
-        ),
-      ),
-      body: BlocBuilder<DocumentUploadCubit, DocumentUploadState>(
-        builder: (context, state) {
-          return FormBuilder(
+    final labels = context.watch<LabelRepository>().state;
+    return BlocBuilder<DocumentUploadCubit, DocumentUploadState>(
+      builder: (context, state) {
+        return Scaffold(
+          extendBodyBehindAppBar: false,
+          resizeToAvoidBottomInset: true,
+          floatingActionButton: Visibility(
+            visible: MediaQuery.of(context).viewInsets.bottom == 0,
+            child: FloatingActionButton.extended(
+              heroTag: "fab_document_upload",
+              onPressed: state.uploadProgress == null ? _onSubmit : null,
+              label: state.uploadProgress == null
+                  ? Text(S.of(context)!.upload)
+                  : Text("Uploading..."), //TODO: INTL
+              icon: state.uploadProgress == null
+                  ? const Icon(Icons.upload)
+                  : SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        value: state.uploadProgress,
+                      )).padded(4),
+            ),
+          ),
+          body: FormBuilder(
             key: _formKey,
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -97,7 +103,7 @@ class _DocumentUploadPreparationPageState
                   handle:
                       NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
-                    leading: BackButton(),
+                    leading: const BackButton(),
                     pinned: true,
                     expandedHeight: 150,
                     flexibleSpace: FlexibleSpaceBar(
@@ -105,7 +111,7 @@ class _DocumentUploadPreparationPageState
                         future: widget.fileBytes,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           }
                           return FileThumbnail(
                             bytes: snapshot.data!,
@@ -117,12 +123,6 @@ class _DocumentUploadPreparationPageState
                       title: Text(S.of(context)!.prepareDocument),
                       collapseMode: CollapseMode.pin,
                     ),
-                    bottom: _isUploadLoading
-                        ? PreferredSize(
-                            child: LinearProgressIndicator(),
-                            preferredSize: Size.fromHeight(4.0),
-                          )
-                        : null,
                   ),
                 ),
               ],
@@ -219,32 +219,13 @@ class _DocumentUploadPreparationPageState
                               ),
                             ),
                             // Created at
-                            FormBuilderDateTimePicker(
-                              autovalidateMode: AutovalidateMode.always,
-                              format: DateFormat.yMMMMd(
-                                  Localizations.localeOf(context).toString()),
-                              inputType: InputType.date,
+                            FormBuilderLocalizedDatePicker(
                               name: DocumentModel.createdKey,
-                              initialValue: null,
-                              onChanged: (value) {
-                                setState(() =>
-                                    _showDatePickerDeleteIcon = value != null);
-                              },
-                              decoration: InputDecoration(
-                                prefixIcon:
-                                    const Icon(Icons.calendar_month_outlined),
-                                labelText: S.of(context)!.createdAt + " *",
-                                suffixIcon: _showDatePickerDeleteIcon
-                                    ? IconButton(
-                                        icon: const Icon(Icons.close),
-                                        onPressed: () {
-                                          _formKey.currentState!
-                                              .fields[DocumentModel.createdKey]
-                                              ?.didChange(null);
-                                        },
-                                      )
-                                    : null,
-                              ),
+                              firstDate: DateTime(1970, 1, 1),
+                              lastDate: DateTime.now(),
+                              locale: Localizations.localeOf(context),
+                              labelText: S.of(context)!.createdAt + " *",
+                              allowUnset: true,
                             ),
                             // Correspondent
                             if (context
@@ -261,7 +242,7 @@ class _DocumentUploadPreparationPageState
                                 addLabelText: S.of(context)!.addCorrespondent,
                                 labelText: S.of(context)!.correspondent + " *",
                                 name: DocumentModel.correspondentKey,
-                                options: state.correspondents,
+                                options: labels.correspondents,
                                 prefixIcon: const Icon(Icons.person_outline),
                                 allowSelectUnassigned: true,
                                 canCreateNewLabel: context
@@ -284,7 +265,7 @@ class _DocumentUploadPreparationPageState
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType + " *",
                                 name: DocumentModel.documentTypeKey,
-                                options: state.documentTypes,
+                                options: labels.documentTypes,
                                 prefixIcon:
                                     const Icon(Icons.description_outlined),
                                 allowSelectUnassigned: true,
@@ -302,7 +283,7 @@ class _DocumentUploadPreparationPageState
                                 allowCreation: true,
                                 allowExclude: false,
                                 allowOnlySelection: true,
-                                options: state.tags,
+                                options: labels.tags,
                               ),
                             Text(
                               "* " + S.of(context)!.uploadInferValuesHint,
@@ -318,9 +299,9 @@ class _DocumentUploadPreparationPageState
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -328,7 +309,6 @@ class _DocumentUploadPreparationPageState
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final cubit = context.read<DocumentUploadCubit>();
       try {
-        setState(() => _isUploadLoading = true);
         final formValues = _formKey.currentState!.value;
 
         final correspondentParam =
@@ -336,7 +316,7 @@ class _DocumentUploadPreparationPageState
         final docTypeParam =
             formValues[DocumentModel.documentTypeKey] as IdQueryParameter?;
         final tagsParam = formValues[DocumentModel.tagsKey] as TagsQuery?;
-        final createdAt = formValues[DocumentModel.createdKey] as DateTime?;
+        final createdAt = formValues[DocumentModel.createdKey] as FormDateTime?;
         final title = formValues[DocumentModel.titleKey] as String;
         final correspondent = switch (correspondentParam) {
           SetIdQueryParameter(id: var id) => id,
@@ -365,7 +345,7 @@ class _DocumentUploadPreparationPageState
           documentType: docType,
           correspondent: correspondent,
           tags: tags,
-          createdAt: createdAt,
+          createdAt: createdAt?.toDateTime(),
           asn: asn,
         );
         showSnackBar(
@@ -390,10 +370,6 @@ class _DocumentUploadPreparationPageState
           const PaperlessApiException.unknown(),
           stackTrace,
         );
-      } finally {
-        setState(() {
-          _isUploadLoading = false;
-        });
       }
     }
   }

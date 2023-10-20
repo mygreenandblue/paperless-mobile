@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
@@ -21,18 +20,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     this._documentApi,
     this._connectivityStatusService,
     this._tasksNotifier,
-  ) : super(const DocumentUploadState()) {
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        emit(state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          tags: labels.tags,
-        ));
-      },
-    );
-  }
+  ) : super(const DocumentUploadState());
 
   Future<String?> upload(
     Uint8List bytes, {
@@ -44,7 +32,6 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     Iterable<int> tags = const [],
     DateTime? createdAt,
     int? asn,
-    void Function(double)? onProgressChanged,
   }) async {
     final taskId = await _documentApi.create(
       bytes,
@@ -55,17 +42,15 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
       tags: tags,
       createdAt: createdAt,
       asn: asn,
-      onProgressChanged: onProgressChanged,
+      onProgressChanged: (progress) {
+        if (!isClosed) {
+          emit(state.copyWith(uploadProgress: progress));
+        }
+      },
     );
     if (taskId != null) {
       _tasksNotifier.listenToTaskChanges(taskId);
     }
     return taskId;
-  }
-
-  @override
-  Future<void> close() async {
-    _labelRepository.removeListener(this);
-    return super.close();
   }
 }

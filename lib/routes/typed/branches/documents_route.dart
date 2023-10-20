@@ -14,7 +14,6 @@ import 'package:paperless_mobile/features/documents/view/pages/document_view.dar
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
 import 'package:paperless_mobile/theme.dart';
 
 class DocumentsBranch extends StatefulShellBranchData {
@@ -33,14 +32,18 @@ class DocumentDetailsRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey =
       outerShellNavigatorKey;
 
+  final int id;
   final bool isLabelClickable;
-  final DocumentModel $extra;
   final String? queryString;
-
+  final String? thumbnailUrl;
+  final String? title;
+  
   const DocumentDetailsRoute({
-    required this.$extra,
+    required this.id,
     this.isLabelClickable = true,
     this.queryString,
+    this.thumbnailUrl,
+    this.title,
   });
 
   @override
@@ -51,14 +54,15 @@ class DocumentDetailsRoute extends GoRouteData {
         context.read(),
         context.read(),
         context.read(),
-        initialDocument: $extra,
-      )
-        ..loadFullContent()
-        ..loadMetaData(),
+        id: id,
+      )..initialize(),
       lazy: false,
       child: DocumentDetailsPage(
+        id: id,
         isLabelClickable: isLabelClickable,
         titleAndContentQueryString: queryString,
+        thumbnailUrl: thumbnailUrl,
+        title: title,
       ),
     );
   }
@@ -96,20 +100,19 @@ class EditDocumentRoute extends GoRouteData {
 class DocumentPreviewRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey =
       outerShellNavigatorKey;
-
-  final DocumentModel $extra;
+  final int id;
   final String? title;
 
   const DocumentPreviewRoute({
-    required this.$extra,
+    required this.id,
     this.title,
   });
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return DocumentView(
-      documentBytes: context.read<PaperlessDocumentsApi>().download($extra),
-      title: title ?? $extra.title,
+      documentBytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
+      title: title,
     );
   }
 }

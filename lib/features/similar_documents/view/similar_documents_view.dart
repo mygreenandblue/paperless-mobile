@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
@@ -66,7 +67,9 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
               enableHeroAnimation: false,
               onTap: (document) {
                 DocumentDetailsRoute(
-                  $extra: document,
+                  title: document.title,
+                  id: document.id,
+                  thumbnailUrl: document.buildThumbnailUrl(context),
                   isLabelClickable: false,
                 ).push(context);
               },

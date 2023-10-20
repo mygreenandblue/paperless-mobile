@@ -21,11 +21,11 @@ abstract class PaperlessDocumentsApi {
   Future<PagedSearchResult<DocumentModel>> findAll(DocumentFilter filter);
   Future<DocumentModel> find(int id);
   Future<int> delete(DocumentModel doc);
-  Future<DocumentMetaData> getMetaData(DocumentModel document);
+  Future<DocumentMetaData> getMetaData(int id);
   Future<Iterable<int>> bulkAction(BulkAction action);
   Future<Uint8List> getPreview(int docId);
   String getThumbnailUrl(int docId);
-  Future<Uint8List> download(DocumentModel document, {bool original});
+  Future<Uint8List> downloadDocument(int id, {bool original});
   Future<void> downloadToFile(
     DocumentModel document,
     String localFilePath, {

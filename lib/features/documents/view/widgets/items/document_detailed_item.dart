@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -56,6 +57,7 @@ class DocumentDetailedItem extends DocumentItem {
     final maxHeight = highlights != null
         ? min(600.0, availableHeight)
         : min(500.0, availableHeight);
+    final labels = context.watch<LabelRepository>().state;
     return Card(
       color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(
@@ -79,39 +81,71 @@ class DocumentDetailedItem extends DocumentItem {
                 width: double.infinity,
                 height: maxHeight / 2,
               ),
-              child: DocumentPreview(
-                document: document,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  DocumentPreview(
+                    documentId: document.id,
+                    title: document.title,
+                  ),
+                  if (paperlessUser.canViewTags)
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: TagsWidget(
+                        tags:
+                            document.tags.map((e) => labels.tags[e]!).toList(),
+                        onTagSelected: onTagSelected,
+                      ).padded(),
+                    ),
+                ],
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                      .format(document.created),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.apply(color: Theme.of(context).hintColor),
+                Expanded(
+                  child: RichText(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.apply(color: Theme.of(context).hintColor),
+                      text: DateFormat.yMMMMd(
+                              Localizations.localeOf(context).toString())
+                          .format(document.created),
+                      children: [
+                        if (paperlessUser.canViewDocumentTypes &&
+                            document.documentType != null) ...[
+                          const TextSpan(text: '\u30FB'),
+                          TextSpan(
+                            text: labels
+                                .documentTypes[document.documentType]?.name,
+                            recognizer: onDocumentTypeSelected != null
+                                ? (TapGestureRecognizer()
+                                  ..onTap = () => onDocumentTypeSelected!(
+                                      document.documentType))
+                                : null,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
                 if (document.archiveSerialNumber != null)
-                  Row(
-                    children: [
-                      Text(
-                        '#${document.archiveSerialNumber}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.apply(color: Theme.of(context).hintColor),
-                      ),
-                    ],
+                  Text(
+                    '#${document.archiveSerialNumber}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.apply(color: Theme.of(context).hintColor),
                   ),
               ],
             ).paddedLTRB(8, 8, 8, 4),
             Text(
-              document.title.isEmpty ? '-' : document.title,
+              document.title.isEmpty ? '(-)' : document.title,
               style: Theme.of(context).textTheme.titleMedium,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -128,39 +162,11 @@ class DocumentDetailedItem extends DocumentItem {
                     textStyle: Theme.of(context).textTheme.titleSmall?.apply(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
-                    correspondent: context
-                        .watch<LabelRepository>()
-                        .state
-                        .correspondents[document.correspondent],
+                    correspondent:
+                        labels.correspondents[document.correspondent],
                   ),
                 ],
-              ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewDocumentTypes)
-              Row(
-                children: [
-                  const Icon(
-                    Icons.description_outlined,
-                    size: 16,
-                  ).paddedOnly(right: 4.0),
-                  DocumentTypeWidget(
-                    onSelected: onDocumentTypeSelected,
-                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                    documentType: context
-                        .watch<LabelRepository>()
-                        .state
-                        .documentTypes[document.documentType],
-                  ),
-                ],
-              ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewTags)
-              TagsWidget(
-                tags: document.tags
-                    .map((e) => context.watch<LabelRepository>().state.tags[e]!)
-                    .toList(),
-                onTagSelected: onTagSelected,
-              ).padded(),
+              ).paddedLTRB(8, 0, 8, 8),
             if (highlights != null)
               Html(
                 data: '<p>${highlights!}</p>',
