@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
@@ -49,18 +49,12 @@ class InboxCubit extends HydratedCubit<InboxState>
         final wasInInboxBeforeUpdate =
             state.documents.map((e) => e.id).contains(document.id);
         if (!hasInboxTag && wasInInboxBeforeUpdate) {
-          print(
-              "INBOX: Removing document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
           remove(document);
           emit(state.copyWith(itemsInInboxCount: state.itemsInInboxCount - 1));
         } else if (hasInboxTag) {
           if (wasInInboxBeforeUpdate) {
-            print(
-                "INBOX: Replacing document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
             replace(document);
           } else {
-            print(
-                "INBOX: Adding document: has: $hasInboxTag, had: $wasInInboxBeforeUpdate");
             _addDocument(document);
             emit(
                 state.copyWith(itemsInInboxCount: state.itemsInInboxCount + 1));
@@ -83,11 +77,26 @@ class InboxCubit extends HydratedCubit<InboxState>
   }
 
   Future<void> refreshItemsInInboxCount([bool shouldLoadInbox = true]) async {
-    debugPrint("Checking for new items in inbox...");
+    logger.fi(
+      "Checking for new documents in inbox...",
+      className: runtimeType.toString(),
+      methodName: "refreshItemsInInboxCount",
+    );
     final stats = await _statsApi.getServerStatistics();
 
     if (stats.documentsInInbox != state.itemsInInboxCount && shouldLoadInbox) {
+      logger.fi(
+        "New documents found in inbox, reloading.",
+        className: runtimeType.toString(),
+        methodName: "refreshItemsInInboxCount",
+      );
       await loadInbox();
+    } else {
+      logger.fi(
+        "No new documents found in inbox.",
+        className: runtimeType.toString(),
+        methodName: "refreshItemsInInboxCount",
+      );
     }
     emit(state.copyWith(itemsInInboxCount: stats.documentsInInbox));
   }
@@ -97,7 +106,6 @@ class InboxCubit extends HydratedCubit<InboxState>
   ///
   Future<void> loadInbox() async {
     if (!isClosed) {
-      debugPrint("Initializing inbox...");
       final inboxTags = await _labelRepository.findAllTags().then(
             (tags) => tags.where((t) => t.isInboxTag).map((t) => t.id!),
           );

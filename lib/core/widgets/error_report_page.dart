@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/core/model/github_error_report.model.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 
 class ErrorReportPage extends StatefulWidget {
   final StackTrace? stackTrace;

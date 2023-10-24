@@ -200,13 +200,13 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   }
 
   @override
-  Future<Uint8List> download(
-    DocumentModel document, {
+  Future<Uint8List> downloadDocument(
+    int id, {
     bool original = false,
   }) async {
     try {
       final response = await client.get(
-        "/api/documents/${document.id}/download/",
+        "/api/documents/$id/download/",
         queryParameters: {'original': original},
         options: Options(responseType: ResponseType.bytes),
       );
@@ -242,14 +242,20 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   }
 
   @override
-  Future<DocumentMetaData> getMetaData(DocumentModel document) async {
+  Future<DocumentMetaData> getMetaData(int id) async {
+    debugPrint("Fetching data for /api/documents/$id/metadata/...");
+
     try {
-      final response =
-          await client.get("/api/documents/${document.id}/metadata/");
-      return compute(
-        DocumentMetaData.fromJson,
-        response.data as Map<String, dynamic>,
+      final response = await client.get(
+        "/api/documents/$id/metadata/",
+        options: Options(
+          sendTimeout: Duration(seconds: 10),
+          receiveTimeout: Duration(seconds: 10),
+        ),
       );
+      debugPrint("Fetched data for /api/documents/$id/metadata/.");
+
+      return DocumentMetaData.fromJson(response.data);
     } on DioException catch (exception) {
       throw exception.unravel(
         orElse: const PaperlessApiException.unknown(),
@@ -296,11 +302,17 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
 
   @override
   Future<DocumentModel> find(int id) async {
+    debugPrint("Fetching data from /api/documents/$id/...");
     try {
       final response = await client.get(
         "/api/documents/$id/",
-        options: Options(validateStatus: (status) => status == 200),
+        options: Options(
+          validateStatus: (status) => status == 200,
+          sendTimeout: Duration(seconds: 10),
+          receiveTimeout: Duration(seconds: 10),
+        ),
       );
+      debugPrint("Fetched data for /api/documents/$id/.");
       return DocumentModel.fromJson(response.data);
     } on DioException catch (exception) {
       throw exception.unravel(

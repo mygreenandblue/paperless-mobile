@@ -1,15 +1,17 @@
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
@@ -56,6 +58,7 @@ class DocumentDetailedItem extends DocumentItem {
     final maxHeight = highlights != null
         ? min(600.0, availableHeight)
         : min(500.0, availableHeight);
+    final labels = context.watch<LabelRepository>().state;
     return Card(
       color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(
@@ -79,88 +82,59 @@ class DocumentDetailedItem extends DocumentItem {
                 width: double.infinity,
                 height: maxHeight / 2,
               ),
-              child: DocumentPreview(
-                document: document,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  DocumentPreview(
+                    documentId: document.id,
+                    title: document.title,
+                  ),
+                  if (paperlessUser.canViewTags)
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: TagsWidget(
+                        tags:
+                            document.tags.map((e) => labels.tags[e]!).toList(),
+                        onTagSelected: onTagSelected,
+                      ).padded(),
+                    ),
+                ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                      .format(document.created),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.apply(color: Theme.of(context).hintColor),
-                ),
-                if (document.archiveSerialNumber != null)
-                  Row(
-                    children: [
-                      Text(
-                        '#${document.archiveSerialNumber}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.apply(color: Theme.of(context).hintColor),
-                      ),
-                    ],
-                  ),
-              ],
-            ).paddedLTRB(8, 8, 8, 4),
+            if (paperlessUser.canViewCorrespondents)
+              CorrespondentWidget(
+                onSelected: onCorrespondentSelected,
+                textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                correspondent: labels.correspondents[document.correspondent],
+              ).paddedLTRB(8, 8, 8, 0),
             Text(
-              document.title.isEmpty ? '-' : document.title,
+              document.title.isEmpty ? '(-)' : document.title,
               style: Theme.of(context).textTheme.titleMedium,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-            ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewCorrespondents)
-              Row(
-                children: [
-                  const Icon(
-                    Icons.person_outline,
-                    size: 16,
-                  ).paddedOnly(right: 4.0),
-                  CorrespondentWidget(
-                    onSelected: onCorrespondentSelected,
-                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                    correspondent: context
-                        .watch<LabelRepository>()
-                        .state
-                        .correspondents[document.correspondent],
+            ).paddedLTRB(8, 8, 8, 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: DateAndDocumentTypeLabelWidget(
+                    document: document,
+                    onDocumentTypeSelected: onDocumentTypeSelected,
                   ),
-                ],
-              ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewDocumentTypes)
-              Row(
-                children: [
-                  const Icon(
-                    Icons.description_outlined,
-                    size: 16,
-                  ).paddedOnly(right: 4.0),
-                  DocumentTypeWidget(
-                    onSelected: onDocumentTypeSelected,
-                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                    documentType: context
-                        .watch<LabelRepository>()
-                        .state
-                        .documentTypes[document.documentType],
+                ),
+                if (document.archiveSerialNumber != null)
+                  Text(
+                    '#${document.archiveSerialNumber}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.apply(color: Theme.of(context).hintColor),
                   ),
-                ],
-              ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewTags)
-              TagsWidget(
-                tags: document.tags
-                    .map((e) => context.watch<LabelRepository>().state.tags[e]!)
-                    .toList(),
-                onTagSelected: onTagSelected,
-              ).padded(),
+              ],
+            ).paddedLTRB(8, 4, 8, 8),
             if (highlights != null)
               Html(
                 data: '<p>${highlights!}</p>',

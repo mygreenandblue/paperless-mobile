@@ -4,7 +4,8 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
 import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
@@ -219,8 +220,12 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
             hasLoaded: state.hasLoaded,
             enableHeroAnimation: false,
             onTap: (document) {
-              DocumentDetailsRoute($extra: document, isLabelClickable: false)
-                  .push(context);
+              DocumentDetailsRoute(
+                title: document.title,
+                id: document.id,
+                isLabelClickable: false,
+                thumbnailUrl: document.buildThumbnailUrl(context),
+              ).push(context);
             },
           )
       ],

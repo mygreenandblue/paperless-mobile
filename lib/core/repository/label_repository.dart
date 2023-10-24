@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/core/repository/persistent_repository.dart';
@@ -11,19 +10,12 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
   LabelRepository(this._api) : super(const LabelRepositoryState());
 
   Future<void> initialize() async {
-    debugPrint("[LabelRepository] initialize() called.");
-    try {
-      await Future.wait([
-        findAllCorrespondents(),
-        findAllDocumentTypes(),
-        findAllStoragePaths(),
-        findAllTags(),
-      ]);
-    } catch (error, stackTrace) {
-      debugPrint(
-          "[LabelRepository] An error occurred in initialize(): ${error.toString()}");
-      debugPrintStack(stackTrace: stackTrace);
-    }
+    await Future.wait([
+      findAllCorrespondents(),
+      findAllDocumentTypes(),
+      findAllStoragePaths(),
+      findAllTags(),
+    ]);
   }
 
   Future<Tag> createTag(Tag object) async {
@@ -95,9 +87,7 @@ class LabelRepository extends PersistentRepository<LabelRepositoryState> {
 
   Future<Iterable<Correspondent>> findAllCorrespondents(
       [Iterable<int>? ids]) async {
-    debugPrint("Loading correspondents...");
     final correspondents = await _api.getCorrespondents(ids);
-    debugPrint("${correspondents.length} correspondents successfully loaded.");
     final updatedState = {
       ...state.correspondents,
     }..addAll({for (var element in correspondents) element.id!: element});

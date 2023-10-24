@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 
 part 'user_credentials.g.dart';

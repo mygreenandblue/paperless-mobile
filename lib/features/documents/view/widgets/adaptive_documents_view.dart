@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_grid_loading_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
@@ -159,7 +160,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
         crossAxisCount: 2,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
-        mainAxisExtent: 356,
+        mainAxisExtent: 324,
       ),
       itemCount: documents.length,
       itemBuilder: (context, index) {
@@ -176,7 +177,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
-        );
+        ).paddedSymmetrically(horizontal: 4);
       },
     );
   }

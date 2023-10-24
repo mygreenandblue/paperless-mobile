@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 
 part 'client_certificate.g.dart';
 

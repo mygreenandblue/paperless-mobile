@@ -18,43 +18,25 @@ class _ClearCacheSettingState extends State<ClearCacheSetting> {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(S.of(context)!.clearCache),
-      subtitle: FutureBuilder<String>(
-        future: FileService.temporaryDirectory.then(_dirSize),
+      subtitle: FutureBuilder<int>(
+        future: FileService.instance
+            .getDirSizeInBytes(FileService.instance.temporaryDirectory),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Text(S.of(context)!.calculatingDots);
           }
-          return Text(S.of(context)!.freeBytes(snapshot.data!));
+          final dirSize = formatBytes(snapshot.data!);
+          return Text(S.of(context)!.freeBytes(dirSize));
         },
       ),
       onTap: () async {
-        final dir = await FileService.temporaryDirectory;
-        final deletedSize = await _dirSize(dir);
-        await dir.delete(recursive: true);
+        final freedBytes = await FileService.instance
+            .clearDirectoryContent(PaperlessDirectoryType.temporary);
         showSnackBar(
           context,
-          S.of(context)!.freedDiskSpace(deletedSize),
+          S.of(context)!.freedDiskSpace(formatBytes(freedBytes)),
         );
       },
     );
   }
-}
-
-Future<String> _dirSize(Directory dir) async {
-  int totalSize = 0;
-  try {
-    if (await dir.exists()) {
-      dir
-          .listSync(recursive: true, followLinks: false)
-          .forEach((FileSystemEntity entity) async {
-        if (entity is File) {
-          totalSize += (await entity.length());
-        }
-      });
-    }
-  } catch (error) {
-    debugPrint(error.toString());
-  }
-
-  return formatBytes(totalSize, 0);
 }

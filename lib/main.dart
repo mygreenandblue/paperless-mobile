@@ -16,11 +16,12 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:logger/logger.dart' as l;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
@@ -28,9 +29,13 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/features/logging/data/formatted_printer.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:paperless_mobile/features/logging/data/mirrored_file_output.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/login/services/authentication_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
@@ -40,11 +45,13 @@ import 'package:paperless_mobile/routes/navigation_keys.dart';
 import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/app_logs_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -82,7 +89,11 @@ Future<void> performMigrations() async {
   final requiresMigrationForCurrentVersion =
       !performedMigrations.contains(currentVersion);
   if (requiresMigrationForCurrentVersion) {
-    debugPrint("Applying migration scripts for version $currentVersion");
+    logger.fd(
+      "Applying migration scripts for version $currentVersion",
+      className: "",
+      methodName: "performMigrations",
+    );
     await migrationProcedure();
     await sp.setStringList(
       'performed_migrations',
@@ -90,7 +101,6 @@ Future<void> performMigrations() async {
     );
   }
 }
-
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
@@ -113,7 +123,16 @@ Future<void> _initHive() async {
 void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    await FileService.instance.initialize();
+
+    logger = l.Logger(
+      output: MirroredFileOutput(),
+      printer: FormattedPrinter(),
+      level: l.Level.trace,
+      filter: l.ProductionFilter(),
+    );
     Paint.enableDithering = true;
+
     // if (kDebugMode) {
     //   // URL: http://localhost:3131
     //   // Login: admin:test
@@ -125,6 +144,7 @@ void main() async {
     //           )
     //       .start();
     // }
+
     packageInfo = await PackageInfo.fromPlatform();
 
     if (Platform.isAndroid) {
@@ -159,6 +179,15 @@ void main() async {
     );
     // Manages security context, required for self signed client certificates
     final sessionManager = SessionManager([
+      PrettyDioLogger(
+        compact: true,
+        responseBody: false,
+        responseHeader: false,
+        request: false,
+        requestBody: false,
+        requestHeader: false,
+        logPrint: (object) => logger.t,
+      ),
       languageHeaderInterceptor,
     ]);
 
@@ -207,16 +236,25 @@ void main() async {
         ),
       ),
     );
-  }, (error, stack) {
+  }, (error, stackTrace) {
+    if (error is StateError &&
+        error.message.contains("Cannot emit new states")) {
+      {
+        return;
+      }
+    }
     // Catches all unexpected/uncaught errors and prints them to the console.
-    String message = switch (error) {
+    final message = switch (error) {
       PaperlessApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
-      _ => error.toString()
+      _ => null
     };
-    debugPrint("An unepxected exception has occured!");
-    debugPrint(message);
-    debugPrintStack(stackTrace: stack);
+    logger.fe(
+      "An unexpected error occurred${message != null ? "- $message" : ""}",
+      error: message == null ? error : null,
+      methodName: "main",
+      stackTrace: stackTrace,
+    );
   });
 }
 
@@ -254,7 +292,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
     final DisplayMode mostOptimalMode =
         sameResolution.isNotEmpty ? sameResolution.first : active;
-    debugPrint('Setting refresh rate to ${mostOptimalMode.refreshRate}');
+    logger.fi('Setting refresh rate to ${mostOptimalMode.refreshRate}');
 
     await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
   }
@@ -301,12 +339,6 @@ class _GoRouterShellState extends State<GoRouterShell> {
                     if (context.canPop()) {
                       context.pop();
                     }
-                    // LoginRoute(
-                    //   $extra: errorState.clientCertificate,
-                    //   password: errorState.password,
-                    //   serverUrl: errorState.serverUrl,
-                    //   username: errorState.username,
-                    // ).go(context);
                     break;
                 }
               },
@@ -320,6 +352,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
           $loggingOutRoute,
           $addAccountRoute,
           $changelogRoute,
+          $appLogsRoute,
           $authenticatedRoute,
         ],
       ),

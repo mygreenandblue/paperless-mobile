@@ -38,6 +38,8 @@ class DioHttpErrorInterceptor extends Interceptor {
                 const PaperlessApiException(ErrorCode.missingClientCertificate),
           ),
         );
+      } else {
+        handler.reject(err);
       }
     }
   }

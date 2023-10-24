@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DocumentPreview extends StatelessWidget {
-  final DocumentModel document;
+  final int documentId;
+  final String? title;
   final BoxFit fit;
   final Alignment alignment;
   final double borderRadius;
@@ -19,13 +20,14 @@ class DocumentPreview extends StatelessWidget {
 
   const DocumentPreview({
     super.key,
-    required this.document,
+    required this.documentId,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.topCenter,
     this.borderRadius = 12.0,
     this.enableHero = true,
     this.scale = 1.1,
     this.isClickable = true,
+    this.title,
   });
 
   @override
@@ -34,12 +36,12 @@ class DocumentPreview extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: isClickable
-            ? () => DocumentPreviewRoute($extra: document).push(context)
+            ? () => DocumentPreviewRoute(id: documentId).push(context)
             : null,
         child: Builder(builder: (context) {
           if (enableHero) {
             return Hero(
-              tag: "thumb_${document.id}",
+              tag: "thumb_$documentId",
               child: _buildPreview(context),
             );
           }
@@ -57,10 +59,9 @@ class DocumentPreview extends StatelessWidget {
         child: CachedNetworkImage(
           fit: fit,
           alignment: alignment,
-          cacheKey: "thumb_${document.id}",
-          imageUrl: context
-              .read<PaperlessDocumentsApi>()
-              .getThumbnailUrl(document.id),
+          cacheKey: "thumb_$documentId",
+          imageUrl:
+              context.read<PaperlessDocumentsApi>().getThumbnailUrl(documentId),
           errorWidget: (ctxt, msg, __) => Text(msg),
           placeholder: (context, value) => Shimmer.fromColors(
             baseColor: Colors.grey[300]!,

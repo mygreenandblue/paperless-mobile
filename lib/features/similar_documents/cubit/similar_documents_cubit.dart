@@ -13,6 +13,7 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
   final int documentId;
   @override
   final ConnectivityStatusService connectivityStatusService;
+
   @override
   final PaperlessDocumentsApi api;
 
@@ -33,19 +34,9 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
       onDeleted: remove,
       onUpdated: replace,
     );
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        emit(state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          tags: labels.tags,
-          storagePaths: labels.storagePaths,
-        ));
-      },
-    );
   }
 
+  @override
   Future<void> initialize() async {
     if (!state.hasLoaded) {
       await updateFilter(

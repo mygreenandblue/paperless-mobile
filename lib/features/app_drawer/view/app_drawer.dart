@@ -2,13 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/global/asset_images.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
-import 'package:paperless_mobile/core/widgets/paperless_logo.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/logging/view/app_logs_page.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
@@ -18,6 +15,7 @@ import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
 import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
 import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routes/typed/top_level/app_logs_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
 import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
 import 'package:provider/provider.dart';
@@ -39,10 +37,10 @@ class AppDrawer extends StatelessWidget {
           children: [
             Row(
               children: [
-                const PaperlessLogo.green(
-                  width: 32,
-                  height: 32,
-                ),
+                const $AssetsLogosGen()
+                    .paperlessLogoGreenSvg
+                    .svg(width: 32, height: 32),
+                SizedBox(width: 8),
                 Text(
                   "Paperless Mobile",
                   style: Theme.of(context).textTheme.titleMedium,
@@ -110,14 +108,6 @@ class AppDrawer extends StatelessWidget {
             ),
             ListTile(
               dense: true,
-              leading: const Icon(Icons.history),
-              title: Text(S.of(context)!.changelog),
-              onTap: () {
-                ChangelogRoute().push(context);
-              },
-            ),
-            ListTile(
-              dense: true,
               leading: const Icon(Icons.bug_report_outlined),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,7 +121,7 @@ class AppDrawer extends StatelessWidget {
               ),
               onTap: () {
                 launchUrlString(
-                  'https://github.com/astubenbord/paperless-mobile/issues/new',
+                  'https://github.com/astubenbord/paperless-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
                   mode: LaunchMode.externalApplication,
                 );
               },

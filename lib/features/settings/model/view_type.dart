@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:paperless_mobile/core/config/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 
 part 'view_type.g.dart';
 

@@ -984,7 +984,7 @@
   "@authenticatingDots": {
     "description": "Message shown when the app is authenticating the user"
   },
-  "persistingUserInformation": "Manteniendo información del usuario...",
+  "persistingUserInformation": "Preservando información del usuario...",
   "fetchingUserInformation": "Obteniendo información del usuario...",
   "@fetchingUserInformation": {
     "description": "Message shown when the app loads user data from the server"
@@ -993,13 +993,31 @@
   "@restoringSession": {
     "description": "Message shown when the user opens the app and the previous user is tried to be authenticated and logged in"
   },
-  "documentsAssigned": "{count, plural, zero{No documents} one{1 document} other{{count} documents}}",
+  "documentsAssigned": "{count, plural, zero{Sin documentos} one{1 documento} other{{count} documentos}}",
   "@documentsAssigned": {
     "description": "Text shown with a correspondent, document type etc. to indicate the number of documents this filter will maximally yield."
   },
-  "discardChangesWarning": "You have unsaved changes. By continuing, all changes will be lost. Do you want to discard these changes?",
+  "discardChangesWarning": "Tienes cambios sin guardar. Si continúa, se perderán todos los cambios. ¿Quiere descartar estos cambios?",
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
   },
-  "changelog": "Changelog"
+  "changelog": "Changelog",
+  "noLogsFoundOn": "No se encontraron registros en {date}.",
+  "logfileBottomReached": "Has alcanzado el final del archivo de registro.",
+  "appLogs": "Registros de la aplicación {date}",
+  "saveLogsToFile": "Guardar registros en un archivo",
+  "copyToClipboard": "Copiar al portapapeles",
+  "couldNotLoadLogfileFrom": "No se pudo cargar el archivo de registro desde {date}.",
+  "loadingLogsFrom": "Cargando registros desde {date}...",
+  "clearLogs": "Limpiar registros desde {date}",
+  "showPdf": "Show PDF",
+  "@showPdf": {
+    "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
+  },
+  "hidePdf": "Hide PDF",
+  "@hidePdf": {
+    "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
+  },
+  "misc": "Miscellaneous",
+  "loggingOut": "Logging out..."
 }

@@ -1001,5 +1001,23 @@
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
   },
-  "changelog": "Changelog"
+  "changelog": "Changelog",
+  "noLogsFoundOn": "No logs found on {date}.",
+  "logfileBottomReached": "You have reached the bottom of this logfile.",
+  "appLogs": "App logs {date}",
+  "saveLogsToFile": "Save logs to file",
+  "copyToClipboard": "Copy to clipboard",
+  "couldNotLoadLogfileFrom": "Could not load logfile from {date}.",
+  "loadingLogsFrom": "Loading logs from {date}...",
+  "clearLogs": "Clear logs from {date}",
+  "showPdf": "Show PDF",
+  "@showPdf": {
+    "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
+  },
+  "hidePdf": "Hide PDF",
+  "@hidePdf": {
+    "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
+  },
+  "misc": "Sonstige",
+  "loggingOut": "Logging out..."
 }

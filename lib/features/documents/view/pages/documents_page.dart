@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
 import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
@@ -109,7 +110,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   }
 
   void _scrollExtentChangedListener() {
-    const threshold = 400;
+    const threshold = kToolbarHeight * 2;
     final offset =
         _nestedScrollViewKey.currentState!.innerController.position.pixels;
     if (offset < threshold && _showExtendedFab == false) {
@@ -404,7 +405,11 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 return SliverAdaptiveDocumentsView(
                   viewType: state.viewType,
                   onTap: (document) {
-                    DocumentDetailsRoute($extra: document).push(context);
+                    DocumentDetailsRoute(
+                      title: document.title,
+                      id: document.id,
+                      thumbnailUrl: document.buildThumbnailUrl(context),
+                    ).push(context);
                   },
                   onSelected:
                       context.read<DocumentsCubit>().toggleDocumentSelection,
@@ -424,6 +429,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 );
               },
             ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 96),
+            )
           ],
         ),
       ),

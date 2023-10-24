@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
@@ -21,11 +22,12 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
   Future<void> loadMore() async {
     final hasConnection =
         await connectivityStatusService.isConnectedToInternet();
-    if (state.isLastPageLoaded || !hasConnection) {
+    if (state.isLastPageLoaded || !hasConnection || state.isLoading) {
       return;
     }
     emit(state.copyWithPaged(isLoading: true));
     final newFilter = state.filter.copyWith(page: state.filter.page + 1);
+    debugPrint("Fetching page ${newFilter.page}");
     try {
       final result = await api.findAll(newFilter);
       emit(
@@ -216,7 +218,6 @@ mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
       emit(newState);
     }
   }
-
 
   @override
   Future<void> close() {

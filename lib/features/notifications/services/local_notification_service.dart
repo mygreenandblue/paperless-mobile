@@ -6,10 +6,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/notifications/converters/notification_tap_response_payload.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_action/create_document_success_payload.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_tap/open_downloaded_document_payload.dart';
 import 'package:paperless_mobile/features/notifications/models/notification_actions.dart';
 import 'package:paperless_mobile/features/notifications/models/notification_channels.dart';
+import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_action/create_document_success_payload.dart';
+import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_tap/open_directory_notification_response_payload.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class LocalNotificationService {
@@ -48,6 +48,31 @@ class LocalNotificationService {
   }
 
   Future<void> notifyFileDownload({
+    required String filePath,
+  }) async {
+    await _plugin.show(
+      filePath.hashCode,
+      filePath,
+      "File download complete.",
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          NotificationChannel.fileDownload.id + "_${filePath.hashCode}",
+          NotificationChannel.fileDownload.name,
+          importance: Importance.max,
+          priority: Priority.high,
+          showProgress: false,
+          when: DateTime.now().millisecondsSinceEpoch,
+          category: AndroidNotificationCategory.status,
+          icon: 'file_download_done',
+        ),
+      ),
+      payload: jsonEncode(
+          OpenDirectoryNotificationResponsePayload(filePath: filePath)
+              .toJson()),
+    );
+  }
+
+  Future<void> notifyDocumentDownload({
     required DocumentModel document,
     required String filename,
     required String filePath,
@@ -89,7 +114,7 @@ class LocalNotificationService {
         ),
       ),
       payload: jsonEncode(
-        OpenDownloadedDocumentPayload(
+        OpenDirectoryNotificationResponsePayload(
           filePath: filePath,
         ).toJson(),
       ),
@@ -139,7 +164,7 @@ class LocalNotificationService {
         ),
       ),
       payload: jsonEncode(
-        OpenDownloadedDocumentPayload(filePath: filePath).toJson(),
+        OpenDirectoryNotificationResponsePayload(filePath: filePath).toJson(),
       ),
     );
   }
@@ -281,9 +306,10 @@ class LocalNotificationService {
     NotificationResponse response,
   ) {
     switch (type) {
-      case NotificationResponseOpenAction.openDownloadedDocumentPath:
-        final payload = OpenDownloadedDocumentPayload.fromJson(
-            jsonDecode(response.payload!));
+      case NotificationResponseOpenAction.openDirectory:
+        final payload = OpenDirectoryNotificationResponsePayload.fromJson(
+          jsonDecode(response.payload!),
+        );
         OpenFilex.open(payload.filePath);
         break;
     }

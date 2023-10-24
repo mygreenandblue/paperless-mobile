@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -17,12 +16,10 @@ class DocumentChangedNotifier {
   Stream<DocumentModel> get $deleted => _deleted.asBroadcastStream();
 
   void notifyUpdated(DocumentModel updated) {
-    debugPrint("Notifying updated document ${updated.id}");
     _updated.add(updated);
   }
 
   void notifyDeleted(DocumentModel deleted) {
-    debugPrint("Notifying deleted document ${deleted.id}");
     _deleted.add(deleted);
   }
 
@@ -30,14 +27,15 @@ class DocumentChangedNotifier {
     Object subscriber, {
     DocumentChangedCallback? onUpdated,
     DocumentChangedCallback? onDeleted,
+    Iterable<int>? ids,
   }) {
     _subscribers.putIfAbsent(
       subscriber,
       () => [
-        _updated.listen((value) {
+        _updated.where((doc) => ids?.contains(doc.id) ?? true).listen((value) {
           onUpdated?.call(value);
         }),
-        _deleted.listen((value) {
+        _deleted.where((doc) => ids?.contains(doc.id) ?? true).listen((value) {
           onDeleted?.call(value);
         }),
       ],

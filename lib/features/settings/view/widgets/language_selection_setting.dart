@@ -21,7 +21,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'cs': LanguageOption('Česky', true),
     'tr': LanguageOption('Türkçe', true),
     'pl': LanguageOption('Polska', true),
-    'ca': LanguageOption('Catalan', true),
+    'ca': LanguageOption('Català', true),
     'ru': LanguageOption('Русский', true),
   };
 

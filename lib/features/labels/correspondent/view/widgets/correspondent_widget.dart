@@ -21,15 +21,19 @@ class CorrespondentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AbsorbPointer(
       absorbing: !isClickable,
-      child: GestureDetector(
-        onTap: () => onSelected?.call(correspondent?.id),
-        child: Text(
-          correspondent?.name ?? "-",
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style:
-              (textStyle ?? Theme.of(context).textTheme.bodyMedium)?.copyWith(
-            color: textColor ?? Theme.of(context).colorScheme.primary,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onTap: () => onSelected?.call(correspondent?.id),
+          child: Text(
+            correspondent?.name ?? "-",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style:
+                (textStyle ?? Theme.of(context).textTheme.bodyMedium)?.copyWith(
+              color: textColor ?? Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
       ),

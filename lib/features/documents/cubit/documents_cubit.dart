@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -44,18 +45,15 @@ class DocumentsCubit extends Cubit<DocumentsState>
         replace(document);
         emit(
           state.copyWith(
-            selection: state.selection
-                .map((e) => e.id == document.id ? document : e)
-                .toList(),
-          ),
+              selection:
+                  state.selection.withDocumentreplaced(document).toList()),
         );
       },
       onDeleted: (document) {
         remove(document);
         emit(
           state.copyWith(
-            selection:
-                state.selection.where((e) => e.id != document.id).toList(),
+            selection: state.selection.withDocumentRemoved(document).toList(),
           ),
         );
       },
@@ -74,7 +72,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   Future<void> bulkDelete(List<DocumentModel> documents) async {
-    debugPrint("[DocumentsCubit] bulkRemove");
     await api.bulkAction(
       BulkDeleteAction(documents.map((doc) => doc.id)),
     );
@@ -85,7 +82,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   void toggleDocumentSelection(DocumentModel model) {
-    debugPrint("[DocumentsCubit] toggleSelection");
     if (state.selectedIds.contains(model.id)) {
       emit(
         state.copyWith(
@@ -100,12 +96,10 @@ class DocumentsCubit extends Cubit<DocumentsState>
   }
 
   void resetSelection() {
-    debugPrint("[DocumentsCubit] resetSelection");
     emit(state.copyWith(selection: []));
   }
 
   void reset() {
-    debugPrint("[DocumentsCubit] reset");
     emit(const DocumentsState());
   }
 
