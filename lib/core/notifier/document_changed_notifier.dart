@@ -27,14 +27,15 @@ class DocumentChangedNotifier {
     Object subscriber, {
     DocumentChangedCallback? onUpdated,
     DocumentChangedCallback? onDeleted,
+    Iterable<int>? ids,
   }) {
     _subscribers.putIfAbsent(
       subscriber,
       () => [
-        _updated.listen((value) {
+        _updated.where((doc) => ids?.contains(doc.id) ?? true).listen((value) {
           onUpdated?.call(value);
         }),
-        _deleted.listen((value) {
+        _deleted.where((doc) => ids?.contains(doc.id) ?? true).listen((value) {
           onDeleted?.call(value);
         }),
       ],

@@ -70,7 +70,9 @@ class _AppLogsPageState extends State<AppLogsPage> {
             ),
           ),
           appBar: AppBar(
-            title: Text(S.of(context)!.appLogs(formattedDate)),
+            title: Text(S
+                .of(context)!
+                .appLogs(formattedDate)), //TODO: CHange to App-Logs in german
             actions: [
               if (state is AppLogsStateLoaded)
                 IconButton(

@@ -41,65 +41,62 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
         username: widget.initialUsername,
       ),
       name: UserCredentialsFormField.fkCredentials,
-      builder: (field) => AutofillGroup(
-        child: Column(
-          children: [
-            TextFormField(
-              key: const ValueKey('login-username'),
-              focusNode: _usernameFocusNode,
-              textCapitalization: TextCapitalization.none,
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (value) {
-                _passwordFocusNode.requestFocus();
-              },
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              autocorrect: false,
-              onChanged: (username) => field.didChange(
-                field.value?.copyWith(username: username) ??
-                    LoginFormCredentials(username: username),
-              ),
-              validator: (value) {
-                if (value?.trim().isEmpty ?? true) {
-                  return S.of(context)!.usernameMustNotBeEmpty;
-                }
-                final serverAddress = widget.formKey.currentState!
-                    .getRawValue<String>(
-                        ServerAddressFormField.fkServerAddress);
-                if (serverAddress != null) {
-                  final userExists = Hive.localUserAccountBox.values
-                      .map((e) => e.id)
-                      .contains('$value@$serverAddress');
-                  if (userExists) {
-                    return S.of(context)!.userAlreadyExists;
-                  }
-                }
-                return null;
-              },
-              autofillHints: const [AutofillHints.username],
-              decoration: InputDecoration(
-                label: Text(S.of(context)!.username),
-              ),
+      builder: (field) => Column(
+        children: [
+          TextFormField(
+            key: const ValueKey('login-username'),
+            focusNode: _usernameFocusNode,
+            textCapitalization: TextCapitalization.none,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (value) {
+              _passwordFocusNode.requestFocus();
+            },
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            autocorrect: false,
+            onChanged: (username) => field.didChange(
+              field.value?.copyWith(username: username) ??
+                  LoginFormCredentials(username: username),
             ),
-            ObscuredInputTextFormField(
-              key: const ValueKey('login-password'),
-              focusNode: _passwordFocusNode,
-              label: S.of(context)!.password,
-              onChanged: (password) => field.didChange(
-                field.value?.copyWith(password: password) ??
-                    LoginFormCredentials(password: password),
-              ),
-              onFieldSubmitted: (_) {
-                widget.onFieldsSubmitted();
-              },
-              validator: (value) {
-                if (value?.trim().isEmpty ?? true) {
-                  return S.of(context)!.passwordMustNotBeEmpty;
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) {
+                return S.of(context)!.usernameMustNotBeEmpty;
+              }
+              final serverAddress = widget.formKey.currentState!
+                  .getRawValue<String>(ServerAddressFormField.fkServerAddress);
+              if (serverAddress != null) {
+                final userExists = Hive.localUserAccountBox.values
+                    .map((e) => e.id)
+                    .contains('$value@$serverAddress');
+                if (userExists) {
+                  return S.of(context)!.userAlreadyExists;
                 }
-                return null;
-              },
+              }
+              return null;
+            },
+            autofillHints: const [AutofillHints.username],
+            decoration: InputDecoration(
+              label: Text(S.of(context)!.username),
             ),
-          ].map((child) => child.padded()).toList(),
-        ),
+          ),
+          ObscuredInputTextFormField(
+            key: const ValueKey('login-password'),
+            focusNode: _passwordFocusNode,
+            label: S.of(context)!.password,
+            onChanged: (password) => field.didChange(
+              field.value?.copyWith(password: password) ??
+                  LoginFormCredentials(password: password),
+            ),
+            onFieldSubmitted: (_) {
+              widget.onFieldsSubmitted();
+            },
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) {
+                return S.of(context)!.passwordMustNotBeEmpty;
+              }
+              return null;
+            },
+          ),
+        ].map((child) => child.padded()).toList(),
       ),
     );
   }

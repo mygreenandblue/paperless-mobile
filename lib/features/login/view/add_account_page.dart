@@ -84,40 +84,42 @@ class _AddAccountPageState extends State<AddAccountPage> {
         ),
       ),
       resizeToAvoidBottomInset: true,
-      body: FormBuilder(
-        key: _formKey,
-        child: ListView(
-          children: [
-            ServerAddressFormField(
-              initialValue: widget.initialServerUrl,
-              onSubmit: (address) {
-                _updateReachability(address);
-              },
-            ).padded(),
-            ClientCertificateFormField(
-              initialBytes: widget.initialClientCertificate?.bytes,
-              initialPassphrase: widget.initialClientCertificate?.passphrase,
-              onChanged: (_) => _updateReachability(),
-            ).padded(),
-            _buildStatusIndicator(),
-            if (_reachabilityStatus == ReachabilityStatus.reachable) ...[
-              UserCredentialsFormField(
-                formKey: _formKey,
-                initialUsername: widget.initialUsername,
-                initialPassword: widget.initialPassword,
-                onFieldsSubmitted: _onSubmit,
-              ),
-              Text(
-                S.of(context)!.loginRequiredPermissionsHint,
-                style: Theme.of(context).textTheme.bodySmall?.apply(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground
-                          .withOpacity(0.6),
-                    ),
-              ).padded(16),
-            ]
-          ],
+      body: AutofillGroup(
+        child: FormBuilder(
+          key: _formKey,
+          child: ListView(
+            children: [
+              ServerAddressFormField(
+                initialValue: widget.initialServerUrl,
+                onSubmit: (address) {
+                  _updateReachability(address);
+                },
+              ).padded(),
+              ClientCertificateFormField(
+                initialBytes: widget.initialClientCertificate?.bytes,
+                initialPassphrase: widget.initialClientCertificate?.passphrase,
+                onChanged: (_) => _updateReachability(),
+              ).padded(),
+              _buildStatusIndicator(),
+              if (_reachabilityStatus == ReachabilityStatus.reachable) ...[
+                UserCredentialsFormField(
+                  formKey: _formKey,
+                  initialUsername: widget.initialUsername,
+                  initialPassword: widget.initialPassword,
+                  onFieldsSubmitted: _onSubmit,
+                ),
+                Text(
+                  S.of(context)!.loginRequiredPermissionsHint,
+                  style: Theme.of(context).textTheme.bodySmall?.apply(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.6),
+                      ),
+                ).padded(16),
+              ]
+            ],
+          ),
         ),
       ),
     );

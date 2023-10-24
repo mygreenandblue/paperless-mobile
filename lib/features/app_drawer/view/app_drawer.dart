@@ -108,14 +108,6 @@ class AppDrawer extends StatelessWidget {
             ),
             ListTile(
               dense: true,
-              leading: const Icon(Icons.history),
-              title: Text(S.of(context)!.changelog),
-              onTap: () {
-                ChangelogRoute().push(context);
-              },
-            ),
-            ListTile(
-              dense: true,
               leading: const Icon(Icons.bug_report_outlined),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,14 +169,6 @@ class AppDrawer extends StatelessWidget {
                 return child
                     .animate(onPlay: (c) => c.repeat(reverse: true))
                     .fade(duration: 1.seconds, begin: 1, end: 0.3);
-              },
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.subject),
-              title: Text(S.of(context)!.appLogs('')),
-              onTap: () {
-                AppLogsRoute().push(context);
               },
             ),
             ListTile(

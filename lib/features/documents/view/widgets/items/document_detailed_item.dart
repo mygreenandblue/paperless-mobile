@@ -11,6 +11,7 @@ import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
@@ -100,38 +101,28 @@ class DocumentDetailedItem extends DocumentItem {
                 ],
               ),
             ),
+            if (paperlessUser.canViewCorrespondents)
+              CorrespondentWidget(
+                onSelected: onCorrespondentSelected,
+                textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                correspondent: labels.correspondents[document.correspondent],
+              ).paddedLTRB(8, 8, 8, 0),
+            Text(
+              document.title.isEmpty ? '(-)' : document.title,
+              style: Theme.of(context).textTheme.titleMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ).paddedLTRB(8, 8, 8, 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: RichText(
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.apply(color: Theme.of(context).hintColor),
-                      text: DateFormat.yMMMMd(
-                              Localizations.localeOf(context).toString())
-                          .format(document.created),
-                      children: [
-                        if (paperlessUser.canViewDocumentTypes &&
-                            document.documentType != null) ...[
-                          const TextSpan(text: '\u30FB'),
-                          TextSpan(
-                            text: labels
-                                .documentTypes[document.documentType]?.name,
-                            recognizer: onDocumentTypeSelected != null
-                                ? (TapGestureRecognizer()
-                                  ..onTap = () => onDocumentTypeSelected!(
-                                      document.documentType))
-                                : null,
-                          ),
-                        ],
-                      ],
-                    ),
+                  child: DateAndDocumentTypeLabelWidget(
+                    document: document,
+                    onDocumentTypeSelected: onDocumentTypeSelected,
                   ),
                 ),
                 if (document.archiveSerialNumber != null)
@@ -143,30 +134,7 @@ class DocumentDetailedItem extends DocumentItem {
                         ?.apply(color: Theme.of(context).hintColor),
                   ),
               ],
-            ).paddedLTRB(8, 8, 8, 4),
-            Text(
-              document.title.isEmpty ? '(-)' : document.title,
-              style: Theme.of(context).textTheme.titleMedium,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ).paddedLTRB(8, 0, 8, 4),
-            if (paperlessUser.canViewCorrespondents)
-              Row(
-                children: [
-                  const Icon(
-                    Icons.person_outline,
-                    size: 16,
-                  ).paddedOnly(right: 4.0),
-                  CorrespondentWidget(
-                    onSelected: onCorrespondentSelected,
-                    textStyle: Theme.of(context).textTheme.titleSmall?.apply(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                    correspondent:
-                        labels.correspondents[document.correspondent],
-                  ),
-                ],
-              ).paddedLTRB(8, 0, 8, 8),
+            ).paddedLTRB(8, 4, 8, 8),
             if (highlights != null)
               Html(
                 data: '<p>${highlights!}</p>',

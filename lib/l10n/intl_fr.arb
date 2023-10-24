@@ -1009,5 +1009,15 @@
   "copyToClipboard": "Copy to clipboard",
   "couldNotLoadLogfileFrom": "Could not load logfile from {date}.",
   "loadingLogsFrom": "Loading logs from {date}...",
-  "clearLogs": "Clear logs from {date}"
+  "clearLogs": "Clear logs from {date}",
+  "showPdf": "Show PDF",
+  "@showPdf": {
+    "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
+  },
+  "hidePdf": "Hide PDF",
+  "@hidePdf": {
+    "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
+  },
+  "misc": "Sonstige",
+  "loggingOut": "Logging out..."
 }

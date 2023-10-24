@@ -1009,5 +1009,15 @@
   "copyToClipboard": "In Zwischenablage kopieren",
   "couldNotLoadLogfileFrom": "Logs vom {date} konnten nicht geladen werden.",
   "loadingLogsFrom": "Lade Logs vom {date}...",
-  "clearLogs": "Logs vom {date} leeren"
+  "clearLogs": "Logs vom {date} leeren",
+  "showPdf": "PDF anzeigen",
+  "@showPdf": {
+    "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
+  },
+  "hidePdf": "PDF ausblenden",
+  "@hidePdf": {
+    "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
+  },
+  "misc": "Sonstige",
+  "loggingOut": "Abmelden..."
 }

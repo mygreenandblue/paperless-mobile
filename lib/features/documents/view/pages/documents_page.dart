@@ -110,7 +110,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   }
 
   void _scrollExtentChangedListener() {
-    const threshold = 400;
+    const threshold = kToolbarHeight * 2;
     final offset =
         _nestedScrollViewKey.currentState!.innerController.position.pixels;
     if (offset < threshold && _showExtendedFab == false) {
@@ -429,6 +429,9 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 );
               },
             ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 96),
+            )
           ],
         ),
       ),

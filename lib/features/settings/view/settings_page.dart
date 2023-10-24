@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/app_logs_tile.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/biometric_authentication_setting.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/changelogs_tile.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/clear_storage_settings.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/color_scheme_option_setting.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/default_download_file_type_setting.dart';
@@ -37,6 +39,9 @@ class SettingsPage extends StatelessWidget {
           const SkipDocumentPreprationOnShareSetting(),
           _buildSectionHeader(context, S.of(context)!.storage),
           const ClearCacheSetting(),
+          _buildSectionHeader(context, S.of(context)!.misc),
+          const AppLogsTile(),
+          const ChangelogsTile(),
         ],
       ),
       bottomNavigationBar: UserAccountBuilder(

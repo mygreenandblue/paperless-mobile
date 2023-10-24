@@ -31,14 +31,13 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     this._notificationService, {
     required this.id,
   }) : super(const DocumentDetailsInitial()) {
-    _notifier.addListener(this, onUpdated: (document) {
-      if (state is DocumentDetailsLoaded) {
-        final currentState = state as DocumentDetailsLoaded;
-        if (document.id == currentState.document.id) {
-          replace(document);
-        }
-      }
-    });
+    _notifier.addListener(
+      this,
+      onUpdated: (document) {
+        replace(document);
+      },
+      ids: [id],
+    );
   }
 
   Future<void> initialize() async {

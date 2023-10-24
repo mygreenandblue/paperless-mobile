@@ -18,14 +18,18 @@ class DocumentTypeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AbsorbPointer(
       absorbing: !isClickable,
-      child: GestureDetector(
-        onTap: () => onSelected?.call(documentType?.id),
-        child: Text(
-          documentType?.toString() ?? "-",
-          style: (textStyle ?? Theme.of(context).textTheme.bodyMedium)
-              ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onTap: () => onSelected?.call(documentType?.id),
+          child: Text(
+            documentType?.toString() ?? "-",
+            style: (textStyle ?? Theme.of(context).textTheme.bodyMedium)
+                ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
       ),
     );

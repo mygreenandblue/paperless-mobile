@@ -53,6 +53,7 @@ class FormBuilderLocalizedDatePicker extends StatefulWidget {
   final DateTime? initialValue;
   final DateTime firstDate;
   final DateTime lastDate;
+  final FocusNode? focusNode;
 
   /// If set to true, the field will not throw any validation errors when empty.
   final bool allowUnset;
@@ -67,6 +68,7 @@ class FormBuilderLocalizedDatePicker extends StatefulWidget {
     required this.labelText,
     this.prefixIcon,
     this.allowUnset = false,
+    this.focusNode,
   });
 
   @override
@@ -100,8 +102,11 @@ class _FormBuilderLocalizedDatePickerState
       final initialText = widget.initialValue != null
           ? DateFormat(formatString).format(widget.initialValue!)
           : null;
+      final defaultFocusNode = FocusNode(debugLabel: formatString);
+      final focusNode =
+          i == 0 ? (widget.focusNode ?? defaultFocusNode) : defaultFocusNode;
       final controls = _NeighbourAwareDateInputSegmentControls(
-        node: FocusNode(debugLabel: formatString),
+        node: focusNode,
         controller: TextEditingController(text: initialText),
         format: formatString,
         position: i,

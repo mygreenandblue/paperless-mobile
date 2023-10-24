@@ -1,7 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:paperless_api/src/models/document_model.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/label_repository_state.dart';
+import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
@@ -31,6 +33,7 @@ class DocumentListItem extends DocumentItem {
   @override
   Widget build(BuildContext context) {
     final labels = context.watch<LabelRepository>().state;
+
     return ListTile(
       tileColor: backgroundColor,
       dense: true,
@@ -75,35 +78,11 @@ class DocumentListItem extends DocumentItem {
           ),
         ],
       ),
-      subtitle: IntrinsicWidth(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: RichText(
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            text: TextSpan(
-              text:
-                  DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                      .format(document.created),
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.apply(color: Colors.grey),
-              children: document.documentType != null
-                  ? [
-                      const TextSpan(text: '\u30FB'),
-                      TextSpan(
-                        text: labels.documentTypes[document.documentType]?.name,
-                        recognizer: onDocumentTypeSelected != null
-                            ? (TapGestureRecognizer()
-                              ..onTap = () => onDocumentTypeSelected!(
-                                  document.documentType))
-                            : null,
-                      ),
-                    ]
-                  : null,
-            ),
-          ),
+      subtitle: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: DateAndDocumentTypeLabelWidget(
+          document: document,
+          onDocumentTypeSelected: onDocumentTypeSelected,
         ),
       ),
       isThreeLine: document.tags.isNotEmpty,

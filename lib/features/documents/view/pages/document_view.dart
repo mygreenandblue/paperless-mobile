@@ -5,9 +5,13 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 class DocumentView extends StatefulWidget {
   final Future<Uint8List> documentBytes;
   final String? title;
+  final bool showAppBar;
+  final bool showControls;
   const DocumentView({
     Key? key,
     required this.documentBytes,
+    this.showAppBar = true,
+    this.showControls = true,
     this.title,
   }) : super(key: key);
 
@@ -27,43 +31,47 @@ class _DocumentViewState extends State<DocumentView> {
     final canGoToNextPage = isInitialized && _currentPage! + 1 < _totalPages!;
     final canGoToPreviousPage = isInitialized && _currentPage! > 0;
     return Scaffold(
-      appBar: AppBar(
-        title: widget.title != null ? Text(widget.title!) : null,
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            Flexible(
+      appBar: widget.showAppBar
+          ? AppBar(
+              title: widget.title != null ? Text(widget.title!) : null,
+            )
+          : null,
+      bottomNavigationBar: widget.showControls
+          ? BottomAppBar(
               child: Row(
                 children: [
-                  IconButton.filled(
-                    onPressed: canGoToPreviousPage
-                        ? () {
-                            _controller?.setPage(_currentPage! - 1);
-                          }
-                        : null,
-                    icon: const Icon(Icons.arrow_left),
+                  Flexible(
+                    child: Row(
+                      children: [
+                        IconButton.filled(
+                          onPressed: canGoToPreviousPage
+                              ? () {
+                                  _controller?.setPage(_currentPage! - 1);
+                                }
+                              : null,
+                          icon: const Icon(Icons.arrow_left),
+                        ),
+                        const SizedBox(width: 16),
+                        IconButton.filled(
+                          onPressed: canGoToNextPage
+                              ? () {
+                                  _controller?.setPage(_currentPage! + 1);
+                                }
+                              : null,
+                          icon: const Icon(Icons.arrow_right),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  IconButton.filled(
-                    onPressed: canGoToNextPage
-                        ? () {
-                            _controller?.setPage(_currentPage! + 1);
-                          }
-                        : null,
-                    icon: const Icon(Icons.arrow_right),
-                  ),
+                  if (_currentPage != null && _totalPages != null)
+                    Text(
+                      "${_currentPage! + 1}/$_totalPages",
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                 ],
               ),
-            ),
-            if (_currentPage != null && _totalPages != null)
-              Text(
-                "${_currentPage! + 1}/$_totalPages",
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-          ],
-        ),
-      ),
+            )
+          : null,
       body: FutureBuilder(
           future: widget.documentBytes,
           builder: (context, snapshot) {
@@ -93,12 +101,7 @@ class _DocumentViewState extends State<DocumentView> {
               onViewCreated: (controller) {
                 _controller = controller;
               },
-              onError: (error) {
-                print(error.toString());
-              },
-              onPageError: (page, error) {
-                print('$page: ${error.toString()}');
-              },
+              
             );
           }),
     );

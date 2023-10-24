@@ -22,11 +22,13 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     required DocumentModel document,
   })  : _initialDocument = document,
         super(DocumentEditState(document: document)) {
-    _notifier.addListener(this, onUpdated: (doc) {
-      if (doc.id == document.id) {
+    _notifier.addListener(
+      this,
+      onUpdated: (doc) {
         emit(state.copyWith(document: doc));
-      }
-    });
+      },
+      ids: [document.id],
+    );
   }
 
   Future<void> updateDocument(DocumentModel document) async {
