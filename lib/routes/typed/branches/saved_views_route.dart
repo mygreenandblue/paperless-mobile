@@ -30,7 +30,7 @@ class CreateSavedViewRoute extends GoRouteData {
 
 class EditSavedViewRoute extends GoRouteData {
   final SavedView $extra;
-  const EditSavedViewRoute(this.$extra);
+  const EditSavedViewRoute({required this.$extra});
 
   @override
   Widget build(BuildContext context, GoRouterState state) {

@@ -7,11 +7,8 @@
   final username = parts.first;
   final serverUrl = parts.last;
   final uri = Uri.parse(serverUrl);
-  final hostLen = uri.host.length;
-  final obscuredUrl = uri.scheme +
-      "://" +
-      uri.host.substring(0, 2) +
-      List.filled(hostLen - 4, '*').join() +
+  final obscuredUrl = uri.host.substring(0, 2) +
+      '***' +
       uri.host.substring(uri.host.length - 2, uri.host.length);
   return (username, obscuredUrl);
 }

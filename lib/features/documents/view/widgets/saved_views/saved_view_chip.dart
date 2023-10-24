@@ -63,7 +63,7 @@ class _SavedViewChipState extends State<SavedViewChip>
             color: effectiveForegroundColor,
           ),
           onPressed: () {
-            EditSavedViewRoute(widget.view).push(context);
+            EditSavedViewRoute($extra: widget.view).push(context);
           },
         ),
         IconButton(
