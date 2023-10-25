@@ -32,13 +32,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Clone flutter repository
-        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.3'
-          channel: stable
-      - run: flutter doctor -v
+          submodules: true
 
       - name: Setup signing config
         uses: ./.github/actions/setup-android-signing-config
@@ -51,7 +46,7 @@ jobs:
 
       - name: Get packages and run codegen
         run: |
-          bash install_dependencies.sh
+          bash install_dependencies_with_submodule.sh
           bash update_changelogs.sh
         working-directory: scripts
 

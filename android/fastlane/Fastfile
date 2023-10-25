@@ -25,7 +25,7 @@ platform :android do |options|
   lane :publish_in_play_store do |options|
     release_status = (options[:is_draft] ? "draft" : "completed")
     track = (options[:track])
-    sh "flutter build appbundle -v"
+    sh "flutter/bin/flutter build appbundle -v"
     upload_to_play_store(
       track: track,
       release_status: release_status,
@@ -47,8 +47,8 @@ platform :android do |options|
 
   desc "Builds apks and creates a new release on GitHub"
   lane :github do |options|
-    sh "flutter build apk --split-per-abi --release"
-    sh "flutter build apk --release"
+    sh "flutter/bin/flutter build apk --split-per-abi --release"
+    sh "flutter/bin/flutter build apk --release"
     set_github_release(
       repository_name: "astubenbord/paperless-mobile",
       api_token: ENV["GH_ACCESS_TOKEN"],
