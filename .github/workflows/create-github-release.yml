@@ -26,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
           
       - run: flutter/bin/flutter doctor -v
 
