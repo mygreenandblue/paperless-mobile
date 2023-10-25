@@ -25,9 +25,9 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Checkout submodules
-        uses: textbook/git-checkout-submodule-action@master
+        with:
+          fetch-depth: 0
+          submodules: recursive
           
       - run: flutter/bin/flutter doctor -v
 
