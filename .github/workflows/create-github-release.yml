@@ -17,20 +17,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Setup Ruby, Bundler, and Gemfile dependencies
-      
+      - name: Create build directory
+        run: mkdir -p /tmp/build
+
       - name: Extract branch name
         shell: bash
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
         id: extract_branch
-
+      
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: recursive
+      
+      - name: Copy files to build directory
+        run: |
+          mkdir -p /tmp/build
+          cp -R . /tmp/build
+          echo "PROJECT_ROOT=/tmp/build" >> $GITHUB_ENV
 
       - name: Set FLUTTER_ROOT environment variable and build dir
         run: echo "FLUTTER_ROOT=$(pwd)/flutter/bin" >> $GITHUB_ENV
+        working-directory: $PROJECT_ROOT
 
       - run: $FLUTTER_ROOT/flutter doctor -v
 
@@ -42,20 +51,21 @@ jobs:
           keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
           release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
-
+        
       - name: Get packages and run codegen
         run: |
           bash ./scripts/install_dependencies_with_submodule.sh
           bash ./scripts/update_changelogs.sh
+        working-directory: $PROJECT_ROOT
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
-          working-directory: android
+          working-directory: $PROJECT_ROOT/android
 
       - run: bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-        working-directory: android
+        working-directory: $PROJECT_ROOT/android
