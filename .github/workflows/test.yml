@@ -3,7 +3,7 @@ name: Create Build Directory
 on: [push]
 
 jobs:
-    build:s
+    build:
         runs-on: ubuntu-latest
         steps:
         - name: Create Build Directory
