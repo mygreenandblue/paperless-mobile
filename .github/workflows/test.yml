@@ -11,6 +11,5 @@ jobs:
             mkdir -p /tmp/build
             cp -R . /tmp/build
         - name: Create file in build directory
-          run: |
-            echo $(ls)
+          run: ls
           working-directory: /tmp/build
