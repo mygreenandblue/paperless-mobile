@@ -16,6 +16,10 @@ inputs:
   keystore-store-password:
     description: 'key.properties storePassword'
     required: true
+  output-directory:
+    description: The directory of the project
+    required: true
+    
 runs:
   using: "composite"
   steps: 
@@ -26,5 +30,7 @@ runs:
         echo "keyAlias=${{ inputs.keystore-key-alias }}" >> key.properties
         echo "storePassword=${{ inputs.keystore-store-password }}" >> key.properties
         echo "keyPassword=${{ inputs.keystore-key-password }}" >> key.properties
+        cp key.properties ${{ inputs.output-directory }}/key.properties
+        cp ${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.output-directory }}/${{ inputs.keystore-key-alias }}-keystore.jks
       shell: bash
       working-directory: android
