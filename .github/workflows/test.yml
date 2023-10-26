@@ -9,6 +9,7 @@ jobs:
         - name: Create Build Directory
           run: |
             mkdir -p /tmp/build
+            touch test.txt
             cp -R . /tmp/build
         
         - run: ls
