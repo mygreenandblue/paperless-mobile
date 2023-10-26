@@ -28,11 +28,19 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          
-      - name: Set FLUTTER_ROOT environment variable
+
+      - name: Copy all files to /tmp/build
+        run: |
+          mkdir -p /tmp/build
+          cp -R . /tmp/build
+        working-directory: /tmp/build
+
+      - name: Set FLUTTER_ROOT environment variable and build dir
         run: echo "FLUTTER_ROOT=$(pwd)/flutter/bin" >> $GITHUB_ENV
-          
+        working-directory: /tmp/build
+
       - run: $FLUTTER_ROOT/flutter doctor -v
+        working-directory: /tmp/build
 
       - name: Setup signing config
         uses: ./.github/actions/setup-android-signing-config
@@ -45,18 +53,18 @@ jobs:
 
       - name: Get packages and run codegen
         run: |
-          bash install_dependencies_with_submodule.sh
-          bash update_changelogs.sh
-        working-directory: scripts
+          bash ./scripts/install_dependencies_with_submodule.sh
+          bash ./scripts/update_changelogs.sh
+        working-directory: /tmp/build
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
-          working-directory: android
+          working-directory: /tmp/build/android
 
       - run: bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-        working-directory: android
+        working-directory: /tmp/build/android
