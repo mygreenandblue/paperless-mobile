@@ -9,4 +9,7 @@ jobs:
         - name: Create Build Directory
           run: |
             mkdir -p /tmp/build
-            touch /tmp/build/test.txt
+        - name: Create file in build directory
+          run: |
+            touch test.txt
+          working-directory: /tmp/build
