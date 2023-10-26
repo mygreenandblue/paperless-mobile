@@ -10,6 +10,6 @@ jobs:
           run: |
             mkdir -p /tmp/build
             cp -R . /tmp/build
-        - name: Create file in build directory
-          run: ls
+        
+        - run: ls
           working-directory: /tmp/build
