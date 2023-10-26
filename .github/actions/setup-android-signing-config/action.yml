@@ -31,6 +31,6 @@ runs:
         echo "storePassword=${{ inputs.keystore-store-password }}" >> key.properties
         echo "keyPassword=${{ inputs.keystore-key-password }}" >> key.properties
         cp key.properties ${{ inputs.output-directory }}/key.properties
-        cp ${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.output-directory }}/${{ inputs.keystore-key-alias }}-keystore.jks
+        cp app/${{ inputs.keystore-key-alias }}-keystore.jks ${{ inputs.output-directory }}/app
       shell: bash
       working-directory: android
