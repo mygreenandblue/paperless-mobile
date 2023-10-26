@@ -12,5 +12,5 @@ jobs:
             cp -R . /tmp/build
         - name: Create file in build directory
           run: |
-            ls
+            echo $(ls)
           working-directory: /tmp/build
