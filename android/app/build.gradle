@@ -104,7 +104,6 @@ android.applicationVariants.all { variant ->
         def abiVersionCode = project.ext.abiCodes.get(abiName)
         if (abiVersionCode != null) {
             output.versionCodeOverride = variant.versionCode * 10 + abiVersionCode
-            println "Mapping " + abiName + " to " + output.versionCodeOverride
         }
     }
 }
