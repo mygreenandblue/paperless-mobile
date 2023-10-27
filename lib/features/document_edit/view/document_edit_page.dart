@@ -20,8 +20,8 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_fie
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentEditPage extends StatefulWidget {
   const DocumentEditPage({

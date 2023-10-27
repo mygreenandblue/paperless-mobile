@@ -6,8 +6,8 @@ import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentSelectionSliverAppBar extends StatelessWidget {
   final DocumentsState state;

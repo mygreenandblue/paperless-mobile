@@ -5,8 +5,8 @@ import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
 import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/login_route.dart';
 
 class LoginToExistingAccountPage extends StatelessWidget {
   const LoginToExistingAccountPage({super.key});

@@ -11,11 +11,11 @@ import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_ch
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/saved_view_details/view/saved_view_preview.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/inbox_route.dart';
+import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/changelog_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
