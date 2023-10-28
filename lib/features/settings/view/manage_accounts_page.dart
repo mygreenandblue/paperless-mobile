@@ -7,8 +7,8 @@ import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_d
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/users/view/widgets/user_account_list_tile.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/add_account_route.dart';
 import 'package:provider/provider.dart';
 
 class ManageAccountsPage extends StatelessWidget {

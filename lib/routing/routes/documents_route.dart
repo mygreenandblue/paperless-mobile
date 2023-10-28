@@ -13,7 +13,7 @@ import 'package:paperless_mobile/features/document_edit/view/document_edit_page.
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/navigation_keys.dart';
+import 'package:paperless_mobile/routing/navigation_keys.dart';
 import 'package:paperless_mobile/theme.dart';
 
 class DocumentsBranch extends StatefulShellBranchData {

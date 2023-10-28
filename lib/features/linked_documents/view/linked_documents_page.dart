@@ -7,8 +7,8 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/view_
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class LinkedDocumentsPage extends StatefulWidget {
   const LinkedDocumentsPage({super.key});

@@ -41,14 +41,14 @@ import 'package:paperless_mobile/features/login/services/authentication_service.
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/add_account_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/app_logs_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/changelog_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/logging_out_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/login_route.dart';
+import 'package:paperless_mobile/routing/navigation_keys.dart';
+import 'package:paperless_mobile/routing/routes/landing_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/add_account_route.dart';
+import 'package:paperless_mobile/routing/routes/app_logs_route.dart';
+import 'package:paperless_mobile/routing/routes/changelog_route.dart';
+import 'package:paperless_mobile/routing/routes/logging_out_route.dart';
+import 'package:paperless_mobile/routing/routes/login_route.dart';
 import 'package:paperless_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -104,7 +104,6 @@ Future<void> performMigrations() async {
 
 Future<void> _initHive() async {
   await Hive.initFlutter();
-
   await performMigrations();
   registerHiveAdapters();
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);

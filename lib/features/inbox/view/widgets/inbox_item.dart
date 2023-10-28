@@ -16,8 +16,8 @@ import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.d
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class InboxItemPlaceholder extends StatelessWidget {
   const InboxItemPlaceholder({super.key});

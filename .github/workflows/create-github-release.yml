@@ -17,22 +17,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Setup Ruby, Bundler, and Gemfile dependencies
-      
+      - name: Create build directory
+        run: mkdir -p /tmp/build
+
       - name: Extract branch name
         shell: bash
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
         id: extract_branch
-
+      
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Clone flutter repository
-        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.3'
-          channel: stable
-      - run: flutter doctor -v
+          fetch-depth: 0
+          submodules: recursive
       
+      - name: Copy files to build directory
+        run: |
+          mkdir -p /tmp/build
+          cp -R . /tmp/build
+
+      - name: Set FLUTTER_ROOT environment variable and build dir
+        run: echo "FLUTTER_ROOT=/tmp/build/flutter/bin" >> $GITHUB_ENV
+
+      - run: $FLUTTER_ROOT/flutter doctor -v
+
       - name: Setup signing config
         uses: ./.github/actions/setup-android-signing-config
         with:
@@ -41,21 +49,23 @@ jobs:
           keystore-store-password: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           release-keystore: ${{ secrets.RELEASE_KEYSTORE }}
           release-keystore-passphrase: ${{ secrets.RELEASE_KEYSTORE_PASSPHRASE }}
-
+          output-directory: /tmp/build/android
+        
       - name: Get packages and run codegen
         run: |
-          bash install_dependencies.sh
-          bash update_changelogs.sh
-        working-directory: scripts
+          bash /tmp/build/scripts/install_dependencies_with_submodule.sh
+          bash /tmp/build/scripts/update_changelogs.sh
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.6"
           bundler-cache: true
-          working-directory: android
-
-      - run: bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
+          working-directory: /tmp/build/android
+          
+      - name: Build and publish GitHub release
+        run: |
+          cd /tmp/build/android
+          bundle exec fastlane github branch:${{ steps.extract_branch.outputs.branch }} is_draft:${{ github.event.inputs.is_draft }}
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-        working-directory: android

@@ -10,8 +10,8 @@ import 'package:paperless_mobile/features/login/view/add_account_page.dart';
 import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
+import 'package:paperless_mobile/routing/navigation_keys.dart';
+import 'package:paperless_mobile/routing/routes.dart';
 
 part 'add_account_route.g.dart';
 

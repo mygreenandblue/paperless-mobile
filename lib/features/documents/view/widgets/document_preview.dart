@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 

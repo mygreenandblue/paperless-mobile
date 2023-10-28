@@ -12,17 +12,17 @@ import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/features/home/view/home_shell_widget.dart';
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
-import 'package:paperless_mobile/routes/navigation_keys.dart';
-import 'package:paperless_mobile/routes/routes.dart';
-import 'package:paperless_mobile/routes/typed/branches/documents_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/inbox_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/landing_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/saved_views_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/scanner_route.dart';
-import 'package:paperless_mobile/routes/typed/branches/upload_queue_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/scaffold_shell_route.dart';
-import 'package:paperless_mobile/routes/typed/top_level/settings_route.dart';
+import 'package:paperless_mobile/routing/navigation_keys.dart';
+import 'package:paperless_mobile/routing/routes.dart';
+import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/inbox_route.dart';
+import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/landing_route.dart';
+import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
+import 'package:paperless_mobile/routing/routes/scanner_route.dart';
+import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/scaffold_shell_route.dart';
+import 'package:paperless_mobile/routing/routes/settings_route.dart';
 import 'package:provider/provider.dart';
 
 /// Key used to access

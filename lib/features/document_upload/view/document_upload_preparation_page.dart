@@ -22,8 +22,8 @@ import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routes/typed/branches/labels_route.dart';
-import 'package:paperless_mobile/routes/typed/shells/authenticated_route.dart';
+import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentUploadResult {
   final bool success;
