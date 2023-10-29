@@ -1,26 +1,26 @@
 [{
         "id": 1,
-        "slug": "correspondent1",
-        "name": "Correspondent 1",
-        "match": "correspondent1",
+        "slug": "ikea",
+        "name": "IKEA",
+        "match": "ikea",
         "matching_algorithm": 1,
         "is_insensitive": true,
         "document_count": 3
     },
     {
         "id": 2,
-        "slug": "correspondent2",
-        "name": "Correspondent 2",
-        "match": "correspondent2",
+        "slug": "mediamarkt",
+        "name": "Media Markt",
+        "match": "media markt",
         "matching_algorithm": 1,
         "is_insensitive": true,
         "document_count": 3
     },
     {
         "id": 3,
-        "slug": "correspondent3",
-        "name": "Correspondent 3",
-        "match": "correspondent3",
+        "slug": "apple",
+        "name": "Apple",
+        "match": "apple",
         "matching_algorithm": 1,
         "is_insensitive": true,
         "document_count": 3
