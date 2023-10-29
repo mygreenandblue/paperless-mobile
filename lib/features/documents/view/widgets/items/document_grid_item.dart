@@ -56,6 +56,7 @@ class DocumentGridItem extends DocumentItem {
                             documentId: document.id,
                             borderRadius: 12.0,
                             enableHero: enableHeroAnimation,
+                            title: document.title,
                           ),
                         ),
                         Align(

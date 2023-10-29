@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:pdfx/pdfx.dart';
 
 class DocumentView extends StatefulWidget {
   final Future<Uint8List> documentBytes;
@@ -20,16 +22,31 @@ class DocumentView extends StatefulWidget {
 }
 
 class _DocumentViewState extends State<DocumentView> {
-  int? _currentPage;
+  late final PdfController _controller;
+  int _currentPage = 1;
   int? _totalPages;
-  PDFViewController? _controller;
+  @override
+  void initState() {
+    super.initState();
+    final document =
+        widget.documentBytes.then((value) => PdfDocument.openData(value));
+    _controller = PdfController(document: document);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isInitialized =
-        _controller != null && _currentPage != null && _totalPages != null;
-    final canGoToNextPage = isInitialized && _currentPage! + 1 < _totalPages!;
-    final canGoToPreviousPage = isInitialized && _currentPage! > 0;
+    final pageTransitionDuration = MediaQuery.disableAnimationsOf(context)
+        ? 0.milliseconds
+        : 100.milliseconds;
+    final canGoToNextPage = _totalPages != null && _currentPage < _totalPages!;
+    final canGoToPreviousPage =
+        _controller.pagesCount != null && _currentPage > 1;
     return Scaffold(
       appBar: widget.showAppBar
           ? AppBar(
@@ -45,8 +62,11 @@ class _DocumentViewState extends State<DocumentView> {
                       children: [
                         IconButton.filled(
                           onPressed: canGoToPreviousPage
-                              ? () {
-                                  _controller?.setPage(_currentPage! - 1);
+                              ? () async {
+                                  await _controller.previousPage(
+                                    duration: pageTransitionDuration,
+                                    curve: Curves.easeOut,
+                                  );
                                 }
                               : null,
                           icon: const Icon(Icons.arrow_left),
@@ -54,8 +74,11 @@ class _DocumentViewState extends State<DocumentView> {
                         const SizedBox(width: 16),
                         IconButton.filled(
                           onPressed: canGoToNextPage
-                              ? () {
-                                  _controller?.setPage(_currentPage! + 1);
+                              ? () async {
+                                  await _controller.nextPage(
+                                    duration: pageTransitionDuration,
+                                    curve: Curves.easeOut,
+                                  );
                                 }
                               : null,
                           icon: const Icon(Icons.arrow_right),
@@ -63,47 +86,35 @@ class _DocumentViewState extends State<DocumentView> {
                       ],
                     ),
                   ),
-                  if (_currentPage != null && _totalPages != null)
-                    Text(
-                      "${_currentPage! + 1}/$_totalPages",
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
+                  PdfPageNumber(
+                    controller: _controller,
+                    builder: (context, loadingState, page, pagesCount) {
+                      if (loadingState != PdfLoadingState.success) {
+                        return const Text("-/-");
+                      }
+                      return Text(
+                        "$page/$pagesCount",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ).padded();
+                    },
+                  ),
                 ],
               ),
             )
           : null,
-      body: FutureBuilder(
-          future: widget.documentBytes,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return PDFView(
-              pdfData: snapshot.data,
-              defaultPage: 0,
-              enableSwipe: true,
-              fitPolicy: FitPolicy.BOTH,
-              swipeHorizontal: true,
-              onRender: (pages) {
-                setState(() {
-                  _currentPage = 0;
-                  _totalPages = pages ?? -1;
-                });
-              },
-              onPageChanged: (page, total) {
-                setState(() {
-                  _currentPage = page;
-                  _totalPages = total;
-                });
-              },
-              onViewCreated: (controller) {
-                _controller = controller;
-              },
-              
-            );
-          }),
+      body: PdfView(
+        controller: _controller,
+        onDocumentLoaded: (document) {
+          setState(() {
+            _totalPages = document.pagesCount;
+          });
+        },
+        onPageChanged: (page) {
+          setState(() {
+            _currentPage = page;
+          });
+        },
+      ),
     );
   }
 }
