@@ -259,7 +259,12 @@ void main() async {
 
 class GoRouterShell extends StatefulWidget {
   final PaperlessApiFactory apiFactory;
-  const GoRouterShell({super.key, required this.apiFactory});
+  final String initialLocation;
+  const GoRouterShell({
+    super.key,
+    required this.apiFactory,
+    this.initialLocation = '/login',
+  });
 
   @override
   State<GoRouterShell> createState() => _GoRouterShellState();
@@ -298,7 +303,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
 
   late final _router = GoRouter(
     debugLogDiagnostics: kDebugMode,
-    initialLocation: "/login",
+    initialLocation: widget.initialLocation,
     routes: [
       ShellRoute(
         builder: (context, state, child) {

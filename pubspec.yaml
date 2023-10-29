@@ -100,6 +100,8 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
   build_runner: ^2.4.6
   bloc_test: ^9.1.0
   dependency_validator: ^3.0.0
@@ -128,6 +130,7 @@ flutter:
     - assets/logos/
     - assets/images/
     - assets/changelogs/
+    - integration_test/src/fixtures/preview/
 
   fonts:
     - family: RobotoMono
