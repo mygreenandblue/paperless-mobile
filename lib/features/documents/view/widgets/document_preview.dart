@@ -36,7 +36,10 @@ class DocumentPreview extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: isClickable
-            ? () => DocumentPreviewRoute(id: documentId).push(context)
+            ? () => DocumentPreviewRoute(
+                  id: documentId,
+                  title: title,
+                ).push(context)
             : null,
         child: Builder(builder: (context) {
           if (enableHero) {

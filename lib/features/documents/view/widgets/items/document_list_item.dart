@@ -91,6 +91,7 @@ class DocumentListItem extends DocumentItem {
         child: GestureDetector(
           child: DocumentPreview(
             documentId: document.id,
+            title: document.title,
             fit: BoxFit.cover,
             alignment: Alignment.topCenter,
             enableHero: enableHeroAnimation,
