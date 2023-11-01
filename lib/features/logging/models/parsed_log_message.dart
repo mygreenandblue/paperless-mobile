@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:developer' as dev;
 import 'package:logger/logger.dart';
 
 final _newLine = Platform.lineTerminator;
@@ -46,12 +46,17 @@ class ParsedErrorLogMessage {
     String errorText = "";
     int currentLine =
         1; // Skip first because we know that the first line is ---BEGIN ERROR---
-    
+
     while (!_errorEndPattern.hasMatch(log[currentLine])) {
       errorText += log[currentLine] + _newLine;
       currentLine++;
+      assert(currentLine < log.length, "Error log message is not closed");
     }
     currentLine++;
+    // dev.log("Parsing ${currentLine}/${log.length}");
+    if (log.length == currentLine) {
+      return (currentLine, ParsedErrorLogMessage(error: errorText));
+    }
     final hasStackTrace = _stackTraceBeginPattern.hasMatch(log[currentLine]);
     String? stackTrace;
     if (hasStackTrace) {
