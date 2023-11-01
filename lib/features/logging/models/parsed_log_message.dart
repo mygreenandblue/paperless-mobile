@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:developer' as dev;
 import 'package:logger/logger.dart';
 
 final _newLine = Platform.lineTerminator;
@@ -50,10 +49,8 @@ class ParsedErrorLogMessage {
     while (!_errorEndPattern.hasMatch(log[currentLine])) {
       errorText += log[currentLine] + _newLine;
       currentLine++;
-      assert(currentLine < log.length, "Error log message is not closed");
     }
     currentLine++;
-    // dev.log("Parsing ${currentLine}/${log.length}");
     if (log.length == currentLine) {
       return (currentLine, ParsedErrorLogMessage(error: errorText));
     }
