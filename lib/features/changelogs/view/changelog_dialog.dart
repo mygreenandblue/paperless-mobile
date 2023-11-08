@@ -63,6 +63,7 @@ class ChangelogDialog extends StatelessWidget {
 }
 
 const _versionNumbers = {
+  "57": "3.1.3",
   "56": "3.1.2",
   "55": "3.1.1",
   "54": "3.1.0",
