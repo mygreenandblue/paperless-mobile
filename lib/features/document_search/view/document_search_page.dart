@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
 import 'package:paperless_mobile/core/extensions/document_extensions.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
@@ -67,7 +68,7 @@ class _DocumentSearchPageState extends State<DocumentSearchPage> {
               context.read<DocumentSearchCubit>().search(query);
             },
           ),
-        ),
+        ).accessible(),
         actions: [
           IconButton(
             color: theme.colorScheme.onSurfaceVariant,

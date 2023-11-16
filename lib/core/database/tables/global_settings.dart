@@ -35,6 +35,9 @@ class GlobalSettings with HiveObjectMixin {
   @HiveField(8, defaultValue: false)
   bool skipDocumentPreprarationOnUpload;
 
+  @HiveField(9, defaultValue: false)
+  bool disableAnimations;
+
   GlobalSettings({
     required this.preferredLocaleSubtag,
     this.preferredThemeMode = ThemeMode.system,
@@ -45,5 +48,6 @@ class GlobalSettings with HiveObjectMixin {
     this.defaultShareType = FileDownloadType.alwaysAsk,
     this.enforceSinglePagePdfUpload = false,
     this.skipDocumentPreprarationOnUpload = false,
+    this.disableAnimations = false,
   });
 }

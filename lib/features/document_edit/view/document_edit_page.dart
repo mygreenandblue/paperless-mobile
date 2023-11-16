@@ -50,8 +50,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   late final Animation<double> _animation;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
