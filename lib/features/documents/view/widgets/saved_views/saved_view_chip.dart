@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
@@ -38,7 +40,7 @@ class _SavedViewChipState extends State<SavedViewChip>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200).accessible(),
     );
     _animation = _animationController.drive(Tween(begin: 0, end: 1));
   }

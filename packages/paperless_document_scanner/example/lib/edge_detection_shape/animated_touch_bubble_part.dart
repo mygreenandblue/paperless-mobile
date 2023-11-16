@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AnimatedTouchBubblePart extends StatefulWidget {
-  const AnimatedTouchBubblePart({super.key, 
+  const AnimatedTouchBubblePart({
+    super.key,
     required this.dragging,
     required this.size,
   });
@@ -22,6 +23,7 @@ class _AnimatedTouchBubblePartState extends State<AnimatedTouchBubblePart>
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -40,7 +42,6 @@ class _AnimatedTouchBubblePartState extends State<AnimatedTouchBubblePart>
     );
 
     _controller.repeat();
-    super.didChangeDependencies();
   }
 
   @override

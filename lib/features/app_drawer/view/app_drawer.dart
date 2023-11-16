@@ -164,7 +164,10 @@ class AppDrawer extends StatelessWidget {
                   return child;
                 }
                 return child
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .animate(
+                      onPlay: (c) => c.repeat(reverse: true),
+                      autoPlay: !MediaQuery.disableAnimationsOf(context),
+                    )
                     .fade(duration: 1.seconds, begin: 1, end: 0.3);
               },
             ),

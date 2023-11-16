@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
@@ -60,6 +61,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
+    debugPrint(disableAnimations.toString());
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
     final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
@@ -150,7 +153,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                       ],
                                     ),
                                   ),
-                                );
+                                ).accessible();
                               },
                             ),
                           ),
