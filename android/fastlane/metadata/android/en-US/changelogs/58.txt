@@ -1,1 +1,2 @@
 * Add setting to disable animations
+* Improved server-address validation
