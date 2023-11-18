@@ -1,1 +1,2 @@
 * Neue Einstellung um Animationen zu deaktivieren
+* Verbesserte Validierung von Server-Adressen

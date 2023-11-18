@@ -42,15 +42,6 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
       initialValue: widget.initialValue,
       name: ServerAddressFormField.fkServerAddress,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        if (value?.trim().isEmpty ?? true) {
-          return S.of(context)!.serverAddressMustNotBeEmpty;
-        }
-        if (!RegExp(r"https?://.*").hasMatch(value!)) {
-          return S.of(context)!.serverAddressMustIncludeAScheme;
-        }
-        return null;
-      },
       builder: (field) {
         return RawAutocomplete<String>(
           focusNode: _focusNode,
@@ -74,7 +65,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
           },
           fieldViewBuilder:
               (context, textEditingController, focusNode, onFieldSubmitted) {
-            return TextField(
+            return TextFormField(
               controller: textEditingController,
               focusNode: focusNode,
               decoration: InputDecoration(
@@ -93,9 +84,19 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
                     : null,
               ),
               autofocus: false,
-              onSubmitted: (_) {
+              onFieldSubmitted: (_) {
                 onFieldSubmitted();
                 _formatInput();
+              },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                if (value?.trim().isEmpty ?? true) {
+                  return S.of(context)!.serverAddressMustNotBeEmpty;
+                }
+                if (!RegExp(r"^https?://.*").hasMatch(value!)) {
+                  return S.of(context)!.serverAddressMustIncludeAScheme;
+                }
+                return null;
               },
               keyboardType: TextInputType.url,
               onChanged: (value) {
