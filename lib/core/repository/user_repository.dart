@@ -1,30 +1,45 @@
 import 'package:equatable/equatable.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/repository/persistent_repository.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 
 part 'user_repository_state.dart';
 
-/// Repository for new users (API v3, server version 1.14.2+)
 class UserRepository extends PersistentRepository<UserRepositoryState> {
-  final PaperlessUserApiV3 _userApiV3;
+  final PaperlessUserApi _userApi;
 
-  UserRepository(this._userApiV3) : super(const UserRepositoryState());
+  UserRepository(this._userApi) : super(const UserRepositoryState());
 
   Future<void> initialize() async {
     await findAll();
   }
 
   Future<Iterable<UserModel>> findAll() async {
-    final users = await _userApiV3.findAll();
-    emit(state.copyWith(users: {for (var e in users) e.id: e}));
-    return users;
+    if (_userApi is PaperlessUserApiV3Impl) {
+      final users = await (_userApi as PaperlessUserApiV3Impl).findAll();
+      emit(state.copyWith(users: {for (var e in users) e.id: e}));
+      return users;
+    }
+    logger.fw(
+      "Tried to access API v3 features while using an older API version.",
+      className: 'UserRepository',
+      methodName: 'findAll',
+    );
+    return [];
   }
 
   Future<UserModel?> find(int id) async {
-    final user = await _userApiV3.find(id);
-    emit(state.copyWith(users: state.users..[id] = user));
-    return user;
+    if (_userApi is PaperlessUserApiV3Impl) {
+      final user = await (_userApi as PaperlessUserApiV3Impl).find(id);
+      emit(state.copyWith(users: state.users..[id] = user));
+      return user;
+    }
+    logger.fw(
+      "Tried to access API v3 features while using an older API version.",
+      className: 'UserRepository',
+      methodName: 'findAll',
+    );
+    return null;
   }
 
   // @override

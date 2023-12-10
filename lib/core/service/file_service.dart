@@ -14,12 +14,12 @@ class FileService {
 
   static FileService? _singleton;
 
-  late final Directory _logDirectory;
-  late final Directory _temporaryDirectory;
-  late final Directory _documentsDirectory;
-  late final Directory _downloadsDirectory;
-  late final Directory _uploadDirectory;
-  late final Directory _temporaryScansDirectory;
+  late Directory _logDirectory;
+  late Directory _temporaryDirectory;
+  late Directory _documentsDirectory;
+  late Directory _downloadsDirectory;
+  late Directory _uploadDirectory;
+  late Directory _temporaryScansDirectory;
 
   Directory get logDirectory => _logDirectory;
   Directory get temporaryDirectory => _temporaryDirectory;
@@ -186,14 +186,15 @@ class FileService {
   }
 
   Future<void> _initTemporaryDirectory() async {
-    _temporaryDirectory = await getTemporaryDirectory();
+    _temporaryDirectory =
+        await getTemporaryDirectory().then((value) => value.create());
   }
 
   Future<void> _initializeDocumentsDirectory() async {
     if (Platform.isAndroid) {
       final dirs =
           await getExternalStorageDirectories(type: StorageDirectory.documents);
-      _documentsDirectory = dirs!.first;
+      _documentsDirectory = await dirs!.first.create(recursive: true);
       return;
     } else if (Platform.isIOS) {
       final dir = await getApplicationDocumentsDirectory();
@@ -212,12 +213,12 @@ class FileService {
               .then((directory) async =>
                   directory?.firstOrNull ??
                   await getApplicationDocumentsDirectory())
-              .then((directory) =>
-                  Directory('${directory.path}/logs').create(recursive: true));
+              .then((directory) => Directory(p.join(directory.path, 'logs'))
+                  .create(recursive: true));
       return;
     } else if (Platform.isIOS) {
-      _logDirectory = await getApplicationDocumentsDirectory().then(
-          (value) => Directory('${value.path}/logs').create(recursive: true));
+      _logDirectory = await getApplicationDocumentsDirectory().then((value) =>
+          Directory(p.join(value.path, 'logs')).create(recursive: true));
       return;
     }
     throw UnsupportedError("Platform not supported.");
@@ -246,7 +247,7 @@ class FileService {
 
   Future<void> _initUploadDirectory() async {
     final dir = await getApplicationDocumentsDirectory()
-        .then((dir) => Directory('${dir.path}/upload'));
+        .then((dir) => Directory(p.join(dir.path, 'upload')));
     _uploadDirectory = await dir.create(recursive: true);
   }
 
@@ -264,4 +265,14 @@ enum PaperlessDirectoryType {
   download,
   upload,
   logs;
+}
+
+extension ClearDirectoryExtension on Directory {
+  Future<void> clear() async {
+    final streamedEntities = list();
+    final entities = await streamedEntities.toList();
+    await Future.wait([
+      for (var entity in entities) entity.delete(recursive: true),
+    ]);
+  }
 }

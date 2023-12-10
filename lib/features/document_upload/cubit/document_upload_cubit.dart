@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/bloc/transient_error.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
@@ -33,24 +34,31 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     DateTime? createdAt,
     int? asn,
   }) async {
-    final taskId = await _documentApi.create(
-      bytes,
-      filename: filename,
-      title: title,
-      correspondent: correspondent,
-      documentType: documentType,
-      tags: tags,
-      createdAt: createdAt,
-      asn: asn,
-      onProgressChanged: (progress) {
-        if (!isClosed) {
-          emit(state.copyWith(uploadProgress: progress));
-        }
-      },
-    );
-    if (taskId != null) {
-      _tasksNotifier.listenToTaskChanges(taskId);
+    try {
+      final taskId = await _documentApi.create(
+        bytes,
+        filename: filename,
+        title: title,
+        correspondent: correspondent,
+        documentType: documentType,
+        tags: tags,
+        createdAt: createdAt,
+        asn: asn,
+        onProgressChanged: (progress) {
+          if (!isClosed) {
+            emit(state.copyWith(uploadProgress: progress));
+          }
+        },
+      );
+      if (taskId != null) {
+        _tasksNotifier.listenToTaskChanges(taskId);
+      }
+      return taskId;
+    } on PaperlessApiException catch (error) {
+      addError(TransientPaperlessApiError(
+        code: error.code,
+        details: error.details,
+      ));
     }
-    return taskId;
   }
 }

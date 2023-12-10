@@ -5,21 +5,12 @@ class LinkedDocumentsState extends DocumentPagingState {
   @JsonKey()
   final ViewType viewType;
 
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, StoragePath> storagePaths;
-  final Map<int, Tag> tags;
-
   const LinkedDocumentsState({
     this.viewType = ViewType.list,
     super.filter = const DocumentFilter(),
     super.isLoading,
     super.hasLoaded,
     super.value,
-    this.correspondents = const {},
-    this.documentTypes = const {},
-    this.storagePaths = const {},
-    this.tags = const {},
   });
 
   LinkedDocumentsState copyWith({
@@ -39,10 +30,6 @@ class LinkedDocumentsState extends DocumentPagingState {
       hasLoaded: hasLoaded ?? this.hasLoaded,
       value: value ?? this.value,
       viewType: viewType ?? this.viewType,
-      correspondents: correspondents ?? this.correspondents,
-      documentTypes: documentTypes ?? this.documentTypes,
-      storagePaths: storagePaths ?? this.storagePaths,
-      tags: tags ?? this.tags,
     );
   }
 
@@ -64,10 +51,6 @@ class LinkedDocumentsState extends DocumentPagingState {
   @override
   List<Object?> get props => [
         viewType,
-        correspondents,
-        documentTypes,
-        tags,
-        storagePaths,
         ...super.props,
       ];
 

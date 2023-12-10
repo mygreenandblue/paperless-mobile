@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/document_extensions.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/util/lambda_utils.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
@@ -148,6 +150,7 @@ class _InboxItemState extends State<InboxItem> {
 
   @override
   Widget build(BuildContext context) {
+    final labelRepository = context.read<LabelRepository>();
     return BlocBuilder<InboxCubit, InboxState>(
       builder: (context, state) {
         return GestureDetector(
@@ -193,7 +196,7 @@ class _InboxItemState extends State<InboxItem> {
                                     ?.fontSize,
                               ),
                               LabelText<Correspondent>(
-                                label: state.labels.correspondents[
+                                label: labelRepository.correspondents[
                                     widget.document.correspondent],
                                 style: Theme.of(context).textTheme.bodyMedium,
                                 placeholder: "-",
@@ -208,7 +211,7 @@ class _InboxItemState extends State<InboxItem> {
                                     ?.fontSize,
                               ),
                               LabelText<DocumentType>(
-                                label: state.labels.documentTypes[
+                                label: labelRepository.documentTypes[
                                     widget.document.documentType],
                                 style: Theme.of(context).textTheme.bodyMedium,
                                 placeholder: "-",
@@ -217,8 +220,8 @@ class _InboxItemState extends State<InboxItem> {
                             const Spacer(),
                             TagsWidget(
                               tags: widget.document.tags
-                                  .map((e) => state.labels.tags[e])
-                                  .whereNot((e) => e == null)
+                                  .map((e) => labelRepository.tags[e])
+                                  .where(isNotNull)
                                   .toList()
                                   .cast<Tag>(),
                               isClickable: false,

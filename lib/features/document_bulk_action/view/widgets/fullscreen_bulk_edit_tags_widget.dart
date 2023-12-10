@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_fields/fullscreen_selection_form.dart';
 import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
 import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
@@ -35,11 +36,12 @@ class _FullscreenBulkEditTagsWidgetState
   void initState() {
     super.initState();
     final state = context.read<DocumentBulkActionCubit>().state;
+    final labels = context.read<LabelRepository>();
     _sharedTags = state.selection
         .map((e) => e.tags)
         .map((e) => e.toSet())
         .fold(
-          state.tags.values.map((e) => e.id!).toSet(),
+          labels.tags.values.map((e) => e.id!).toSet(),
           (previousValue, element) => previousValue.intersection(element),
         )
         .toList();
@@ -49,14 +51,10 @@ class _FullscreenBulkEditTagsWidgetState
         .toSet()
         .difference(_sharedTags.toSet())
         .toList();
-    _filteredTags = state.tags.keys.toList();
+    _filteredTags = labels.tags.keys.toList();
     _controller.addListener(() {
       setState(() {
-        _filteredTags = context
-            .read<DocumentBulkActionCubit>()
-            .state
-            .tags
-            .values
+        _filteredTags = labels.tags.values
             .where((e) =>
                 e.name.normalized().contains(_controller.text.normalized()))
             .map((e) => e.id!)
@@ -69,6 +67,7 @@ class _FullscreenBulkEditTagsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final labelRepository = context.watch<LabelRepository>();
     return BlocBuilder<DocumentBulkActionCubit, DocumentBulkActionState>(
       builder: (context, state) {
         return FullscreenSelectionForm(
@@ -86,7 +85,7 @@ class _FullscreenBulkEditTagsWidgetState
           selectionBuilder: (context, index) {
             return _buildTagOption(
               _filteredTags[index],
-              state.tags,
+              labelRepository.tags,
             );
           },
           selectionCount: _filteredTags.length,
@@ -155,11 +154,12 @@ class _FullscreenBulkEditTagsWidgetState
   void _submit() async {
     if (_addTags.isNotEmpty || _removeTags.isNotEmpty) {
       final bloc = context.read<DocumentBulkActionCubit>();
+      final labelRepository = context.read<LabelRepository>();
       final addNames = _addTags
-          .map((value) => "\"${bloc.state.tags[value]!.name}\"")
+          .map((value) => "\"${labelRepository.tags[value]!.name}\"")
           .toList();
       final removeNames = _removeTags
-          .map((value) => "\"${bloc.state.tags[value]!.name}\"")
+          .map((value) => "\"${labelRepository.tags[value]!.name}\"")
           .toList();
       final shouldPerformAction = await showDialog<bool>(
             context: context,

@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_color_picker.dart';
-import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddTagPage extends StatelessWidget {
@@ -16,15 +16,14 @@ class AddTagPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EditLabelCubit(
+      create: (context) => LabelCubit(
         context.read(),
       ),
       child: AddLabelPage<Tag>(
         pageTitle: Text(S.of(context)!.addTag),
         fromJsonT: Tag.fromJson,
         initialName: initialName,
-        onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addTag(label),
+        onSubmit: (context, label) => context.read<LabelCubit>().addTag(label),
         additionalFields: [
           FormBuilderColorPickerField(
             name: Tag.colorKey,

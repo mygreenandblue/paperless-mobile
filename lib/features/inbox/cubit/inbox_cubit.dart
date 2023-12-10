@@ -6,7 +6,6 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
 import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
@@ -37,7 +36,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     this._labelRepository,
     this.notifier,
     this.connectivityStatusService,
-  ) : super(InboxState(labels: _labelRepository.state)) {
+  ) : super(const InboxState()) {
     notifier.addListener(
       this,
       onDeleted: remove,
@@ -60,12 +59,6 @@ class InboxCubit extends HydratedCubit<InboxState>
                 state.copyWith(itemsInInboxCount: state.itemsInInboxCount + 1));
           }
         }
-      },
-    );
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        emit(state.copyWith(labels: labels));
       },
     );
   }
@@ -112,7 +105,7 @@ class InboxCubit extends HydratedCubit<InboxState>
 
       if (inboxTags.isEmpty) {
         // no inbox tags = no inbox items.
-        return emit(
+        return emit( 
           state.copyWith(
             hasLoaded: true,
             value: [],
@@ -256,7 +249,6 @@ class InboxCubit extends HydratedCubit<InboxState>
 
   @override
   Future<void> close() {
-    _labelRepository.removeListener(this);
     return super.close();
   }
 

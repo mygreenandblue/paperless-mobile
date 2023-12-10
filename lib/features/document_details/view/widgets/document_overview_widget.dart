@@ -27,7 +27,7 @@ class DocumentOverviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<LocalUserAccount>().paperlessUser;
-    final availableLabels = context.watch<LabelRepository>().state;
+    final labelRepository = context.watch<LabelRepository>();
 
     return SliverList.list(
       children: [
@@ -51,7 +51,7 @@ class DocumentOverviewWidget extends StatelessWidget {
             label: S.of(context)!.documentType,
             content: LabelText<DocumentType>(
               style: Theme.of(context).textTheme.bodyLarge,
-              label: availableLabels.documentTypes[document.documentType],
+              label: labelRepository.documentTypes[document.documentType],
             ),
           ).paddedOnly(bottom: itemSpacing),
         if (document.correspondent != null && user.canViewCorrespondents)
@@ -59,14 +59,14 @@ class DocumentOverviewWidget extends StatelessWidget {
             label: S.of(context)!.correspondent,
             content: LabelText<Correspondent>(
               style: Theme.of(context).textTheme.bodyLarge,
-              label: availableLabels.correspondents[document.correspondent],
+              label: labelRepository.correspondents[document.correspondent],
             ),
           ).paddedOnly(bottom: itemSpacing),
         if (document.storagePath != null && user.canViewStoragePaths)
           DetailsItem(
             label: S.of(context)!.storagePath,
             content: LabelText<StoragePath>(
-              label: availableLabels.storagePaths[document.storagePath],
+              label: labelRepository.storagePaths[document.storagePath],
             ),
           ).paddedOnly(bottom: itemSpacing),
         if (document.tags.isNotEmpty && user.canViewTags)
@@ -77,7 +77,7 @@ class DocumentOverviewWidget extends StatelessWidget {
               child: TagsWidget(
                 isClickable: false,
                 tags:
-                    document.tags.map((e) => availableLabels.tags[e]!).toList(),
+                    document.tags.map((e) => labelRepository.tags[e]!).toList(),
               ),
             ),
           ).paddedOnly(bottom: itemSpacing),

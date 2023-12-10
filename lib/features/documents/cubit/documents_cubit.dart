@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:paperless_mobile/core/extensions/document_extensions.dart';
@@ -20,7 +18,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   @override
   final PaperlessDocumentsApi api;
 
-  final LabelRepository _labelRepository;
   @override
   final ConnectivityStatusService connectivityStatusService;
 
@@ -32,7 +29,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   DocumentsCubit(
     this.api,
     this.notifier,
-    this._labelRepository,
     this._userState,
     this.connectivityStatusService,
   ) : super(DocumentsState(
@@ -57,17 +53,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
           ),
         );
       },
-    );
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) => emit(
-        state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          storagePaths: labels.storagePaths,
-          tags: labels.tags,
-        ),
-      ),
     );
   }
 
@@ -111,7 +96,6 @@ class DocumentsCubit extends Cubit<DocumentsState>
   @override
   Future<void> close() {
     notifier.removeListener(this);
-    _labelRepository.removeListener(this);
     return super.close();
   }
 

@@ -4,8 +4,6 @@ part of 'inbox_cubit.dart';
 class InboxState extends DocumentPagingState {
   final Iterable<int> inboxTags;
 
-  final LabelRepositoryState labels;
-
   final int itemsInInboxCount;
 
   @JsonKey()
@@ -19,7 +17,6 @@ class InboxState extends DocumentPagingState {
     this.inboxTags = const [],
     this.isHintAcknowledged = false,
     this.itemsInInboxCount = 0,
-    this.labels = const LabelRepositoryState(),
   });
 
   @override
@@ -32,7 +29,6 @@ class InboxState extends DocumentPagingState {
         documents,
         isHintAcknowledged,
         itemsInInboxCount,
-        labels,
       ];
 
   InboxState copyWith({
@@ -42,7 +38,6 @@ class InboxState extends DocumentPagingState {
     List<PagedSearchResult<DocumentModel>>? value,
     DocumentFilter? filter,
     bool? isHintAcknowledged,
-    LabelRepositoryState? labels,
     Map<int, FieldSuggestions>? suggestions,
     int? itemsInInboxCount,
   }) {
@@ -52,7 +47,6 @@ class InboxState extends DocumentPagingState {
       value: value ?? super.value,
       inboxTags: inboxTags ?? this.inboxTags,
       isHintAcknowledged: isHintAcknowledged ?? this.isHintAcknowledged,
-      labels: labels ?? this.labels,
       filter: filter ?? super.filter,
       itemsInInboxCount: itemsInInboxCount ?? this.itemsInInboxCount,
     );

@@ -19,28 +19,13 @@ class LinkedDocumentsCubit extends HydratedCubit<LinkedDocumentsState>
   final ConnectivityStatusService connectivityStatusService;
   @override
   final DocumentChangedNotifier notifier;
-
-  final LabelRepository _labelRepository;
-
   LinkedDocumentsCubit(
     DocumentFilter filter,
     this.api,
     this.notifier,
-    this._labelRepository,
     this.connectivityStatusService,
   ) : super(LinkedDocumentsState(filter: filter)) {
     updateFilter(filter: filter);
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        emit(state.copyWith(
-          correspondents: labels.correspondents,
-          documentTypes: labels.documentTypes,
-          tags: labels.tags,
-          storagePaths: labels.storagePaths,
-        ));
-      },
-    );
     notifier.addListener(
       this,
       onUpdated: replace,

@@ -1010,14 +1010,19 @@
   "couldNotLoadLogfileFrom": "No es pot carregar log desde {date}.",
   "loadingLogsFrom": "Carregant registres des de {date}...",
   "clearLogs": "Netejar registres des de {date}",
-  "showPdf": "Show PDF",
+  "showPdf": "Mostra PDF",
   "@showPdf": {
     "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
   },
-  "hidePdf": "Hide PDF",
+  "hidePdf": "Oculta PDF",
   "@hidePdf": {
     "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
   },
-  "misc": "Miscellaneous",
-  "loggingOut": "Logging out..."
+  "misc": "Miscel·lanni",
+  "loggingOut": "Sortint...",
+  "testingConnection": "Provant connexió...",
+  "@testingConnection": {
+    "description": "Text shown while the app tries to establish a connection to the specified host."
+  },
+  "version": "Versió {versionCode}"
 }

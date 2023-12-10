@@ -11,9 +11,8 @@ class PaperlessServerMessageException implements Exception {
   static bool canParse(dynamic json) {
     if (json is Map<String, dynamic>) {
       return json.containsKey('detail') && json.length == 1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   factory PaperlessServerMessageException.fromJson(Map<String, dynamic> json) =>

@@ -22,6 +22,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/accessibility/accessible_page.dart';
 import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/bloc/my_bloc_observer.dart';
 import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
@@ -123,6 +124,7 @@ Future<void> _initHive() async {
 
 void main() async {
   runZonedGuarded(() async {
+    Bloc.observer = MyBlocObserver();
     WidgetsFlutterBinding.ensureInitialized();
     await FileService.instance.initialize();
 
@@ -371,6 +373,16 @@ class _GoRouterShellState extends State<GoRouterShell> {
         return DynamicColorBuilder(
           builder: (lightDynamic, darkDynamic) {
             return MaterialApp.router(
+              builder: (context, child) {
+                return AnnotatedRegion<SystemUiOverlayStyle>(
+                  child: child!,
+                  value: buildOverlayStyle(
+                    Theme.of(context),
+                    systemNavigationBarColor:
+                        Theme.of(context).colorScheme.background,
+                  ),
+                );
+              },
               routerConfig: _router,
               debugShowCheckedModeBanner: true,
               title: "Paperless Mobile",

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/edit_label/cubit/edit_label_cubit.dart';
 import 'package:paperless_mobile/features/edit_label/view/add_label_page.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class AddDocumentTypePage extends StatelessWidget {
@@ -15,7 +15,7 @@ class AddDocumentTypePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EditLabelCubit(
+      create: (context) => LabelCubit(
         context.read(),
       ),
       child: AddLabelPage<DocumentType>(
@@ -23,7 +23,7 @@ class AddDocumentTypePage extends StatelessWidget {
         fromJsonT: DocumentType.fromJson,
         initialName: initialName,
         onSubmit: (context, label) =>
-            context.read<EditLabelCubit>().addDocumentType(label),
+            context.read<LabelCubit>().addDocumentType(label),
       ),
     );
   }

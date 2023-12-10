@@ -76,5 +76,11 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.userNotFound => S.of(context)!.userNotFound,
     ErrorCode.updateSavedViewError => S.of(context)!.couldNotUpdateSavedView,
     ErrorCode.userAlreadyExists => S.of(context)!.userAlreadyExists,
+    ErrorCode.customFieldCreateFailed =>
+      'Could not create custom field, please try again.', //TODO: INTL
+    ErrorCode.customFieldLoadFailed =>
+      'Could not load custom field.', //TODO: INTL
+    ErrorCode.customFieldDeleteFailed =>
+      'Could not delete custom field, please try again.', //TODO: INTL
   };
 }

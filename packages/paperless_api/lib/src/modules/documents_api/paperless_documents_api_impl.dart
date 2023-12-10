@@ -109,7 +109,10 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       );
     } on DioException catch (exception) {
       throw exception.unravel(
-        orElse: const PaperlessApiException(ErrorCode.documentLoadFailed),
+        orElse: PaperlessApiException(
+          ErrorCode.documentLoadFailed,
+          details: exception.message,
+        ),
       );
     }
   }

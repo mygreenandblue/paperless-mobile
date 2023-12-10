@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/bloc/loading_status.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
@@ -50,16 +51,13 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
         context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
-          previous is DocumentDetailsLoaded &&
-          current is DocumentDetailsLoaded &&
-          previous.document.archiveSerialNumber !=
-              current.document.archiveSerialNumber,
+          previous.status == LoadingStatus.loaded &&
+          current.status == LoadingStatus.loaded &&
+          previous.document!.archiveSerialNumber !=
+              current.document!.archiveSerialNumber,
       listener: (context, state) {
-        _asnEditingController.text = (state as DocumentDetailsLoaded)
-                .document
-                .archiveSerialNumber
-                ?.toString() ??
-            '';
+        _asnEditingController.text =
+            state.document!.archiveSerialNumber?.toString() ?? '';
         setState(() {
           _canUpdate = false;
         });

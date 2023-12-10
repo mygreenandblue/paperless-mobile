@@ -14,6 +14,7 @@ import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
 import 'package:paperless_mobile/routing/navigation_keys.dart';
+
 class LabelsBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = labelsNavigatorKey;
   const LabelsBranch();
@@ -78,7 +79,6 @@ class LinkedDocumentsRoute extends GoRouteData {
     return BlocProvider(
       create: (context) => LinkedDocumentsCubit(
         $extra,
-        context.read(),
         context.read(),
         context.read(),
         context.read(),

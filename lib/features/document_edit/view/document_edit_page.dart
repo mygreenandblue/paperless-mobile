@@ -185,6 +185,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
 
   Padding _buildEditForm(BuildContext context, DocumentEditState state,
       FieldSuggestions? filteredSuggestions, UserModel currentUser) {
+    final labelRepository = context.watch<LabelRepository>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: TabBarView(
@@ -211,8 +213,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                       ).push<Correspondent>(context),
                       addLabelText: S.of(context)!.addCorrespondent,
                       labelText: S.of(context)!.correspondent,
-                      options:
-                          context.watch<LabelRepository>().state.correspondents,
+                      options: labelRepository.correspondents,
                       initialValue: state.document.correspondent != null
                           ? SetIdQueryParameter(
                               id: state.document.correspondent!)
@@ -243,8 +244,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                           ? SetIdQueryParameter(
                               id: state.document.documentType!)
                           : const UnsetIdQueryParameter(),
-                      options:
-                          context.watch<LabelRepository>().state.documentTypes,
+                      options: labelRepository.documentTypes,
                       name: _DocumentEditPageState.fkDocumentType,
                       prefixIcon: const Icon(Icons.description_outlined),
                       allowSelectUnassigned: true,
@@ -266,8 +266,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                       canCreateNewLabel: currentUser.canCreateStoragePaths,
                       addLabelText: S.of(context)!.addStoragePath,
                       labelText: S.of(context)!.storagePath,
-                      options:
-                          context.watch<LabelRepository>().state.storagePaths,
+                      options: labelRepository.storagePaths,
                       initialValue: state.document.storagePath != null
                           ? SetIdQueryParameter(id: state.document.storagePath!)
                           : const UnsetIdQueryParameter(),
@@ -280,7 +279,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
               // Tag form field
               if (currentUser.canViewTags)
                 TagsFormField(
-                  options: context.watch<LabelRepository>().state.tags,
+                  options: labelRepository.tags,
                   name: fkTags,
                   allowOnlySelection: true,
                   allowCreation: true,

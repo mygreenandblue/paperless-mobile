@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
@@ -37,7 +38,7 @@ class DocumentDetailsRoute extends GoRouteData {
   final String? queryString;
   final String? thumbnailUrl;
   final String? title;
-  
+
   const DocumentDetailsRoute({
     required this.id,
     this.isLabelClickable = true,
@@ -50,7 +51,6 @@ class DocumentDetailsRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) {
     return BlocProvider(
       create: (_) => DocumentDetailsCubit(
-        context.read(),
         context.read(),
         context.read(),
         context.read(),
@@ -131,9 +131,9 @@ class BulkEditDocumentsRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    final labelRepository = context.read<LabelRepository>();
     return BlocProvider(
       create: (_) => DocumentBulkActionCubit(
-        context.read(),
         context.read(),
         context.read(),
         selection: $extra.selection,
@@ -144,9 +144,9 @@ class BulkEditDocumentsRoute extends GoRouteData {
             LabelType.tag => const FullscreenBulkEditTagsWidget(),
             _ => FullscreenBulkEditLabelPage(
                 options: switch ($extra.type) {
-                  LabelType.correspondent => state.correspondents,
-                  LabelType.documentType => state.documentTypes,
-                  LabelType.storagePath => state.storagePaths,
+                  LabelType.correspondent => labelRepository.correspondents,
+                  LabelType.documentType => labelRepository.documentTypes,
+                  LabelType.storagePath => labelRepository.storagePaths,
                   _ => throw Exception("Parameter not allowed here."),
                 },
                 selection: state.selection,

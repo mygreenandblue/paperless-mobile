@@ -6,6 +6,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:paperless_mobile/core/bloc/loading_status.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
@@ -15,6 +16,7 @@ import 'package:paperless_mobile/features/document_details/view/widgets/document
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
@@ -65,7 +67,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     debugPrint(disableAnimations.toString());
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
-    final tabLength = 4 + (hasMultiUserSupport && false ? 1 : 0);
+    final tabLength = 4 + (hasMultiUserSupport ? 1 : 0);
     return AnnotatedRegion(
       value: buildOverlayStyle(
         Theme.of(context),
@@ -79,9 +81,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
               extendBodyBehindAppBar: false,
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endDocked,
-              floatingActionButton: switch (state) {
-                DocumentDetailsLoaded(document: var document) =>
-                  _buildEditButton(document),
+              floatingActionButton: switch (state.status) {
+                LoadingStatus.loaded => _buildEditButton(state.document!),
                 _ => null
               },
               bottomNavigationBar: _buildBottomAppBar(),
@@ -93,9 +94,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     sliver:
                         BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
                       builder: (context, state) {
-                        final title = switch (state) {
-                          DocumentDetailsLoaded(document: var document) =>
-                            document.title,
+                        final title = switch (state.status) {
+                          LoadingStatus.loaded => state.document!.title,
                           _ => widget.title ?? '',
                         };
                         return SliverAppBar(
@@ -201,17 +201,17 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     ),
                                   ),
                                 ),
-                                // if (hasMultiUserSupport && false)
-                                //   Tab(
-                                //     child: Text(
-                                //       "Permissions",
-                                //       style: TextStyle(
-                                //         color: Theme.of(context)
-                                //             .colorScheme
-                                //             .onPrimaryContainer,
-                                //       ),
-                                //     ),
-                                //   ),
+                                if (hasMultiUserSupport)
+                                  Tab(
+                                    child: Text(
+                                      "Permissions",
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer,
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -224,7 +224,6 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                   builder: (context, state) {
                     return BlocProvider(
                       create: (context) => SimilarDocumentsCubit(
-                        context.read(),
                         context.read(),
                         context.read(),
                         context.read(),
@@ -243,17 +242,15 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                switch (state) {
-                                  DocumentDetailsLoaded(
-                                    document: var document
-                                  ) =>
+                                switch (state.status) {
+                                  LoadingStatus.loaded =>
                                     DocumentOverviewWidget(
-                                      document: document,
+                                      document: state.document!,
                                       itemSpacing: _itemSpacing,
                                       queryString:
                                           widget.titleAndContentQueryString,
                                     ),
-                                  DocumentDetailsError() => _buildErrorState(),
+                                  LoadingStatus.error => _buildErrorState(),
                                   _ => _buildLoadingState(),
                                 },
                               ],
@@ -264,16 +261,13 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                switch (state) {
-                                  DocumentDetailsLoaded(
-                                    document: var document
-                                  ) =>
-                                    DocumentContentWidget(
-                                      document: document,
+                                switch (state.status) {
+                                  LoadingStatus.loaded => DocumentContentWidget(
+                                      document: state.document!,
                                       queryString:
                                           widget.titleAndContentQueryString,
                                     ),
-                                  DocumentDetailsError() => _buildErrorState(),
+                                  LoadingStatus.error => _buildErrorState(),
                                   _ => _buildLoadingState(),
                                 }
                               ],
@@ -284,17 +278,14 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                switch (state) {
-                                  DocumentDetailsLoaded(
-                                    document: var document,
-                                    metaData: var metaData,
-                                  ) =>
+                                switch (state.status) {
+                                  LoadingStatus.loaded =>
                                     DocumentMetaDataWidget(
-                                      document: document,
+                                      document: state.document!,
                                       itemSpacing: _itemSpacing,
-                                      metaData: metaData,
+                                      metaData: state.metaData!,
                                     ),
-                                  DocumentDetailsError() => _buildErrorState(),
+                                  LoadingStatus.error => _buildErrorState(),
                                   _ => _buildLoadingState(),
                                 },
                               ],
@@ -312,20 +303,25 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                 ),
                               ],
                             ),
-                            // if (hasMultiUserSupport && false)
-                            //   CustomScrollView(
-                            //     controller: _pagingScrollController,
-                            //     slivers: [
-                            //       SliverOverlapInjector(
-                            //         handle: NestedScrollView
-                            //             .sliverOverlapAbsorberHandleFor(
-                            //                 context),
-                            //       ),
-                            //       DocumentPermissionsWidget(
-                            //         document: state.document,
-                            //       ),
-                            //     ],
-                            //   ),
+                            if (hasMultiUserSupport)
+                              CustomScrollView(
+                                controller: _pagingScrollController,
+                                slivers: [
+                                  SliverOverlapInjector(
+                                    handle: NestedScrollView
+                                        .sliverOverlapAbsorberHandleFor(
+                                            context),
+                                  ),
+                                  switch (state.status) {
+                                    LoadingStatus.loaded =>
+                                      DocumentPermissionsWidget(
+                                        document: state.document!,
+                                      ),
+                                    LoadingStatus.error => _buildErrorState(),
+                                    _ => _buildLoadingState(),
+                                  }
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -383,8 +379,8 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
         return BottomAppBar(
           child: Builder(
             builder: (context) {
-              return switch (state) {
-                DocumentDetailsLoaded(document: var document) => Row(
+              return switch (state.status) {
+                LoadingStatus.loaded => Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ConnectivityAwareActionWrapper(
@@ -398,7 +394,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         child: IconButton(
                           tooltip: S.of(context)!.deleteDocumentTooltip,
                           icon: const Icon(Icons.delete),
-                          onPressed: () => _onDelete(document),
+                          onPressed: () => _onDelete(state.document!),
                         ).paddedSymmetrically(horizontal: 4),
                       ),
                       ConnectivityAwareActionWrapper(
@@ -408,7 +404,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           enabled: false,
                         ),
                         child: DocumentDownloadButton(
-                          document: document,
+                          document: state.document,
                         ),
                       ),
                       ConnectivityAwareActionWrapper(
@@ -422,7 +418,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           onPressed: _onOpenFileInSystemViewer,
                         ).paddedOnly(right: 4.0),
                       ),
-                      DocumentShareButton(document: document),
+                      DocumentShareButton(document: state.document),
                       IconButton(
                         tooltip: S.of(context)!.print,
                         onPressed: () => context

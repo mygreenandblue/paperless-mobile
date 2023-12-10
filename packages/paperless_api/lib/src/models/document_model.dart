@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
+import 'package:paperless_api/src/models/custom_field_model.dart';
 import 'package:paperless_api/src/models/search_hit.dart';
 
 part 'document_model.g.dart';
@@ -50,6 +51,7 @@ class DocumentModel extends Equatable {
 
   // Only present if full_perms=true
   final Permissions? permissions;
+  final Iterable<CustomFieldModel>? customFields;
 
   const DocumentModel({
     required this.id,
@@ -69,6 +71,7 @@ class DocumentModel extends Equatable {
     this.owner,
     this.userCanChange,
     this.permissions,
+    this.customFields,
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) =>
@@ -89,6 +92,8 @@ class DocumentModel extends Equatable {
     int? Function()? archiveSerialNumber,
     String? originalFileName,
     String? archivedFileName,
+    int? Function()? owner,
+    bool? userCanChange,
   }) {
     return DocumentModel(
       id: id,
@@ -107,6 +112,8 @@ class DocumentModel extends Equatable {
           ? archiveSerialNumber()
           : this.archiveSerialNumber,
       archivedFileName: archivedFileName ?? this.archivedFileName,
+      owner: owner != null ? owner() : this.owner,
+      userCanChange: userCanChange ?? this.userCanChange,
     );
   }
 
@@ -114,17 +121,18 @@ class DocumentModel extends Equatable {
   List<Object?> get props => [
         id,
         title,
-        content.hashCode,
-        tags,
-        documentType,
-        storagePath,
+        content,
         correspondent,
+        documentType,
+        tags,
+        storagePath,
         created,
         modified,
         added,
         archiveSerialNumber,
         originalFileName,
         archivedFileName,
-        storagePath,
+        owner,
+        userCanChange,
       ];
 }
