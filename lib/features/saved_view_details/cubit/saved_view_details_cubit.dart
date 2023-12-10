@@ -34,31 +34,12 @@ class SavedViewDetailsCubit extends Cubit<SavedViewDetailsState>
     required this.savedView,
     int initialCount = 25,
   }) : super(
-          SavedViewDetailsState(
-            correspondents: _labelRepository.state.correspondents,
-            documentTypes: _labelRepository.state.documentTypes,
-            tags: _labelRepository.state.tags,
-            storagePaths: _labelRepository.state.storagePaths,
-            viewType: _userState.savedViewsViewType,
-          ),
+          SavedViewDetailsState(viewType: _userState.savedViewsViewType),
         ) {
     notifier.addListener(
       this,
       onDeleted: remove,
       onUpdated: replace,
-    );
-    _labelRepository.addListener(
-      this,
-      onChanged: (labels) {
-        if (!isClosed) {
-          emit(state.copyWith(
-            correspondents: labels.correspondents,
-            documentTypes: labels.documentTypes,
-            tags: labels.tags,
-            storagePaths: labels.storagePaths,
-          ));
-        }
-      },
     );
     updateFilter(
       filter: savedView.toDocumentFilter().copyWith(

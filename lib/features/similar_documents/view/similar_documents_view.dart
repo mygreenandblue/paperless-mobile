@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/extensions/document_extensions.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
 import 'package:paperless_mobile/core/widgets/offline_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
 import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
@@ -47,6 +49,16 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
             if (!connectivity.isConnected && !state.hasLoaded) {
               return const SliverToBoxAdapter(
                 child: OfflineWidget(),
+              );
+            }
+            if (state.error != null) {
+              return SliverFillRemaining(
+                child: Center(
+                  child: Text(
+                    translateError(context, state.error!),
+                    textAlign: TextAlign.center,
+                  ),
+                ).padded(),
               );
             }
             if (state.hasLoaded &&

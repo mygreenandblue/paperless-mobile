@@ -28,16 +28,31 @@ class DioHttpErrorInterceptor extends Interceptor {
             type: DioExceptionType.badResponse,
           ),
         );
-      } else if (data is String &&
-          data.contains("No required SSL certificate was sent")) {
-        handler.reject(
-          DioException(
-            requestOptions: err.requestOptions,
-            type: DioExceptionType.badResponse,
-            error:
-                const PaperlessApiException(ErrorCode.missingClientCertificate),
-          ),
-        );
+      } else if (data is String) {
+        if (data.contains("No required SSL certificate was sent")) {
+          handler.reject(
+            DioException(
+              requestOptions: err.requestOptions,
+              type: DioExceptionType.badResponse,
+              error: const PaperlessApiException(
+                  ErrorCode.missingClientCertificate),
+            ),
+          );
+        } else {
+          handler.reject(
+            DioException(
+              requestOptions: err.requestOptions,
+              message: data,
+              error: PaperlessApiException(
+                ErrorCode.documentLoadFailed,
+                details: data,
+              ),
+              response: err.response,
+              stackTrace: err.stackTrace,
+              type: DioExceptionType.badResponse,
+            ),
+          );
+        }
       } else {
         handler.reject(err);
       }

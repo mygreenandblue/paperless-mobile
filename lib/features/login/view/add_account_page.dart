@@ -1,9 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
@@ -13,10 +17,13 @@ import 'package:paperless_mobile/features/login/model/client_certificate_form_mo
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
+import 'package:paperless_mobile/features/login/view/widgets/form_fields/login_settings_page.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
+import 'package:paperless_mobile/generated/assets.gen.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:paperless_mobile/routing/routes/app_logs_route.dart';
 
 class AddAccountPage extends StatefulWidget {
   final FutureOr<void> Function(
@@ -58,10 +65,172 @@ class _AddAccountPageState extends State<AddAccountPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool _isCheckingConnection = false;
   ReachabilityStatus _reachabilityStatus = ReachabilityStatus.unknown;
-
   bool _isFormSubmitted = false;
+
+  final _pageController = PageController();
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text(widget.titleText),
+      ),
+      body: FormBuilder(
+        key: _formKey,
+        child: AutofillGroup(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Assets.logos.paperlessLogoGreenPng.image(
+                width: 150,
+                height: 150,
+              ),
+              Text(
+                'Paperless Mobile',
+                style: Theme.of(context).textTheme.displaySmall,
+              ).padded(),
+              SizedBox(height: 24),
+              Expanded(
+                child: PageView(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: _pageController,
+                  allowImplicitScrolling: false,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ServerAddressFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              _reachabilityStatus = ReachabilityStatus.unknown;
+                            });
+                          },
+                        ).paddedSymmetrically(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
+                        ClientCertificateFormField(
+                          initialBytes: widget.initialClientCertificate?.bytes,
+                          initialPassphrase:
+                              widget.initialClientCertificate?.passphrase,
+                        ).padded(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            //TODO: Move additional headers and client cert to separate page
+                            // IconButton.filledTonal(
+                            //   onPressed: () {
+                            //     Navigator.of(context).push(
+                            //       MaterialPageRoute(builder: (context) {
+                            //         return LoginSettingsPage();
+                            //       }),
+                            //     );
+                            //   },
+                            //   icon: Icon(Icons.settings),
+                            // ),
+                            SizedBox(width: 8),
+                            FilledButton.icon(
+                              onPressed: () async {
+                                final status = await _updateReachability();
+                                if (status == ReachabilityStatus.reachable) {
+                                  Future.delayed(1.seconds, () {
+                                    _pageController.nextPage(
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  });
+                                }
+                              },
+                              icon: _isCheckingConnection
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary,
+                                      ),
+                                    )
+                                  : _reachabilityStatus ==
+                                          ReachabilityStatus.reachable
+                                      ? Icon(Icons.done)
+                                      : Icon(Icons.arrow_forward),
+                              label: Text(S.of(context)!.continueLabel),
+                            ),
+                          ],
+                        ).paddedSymmetrically(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        _buildStatusIndicator().padded(),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        UserCredentialsFormField(
+                          formKey: _formKey,
+                          initialUsername: widget.initialUsername,
+                          initialPassword: widget.initialPassword,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () {
+                                _pageController.previousPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              icon: Icon(Icons.arrow_back),
+                              label: Text(S.of(context)!.edit),
+                            ),
+                            FilledButton(
+                              onPressed: () {
+                                _onSubmit();
+                              },
+                              child: Text(S.of(context)!.signIn),
+                            ),
+                          ],
+                        ).padded(),
+                        Text(
+                          S.of(context)!.loginRequiredPermissionsHint,
+                          style: Theme.of(context).textTheme.bodySmall?.apply(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onBackground
+                                    .withOpacity(0.6),
+                              ),
+                        ).padded(16),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Text.rich(
+                TextSpan(
+                  style: Theme.of(context).textTheme.labelLarge,
+                  children: [
+                    TextSpan(text: S.of(context)!.version(packageInfo.version)),
+                    WidgetSpan(child: SizedBox(width: 24)),
+                    TextSpan(
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary),
+                      text: S.of(context)!.appLogs(''),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          AppLogsRoute().push(context);
+                        },
+                    ),
+                  ],
+                ),
+              ).padded(),
+            ],
+          ),
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titleText),
@@ -91,7 +260,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
             children: [
               ServerAddressFormField(
                 initialValue: widget.initialServerUrl,
-                onSubmit: (address) {
+                onChanged: (address) {
                   _updateReachability(address);
                 },
               ).padded(),
@@ -117,7 +286,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                             .withOpacity(0.6),
                       ),
                 ).padded(16),
-              ]
+              ],
             ],
           ),
         ),
@@ -125,7 +294,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
     );
   }
 
-  Future<void> _updateReachability([String? address]) async {
+  Future<ReachabilityStatus> _updateReachability([String? address]) async {
     setState(() {
       _isCheckingConnection = true;
     });
@@ -150,13 +319,10 @@ class _AddAccountPageState extends State<AddAccountPage> {
       _isCheckingConnection = false;
       _reachabilityStatus = status;
     });
+    return status;
   }
 
   Widget _buildStatusIndicator() {
-    if (_isCheckingConnection) {
-      return const ListTile();
-    }
-
     Widget _buildIconText(
       IconData icon,
       String text, [
@@ -176,14 +342,6 @@ class _AddAccountPageState extends State<AddAccountPage> {
 
     Color errorColor = Theme.of(context).colorScheme.error;
     switch (_reachabilityStatus) {
-      case ReachabilityStatus.unknown:
-        return Container();
-      case ReachabilityStatus.reachable:
-        return _buildIconText(
-          Icons.done,
-          S.of(context)!.connectionSuccessfulylEstablished,
-          Colors.green,
-        );
       case ReachabilityStatus.notReachable:
         return _buildIconText(
           Icons.close,
@@ -214,6 +372,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
           S.of(context)!.connectionTimedOut,
           errorColor,
         );
+      default:
+        return const ListTile();
     }
   }
 

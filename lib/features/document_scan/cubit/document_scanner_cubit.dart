@@ -3,20 +3,24 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/bloc/loading_status.dart';
+import 'package:paperless_mobile/core/bloc/transient_error.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:rxdart/rxdart.dart';
 
+part 'document_scanner_cubit.freezed.dart';
 part 'document_scanner_state.dart';
 
 class DocumentScannerCubit extends Cubit<DocumentScannerState> {
   final LocalNotificationService _notificationService;
 
   DocumentScannerCubit(this._notificationService)
-      : super(const InitialDocumentScannerState());
+      : super(const DocumentScannerState());
 
   Future<void> initialize() async {
     logger.fd(
@@ -24,7 +28,7 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
       className: runtimeType.toString(),
       methodName: "initialize",
     );
-    emit(const RestoringDocumentScannerState());
+    emit(const DocumentScannerState(status: LoadingStatus.loading));
     final tempDir = FileService.instance.temporaryScansDirectory;
     final allFiles = tempDir.list().whereType<File>();
     final scans =
@@ -36,13 +40,14 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
     );
     emit(
       scans.isEmpty
-          ? const InitialDocumentScannerState()
-          : LoadedDocumentScannerState(scans: scans),
+          ? const DocumentScannerState()
+          : DocumentScannerState(scans: scans, status: LoadingStatus.loaded),
     );
   }
 
   void addScan(File file) async {
-    emit(LoadedDocumentScannerState(
+    emit(DocumentScannerState(
+      status: LoadingStatus.loaded,
       scans: [...state.scans, file],
     ));
   }
@@ -60,21 +65,22 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
     final scans = state.scans..remove(file);
     emit(
       scans.isEmpty
-          ? const InitialDocumentScannerState()
-          : LoadedDocumentScannerState(scans: scans),
+          ? const DocumentScannerState()
+          : DocumentScannerState(
+              status: LoadingStatus.loaded,
+              scans: scans,
+            ),
     );
   }
 
   Future<void> reset() async {
     try {
-      Future.wait([
-        for (final file in state.scans) file.delete(),
-      ]);
+      Future.wait([for (final file in state.scans) file.delete()]);
       imageCache.clear();
     } catch (_) {
-      throw const PaperlessApiException(ErrorCode.scanRemoveFailed);
+      addError(TransientPaperlessApiError(code: ErrorCode.scanRemoveFailed));
     } finally {
-      emit(const InitialDocumentScannerState());
+      emit(const DocumentScannerState());
     }
   }
 
@@ -83,12 +89,16 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
     String fileName,
     String locale,
   ) async {
-    var file = await FileService.instance.saveToFile(bytes, fileName);
-    _notificationService.notifyFileSaved(
-      filename: fileName,
-      filePath: file.path,
-      finished: true,
-      locale: locale,
-    );
+    try {
+      var file = await FileService.instance.saveToFile(bytes, fileName);
+      _notificationService.notifyFileSaved(
+        filename: fileName,
+        filePath: file.path,
+        finished: true,
+        locale: locale,
+      );
+    } on Exception catch (e) {
+      addError(TransientMessageError(message: e.toString()));
+    }
   }
 }

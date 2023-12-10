@@ -14,7 +14,7 @@ import 'paperless_server_stats_api.dart';
 ///
 class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
   final Dio client;
-
+  static const _fallbackVersion = '0.0.0';
   PaperlessServerStatsApiImpl(this.client);
 
   @override
@@ -24,7 +24,10 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
         "/api/remote_version/",
         options: Options(validateStatus: (status) => status == 200),
       );
-      final version = response.data["version"] as String;
+      var version = response.data["version"] as String;
+      if (version == _fallbackVersion) {
+        version = response.headers.value('x-version') ?? _fallbackVersion;
+      }
       final updateAvailable = response.data["update_available"] as bool;
       return PaperlessServerInformationModel(
         apiVersion: int.parse(response.headers.value('x-api-version')!),

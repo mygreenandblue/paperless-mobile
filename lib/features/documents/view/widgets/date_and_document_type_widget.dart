@@ -18,6 +18,7 @@ class DateAndDocumentTypeLabelWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final subtitleStyle =
         Theme.of(context).textTheme.labelMedium?.apply(color: Colors.grey);
+    final labelRepository = context.watch<LabelRepository>();
     return RichText(
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -37,11 +38,8 @@ class DateAndDocumentTypeLabelWidget extends StatelessWidget {
                           ? () => onDocumentTypeSelected!(document.documentType)
                           : null,
                       child: Text(
-                        context
-                            .watch<LabelRepository>()
-                            .state
-                            .documentTypes[document.documentType]!
-                            .name,
+                        labelRepository
+                            .documentTypes[document.documentType]!.name,
                         style: subtitleStyle,
                       ),
                     ),

@@ -9,10 +9,11 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class ServerAddressFormField extends StatefulWidget {
   static const String fkServerAddress = "serverAddress";
   final String? initialValue;
-  final void Function(String? address) onSubmit;
+  final ValueChanged<String?>? onChanged;
+
   const ServerAddressFormField({
     Key? key,
-    required this.onSubmit,
+    this.onChanged,
     this.initialValue,
   }) : super(key: key);
 
@@ -20,8 +21,10 @@ class ServerAddressFormField extends StatefulWidget {
   State<ServerAddressFormField> createState() => _ServerAddressFormFieldState();
 }
 
-class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
+class _ServerAddressFormFieldState extends State<ServerAddressFormField>
+    with AutomaticKeepAliveClientMixin {
   bool _canClear = false;
+  final _textFieldKey = GlobalKey();
 
   @override
   void initState() {
@@ -38,10 +41,12 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FormBuilderField<String>(
       initialValue: widget.initialValue,
       name: ServerAddressFormField.fkServerAddress,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: widget.onChanged,
       builder: (field) {
         return RawAutocomplete<String>(
           focusNode: _focusNode,
@@ -51,6 +56,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
               onSelected: onSelected,
               options: options,
               maxOptionsHeight: 200.0,
+              maxWidth: MediaQuery.sizeOf(context).width - 40,
             );
           },
           key: const ValueKey('login-server-address'),
@@ -60,12 +66,12 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
                 .where((element) => element.contains(textEditingValue.text));
           },
           onSelected: (option) {
-            _formatInput();
-            field.didChange(_textEditingController.text);
+            _formatInput(field);
           },
           fieldViewBuilder:
               (context, textEditingController, focusNode, onFieldSubmitted) {
             return TextFormField(
+              key: _textFieldKey,
               controller: textEditingController,
               focusNode: focusNode,
               decoration: InputDecoration(
@@ -78,15 +84,22 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
                         onPressed: () {
                           textEditingController.clear();
                           field.didChange(textEditingController.text);
-                          widget.onSubmit(textEditingController.text);
                         },
                       )
                     : null,
               ),
               autofocus: false,
               onFieldSubmitted: (_) {
+                _formatInput(field);
                 onFieldSubmitted();
-                _formatInput();
+              },
+              onTapOutside: (event) {
+                if (!FocusScope.of(context).hasFocus) {
+                  return;
+                }
+                _formatInput(field);
+                onFieldSubmitted();
+                FocusScope.of(context).unfocus();
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
@@ -113,7 +126,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
     );
   }
 
-  void _formatInput() {
+  void _formatInput(FormFieldState<String> field) {
     String address = _textEditingController.text.trim();
     address = address.replaceAll(RegExp(r'^\/+|\/+$'), '');
     _textEditingController.text = address;
@@ -121,8 +134,11 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField> {
       baseOffset: address.length,
       extentOffset: address.length,
     );
-    widget.onSubmit(address);
+    field.didChange(_textEditingController.text);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 /// Taken from [Autocomplete]
@@ -131,12 +147,14 @@ class _AutocompleteOptions extends StatelessWidget {
     required this.onSelected,
     required this.options,
     required this.maxOptionsHeight,
+    required this.maxWidth,
   });
 
   final AutocompleteOnSelected<String> onSelected;
 
   final Iterable<String> options;
   final double maxOptionsHeight;
+  final double maxWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +163,10 @@ class _AutocompleteOptions extends StatelessWidget {
       child: Material(
         elevation: 4.0,
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: maxOptionsHeight),
+          constraints: BoxConstraints(
+            maxHeight: maxOptionsHeight,
+            maxWidth: maxWidth,
+          ),
           child: ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,

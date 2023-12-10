@@ -53,8 +53,8 @@ class HomeShellWidget extends StatelessWidget {
           builder: (context, box, _) {
             if (currentUserId == null) {
               //This only happens during logout...
-              //TODO: Find way so this does not occur anymore
-              return SizedBox.shrink();
+              //FIXME: Find way so this does not occur anymore
+              return const SizedBox.shrink();
             }
             final currentLocalUser = box.get(currentUserId)!;
             return MultiProvider(
@@ -107,36 +107,31 @@ class HomeShellWidget extends StatelessWidget {
                 ),
                 if (currentLocalUser.hasMultiUserSupport)
                   Provider(
-                    create: (context) => PaperlessUserApiV3Impl(
+                    create: (context) => paperlessProviderFactory.createUserApi(
                       context.read<SessionManager>().client,
+                      apiVersion: paperlessApiVersion,
                     ),
                   ),
               ],
               builder: (context, _) {
                 return MultiProvider(
                   providers: [
-                    Provider(
+                    ChangeNotifierProvider(
                       create: (context) {
-                        final repo = LabelRepository(context.read());
-                        if (currentLocalUser
-                            .paperlessUser.canViewCorrespondents) {
-                          repo.findAllCorrespondents();
-                        }
-                        if (currentLocalUser
-                            .paperlessUser.canViewDocumentTypes) {
-                          repo.findAllDocumentTypes();
-                        }
-                        if (currentLocalUser.paperlessUser.canViewTags) {
-                          repo.findAllTags();
-                        }
-                        if (currentLocalUser
-                            .paperlessUser.canViewStoragePaths) {
-                          repo.findAllStoragePaths();
-                        }
-                        return repo;
+                        return LabelRepository(context.read())
+                          ..initialize(
+                            loadCorrespondents: currentLocalUser
+                                .paperlessUser.canViewCorrespondents,
+                            loadDocumentTypes: currentLocalUser
+                                .paperlessUser.canViewDocumentTypes,
+                            loadStoragePaths: currentLocalUser
+                                .paperlessUser.canViewStoragePaths,
+                            loadTags:
+                                currentLocalUser.paperlessUser.canViewTags,
+                          );
                       },
                     ),
-                    Provider(
+                    ChangeNotifierProvider(
                       create: (context) {
                         final repo = SavedViewRepository(context.read());
                         if (currentLocalUser.paperlessUser.canViewSavedViews) {
@@ -145,6 +140,12 @@ class HomeShellWidget extends StatelessWidget {
                         return repo;
                       },
                     ),
+                    if (currentLocalUser.hasMultiUserSupport)
+                      Provider(
+                        create: (context) => UserRepository(
+                          context.read(),
+                        )..initialize(),
+                      ),
                   ],
                   builder: (context, _) {
                     return MultiProvider(
@@ -152,7 +153,6 @@ class HomeShellWidget extends StatelessWidget {
                         Provider(
                           lazy: false,
                           create: (context) => DocumentsCubit(
-                            context.read(),
                             context.read(),
                             context.read(),
                             Hive.box<LocalUserAppState>(
@@ -196,12 +196,6 @@ class HomeShellWidget extends StatelessWidget {
                             context.read(),
                           ),
                         ),
-                        if (currentLocalUser.hasMultiUserSupport)
-                          Provider(
-                            create: (context) => UserRepository(
-                              context.read(),
-                            )..initialize(),
-                          ),
                       ],
                       child: child,
                     );

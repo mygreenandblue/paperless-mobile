@@ -112,6 +112,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   /// Switches to another account if it exists.
   Future<void> switchAccount(String localUserId) async {
     emit(const SwitchingAccountsState());
+    await FileService.instance.initialize();
+
     final redactedId = redactUserId(localUserId);
     logger.fd(
       'Trying to switch to user $redactedId...',

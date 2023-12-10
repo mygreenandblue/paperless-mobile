@@ -12,13 +12,13 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class UserCredentialsFormField extends StatefulWidget {
   static const fkCredentials = 'credentials';
 
-  final void Function() onFieldsSubmitted;
+  final VoidCallback? onFieldsSubmitted;
   final String? initialUsername;
   final String? initialPassword;
   final GlobalKey<FormBuilderState> formKey;
   const UserCredentialsFormField({
     Key? key,
-    required this.onFieldsSubmitted,
+    this.onFieldsSubmitted,
     this.initialUsername,
     this.initialPassword,
     required this.formKey,
@@ -29,12 +29,14 @@ class UserCredentialsFormField extends StatefulWidget {
       _UserCredentialsFormFieldState();
 }
 
-class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
+class _UserCredentialsFormFieldState extends State<UserCredentialsFormField>
+    with AutomaticKeepAliveClientMixin {
   final _usernameFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FormBuilderField<LoginFormCredentials?>(
       initialValue: LoginFormCredentials(
         password: widget.initialPassword,
@@ -87,7 +89,7 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
                   LoginFormCredentials(password: password),
             ),
             onFieldSubmitted: (_) {
-              widget.onFieldsSubmitted();
+              widget.onFieldsSubmitted?.call();
             },
             validator: (value) {
               if (value?.trim().isEmpty ?? true) {
@@ -100,6 +102,9 @@ class _UserCredentialsFormFieldState extends State<UserCredentialsFormField> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 /**

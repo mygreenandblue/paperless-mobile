@@ -70,7 +70,7 @@ class _DocumentUploadPreparationPageState
 
   @override
   Widget build(BuildContext context) {
-    final labels = context.watch<LabelRepository>().state;
+    final labelRepository = context.watch<LabelRepository>();
     return BlocBuilder<DocumentUploadCubit, DocumentUploadState>(
       builder: (context, state) {
         return Scaffold(
@@ -242,7 +242,7 @@ class _DocumentUploadPreparationPageState
                                 addLabelText: S.of(context)!.addCorrespondent,
                                 labelText: S.of(context)!.correspondent + " *",
                                 name: DocumentModel.correspondentKey,
-                                options: labels.correspondents,
+                                options: labelRepository.correspondents,
                                 prefixIcon: const Icon(Icons.person_outline),
                                 allowSelectUnassigned: true,
                                 canCreateNewLabel: context
@@ -265,7 +265,7 @@ class _DocumentUploadPreparationPageState
                                 addLabelText: S.of(context)!.addDocumentType,
                                 labelText: S.of(context)!.documentType + " *",
                                 name: DocumentModel.documentTypeKey,
-                                options: labels.documentTypes,
+                                options: labelRepository.documentTypes,
                                 prefixIcon:
                                     const Icon(Icons.description_outlined),
                                 allowSelectUnassigned: true,
@@ -283,7 +283,7 @@ class _DocumentUploadPreparationPageState
                                 allowCreation: true,
                                 allowExclude: false,
                                 allowOnlySelection: true,
-                                options: labels.tags,
+                                options: labelRepository.tags,
                               ),
                             Text(
                               "* " + S.of(context)!.uploadInferValuesHint,
@@ -353,8 +353,6 @@ class _DocumentUploadPreparationPageState
           S.of(context)!.documentSuccessfullyUploadedProcessing,
         );
         context.pop(DocumentUploadResult(true, taskId));
-      } on PaperlessApiException catch (error, stackTrace) {
-        showErrorMessage(context, error, stackTrace);
       } on PaperlessFormValidationException catch (exception) {
         setState(() => _errors = exception.validationMessages);
       } catch (error, stackTrace) {

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:paperless_api/src/models/document_model.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/label_repository_state.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
@@ -32,7 +29,7 @@ class DocumentListItem extends DocumentItem {
 
   @override
   Widget build(BuildContext context) {
-    final labels = context.watch<LabelRepository>().state;
+    final labelRepository = context.watch<LabelRepository>();
 
     return ListTile(
       tileColor: backgroundColor,
@@ -51,10 +48,8 @@ class DocumentListItem extends DocumentItem {
                 absorbing: isSelectionActive,
                 child: CorrespondentWidget(
                   isClickable: isLabelClickable,
-                  correspondent: context
-                      .watch<LabelRepository>()
-                      .state
-                      .correspondents[document.correspondent],
+                  correspondent:
+                      labelRepository.correspondents[document.correspondent],
                   onSelected: onCorrespondentSelected,
                 ),
               ),
@@ -70,8 +65,8 @@ class DocumentListItem extends DocumentItem {
             child: TagsWidget(
               isClickable: isLabelClickable,
               tags: document.tags
-                  .where((e) => labels.tags.containsKey(e))
-                  .map((e) => labels.tags[e]!)
+                  .where((e) => labelRepository.tags.containsKey(e))
+                  .map((e) => labelRepository.tags[e]!)
                   .toList(),
               onTagSelected: (id) => onTagSelected?.call(id),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
@@ -47,10 +48,6 @@ class DocumentFilterForm extends StatefulWidget {
   final DocumentFilter initialFilter;
   final ScrollController? scrollController;
   final EdgeInsets padding;
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
 
   const DocumentFilterForm({
     super.key,
@@ -59,10 +56,6 @@ class DocumentFilterForm extends StatefulWidget {
     required this.initialFilter,
     this.scrollController,
     this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
   });
 
   @override
@@ -80,13 +73,14 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   @override
   Widget build(BuildContext context) {
+    final labelRepository = context.watch<LabelRepository>();
     return FormBuilder(
       key: widget.formKey,
       child: CustomScrollView(
         controller: widget.scrollController,
         slivers: [
           if (widget.header != null) widget.header!,
-          ..._buildFormFieldList(),
+          ..._buildFormFieldList(labelRepository),
           const SliverToBoxAdapter(
             child: SizedBox(
               height: 32,
@@ -97,7 +91,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  List<Widget> _buildFormFieldList() {
+  List<Widget> _buildFormFieldList(LabelRepository labelRepository) {
     return [
       _buildQueryFormField(),
       Align(
@@ -123,10 +117,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
           _checkQueryConstraints();
         },
       ),
-      _buildCorrespondentFormField(),
-      _buildDocumentTypeFormField(),
-      _buildStoragePathFormField(),
-      _buildTagsFormField(),
+      _buildCorrespondentFormField(labelRepository.correspondents),
+      _buildDocumentTypeFormField(labelRepository.documentTypes),
+      _buildStoragePathFormField(labelRepository.storagePaths),
+      _buildTagsFormField(labelRepository.tags),
     ]
         .map((w) => SliverPadding(
               padding: widget.padding,
@@ -151,10 +145,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     }
   }
 
-  Widget _buildDocumentTypeFormField() {
+  Widget _buildDocumentTypeFormField(Map<int, DocumentType> documentTypes) {
     return LabelFormField<DocumentType>(
       name: DocumentFilterForm.fkDocumentType,
-      options: widget.documentTypes,
+      options: documentTypes,
       labelText: S.of(context)!.documentType,
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
@@ -166,10 +160,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  Widget _buildCorrespondentFormField() {
+  Widget _buildCorrespondentFormField(Map<int, Correspondent> correspondents) {
     return LabelFormField<Correspondent>(
       name: DocumentFilterForm.fkCorrespondent,
-      options: widget.correspondents,
+      options: correspondents,
       labelText: S.of(context)!.correspondent,
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
@@ -181,10 +175,10 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  Widget _buildStoragePathFormField() {
+  Widget _buildStoragePathFormField(Map<int, StoragePath> storagePaths) {
     return LabelFormField<StoragePath>(
       name: DocumentFilterForm.fkStoragePath,
-      options: widget.storagePaths,
+      options: storagePaths,
       labelText: S.of(context)!.storagePath,
       initialValue: widget.initialFilter.storagePath,
       prefixIcon: const Icon(Icons.folder_outlined),
@@ -202,11 +196,11 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  Widget _buildTagsFormField() {
+  Widget _buildTagsFormField(Map<int, Tag> tags) {
     return TagsFormField(
       name: DocumentModel.tagsKey,
       initialValue: widget.initialFilter.tags,
-      options: widget.tags,
+      options: tags,
       allowExclude: false,
       allowOnlySelection: false,
       allowCreation: false,

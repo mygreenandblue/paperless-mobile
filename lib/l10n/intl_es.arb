@@ -873,7 +873,7 @@
   "@donate": {
     "description": "Label of the in-app donate button"
   },
-  "donationDialogContent": "¡Gracias por querer apoyar esta aplicación!\nDebido a las políticas de pago, tanto de Google como de Apple, no se puede mostrar ningún enlace que lo dirija a las donaciones. En este contexto, ni siquiera es posible enlazar la página del repositorio del proyecto. Por lo tanto, puedes visitar la sección \"Donations\" en el archivo README de este proyecto. Tu apoyo es valorado gratamente y ayuda a mantener con vida el desarrollo de esta aplicación.\n¡Muchas gracias!",
+  "donationDialogContent": "¡Gracias por querer apoyar esta aplicación!\nDebido a las políticas de pago, tanto de Google como de Apple, no se puede mostrar ningún enlace que lo dirija a las donaciones. En este contexto, ni siquiera es posible enlazar la página del repositorio del proyecto. Por lo tanto, puedes visitar la sección \"Donaciones\" en el archivo README de este proyecto. Tu apoyo es valorado gratamente y ayuda a mantener con vida el desarrollo de esta aplicación.\n¡Muchas gracias!",
   "@donationDialogContent": {
     "description": "Text displayed in the donation dialog"
   },
@@ -881,11 +881,11 @@
   "@noDocumentsFound": {
     "description": "Message shown when no documents were found."
   },
-  "couldNotDeleteCorrespondent": "No se pudo remover el interlocutor, intente nuevamente.",
+  "couldNotDeleteCorrespondent": "No se pudo borrar el interlocutor, intente nuevamente.",
   "@couldNotDeleteCorrespondent": {
     "description": "Message shown in snackbar when a correspondent could not be deleted."
   },
-  "couldNotDeleteDocumentType": "No se pudo remover el tipo de documento, intente nuevamente.",
+  "couldNotDeleteDocumentType": "No se pudo borrar el tipo de documento, intente nuevamente.",
   "@couldNotDeleteDocumentType": {
     "description": "Message shown when a document type could not be deleted"
   },
@@ -893,7 +893,7 @@
   "@couldNotDeleteTag": {
     "description": "Message shown when a tag could not be deleted"
   },
-  "couldNotDeleteStoragePath": "No se pudo remover la ruta de almacenamiento, intente nuevamente.",
+  "couldNotDeleteStoragePath": "No se pudo borrar la ruta de almacenamiento, intente nuevamente.",
   "@couldNotDeleteStoragePath": {
     "description": "Message shown when a storage path could not be deleted"
   },
@@ -934,7 +934,7 @@
     "description": "Message shown when a saved view could not be updated"
   },
   "couldNotUpdateStoragePath": "No se pudo actualizar la ruta de almacenamiento, intente nuevamente.",
-  "savedViewSuccessfullyUpdated": "La vista guardada se actualizó correctamente.",
+  "savedViewSuccessfullyUpdated": "Vista guardada actualizada correctamente.",
   "@savedViewSuccessfullyUpdated": {
     "description": "Message shown when a saved view was successfully updated."
   },
@@ -984,7 +984,7 @@
   "@authenticatingDots": {
     "description": "Message shown when the app is authenticating the user"
   },
-  "persistingUserInformation": "Preservando información del usuario...",
+  "persistingUserInformation": "Guardando información del usuario...",
   "fetchingUserInformation": "Obteniendo información del usuario...",
   "@fetchingUserInformation": {
     "description": "Message shown when the app loads user data from the server"
@@ -1001,7 +1001,7 @@
   "@discardChangesWarning": {
     "description": "Warning message shown when the user tries to close a route without saving the changes."
   },
-  "changelog": "Changelog",
+  "changelog": "Registro de cambios",
   "noLogsFoundOn": "No se encontraron registros en {date}.",
   "logfileBottomReached": "Has alcanzado el final del archivo de registro.",
   "appLogs": "Registros de la aplicación {date}",
@@ -1010,14 +1010,19 @@
   "couldNotLoadLogfileFrom": "No se pudo cargar el archivo de registro desde {date}.",
   "loadingLogsFrom": "Cargando registros desde {date}...",
   "clearLogs": "Limpiar registros desde {date}",
-  "showPdf": "Show PDF",
+  "showPdf": "Mostrar PDF",
   "@showPdf": {
     "description": "Tooltip shown on the \"show pdf\" button on the document edit page"
   },
-  "hidePdf": "Hide PDF",
+  "hidePdf": "Ocultar PDF",
   "@hidePdf": {
     "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
   },
-  "misc": "Miscellaneous",
-  "loggingOut": "Logging out..."
+  "misc": "Otros",
+  "loggingOut": "Cerrando sesión...",
+  "testingConnection": "Testing connection...",
+  "@testingConnection": {
+    "description": "Text shown while the app tries to establish a connection to the specified host."
+  },
+  "version": "Version {versionCode}"
 }

@@ -7,7 +7,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-
+import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:path/path.dart' as p;
 import 'obscured_input_text_form_field.dart';
 
 class ClientCertificateFormField extends StatefulWidget {
@@ -16,10 +17,10 @@ class ClientCertificateFormField extends StatefulWidget {
   final String? initialPassphrase;
   final Uint8List? initialBytes;
 
-  final void Function(ClientCertificateFormModel? cert) onChanged;
+  final ValueChanged<ClientCertificateFormModel?>? onChanged;
   const ClientCertificateFormField({
     super.key,
-    required this.onChanged,
+    this.onChanged,
     this.initialPassphrase,
     this.initialBytes,
   });
@@ -29,13 +30,15 @@ class ClientCertificateFormField extends StatefulWidget {
       _ClientCertificateFormFieldState();
 }
 
-class _ClientCertificateFormFieldState
-    extends State<ClientCertificateFormField> {
+class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
+    with AutomaticKeepAliveClientMixin {
   File? _selectedFile;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FormBuilderField<ClientCertificateFormModel?>(
       key: const ValueKey('login-client-cert'),
+      name: ClientCertificateFormField.fkClientCertificate,
       onChanged: widget.onChanged,
       initialValue: widget.initialBytes != null
           ? ClientCertificateFormModel(
@@ -43,16 +46,6 @@ class _ClientCertificateFormFieldState
               passphrase: widget.initialPassphrase,
             )
           : null,
-      validator: (value) {
-        if (value == null) {
-          return null;
-        }
-        assert(_selectedFile != null);
-        if (_selectedFile?.path.split(".").last != 'pfx') {
-          return S.of(context)!.invalidCertificateFormat;
-        }
-        return null;
-      },
       builder: (field) {
         final theme =
             Theme.of(context).copyWith(dividerColor: Colors.transparent); //new
@@ -127,7 +120,6 @@ class _ClientCertificateFormFieldState
           ),
         );
       },
-      name: ClientCertificateFormField.fkClientCertificate,
     );
   }
 
@@ -138,6 +130,11 @@ class _ClientCertificateFormFieldState
       allowMultiple: false,
     );
     if (result == null || result.files.single.path == null) {
+      return;
+    }
+    final path = result.files.single.path!;
+    if (p.extension(path) != '.pfx') {
+      showSnackBar(context, S.of(context)!.invalidCertificateFormat);
       return;
     }
     File file = File(result.files.single.path!);
@@ -171,4 +168,7 @@ class _ClientCertificateFormFieldState
       );
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

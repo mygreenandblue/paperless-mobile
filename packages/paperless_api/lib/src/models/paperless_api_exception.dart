@@ -68,5 +68,8 @@ enum ErrorCode {
   loadTasksError,
   userNotFound,
   userAlreadyExists,
-  updateSavedViewError;
+  updateSavedViewError,
+  customFieldCreateFailed,
+  customFieldLoadFailed,
+  customFieldDeleteFailed;
 }

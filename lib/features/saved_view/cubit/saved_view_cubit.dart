@@ -13,17 +13,14 @@ class SavedViewCubit extends Cubit<SavedViewState> {
 
   SavedViewCubit(this._savedViewRepository)
       : super(const SavedViewState.initial()) {
-    _savedViewRepository.addListener(
-      this,
-      onChanged: (views) {
-        views.when(
-          initial: (savedViews) => emit(const SavedViewState.initial()),
-          loading: (savedViews) => emit(const SavedViewState.loading()),
-          loaded: (savedViews) =>
-              emit(SavedViewState.loaded(savedViews: savedViews)),
-          error: (savedViews) => emit(const SavedViewState.error()),
-        );
-      },
+    _savedViewRepository.addListener(_onSavedViewsChanged);
+  }
+
+  void _onSavedViewsChanged() {
+    emit(
+      SavedViewState.loaded(
+        savedViews: _savedViewRepository.savedViews,
+      ),
     );
   }
 
@@ -53,7 +50,7 @@ class SavedViewCubit extends Cubit<SavedViewState> {
 
   @override
   Future<void> close() {
-    _savedViewRepository.removeListener(this);
+    _savedViewRepository.removeListener(_onSavedViewsChanged);
     return super.close();
   }
 }

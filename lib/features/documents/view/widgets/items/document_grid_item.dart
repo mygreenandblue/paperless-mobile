@@ -30,6 +30,7 @@ class DocumentGridItem extends DocumentItem {
   @override
   Widget build(BuildContext context) {
     var currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final labelRepository = context.watch<LabelRepository>();
     return Stack(
       children: [
         Card(
@@ -75,10 +76,7 @@ class DocumentGridItem extends DocumentItem {
                                   if (currentUser.canViewTags)
                                     TagsWidget.sliver(
                                       tags: document.tags
-                                          .map((e) => context
-                                              .watch<LabelRepository>()
-                                              .state
-                                              .tags[e]!)
+                                          .map((e) => labelRepository.tags[e]!)
                                           .toList(),
                                       onTagSelected: onTagSelected,
                                     ),
@@ -102,17 +100,13 @@ class DocumentGridItem extends DocumentItem {
                       children: [
                         if (currentUser.canViewCorrespondents)
                           CorrespondentWidget(
-                            correspondent: context
-                                .watch<LabelRepository>()
-                                .state
+                            correspondent: labelRepository
                                 .correspondents[document.correspondent],
                             onSelected: onCorrespondentSelected,
                           ),
                         if (currentUser.canViewDocumentTypes)
                           DocumentTypeWidget(
-                            documentType: context
-                                .watch<LabelRepository>()
-                                .state
+                            documentType: labelRepository
                                 .documentTypes[document.documentType],
                             onSelected: onDocumentTypeSelected,
                           ),

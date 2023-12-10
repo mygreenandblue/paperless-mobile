@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -8,10 +10,6 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class SortFieldSelectionBottomSheet extends StatefulWidget {
   final SortOrder initialSortOrder;
   final SortField? initialSortField;
-  final Map<int, Correspondent> correspondents;
-  final Map<int, DocumentType> documentTypes;
-  final Map<int, Tag> tags;
-  final Map<int, StoragePath> storagePaths;
 
   final Future Function(SortField? field, SortOrder order) onSubmit;
 
@@ -20,10 +18,6 @@ class SortFieldSelectionBottomSheet extends StatefulWidget {
     required this.initialSortOrder,
     required this.initialSortField,
     required this.onSubmit,
-    required this.correspondents,
-    required this.documentTypes,
-    required this.tags,
-    required this.storagePaths,
   });
 
   @override
@@ -45,6 +39,7 @@ class _SortFieldSelectionBottomSheetState
 
   @override
   Widget build(BuildContext context) {
+    final labelRepository = context.watch<LabelRepository>();
     return ClipRRect(
       child: SingleChildScrollView(
         child: Column(
@@ -75,7 +70,7 @@ class _SortFieldSelectionBottomSheetState
                 _buildSortOption(SortField.archiveSerialNumber),
                 _buildSortOption(
                   SortField.correspondentName,
-                  enabled: widget.correspondents.values.fold<bool>(
+                  enabled: labelRepository.correspondents.values.fold<bool>(
                       false,
                       (previousValue, element) =>
                           previousValue || (element.documentCount ?? 0) > 0),
@@ -83,7 +78,7 @@ class _SortFieldSelectionBottomSheetState
                 _buildSortOption(SortField.title),
                 _buildSortOption(
                   SortField.documentType,
-                  enabled: widget.documentTypes.values.fold<bool>(
+                  enabled: labelRepository.documentTypes.values.fold<bool>(
                       false,
                       (previousValue, element) =>
                           previousValue || (element.documentCount ?? 0) > 0),

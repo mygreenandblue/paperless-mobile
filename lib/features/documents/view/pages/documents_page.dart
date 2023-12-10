@@ -489,10 +489,6 @@ class _DocumentsPageState extends State<DocumentsPage> {
                 initialFilter: context.read<DocumentsCubit>().state.filter,
                 scrollController: controller,
                 draggableSheetController: draggableSheetController,
-                correspondents: state.correspondents,
-                documentTypes: state.documentTypes,
-                storagePaths: state.storagePaths,
-                tags: state.tags,
               );
             },
           ),

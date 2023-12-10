@@ -14,9 +14,15 @@ class PaperlessServerStatisticsModel {
       : documentsTotal = json['documents_total'] ?? 0,
         documentsInInbox = json['documents_inbox'] ?? 0,
         totalChars = json["character_count"],
-        fileTypeCounts = (json['document_file_type_counts'] as List? ?? [])
-            .map((e) => DocumentFileTypeCount.fromJson(e))
-            .toList();
+        fileTypeCounts =
+            _parseFileTypeCounts(json['document_file_type_counts']);
+
+  static List<DocumentFileTypeCount> _parseFileTypeCounts(dynamic value) {
+    if (value is List) {
+      return value.map((e) => DocumentFileTypeCount.fromJson(e)).toList();
+    }
+    return [];
+  }
 }
 
 class DocumentFileTypeCount {

@@ -1019,5 +1019,10 @@
     "description": "Tooltip shown on the \"show pdf\" icon button on the document edit page"
   },
   "misc": "Miscellaneous",
-  "loggingOut": "Logging out..."
+  "loggingOut": "Logging out...",
+  "testingConnection": "Testing connection...",
+  "@testingConnection": {
+    "description": "Text shown while the app tries to establish a connection to the specified host."
+  },
+  "version": "Version {versionCode}"
 }

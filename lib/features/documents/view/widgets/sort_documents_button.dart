@@ -69,10 +69,6 @@ class SortDocumentsButton extends StatelessWidget {
                                     ),
                                   );
                             },
-                            correspondents: state.correspondents,
-                            documentTypes: state.documentTypes,
-                            storagePaths: state.storagePaths,
-                            tags: state.tags,
                           ),
                         ),
                       ),
