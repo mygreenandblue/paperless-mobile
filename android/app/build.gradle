@@ -103,7 +103,9 @@ android.applicationVariants.all { variant ->
         def abiName = output.getFilter(OutputFile.ABI)
         def abiVersionCode = project.ext.abiCodes.get(abiName)
         if (abiVersionCode != null) {
-            output.versionCodeOverride = variant.versionCode * 10 + abiVersionCode
+            output.versionCodeOverride = abiVersionCode * 1000 + variant.versionCode
+            println(abiName + ": " + output.versionCodeOverride)
+            // output.versionCodeOverride = variant.versionCode * 10 + abiVersionCode
         }
     }
 }
