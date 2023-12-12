@@ -15,6 +15,7 @@ import 'package:paperless_mobile/features/document_details/cubit/document_detail
 import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_notes_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
@@ -67,7 +68,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     debugPrint(disableAnimations.toString());
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
-    final tabLength = 4 + (hasMultiUserSupport ? 1 : 0);
+    final tabLength = 5 + (hasMultiUserSupport ? 1 : 0);
     return AnnotatedRegion(
       value: buildOverlayStyle(
         Theme.of(context),
@@ -201,6 +202,16 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     ),
                                   ),
                                 ),
+                                Tab(
+                                  child: Text(
+                                    "Notes",
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                    ),
+                                  ),
+                                ),
                                 if (hasMultiUserSupport)
                                   Tab(
                                     child: Text(
@@ -301,6 +312,35 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   pagingScrollController:
                                       _pagingScrollController,
                                 ),
+                              ],
+                            ),
+                            CustomScrollView(
+                              slivers: [
+                                SliverOverlapInjector(
+                                  handle: NestedScrollView
+                                      .sliverOverlapAbsorberHandleFor(context),
+                                ),
+                                switch (state.status) {
+                                  LoadingStatus.loaded => DocumentNotesWidget(
+                                      document: state.document!,
+                                    ),
+                                  LoadingStatus.error => _buildErrorState(),
+                                  _ => _buildLoadingState(),
+                                },
+                                if (state.status == LoadingStatus.loaded)
+                                  SliverToBoxAdapter(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {
+                                          AddNoteRoute($extra: state.document!)
+                                              .push(context);
+                                        },
+                                        icon: Icon(Icons.note_add_outlined),
+                                        label: Text('Add note'),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                             if (hasMultiUserSupport)

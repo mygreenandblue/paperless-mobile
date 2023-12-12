@@ -71,6 +71,7 @@ part 'authenticated_route.g.dart';
                 TypedGoRoute<DocumentDetailsRoute>(
                   path: "details/:id",
                   name: R.documentDetails,
+                  routes: [],
                 ),
                 TypedGoRoute<EditDocumentRoute>(
                   path: "edit",
@@ -83,6 +84,10 @@ part 'authenticated_route.g.dart';
                 TypedGoRoute<DocumentPreviewRoute>(
                   path: 'preview',
                   name: R.documentPreview,
+                ),
+                TypedGoRoute<AddNoteRoute>(
+                  path: 'add-note',
+                  name: R.addNote,
                 ),
               ],
             )

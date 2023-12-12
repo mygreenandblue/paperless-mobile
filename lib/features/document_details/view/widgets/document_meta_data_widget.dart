@@ -25,54 +25,51 @@ class DocumentMetaDataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = context.watch<LocalUserAccount>().paperlessUser;
 
-    return SliverList(
-      delegate: SliverChildListDelegate(
-        [
-          if (currentUser.canEditDocuments)
-            ArchiveSerialNumberField(
-              document: document,
-            ).paddedOnly(bottom: itemSpacing),
-          DetailsItem.text(
-            DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                .format(document.modified),
-            context: context,
-            label: S.of(context)!.modifiedAt,
+    return SliverList.list(
+      children: [
+        if (currentUser.canEditDocuments)
+          ArchiveSerialNumberField(
+            document: document,
           ).paddedOnly(bottom: itemSpacing),
+        DetailsItem.text(
+          DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+              .format(document.modified),
+          context: context,
+          label: S.of(context)!.modifiedAt,
+        ).paddedOnly(bottom: itemSpacing),
+        DetailsItem.text(
+          DateFormat.yMMMMd(Localizations.localeOf(context).toString())
+              .format(document.added),
+          context: context,
+          label: S.of(context)!.addedAt,
+        ).paddedOnly(bottom: itemSpacing),
+        DetailsItem.text(
+          metaData.mediaFilename,
+          context: context,
+          label: S.of(context)!.mediaFilename,
+        ).paddedOnly(bottom: itemSpacing),
+        if (document.originalFileName != null)
           DetailsItem.text(
-            DateFormat.yMMMMd(Localizations.localeOf(context).toString())
-                .format(document.added),
-            context: context,
-            label: S.of(context)!.addedAt,
-          ).paddedOnly(bottom: itemSpacing),
-          DetailsItem.text(
-            metaData.mediaFilename,
-            context: context,
-            label: S.of(context)!.mediaFilename,
-          ).paddedOnly(bottom: itemSpacing),
-          if (document.originalFileName != null)
-            DetailsItem.text(
-              document.originalFileName!,
-              context: context,
-              label: S.of(context)!.originalMD5Checksum,
-            ).paddedOnly(bottom: itemSpacing),
-          DetailsItem.text(
-            metaData.originalChecksum,
+            document.originalFileName!,
             context: context,
             label: S.of(context)!.originalMD5Checksum,
           ).paddedOnly(bottom: itemSpacing),
-          DetailsItem.text(
-            formatBytes(metaData.originalSize, 2),
-            context: context,
-            label: S.of(context)!.originalFileSize,
-          ).paddedOnly(bottom: itemSpacing),
-          DetailsItem.text(
-            metaData.originalMimeType,
-            context: context,
-            label: S.of(context)!.originalMIMEType,
-          ).paddedOnly(bottom: itemSpacing),
-          
-        ],
-      ),
+        DetailsItem.text(
+          metaData.originalChecksum,
+          context: context,
+          label: S.of(context)!.originalMD5Checksum,
+        ).paddedOnly(bottom: itemSpacing),
+        DetailsItem.text(
+          formatBytes(metaData.originalSize, 2),
+          context: context,
+          label: S.of(context)!.originalFileSize,
+        ).paddedOnly(bottom: itemSpacing),
+        DetailsItem.text(
+          metaData.originalMimeType,
+          context: context,
+          label: S.of(context)!.originalMIMEType,
+        ).paddedOnly(bottom: itemSpacing),
+      ],
     );
   }
 }
