@@ -117,8 +117,12 @@ class TagsFormField extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemCount: displayedSuggestions.length,
                       itemBuilder: (context, index) {
+                        print(options);
                         final suggestion =
-                            options[displayedSuggestions.elementAt(index)]!;
+                            options[displayedSuggestions.elementAt(index)];
+                        if (suggestion == null) {
+                          return SizedBox.shrink();
+                        }
                         return ColoredChipWrapper(
                           child: ActionChip(
                             label: Text(suggestion.name),
