@@ -42,8 +42,7 @@
 </div>
 
 ## Important Notes
-* ⚠️ This project is under **very active** development.
-* ⚠️ Breaking changes **are still expected** between updates! Please perform a clean install after updating the app before filing an issue or leaving a 1-Star review in the App-Stores!**
+* ⚠️ Breaking changes **are still expected** between updates! Please perform a **clean instal** after updating the app before filing an issue or leaving a 1-star review in the App-Store!
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
