@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 
 class LabelRepository extends ChangeNotifier {
   final PaperlessLabelsApi _api;
@@ -57,8 +58,29 @@ class LabelRepository extends ChangeNotifier {
   }
 
   Future<Iterable<Tag>> findAllTags([Iterable<int>? ids]) async {
+    logger.fd(
+      "Loading ${ids?.isEmpty ?? true ? "all" : "a subset of"} tags"
+      "${ids?.isEmpty ?? true ? "" : " (${ids!.join(",")})"}...",
+      className: runtimeType.toString(),
+      methodName: "findAllTags",
+    );
     final data = await _api.getTags(ids);
-    tags = {for (var tag in data) tag.id!: tag};
+    if (ids?.isNotEmpty ?? false) {
+      logger.fd(
+        "Successfully updated subset of tags: ${ids!.join(",")}",
+        className: runtimeType.toString(),
+        methodName: "findAllTags",
+      );
+      // Only update the tags that were requested, keep existing ones.
+      tags = {...tags, for (var tag in data) tag.id!: tag};
+    } else {
+      logger.fd(
+        "Successfully updated all tags.",
+        className: runtimeType.toString(),
+        methodName: "findAllTags",
+      );
+      tags = {for (var tag in data) tag.id!: tag};
+    }
     notifyListeners();
     return data;
   }

@@ -183,8 +183,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     );
   }
 
-  Padding _buildEditForm(BuildContext context, DocumentEditState state,
-      FieldSuggestions? filteredSuggestions, UserModel currentUser) {
+  Padding _buildEditForm(
+    BuildContext context,
+    DocumentEditState state,
+    FieldSuggestions? filteredSuggestions,
+    UserModel currentUser,
+  ) {
     final labelRepository = context.watch<LabelRepository>();
 
     return Padding(

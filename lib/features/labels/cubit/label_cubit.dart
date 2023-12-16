@@ -10,16 +10,16 @@ class LabelCubit extends Cubit<LabelState> {
   final LabelRepository labelRepository;
 
   LabelCubit(this.labelRepository) : super(const LabelState()) {
-    labelRepository.addListener(
-      () {
-        emit(state.copyWith(
-          correspondents: labelRepository.correspondents,
-          documentTypes: labelRepository.documentTypes,
-          storagePaths: labelRepository.storagePaths,
-          tags: labelRepository.tags,
-        ));
-      },
-    );
+    labelRepository.addListener(_updateStateListener);
+  }
+
+  void _updateStateListener() {
+    emit(state.copyWith(
+      correspondents: labelRepository.correspondents,
+      documentTypes: labelRepository.documentTypes,
+      storagePaths: labelRepository.storagePaths,
+      tags: labelRepository.tags,
+    ));
   }
 
   Future<void> reload({
@@ -130,6 +130,7 @@ class LabelCubit extends Cubit<LabelState> {
 
   @override
   Future<void> close() {
+    labelRepository.removeListener(_updateStateListener);
     return super.close();
   }
 }

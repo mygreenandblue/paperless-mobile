@@ -105,14 +105,18 @@ class _DocumentViewState extends State<DocumentView> {
       body: PdfView(
         controller: _controller,
         onDocumentLoaded: (document) {
-          setState(() {
-            _totalPages = document.pagesCount;
-          });
+          if (mounted) {
+            setState(() {
+              _totalPages = document.pagesCount;
+            });
+          }
         },
         onPageChanged: (page) {
-          setState(() {
-            _currentPage = page;
-          });
+          if (mounted) {
+            setState(() {
+              _currentPage = page;
+            });
+          }
         },
       ),
     );
