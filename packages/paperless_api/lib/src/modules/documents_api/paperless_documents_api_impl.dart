@@ -323,4 +323,22 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       );
     }
   }
+
+  @override
+  Future<DocumentModel> deleteNote(DocumentModel document, int noteId) async {
+    try {
+      final response = await client.delete(
+        "/api/documents/${document.id}/notes/?id=$noteId",
+        options: Options(validateStatus: (status) => status == 200),
+      );
+      final notes =
+          (response.data as List).map((e) => NoteModel.fromJson(e)).toList();
+
+      return document.copyWith(notes: notes);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(ErrorCode.documentDeleteFailed),
+      );
+    }
+  }
 }

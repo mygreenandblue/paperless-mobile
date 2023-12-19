@@ -11,9 +11,18 @@ extension WidgetPadding on Widget {
   Widget paddedSymmetrically({
     double horizontal = 0.0,
     double vertical = 0.0,
+    bool sliver = false,
   }) {
+    final insets =
+        EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical);
+    if (sliver) {
+      return SliverPadding(
+        padding: insets,
+        sliver: this,
+      );
+    }
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+      padding: insets,
       child: this,
     );
   }

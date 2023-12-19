@@ -87,6 +87,47 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     }
   }
 
+  Future<void> updateNote(NoteModel note) async {
+    assert(state.status == LoadingStatus.loaded);
+    final document = state.document!;
+    final updatedNotes = document.notes.map((e) => e.id == note.id ? note : e);
+    try {
+      final updatedDocument = await _api.update(
+        state.document!.copyWith(
+          notes: updatedNotes,
+        ),
+      );
+      _notifier.notifyUpdated(updatedDocument);
+    } on PaperlessApiException catch (e) {
+      addError(
+        TransientPaperlessApiError(
+          code: e.code,
+          details: e.details,
+        ),
+      );
+    }
+  }
+
+  Future<void> deleteNote(NoteModel note) async {
+    assert(state.status == LoadingStatus.loaded,
+        "Document data has to be loaded before calling this method.");
+    assert(note.id != null, "Note id cannot be null.");
+    try {
+      final updatedDocument = await _api.deleteNote(
+        state.document!,
+        note.id!,
+      );
+      _notifier.notifyUpdated(updatedDocument);
+    } on PaperlessApiException catch (e) {
+      addError(
+        TransientPaperlessApiError(
+          code: e.code,
+          details: e.details,
+        ),
+      );
+    }
+  }
+
   Future<void> assignAsn(
     DocumentModel document, {
     int? asn,

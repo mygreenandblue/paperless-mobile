@@ -240,67 +240,103 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         context.read(),
                         documentId: widget.id,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
-                        ),
-                        child: TabBarView(
-                          children: [
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded =>
-                                    DocumentOverviewWidget(
-                                      document: state.document!,
-                                      itemSpacing: _itemSpacing,
-                                      queryString:
-                                          widget.titleAndContentQueryString,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                },
-                              ],
-                            ),
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded => DocumentContentWidget(
-                                      document: state.document!,
-                                      queryString:
-                                          widget.titleAndContentQueryString,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                }
-                              ],
-                            ),
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded =>
-                                    DocumentMetaDataWidget(
-                                      document: state.document!,
-                                      itemSpacing: _itemSpacing,
-                                      metaData: state.metaData!,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                },
-                              ],
-                            ),
+                      child: TabBarView(
+                        children: [
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentOverviewWidget(
+                                    document: state.document!,
+                                    itemSpacing: _itemSpacing,
+                                    queryString:
+                                        widget.titleAndContentQueryString,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentContentWidget(
+                                    document: state.document!,
+                                    queryString:
+                                        widget.titleAndContentQueryString,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              }
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentMetaDataWidget(
+                                    document: state.document!,
+                                    itemSpacing: _itemSpacing,
+                                    metaData: state.metaData!,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          CustomScrollView(
+                            controller: _pagingScrollController,
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              SimilarDocumentsView(
+                                pagingScrollController: _pagingScrollController,
+                              ).paddedSymmetrically(
+                                vertical: 16,
+                                sliver: true,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentNotesWidget(
+                                    document: state.document!,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          if (hasMultiUserSupport)
                             CustomScrollView(
                               controller: _pagingScrollController,
                               slivers: [
@@ -308,62 +344,27 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                SimilarDocumentsView(
-                                  pagingScrollController:
-                                      _pagingScrollController,
-                                ),
-                              ],
-                            ),
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
                                 switch (state.status) {
-                                  LoadingStatus.loaded => DocumentNotesWidget(
+                                  LoadingStatus.loaded =>
+                                    DocumentPermissionsWidget(
                                       document: state.document!,
+                                    ).paddedSymmetrically(
+                                      vertical: 16,
+                                      sliver: true,
                                     ),
                                   LoadingStatus.error => _buildErrorState(),
                                   _ => _buildLoadingState(),
-                                },
-                                if (state.status == LoadingStatus.loaded)
-                                  SliverToBoxAdapter(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          AddNoteRoute($extra: state.document!)
-                                              .push(context);
-                                        },
-                                        icon: Icon(Icons.note_add_outlined),
-                                        label: Text('Add note'),
-                                      ),
-                                    ),
-                                  ),
+                                }
                               ],
                             ),
-                            if (hasMultiUserSupport)
-                              CustomScrollView(
-                                controller: _pagingScrollController,
-                                slivers: [
-                                  SliverOverlapInjector(
-                                    handle: NestedScrollView
-                                        .sliverOverlapAbsorberHandleFor(
-                                            context),
-                                  ),
-                                  switch (state.status) {
-                                    LoadingStatus.loaded =>
-                                      DocumentPermissionsWidget(
-                                        document: state.document!,
-                                      ),
-                                    LoadingStatus.error => _buildErrorState(),
-                                    _ => _buildLoadingState(),
-                                  }
-                                ],
+                        ]
+                            .map(
+                              (child) => Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: child,
                               ),
-                          ],
-                        ),
+                            )
+                            .toList(),
                       ),
                     );
                   },

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
@@ -95,6 +96,9 @@ class DocumentModel extends Equatable {
     String? archivedFileName,
     int? Function()? owner,
     bool? userCanChange,
+    Iterable<NoteModel>? notes,
+    Permissions? permissions,
+    Iterable<CustomFieldModel>? customFields,
   }) {
     return DocumentModel(
       id: id,
@@ -115,6 +119,9 @@ class DocumentModel extends Equatable {
       archivedFileName: archivedFileName ?? this.archivedFileName,
       owner: owner != null ? owner() : this.owner,
       userCanChange: userCanChange ?? this.userCanChange,
+      customFields: customFields ?? this.customFields,
+      notes: notes ?? this.notes,
+      permissions: permissions ?? this.permissions,
     );
   }
 
@@ -135,5 +142,8 @@ class DocumentModel extends Equatable {
         archivedFileName,
         owner,
         userCanChange,
+        customFields,
+        notes,
+        permissions,
       ];
 }

@@ -22,6 +22,7 @@ abstract class PaperlessDocumentsApi {
   Future<DocumentModel> find(int id);
   Future<int> delete(DocumentModel doc);
   Future<DocumentMetaData> getMetaData(int id);
+  Future<DocumentModel> deleteNote(DocumentModel document, int noteId);
   Future<Iterable<int>> bulkAction(BulkAction action);
   Future<Uint8List> getPreview(int docId);
   String getThumbnailUrl(int docId);
