@@ -51,7 +51,7 @@ class DocumentModel extends Equatable {
 
   // Only present if full_perms=true
   final Permissions? permissions;
-  final Iterable<CustomFieldModel>? customFields;
+  final Iterable<CustomFieldModel> customFields;
 
   const DocumentModel({
     required this.id,
@@ -71,7 +71,7 @@ class DocumentModel extends Equatable {
     this.owner,
     this.userCanChange,
     this.permissions,
-    this.customFields,
+    this.customFields = const [],
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) =>
