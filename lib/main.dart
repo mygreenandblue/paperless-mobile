@@ -384,7 +384,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 );
               },
               routerConfig: _router,
-              debugShowCheckedModeBanner: true,
+              debugShowCheckedModeBanner: false,
               title: "Paperless Mobile",
               theme: buildTheme(
                 brightness: Brightness.light,
@@ -396,7 +396,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 dynamicScheme: darkDynamic,
                 preferredColorScheme: settings.preferredColorSchemeOption,
               ),
-              themeMode: settings.preferredThemeMode,
+              themeMode: ThemeMode.light,
               supportedLocales: const [
                 Locale('en'),
                 Locale('de'),
