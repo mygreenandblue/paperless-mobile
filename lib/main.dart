@@ -396,7 +396,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 dynamicScheme: darkDynamic,
                 preferredColorScheme: settings.preferredColorSchemeOption,
               ),
-              themeMode: ThemeMode.light,
+              themeMode:  settings.preferredThemeMode,
               supportedLocales: const [
                 Locale('en'),
                 Locale('de'),
