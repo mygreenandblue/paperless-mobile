@@ -92,7 +92,7 @@ See the [open issues](https://github.com/astubenbord/paperless-mobile/issues) fo
 Distributed under the GNU General Public License v3.0. See `LICENSE.txt` for more information.
 
 ## Donations
-I you wish to support the development of this project, you can donate through GitHub Sponsors (see "Sponsor this project" on the right). Any donation is much appreciated and keeps the development of this project alive!
+If you wish to support the development of this project, you can donate through GitHub Sponsors (see "Sponsor this project" on the right). Any donation is much appreciated and keeps the development of this project alive!
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
