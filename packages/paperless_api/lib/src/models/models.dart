@@ -28,4 +28,4 @@ export 'task/task.dart';
 export 'task/task_status.dart';
 export 'user_model.dart';
 export 'exception/exceptions.dart';
-export 'note_model.dart';
+export 'note_model.dart' show NoteModel;

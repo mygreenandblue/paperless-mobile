@@ -85,10 +85,6 @@ part 'authenticated_route.g.dart';
                   path: 'preview',
                   name: R.documentPreview,
                 ),
-                TypedGoRoute<AddNoteRoute>(
-                  path: 'add-note',
-                  name: R.addNote,
-                ),
               ],
             )
           ],

@@ -37,6 +37,11 @@ class PaperlessAuthenticationApiImpl implements PaperlessAuthenticationApi {
       // return AuthenticationTemporaryRedirect(redirectUrl!);
     } on DioException catch (exception) {
       throw exception.unravel();
+    } catch (error, stackTrace) {
+      throw PaperlessApiException.unknown(
+        details: error.toString(),
+        stackTrace: stackTrace,
+      );
     }
   }
 }

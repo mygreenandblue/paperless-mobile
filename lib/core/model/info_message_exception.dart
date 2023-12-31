@@ -9,4 +9,9 @@ class InfoMessageException implements Exception {
     this.message,
     this.stackTrace,
   });
+
+  @override
+  String toString() {
+    return 'InfoMessageException(code: $code, message: $message, stackTrace: $stackTrace)';
+  }
 }

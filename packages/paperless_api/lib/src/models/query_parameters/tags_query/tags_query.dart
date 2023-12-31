@@ -4,7 +4,7 @@ import 'package:paperless_api/config/hive/hive_type_ids.dart';
 
 part 'tags_query.g.dart';
 
-sealed class TagsQuery {
+sealed class TagsQuery with EquatableMixin {
   const TagsQuery();
   Map<String, String> toQueryParameter();
   bool matches(Iterable<int> ids);
@@ -20,10 +20,13 @@ class NotAssignedTagsQuery extends TagsQuery {
 
   @override
   bool matches(Iterable<int> ids) => ids.isEmpty;
+
+  @override
+  List<Object?> get props => [];
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedTagsQuery)
-class AnyAssignedTagsQuery extends TagsQuery with EquatableMixin {
+class AnyAssignedTagsQuery extends TagsQuery {
   @HiveField(0)
   final List<int> tagIds;
   const AnyAssignedTagsQuery({
@@ -54,7 +57,7 @@ class AnyAssignedTagsQuery extends TagsQuery with EquatableMixin {
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.idsTagsQuery)
-class IdsTagsQuery extends TagsQuery with EquatableMixin {
+class IdsTagsQuery extends TagsQuery {
   @HiveField(0)
   final List<int> include;
   @HiveField(1)

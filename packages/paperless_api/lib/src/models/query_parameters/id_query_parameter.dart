@@ -4,7 +4,7 @@ import 'package:paperless_api/config/hive/hive_type_ids.dart';
 
 part 'id_query_parameter.g.dart';
 
-sealed class IdQueryParameter {
+sealed class IdQueryParameter with EquatableMixin {
   const IdQueryParameter();
   Map<String, String> toQueryParameter(String field);
   bool matches(int? id);
@@ -23,6 +23,9 @@ class UnsetIdQueryParameter extends IdQueryParameter {
 
   @override
   bool matches(int? id) => true;
+
+  @override
+  List<Object?> get props => [];
 }
 
 // @HiveType(typeId: PaperlessApiHiveTypeIds.notAssignedIdQueryParameter)
@@ -36,6 +39,8 @@ class NotAssignedIdQueryParameter extends IdQueryParameter {
 
   @override
   bool matches(int? id) => id == null;
+  @override
+  List<Object?> get props => [];
 }
 
 // @HiveType(typeId: PaperlessApiHiveTypeIds.anyAssignedIdQueryParameter)
@@ -48,6 +53,8 @@ class AnyAssignedIdQueryParameter extends IdQueryParameter {
 
   @override
   bool matches(int? id) => id != null;
+  @override
+  List<Object?> get props => [];
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.setIdQueryParameter)

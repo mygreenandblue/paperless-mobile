@@ -311,4 +311,17 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     _notifier.removeListener(this);
     await super.close();
   }
+
+  Future<void> addNote(String text) async {
+    assert(state.status == LoadingStatus.loaded);
+    try {
+      final updatedDocument = await _api.addNote(
+        document: state.document!,
+        text: text,
+      );
+      _notifier.notifyUpdated(updatedDocument);
+    } on PaperlessApiException catch (err) {
+      addError(TransientPaperlessApiError(code: err.code));
+    }
+  }
 }

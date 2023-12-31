@@ -36,4 +36,7 @@ abstract class PaperlessDocumentsApi {
   Future<FieldSuggestions> findSuggestions(DocumentModel document);
 
   Future<List<String>> autocomplete(String query, [int limit = 10]);
+
+  Future<DocumentModel> addNote(
+      {required DocumentModel document, required String text});
 }

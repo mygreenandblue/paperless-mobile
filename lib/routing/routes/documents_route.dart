@@ -9,7 +9,6 @@ import 'package:paperless_mobile/features/document_bulk_action/view/widgets/full
 import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
 import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/add_note_page.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
@@ -208,19 +207,6 @@ class BulkEditDocumentsRoute extends GoRouteData {
           };
         },
       ),
-    );
-  }
-}
-
-class AddNoteRoute extends GoRouteData {
-  final DocumentModel $extra;
-
-  AddNoteRoute({required this.$extra});
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return AddNotePage(
-      document: $extra,
     );
   }
 }
