@@ -408,6 +408,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 Locale('pl'),
                 Locale('ru'),
                 Locale('tr'),
+                Locale('it'),
               ],
               localeResolutionCallback: (locale, supportedLocales) {
                 if (locale == null) {

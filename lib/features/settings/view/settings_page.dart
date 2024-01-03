@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/app_logs_tile.dart';
@@ -15,6 +17,7 @@ import 'package:paperless_mobile/features/settings/view/widgets/theme_mode_setti
 import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -80,15 +83,49 @@ class SettingsPage extends StatelessWidget {
                   );
                 }
                 final serverData = snapshot.data!;
-                return Text(
-                  S.of(context)!.paperlessServerVersion +
-                      ' ' +
-                      serverData.version.toString() +
-                      ' (API v${serverData.apiVersion})',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary,
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      S.of(context)!.paperlessServerVersion +
+                          ' ' +
+                          serverData.version.toString() +
+                          ' (API v${serverData.apiVersion})',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (serverData.isUpdateAvailable) ...[
+                      SizedBox(height: 8),
+                      Text.rich(
+                        TextSpan(
+                          style: Theme.of(context).textTheme.labelSmall!,
+                          text: '${S.of(context)!.newerVersionAvailable} ',
+                          children: [
+                            TextSpan(
+                              text: serverData.latestVersion,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall!
+                                  .copyWith(
+                                    decoration: TextDecoration.underline,
+                                    color: CupertinoColors.link,
+                                    decorationColor: CupertinoColors.link,
+                                  ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  launchUrlString(
+                                    "https://github.com/paperless-ngx/paperless-ngx/releases/tag/${serverData.latestVersion}",
+                                  );
+                                },
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                  textAlign: TextAlign.center,
+                    ]
+                  ],
                 );
               },
             ),

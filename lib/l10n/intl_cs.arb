@@ -1026,5 +1026,6 @@
   },
   "version": "Version {versionCode}",
   "notes": "{count, plural, zero{Notes} one{Note} other{Notes}}",
-  "addNote": "Add note"
+  "addNote": "Add note",
+  "newerVersionAvailable": "Newer version available:"
 }

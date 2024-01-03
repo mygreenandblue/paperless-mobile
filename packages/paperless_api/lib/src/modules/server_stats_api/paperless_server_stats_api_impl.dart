@@ -24,13 +24,15 @@ class PaperlessServerStatsApiImpl implements PaperlessServerStatsApi {
         "/api/remote_version/",
         options: Options(validateStatus: (status) => status == 200),
       );
-      var version = response.data["version"] as String;
-      if (version == _fallbackVersion) {
-        version = response.headers.value('x-version') ?? _fallbackVersion;
-      }
+      final latestVersion = response.data["version"] as String;
+      final version = response.headers
+              .value(PaperlessServerInformationModel.versionHeader) ??
+          _fallbackVersion;
       final updateAvailable = response.data["update_available"] as bool;
       return PaperlessServerInformationModel(
-        apiVersion: int.parse(response.headers.value('x-api-version')!),
+        apiVersion: int.parse(response.headers
+            .value(PaperlessServerInformationModel.apiVersionHeader)!),
+        latestVersion: latestVersion,
         version: version,
         isUpdateAvailable: updateAvailable,
       );

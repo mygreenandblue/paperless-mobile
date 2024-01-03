@@ -1020,11 +1020,12 @@
   },
   "misc": "Otros",
   "loggingOut": "Cerrando sesión...",
-  "testingConnection": "Testing connection...",
+  "testingConnection": "Probando conexión...",
   "@testingConnection": {
     "description": "Text shown while the app tries to establish a connection to the specified host."
   },
   "version": "Version {versionCode}",
-  "notes": "{count, plural, zero{Notes} one{Note} other{Notes}}",
-  "addNote": "Add note"
+  "notes": "{count, plural, zero{Notas} one{Nota} other{Notas}}",
+  "addNote": "Añadir nota",
+  "newerVersionAvailable": "Newer version available:"
 }

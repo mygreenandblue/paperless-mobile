@@ -1025,6 +1025,7 @@
     "description": "Text shown while the app tries to establish a connection to the specified host."
   },
   "version": "Versió {versionCode}",
-  "notes": "{count, plural, zero{Notes} one{Note} other{Notes}}",
-  "addNote": "Add note"
+  "notes": "{count, plural, zero{Notes} one{Nota} other{Notes}}",
+  "addNote": "Afegir Nota",
+  "newerVersionAvailable": "Newer version available:"
 }
