@@ -1027,5 +1027,19 @@
   "version": "Version {versionCode}",
   "notes": "{count, plural, zero{Notes} one{Note} other{Notes}}",
   "addNote": "Ajouter une note",
-  "newerVersionAvailable": "Newer version available:"
+  "newerVersionAvailable": "Newer version available:",
+  "dateOutOfRange": "Date must be between {firstDate} and {lastDate}.",
+  "@dateOutOfRange": {
+    "description": "Error message shown when the user tries to select a date outside of the allowed range.",
+    "placeholders": {
+      "firstDate": {
+        "type": "DateTime",
+        "format": "yMd"
+      },
+      "lastDate": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  }
 }
