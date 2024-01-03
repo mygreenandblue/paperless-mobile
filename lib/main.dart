@@ -111,6 +111,7 @@ Future<void> _initHive() async {
   registerHiveAdapters();
   await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
   await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
+  await Hive.openBox<bool>(HiveBoxes.hintStateBox);
   await Hive.openBox<String>(HiveBoxes.hosts);
   final globalSettingsBox =
       await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);

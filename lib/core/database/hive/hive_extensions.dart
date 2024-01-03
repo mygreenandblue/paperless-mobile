@@ -54,4 +54,5 @@ extension HiveBoxAccessors on HiveInterface {
       box<LocalUserAppState>(HiveBoxes.localUserAppState);
   Box<GlobalSettings> get globalSettingsBox =>
       box<GlobalSettings>(HiveBoxes.globalSettings);
+  Box<bool> get hintStateBox => box<bool>(HiveBoxes.hintStateBox);
 }

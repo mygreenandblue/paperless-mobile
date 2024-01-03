@@ -19,12 +19,14 @@ class HiveBoxes {
   static const localUserAccount = 'localUserAccount';
   static const localUserAppState = 'localUserAppState';
   static const hosts = 'hosts';
+  static const hintStateBox = 'hintStateBox';
 
   static List<String> get all => [
         globalSettings,
         localUserCredentials,
         localUserAccount,
         localUserAppState,
+        hintStateBox,
         hosts,
       ];
 }

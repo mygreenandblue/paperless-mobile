@@ -40,7 +40,7 @@ class _DocumentSearchBarState extends State<DocumentSearchBar> {
             constraints: const BoxConstraints(
               maxWidth: 720,
               minWidth: 360,
-              maxHeight: 56,
+              maxHeight: 48,
               minHeight: 48,
             ),
             child: Row(

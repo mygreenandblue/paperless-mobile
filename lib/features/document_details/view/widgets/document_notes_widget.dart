@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:paperless_mobile/core/widgets/hint_card.dart';
+import 'package:paperless_mobile/core/widgets/hint_state_builder.dart';
 import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:markdown/markdown.dart' show markdownToHtml;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class DocumentNotesWidget extends StatefulWidget {
   final DocumentModel document;
@@ -19,11 +28,29 @@ class DocumentNotesWidget extends StatefulWidget {
 class _DocumentNotesWidgetState extends State<DocumentNotesWidget> {
   final _noteContentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
+  bool _isNoteSubmitting = false;
   @override
   Widget build(BuildContext context) {
+    const hintKey = "hideMarkdownSyntaxHint";
     return SliverMainAxisGroup(
       slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.only(bottom: 16),
+          sliver: SliverToBoxAdapter(
+            child: HintStateBuilder(
+              listenKey: hintKey,
+              builder: (context, box) {
+                return HintCard(
+                  hintText: S.of(context)!.notesMarkdownSyntaxSupportHint,
+                  show: !box.get(hintKey, defaultValue: false)!,
+                  onHintAcknowledged: () {
+                    box.put(hintKey, true);
+                  },
+                );
+              },
+            ),
+          ),
+        ),
         SliverToBoxAdapter(
           child: Form(
             key: _formKey,
@@ -33,79 +60,107 @@ class _DocumentNotesWidgetState extends State<DocumentNotesWidget> {
                   controller: _noteContentController,
                   maxLines: null,
                   validator: (value) {
-                    if (value?.isEmpty ?? true) {
+                    if (value?.trim().isEmpty ?? true) {
                       return S.of(context)!.thisFieldIsRequired;
                     }
                     return null;
                   },
+                  textInputAction: TextInputAction.newline,
                   decoration: InputDecoration(
-                    hintText: 'Your note here...',
-                    labelText: 'New note',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: S.of(context)!.newNote,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _noteContentController.clear();
+                      },
+                    ),
                   ),
-                ).padded(),
+                ).paddedOnly(bottom: 8),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    icon: Icon(Icons.note_add_outlined),
-                    label: Text("Add note"),
-                    onPressed: () {
+                  child: ElevatedButton.icon(
+                    icon: _isNoteSubmitting
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            ),
+                          )
+                        : const Icon(Icons.note_add_outlined),
+                    label: Text(S.of(context)!.addNote),
+                    onPressed: () async {
                       _formKey.currentState?.save();
                       if (_formKey.currentState?.validate() ?? false) {
-                        context
-                            .read<DocumentDetailsCubit>()
-                            .addNote(_noteContentController.text);
+                        setState(() {
+                          _isNoteSubmitting = true;
+                        });
+                        try {
+                          await context
+                              .read<DocumentDetailsCubit>()
+                              .addNote(_noteContentController.text.trim());
+                          _noteContentController.clear();
+                        } catch (error) {
+                          showGenericError(context, error);
+                        } finally {
+                          setState(() {
+                            _isNoteSubmitting = false;
+                          });
+                        }
                       }
                     },
-                  ).padded(),
+                  ),
                 ),
               ],
-            ).padded(),
+            ),
           ),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 16),
         ),
         SliverList.separated(
           separatorBuilder: (context, index) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final note = widget.document.notes.elementAt(index);
             return Card(
-              // borderRadius: BorderRadius.circular(8),
-              // elevation: 1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (note.created != null)
-                    Text(
-                      DateFormat.yMMMd(
-                              Localizations.localeOf(context).toString())
-                          .addPattern('\u2014')
-                          .add_jm()
-                          .format(note.created!),
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(.5),
-                          ),
-                    ),
-                  const SizedBox(height: 8),
-                  Text(
-                    note.note!,
-                    textAlign: TextAlign.justify,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                  Html(
+                    data: markdownToHtml(note.note!),
+                    onLinkTap: (url, attributes, element) async {
+                      if (url?.isEmpty ?? true) {
+                        return;
+                      }
+                      if (await canLaunchUrlString(url!)) {
+                        launchUrlString(url);
+                      }
+                    },
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      if (note.created != null)
+                        Text(
+                          DateFormat.yMMMd(
+                                  Localizations.localeOf(context).toString())
+                              .addPattern('\u2014')
+                              .add_jm()
+                              .format(note.created!),
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(.5),
+                                  ),
+                        ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        tooltip: S.of(context)!.delete,
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           context.read<DocumentDetailsCubit>().deleteNote(note);
-                          showSnackBar(
-                            context,
-                            S.of(context)!.documentSuccessfullyUpdated,
-                          );
                         },
                       ),
                     ],

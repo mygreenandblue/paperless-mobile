@@ -61,7 +61,7 @@ class HintCard extends StatelessWidget {
               const Padding(padding: EdgeInsets.only(bottom: 24)),
           ],
         ).padded(),
-      ).padded(),
+      ),
     );
   }
 }

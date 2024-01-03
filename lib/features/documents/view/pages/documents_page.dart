@@ -21,6 +21,7 @@ import 'package:paperless_mobile/features/documents/view/widgets/selection/docum
 import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -308,8 +309,18 @@ class _DocumentsPageState extends State<DocumentsPage> {
         // Listen for scroll notifications to load new data.
         // Scroll controller does not work here due to nestedscrollview limitations.
         final offset = notification.metrics.pixels;
-        if (offset > 128 && _savedViewsExpansionController.isExpanded) {
-          _savedViewsExpansionController.collapse();
+        try {
+          if (offset > 128 && _savedViewsExpansionController.isExpanded) {
+            _savedViewsExpansionController.collapse();
+          }
+          // Workaround for https://github.com/astubenbord/paperless-mobile/issues/341 probably caused by https://github.com/flutter/flutter/issues/138153
+        } on TypeError catch (error) {
+          logger.fw(
+            "An exception was thrown, but this message can probably be ignored. See issue #341 for more details.",
+            error: error,
+            className: runtimeType.toString(),
+            methodName: "_buildDocumentsTab",
+          );
         }
 
         final max = notification.metrics.maxScrollExtent;

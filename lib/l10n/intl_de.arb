@@ -1041,5 +1041,8 @@
         "format": "yMd"
       }
     }
-  }
+  },
+  "permissions": "Berechtigungen",
+  "newNote": "Neue Notiz",
+  "notesMarkdownSyntaxSupportHint": "Paperless Mobile unterstützt Markdown-Syntax zur Darstellung und Formatierung von Notizen. Probiere es aus!"
 }

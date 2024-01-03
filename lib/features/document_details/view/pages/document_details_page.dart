@@ -161,6 +161,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           bottom: ColoredTabBar(
                             tabBar: TabBar(
                               isScrollable: true,
+                              tabAlignment: TabAlignment.start,
                               tabs: [
                                 Tab(
                                   child: Text(
@@ -203,19 +204,33 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   ),
                                 ),
                                 Tab(
-                                  child: Text(
-                                    "Notes",
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer,
-                                    ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        S.of(context)!.notes(0),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                        ),
+                                      ),
+                                      if ((state.document?.notes.length ?? 0) >
+                                          0)
+                                        Card(
+                                          child: Text(state
+                                                  .document!.notes.length
+                                                  .toString())
+                                              .paddedSymmetrically(
+                                                  horizontal: 8, vertical: 2),
+                                        ),
+                                    ],
                                   ),
                                 ),
                                 if (hasMultiUserSupport)
                                   Tab(
                                     child: Text(
-                                      "Permissions",
+                                      S.of(context)!.permissions,
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme

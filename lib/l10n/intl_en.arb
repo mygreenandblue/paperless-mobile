@@ -1041,6 +1041,8 @@
         "format": "yMd"
       }
     }
-    
-  }
+  },
+  "permissions": "Permissions",
+  "newNote": "New note",
+  "notesMarkdownSyntaxSupportHint": "Paperless Mobile can render notes using basic markdown syntax. Try it out!"
 }
