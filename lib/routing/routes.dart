@@ -26,4 +26,5 @@ class R {
   static const loggingOut = "loggingOut";
   static const restoringSession = "restoringSession";
   static const addAccount = 'addAccount';
+  static const addNote = 'addNote';
 }

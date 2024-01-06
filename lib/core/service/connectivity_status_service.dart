@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:paperless_mobile/core/global/os_error_codes.dart';
 import 'package:paperless_mobile/core/interceptor/server_reachability_error_interceptor.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
+import 'package:paperless_mobile/core/security/session_manager_impl.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:rxdart/subjects.dart';
@@ -79,7 +80,7 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
     }
     try {
       SessionManager manager =
-          SessionManager([ServerReachabilityErrorInterceptor()])
+          SessionManagerImpl([ServerReachabilityErrorInterceptor()])
             ..updateSettings(clientCertificate: clientCertificate)
             ..client.options.connectTimeout = const Duration(seconds: 5)
             ..client.options.receiveTimeout = const Duration(seconds: 5);

@@ -3,9 +3,11 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
@@ -83,7 +85,6 @@ class _FormBuilderLocalizedDatePickerState
 
   final _textFieldControls =
       LinkedList<_NeighbourAwareDateInputSegmentControls>();
-  String? _error;
   bool _temporarilyDisableListeners = false;
   @override
   void initState() {
@@ -184,10 +185,7 @@ class _FormBuilderLocalizedDatePickerState
           // Imitate the functionality of the validator function in "normal" form fields.
           // The error is shown on the outer decorator as if this was a regular text input.
           // Errors are cleared after the next user interaction.
-          final error = _validateDate(value);
-          setState(() {
-            _error = error;
-          });
+          // final error = _validateDate(value);
         },
         autovalidateMode: AutovalidateMode.onUserInteraction,
         initialValue: widget.initialValue != null
@@ -201,7 +199,7 @@ class _FormBuilderLocalizedDatePickerState
             child: InputDecorator(
               textAlignVertical: TextAlignVertical.bottom,
               decoration: InputDecoration(
-                errorText: _error,
+                errorText: field.errorText,
                 labelText: widget.labelText,
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -271,16 +269,10 @@ class _FormBuilderLocalizedDatePickerState
     if (d.day != date.day && d.month != date.month && d.year != date.year) {
       return "Invalid date.";
     }
-    if (d.isBefore(widget.firstDate)) {
-      final formattedDateHint =
-          DateFormat.yMd(widget.locale.toString()).format(widget.firstDate);
-      return "Date must be after $formattedDateHint.";
+    if (d.isBefore(widget.firstDate) || d.isAfter(widget.lastDate)) {
+      return S.of(context)!.dateOutOfRange(widget.firstDate, widget.lastDate);
     }
-    if (d.isAfter(widget.lastDate)) {
-      final formattedDateHint =
-          DateFormat.yMd(widget.locale.toString()).format(widget.lastDate);
-      return "Date must be before $formattedDateHint.";
-    }
+
     return null;
   }
 
@@ -332,6 +324,7 @@ class _FormBuilderLocalizedDatePickerState
             _DateInputSegment.year => fieldValue.copyWith(year: number),
           };
           field.setValue(newValue);
+          field.validate();
         }
       },
       inputFormatters: [

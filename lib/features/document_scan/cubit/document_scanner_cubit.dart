@@ -54,7 +54,9 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
 
   Future<void> removeScan(File file) async {
     try {
-      await file.delete();
+      if (await file.exists()) {
+        await file.delete();
+      }
     } catch (error, stackTrace) {
       throw InfoMessageException(
         code: ErrorCode.scanRemoveFailed,

@@ -424,7 +424,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
           initialValue: initialCreatedAtDate,
           labelText: S.of(context)!.createdAt,
           firstDate: DateTime(1970, 1, 1),
-          lastDate: DateTime.now(),
+          lastDate: DateTime(2100, 1, 1),
           locale: Localizations.localeOf(context),
           prefixIcon: Icon(Icons.calendar_today),
         ),

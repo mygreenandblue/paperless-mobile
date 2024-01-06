@@ -125,8 +125,8 @@ class DocumentFilter extends Equatable {
     return queryParams;
   }
 
-  @override
-  String toString() => toQueryParameters().toString();
+  // @override
+  // String toString() => toQueryParameters().toString();
 
   DocumentFilter copyWith({
     int? pageSize,
@@ -249,9 +249,4 @@ class DocumentFilter extends Equatable {
         moreLike,
         selectedView,
       ];
-
-  // factory DocumentFilter.fromJson(Map<String, dynamic> json) =>
-  //     _$DocumentFilterFromJson(json);
-
-  // Map<String, dynamic> toJson() => _$DocumentFilterToJson(this);
 }

@@ -24,6 +24,8 @@ import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/bloc/my_bloc_observer.dart';
 import 'package:paperless_mobile/core/database/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
+import 'package:paperless_mobile/core/database/hive/hive_initialization.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
@@ -31,7 +33,7 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/notifier/go_router_refresh_stream.dart';
+import 'package:paperless_mobile/core/security/session_manager_impl.dart';
 import 'package:paperless_mobile/features/logging/data/formatted_printer.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
 import 'package:paperless_mobile/features/logging/data/mirrored_file_output.dart';
@@ -105,64 +107,36 @@ Future<void> performMigrations() async {
   }
 }
 
-Future<void> _initHive() async {
-  await Hive.initFlutter();
-  await performMigrations();
-  registerHiveAdapters();
-  await Hive.openBox<LocalUserAccount>(HiveBoxes.localUserAccount);
-  await Hive.openBox<LocalUserAppState>(HiveBoxes.localUserAppState);
-  await Hive.openBox<String>(HiveBoxes.hosts);
-  final globalSettingsBox =
-      await Hive.openBox<GlobalSettings>(HiveBoxes.globalSettings);
+Future<void> initializeDefaultParameters() async {
+  Bloc.observer = MyBlocObserver();
+  await FileService.instance.initialize();
+  logger = l.Logger(
+    output: MirroredFileOutput(),
+    printer: FormattedPrinter(),
+    level: l.Level.trace,
+    filter: l.ProductionFilter(),
+  );
 
-  if (!globalSettingsBox.hasValue) {
-    await globalSettingsBox.setValue(
-      GlobalSettings(preferredLocaleSubtag: defaultPreferredLocale.toString()),
-    );
+  packageInfo = await PackageInfo.fromPlatform();
+
+  if (Platform.isAndroid) {
+    androidInfo = await DeviceInfoPlugin().androidInfo;
   }
+  if (Platform.isIOS) {
+    iosInfo = await DeviceInfoPlugin().iosInfo;
+  }
+
+  await findSystemLocale();
 }
 
 void main() async {
   runZonedGuarded(() async {
-    Bloc.observer = MyBlocObserver();
-    WidgetsFlutterBinding.ensureInitialized();
-    await FileService.instance.initialize();
-
-    logger = l.Logger(
-      output: MirroredFileOutput(),
-      printer: FormattedPrinter(),
-      level: l.Level.trace,
-      filter: l.ProductionFilter(),
-    );
-    Paint.enableDithering = true;
-
-    // if (kDebugMode) {
-    //   // URL: http://localhost:3131
-    //   // Login: admin:test
-    //   await LocalMockApiServer(
-    //           // RandomDelayGenerator(
-    //           //   const Duration(milliseconds: 100),
-    //           //   const Duration(milliseconds: 800),
-    //           // ),
-    //           )
-    //       .start();
-    // }
-
-    packageInfo = await PackageInfo.fromPlatform();
-
-    if (Platform.isAndroid) {
-      androidInfo = await DeviceInfoPlugin().androidInfo;
-    }
-    if (Platform.isIOS) {
-      iosInfo = await DeviceInfoPlugin().iosInfo;
-    }
-    await _initHive();
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-    final globalSettingsBox =
-        Hive.box<GlobalSettings>(HiveBoxes.globalSettings);
-    final globalSettings = globalSettingsBox.getValue()!;
-
-    await findSystemLocale();
+    final hiveDirectory = await getApplicationDocumentsDirectory();
+    final defaultLocale = defaultPreferredLocale.languageCode;
+    await initializeDefaultParameters();
+    await initHive(hiveDirectory, defaultLocale);
+    await performMigrations();
 
     final connectivityStatusService = ConnectivityStatusServiceImpl(
       Connectivity(),
@@ -178,10 +152,10 @@ void main() async {
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
     final languageHeaderInterceptor = LanguageHeaderInterceptor(
-      globalSettings.preferredLocaleSubtag,
+      () => Hive.globalSettingsBox.getValue()!.preferredLocaleSubtag,
     );
     // Manages security context, required for self signed client certificates
-    final sessionManager = SessionManager([
+    final SessionManager sessionManager = SessionManagerImpl([
       PrettyDioLogger(
         compact: true,
         responseBody: false,
@@ -194,20 +168,8 @@ void main() async {
       languageHeaderInterceptor,
     ]);
 
-    // Initialize Blocs/Cubits
-    final connectivityCubit = ConnectivityCubit(connectivityStatusService);
-
-    // Load application settings and stored authentication data
-    await connectivityCubit.initialize();
-
     final localNotificationService = LocalNotificationService();
     await localNotificationService.initialize();
-
-    //Update language header in interceptor on language change.
-    globalSettingsBox.listenable().addListener(() {
-      languageHeaderInterceptor.preferredLocaleSubtag =
-          globalSettings.preferredLocaleSubtag;
-    });
 
     final apiFactory = PaperlessApiFactoryImpl(sessionManager);
     final authenticationCubit = AuthenticationCubit(
@@ -218,33 +180,19 @@ void main() async {
       localNotificationService,
     );
     runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(value: sessionManager),
-          Provider<LocalAuthenticationService>.value(value: localAuthService),
-          Provider<ConnectivityStatusService>.value(
-              value: connectivityStatusService),
-          Provider<LocalNotificationService>.value(
-              value: localNotificationService),
-          Provider.value(value: DocumentChangedNotifier()),
-        ],
-        child: MultiProvider(
-          providers: [
-            Provider<ConnectivityCubit>.value(value: connectivityCubit),
-            Provider.value(value: authenticationCubit),
-          ],
-          child: GoRouterShell(
-            apiFactory: apiFactory,
-          ),
-        ),
+      AppEntrypoint(
+        sessionManager: sessionManager,
+        apiFactory: apiFactory,
+        authenticationCubit: authenticationCubit,
+        connectivityStatusService: connectivityStatusService,
+        localNotificationService: localNotificationService,
+        localAuthService: localAuthService,
       ),
     );
   }, (error, stackTrace) {
     if (error is StateError &&
         error.message.contains("Cannot emit new states")) {
-      {
-        return;
-      }
+      return;
     }
     // Catches all unexpected/uncaught errors and prints them to the console.
     final message = switch (error) {
@@ -261,9 +209,52 @@ void main() async {
   });
 }
 
+class AppEntrypoint extends StatelessWidget {
+  final PaperlessApiFactory apiFactory;
+  final AuthenticationCubit authenticationCubit;
+  final ConnectivityStatusService connectivityStatusService;
+  final LocalNotificationService localNotificationService;
+  final LocalAuthenticationService localAuthService;
+  final SessionManager sessionManager;
+
+  const AppEntrypoint({
+    super.key,
+    required this.apiFactory,
+    required this.authenticationCubit,
+    required this.connectivityStatusService,
+    required this.localNotificationService,
+    required this.localAuthService,
+    required this.sessionManager,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider.value(value: DocumentChangedNotifier()),
+        Provider.value(value: authenticationCubit),
+        Provider.value(
+          value: ConnectivityCubit(connectivityStatusService)..initialize(),
+        ),
+        ChangeNotifierProvider.value(value: sessionManager),
+        Provider.value(value: connectivityStatusService),
+        Provider.value(value: localNotificationService),
+        Provider.value(value: localAuthService),
+      ],
+      child: GoRouterShell(
+        apiFactory: apiFactory,
+      ),
+    );
+  }
+}
+
 class GoRouterShell extends StatefulWidget {
   final PaperlessApiFactory apiFactory;
-  const GoRouterShell({super.key, required this.apiFactory});
+
+  const GoRouterShell({
+    super.key,
+    required this.apiFactory,
+  });
 
   @override
   State<GoRouterShell> createState() => _GoRouterShellState();
@@ -396,7 +387,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 dynamicScheme: darkDynamic,
                 preferredColorScheme: settings.preferredColorSchemeOption,
               ),
-              themeMode:  settings.preferredThemeMode,
+              themeMode: settings.preferredThemeMode,
               supportedLocales: const [
                 Locale('en'),
                 Locale('de'),
@@ -408,6 +399,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 Locale('pl'),
                 Locale('ru'),
                 Locale('tr'),
+                Locale('it'),
               ],
               localeResolutionCallback: (locale, supportedLocales) {
                 if (locale == null) {

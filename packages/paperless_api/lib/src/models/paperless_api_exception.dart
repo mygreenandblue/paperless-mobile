@@ -11,7 +11,16 @@ class PaperlessApiException implements Exception {
     this.httpStatusCode,
   });
 
-  const PaperlessApiException.unknown() : this(ErrorCode.unknown);
+  const PaperlessApiException.unknown({
+    String? details,
+    StackTrace? stackTrace,
+    int? httpStatusCode,
+  }) : this(
+          ErrorCode.unknown,
+          details: details,
+          stackTrace: stackTrace,
+          httpStatusCode: httpStatusCode,
+        );
 
   @override
   String toString() {
@@ -71,5 +80,7 @@ enum ErrorCode {
   updateSavedViewError,
   customFieldCreateFailed,
   customFieldLoadFailed,
-  customFieldDeleteFailed;
+  customFieldDeleteFailed,
+  deleteNoteFailed,
+  addNoteFailed;
 }

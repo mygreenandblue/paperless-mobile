@@ -11,7 +11,7 @@ import 'date_range_unit.dart';
 
 part 'date_range_query.g.dart';
 
-sealed class DateRangeQuery {
+sealed class DateRangeQuery with EquatableMixin {
   const DateRangeQuery();
 
   Map<String, String> toQueryParameter(DateRangeQueryField field);
@@ -28,10 +28,13 @@ class UnsetDateRangeQuery extends DateRangeQuery {
 
   @override
   bool matches(DateTime dt) => true;
+
+  @override
+  List<Object?> get props => [];
 }
 
 @HiveType(typeId: PaperlessApiHiveTypeIds.relativeDateRangeQuery)
-class RelativeDateRangeQuery extends DateRangeQuery with EquatableMixin {
+class RelativeDateRangeQuery extends DateRangeQuery {
   @HiveField(0)
   final int offset;
   @HiveField(1)
@@ -84,7 +87,7 @@ class RelativeDateRangeQuery extends DateRangeQuery with EquatableMixin {
 
 @JsonSerializable()
 @HiveType(typeId: PaperlessApiHiveTypeIds.absoluteDateRangeQuery)
-class AbsoluteDateRangeQuery extends DateRangeQuery with EquatableMixin {
+class AbsoluteDateRangeQuery extends DateRangeQuery {
   @LocalDateTimeJsonConverter()
   @HiveField(0)
   final DateTime? after;

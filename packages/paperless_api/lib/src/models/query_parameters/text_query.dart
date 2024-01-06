@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/config/hive/hive_type_ids.dart';
@@ -89,6 +90,11 @@ class TextQuery {
       return true;
     }
     return other.queryText == queryText && other.queryType == queryType;
+  }
+
+  @override
+  String toString() {
+    return "TextQuery($queryText, $queryType)";
   }
 
   @override

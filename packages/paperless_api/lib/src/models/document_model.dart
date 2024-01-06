@@ -1,10 +1,10 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_api/src/converters/local_date_time_json_converter.dart';
 import 'package:paperless_api/src/models/custom_field_model.dart';
+import 'package:paperless_api/src/models/note_model.dart';
 import 'package:paperless_api/src/models/search_hit.dart';
 
 part 'document_model.g.dart';
@@ -48,8 +48,9 @@ class DocumentModel extends Equatable {
 
   final int? owner;
   final bool? userCanChange;
+  final Iterable<NoteModel> notes;
 
-  // Only present if full_perms=true
+  /// Only present if full_perms=true
   final Permissions? permissions;
   final Iterable<CustomFieldModel> customFields;
 
@@ -72,6 +73,7 @@ class DocumentModel extends Equatable {
     this.userCanChange,
     this.permissions,
     this.customFields = const [],
+    this.notes = const [],
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) =>
@@ -94,6 +96,9 @@ class DocumentModel extends Equatable {
     String? archivedFileName,
     int? Function()? owner,
     bool? userCanChange,
+    Iterable<NoteModel>? notes,
+    Permissions? permissions,
+    Iterable<CustomFieldModel>? customFields,
   }) {
     return DocumentModel(
       id: id,
@@ -114,6 +119,9 @@ class DocumentModel extends Equatable {
       archivedFileName: archivedFileName ?? this.archivedFileName,
       owner: owner != null ? owner() : this.owner,
       userCanChange: userCanChange ?? this.userCanChange,
+      customFields: customFields ?? this.customFields,
+      notes: notes ?? this.notes,
+      permissions: permissions ?? this.permissions,
     );
   }
 
@@ -134,5 +142,8 @@ class DocumentModel extends Equatable {
         archivedFileName,
         owner,
         userCanChange,
+        customFields,
+        notes,
+        permissions,
       ];
 }

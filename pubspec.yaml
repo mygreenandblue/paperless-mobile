@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 3.1.8+403
+version: 3.2.0+404
 
 environment:
   sdk: ">=3.1.0 <4.0.0"
@@ -103,8 +103,10 @@ dependencies:
   # camerawesome: ^2.0.0-dev.1
   pdfx:
     git:
-      url: "https://github.com/ScerIO/packages.flutter"
+      url: 'https://github.com/ScerIO/packages.flutter'
+      ref: '4be9de9ffed5398fd7d5f44bbb07dcd3d3f1711b'
       path: packages/pdfx
+  markdown: ^7.1.1
 
 dependency_overrides:
   intl: ^0.18.1

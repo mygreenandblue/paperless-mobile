@@ -22,6 +22,7 @@ abstract class PaperlessDocumentsApi {
   Future<DocumentModel> find(int id);
   Future<int> delete(DocumentModel doc);
   Future<DocumentMetaData> getMetaData(int id);
+  Future<DocumentModel> deleteNote(DocumentModel document, int noteId);
   Future<Iterable<int>> bulkAction(BulkAction action);
   Future<Uint8List> getPreview(int docId);
   String getThumbnailUrl(int docId);
@@ -35,4 +36,7 @@ abstract class PaperlessDocumentsApi {
   Future<FieldSuggestions> findSuggestions(DocumentModel document);
 
   Future<List<String>> autocomplete(String query, [int limit = 10]);
+
+  Future<DocumentModel> addNote(
+      {required DocumentModel document, required String text});
 }

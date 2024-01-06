@@ -71,6 +71,7 @@ part 'authenticated_route.g.dart';
                 TypedGoRoute<DocumentDetailsRoute>(
                   path: "details/:id",
                   name: R.documentDetails,
+                  routes: [],
                 ),
                 TypedGoRoute<EditDocumentRoute>(
                   path: "edit",

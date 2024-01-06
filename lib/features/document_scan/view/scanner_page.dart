@@ -14,6 +14,7 @@ import 'package:paperless_mobile/core/bloc/loading_status.dart';
 import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/global/constants.dart';
+import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/file_service.dart';
 import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
@@ -326,6 +327,8 @@ class _ScannerPageState extends State<ScannerPage>
                         .removeScan(scans[index]);
                   } on PaperlessApiException catch (error, stackTrace) {
                     showErrorMessage(context, error, stackTrace);
+                  } on InfoMessageException catch (error, stackTrace) {
+                    showInfoMessage(context, error, stackTrace);
                   }
                 },
                 index: index,

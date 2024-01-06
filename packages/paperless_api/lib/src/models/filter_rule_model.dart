@@ -82,7 +82,6 @@ class FilterRule with EquatableMixin {
         assert(filter.tags is IdsTagsQuery);
         return filter.copyWith(
           tags: switch (filter.tags) {
-            // TODO: Handle this case.
             IdsTagsQuery(include: var i, exclude: var e) => IdsTagsQuery(
                 include: [...i, int.parse(value!)],
                 exclude: e,

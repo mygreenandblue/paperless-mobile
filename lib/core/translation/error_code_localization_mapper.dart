@@ -82,5 +82,7 @@ String translateError(BuildContext context, ErrorCode code) {
       'Could not load custom field.', //TODO: INTL
     ErrorCode.customFieldDeleteFailed =>
       'Could not delete custom field, please try again.', //TODO: INTL
+    ErrorCode.deleteNoteFailed => 'Could not delete note, please try again.',
+    ErrorCode.addNoteFailed => 'Could not create note, please try again.',
   };
 }

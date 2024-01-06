@@ -1024,5 +1024,25 @@
   "@testingConnection": {
     "description": "Text shown while the app tries to establish a connection to the specified host."
   },
-  "version": "Version {versionCode}"
+  "version": "Version {versionCode}",
+  "notes": "{count, plural, zero{Notes} one{Note} other{Notes}}",
+  "addNote": "Add note",
+  "newerVersionAvailable": "Newer version available:",
+  "dateOutOfRange": "Date must be between {firstDate} and {lastDate}.",
+  "@dateOutOfRange": {
+    "description": "Error message shown when the user tries to select a date outside of the allowed range.",
+    "placeholders": {
+      "firstDate": {
+        "type": "DateTime",
+        "format": "yMd"
+      },
+      "lastDate": {
+        "type": "DateTime",
+        "format": "yMd"
+      }
+    }
+  },
+  "permissions": "Permissions",
+  "newNote": "New note",
+  "notesMarkdownSyntaxSupportHint": "Paperless Mobile can render notes using basic markdown syntax. Try it out!"
 }

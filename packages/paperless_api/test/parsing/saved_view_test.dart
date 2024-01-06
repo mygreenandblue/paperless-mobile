@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:paperless_api/paperless_api.dart';
 
 void main() {
-  group('Validate parsing logic from [SavedView] to [DocumentFilter]:', () {
+  group('Parsing [SavedView] to [DocumentFilter]:', () {
     test('Values are correctly parsed if set.', () {
       expect(
         SavedView.fromJson({
@@ -64,7 +64,7 @@ void main() {
           ]
         }).toDocumentFilter(),
         equals(
-          DocumentFilter.initial.copyWith(
+          DocumentFilter(
             correspondent: const SetIdQueryParameter(id: 42),
             documentType: const SetIdQueryParameter(id: 69),
             storagePath: const SetIdQueryParameter(id: 14),
@@ -83,6 +83,7 @@ void main() {
             sortField: SortField.created,
             sortOrder: SortOrder.descending,
             query: const TextQuery.extended("Never gonna give you up"),
+            selectedView: 1,
           ),
         ),
       );
@@ -99,7 +100,11 @@ void main() {
           "sort_reverse": true,
           "filter_rules": [],
         }).toDocumentFilter(),
-        equals(DocumentFilter.initial),
+        equals(
+          const DocumentFilter(
+            selectedView: 1,
+          ),
+        ),
       );
     });
 
@@ -130,11 +135,12 @@ void main() {
           },
         ],
       }).toDocumentFilter();
-      final expected = DocumentFilter.initial.copyWith(
-        correspondent: const NotAssignedIdQueryParameter(),
-        documentType: const NotAssignedIdQueryParameter(),
-        storagePath: const NotAssignedIdQueryParameter(),
-        tags: const NotAssignedTagsQuery(),
+      const expected = DocumentFilter(
+        correspondent: NotAssignedIdQueryParameter(),
+        documentType: NotAssignedIdQueryParameter(),
+        storagePath: NotAssignedIdQueryParameter(),
+        tags: NotAssignedTagsQuery(),
+        selectedView: 1,
       );
       expect(
         actual,
@@ -148,6 +154,7 @@ void main() {
       expect(
         SavedView.fromDocumentFilter(
           DocumentFilter(
+            selectedView: 1,
             correspondent: const SetIdQueryParameter(id: 1),
             documentType: const SetIdQueryParameter(id: 2),
             storagePath: const SetIdQueryParameter(id: 3),
@@ -173,6 +180,7 @@ void main() {
         ),
         equals(
           SavedView(
+            id: 1,
             name: "test_name",
             showOnDashboard: false,
             showInSidebar: false,

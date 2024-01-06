@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -17,7 +16,6 @@ import 'package:paperless_mobile/features/login/model/client_certificate_form_mo
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
-import 'package:paperless_mobile/features/login/view/widgets/form_fields/login_settings_page.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
 import 'package:paperless_mobile/generated/assets.gen.dart';
@@ -44,6 +42,7 @@ class AddAccountPage extends StatefulWidget {
   final bool showLocalAccounts;
 
   final Widget? bottomLeftButton;
+
   const AddAccountPage({
     Key? key,
     required this.onSubmit,

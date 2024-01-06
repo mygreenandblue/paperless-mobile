@@ -15,6 +15,7 @@ import 'package:paperless_mobile/features/document_details/cubit/document_detail
 import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
+import 'package:paperless_mobile/features/document_details/view/widgets/document_notes_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
@@ -67,7 +68,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     debugPrint(disableAnimations.toString());
     final hasMultiUserSupport =
         context.watch<LocalUserAccount>().hasMultiUserSupport;
-    final tabLength = 4 + (hasMultiUserSupport ? 1 : 0);
+    final tabLength = 5 + (hasMultiUserSupport ? 1 : 0);
     return AnnotatedRegion(
       value: buildOverlayStyle(
         Theme.of(context),
@@ -160,6 +161,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                           bottom: ColoredTabBar(
                             tabBar: TabBar(
                               isScrollable: true,
+                              tabAlignment: TabAlignment.start,
                               tabs: [
                                 Tab(
                                   child: Text(
@@ -201,10 +203,34 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     ),
                                   ),
                                 ),
+                                Tab(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        S.of(context)!.notes(0),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                        ),
+                                      ),
+                                      if ((state.document?.notes.length ?? 0) >
+                                          0)
+                                        Card(
+                                          child: Text(state
+                                                  .document!.notes.length
+                                                  .toString())
+                                              .paddedSymmetrically(
+                                                  horizontal: 8, vertical: 2),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                                 if (hasMultiUserSupport)
                                   Tab(
                                     child: Text(
-                                      "Permissions",
+                                      S.of(context)!.permissions,
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
@@ -229,67 +255,103 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                         context.read(),
                         documentId: widget.id,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
-                        ),
-                        child: TabBarView(
-                          children: [
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded =>
-                                    DocumentOverviewWidget(
-                                      document: state.document!,
-                                      itemSpacing: _itemSpacing,
-                                      queryString:
-                                          widget.titleAndContentQueryString,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                },
-                              ],
-                            ),
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded => DocumentContentWidget(
-                                      document: state.document!,
-                                      queryString:
-                                          widget.titleAndContentQueryString,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                }
-                              ],
-                            ),
-                            CustomScrollView(
-                              slivers: [
-                                SliverOverlapInjector(
-                                  handle: NestedScrollView
-                                      .sliverOverlapAbsorberHandleFor(context),
-                                ),
-                                switch (state.status) {
-                                  LoadingStatus.loaded =>
-                                    DocumentMetaDataWidget(
-                                      document: state.document!,
-                                      itemSpacing: _itemSpacing,
-                                      metaData: state.metaData!,
-                                    ),
-                                  LoadingStatus.error => _buildErrorState(),
-                                  _ => _buildLoadingState(),
-                                },
-                              ],
-                            ),
+                      child: TabBarView(
+                        children: [
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentOverviewWidget(
+                                    document: state.document!,
+                                    itemSpacing: _itemSpacing,
+                                    queryString:
+                                        widget.titleAndContentQueryString,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentContentWidget(
+                                    document: state.document!,
+                                    queryString:
+                                        widget.titleAndContentQueryString,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              }
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentMetaDataWidget(
+                                    document: state.document!,
+                                    itemSpacing: _itemSpacing,
+                                    metaData: state.metaData!,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          CustomScrollView(
+                            controller: _pagingScrollController,
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              SimilarDocumentsView(
+                                pagingScrollController: _pagingScrollController,
+                              ).paddedSymmetrically(
+                                vertical: 16,
+                                sliver: true,
+                              ),
+                            ],
+                          ),
+                          CustomScrollView(
+                            slivers: [
+                              SliverOverlapInjector(
+                                handle: NestedScrollView
+                                    .sliverOverlapAbsorberHandleFor(context),
+                              ),
+                              switch (state.status) {
+                                LoadingStatus.loaded => DocumentNotesWidget(
+                                    document: state.document!,
+                                  ).paddedSymmetrically(
+                                    vertical: 16,
+                                    sliver: true,
+                                  ),
+                                LoadingStatus.error => _buildErrorState(),
+                                _ => _buildLoadingState(),
+                              },
+                            ],
+                          ),
+                          if (hasMultiUserSupport)
                             CustomScrollView(
                               controller: _pagingScrollController,
                               slivers: [
@@ -297,33 +359,27 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                   handle: NestedScrollView
                                       .sliverOverlapAbsorberHandleFor(context),
                                 ),
-                                SimilarDocumentsView(
-                                  pagingScrollController:
-                                      _pagingScrollController,
-                                ),
+                                switch (state.status) {
+                                  LoadingStatus.loaded =>
+                                    DocumentPermissionsWidget(
+                                      document: state.document!,
+                                    ).paddedSymmetrically(
+                                      vertical: 16,
+                                      sliver: true,
+                                    ),
+                                  LoadingStatus.error => _buildErrorState(),
+                                  _ => _buildLoadingState(),
+                                }
                               ],
                             ),
-                            if (hasMultiUserSupport)
-                              CustomScrollView(
-                                controller: _pagingScrollController,
-                                slivers: [
-                                  SliverOverlapInjector(
-                                    handle: NestedScrollView
-                                        .sliverOverlapAbsorberHandleFor(
-                                            context),
-                                  ),
-                                  switch (state.status) {
-                                    LoadingStatus.loaded =>
-                                      DocumentPermissionsWidget(
-                                        document: state.document!,
-                                      ),
-                                    LoadingStatus.error => _buildErrorState(),
-                                    _ => _buildLoadingState(),
-                                  }
-                                ],
+                        ]
+                            .map(
+                              (child) => Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: child,
                               ),
-                          ],
-                        ),
+                            )
+                            .toList(),
                       ),
                     );
                   },
