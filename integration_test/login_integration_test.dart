@@ -1,224 +1,130 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:mockito/mockito.dart';
-// import 'package:paperless_api/paperless_api.dart';
-// import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-// import 'package:paperless_mobile/core/service/connectivity_status.service.dart';
-// import 'package:paperless_mobile/core/store/local_vault.dart';
-// import 'package:paperless_mobile/di_test_mocks.mocks.dart';
-// import 'package:paperless_mobile/features/settings/bloc/application_settings_cubit.dart';
-// import 'package:paperless_mobile/features/settings/model/application_settings_state.dart';
-// import 'package:paperless_mobile/features/settings/model/view_type.dart';
+import 'dart:io';
 
-// import 'src/framework.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:paperless_mobile/core/database/hive/hive_config.dart';
+import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
+import 'package:paperless_mobile/core/database/hive/hive_initialization.dart';
+import 'package:paperless_mobile/core/database/tables/global_settings.dart';
+import 'package:paperless_mobile/core/security/session_manager.dart';
+import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:paperless_mobile/features/login/services/authentication_service.dart';
+import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:paperless_mobile/keys.dart';
+import 'package:paperless_mobile/main.dart'
+    show initializeDefaultParameters, AppEntrypoint;
+import 'package:path_provider/path_provider.dart';
 
-// void main() async {
-//   final t = await initializeTestingFramework(languageCode: 'de');
+import 'src/mocks/mock_paperless_api.dart';
 
-//   const testServerUrl = 'https://example.com';
-//   const testUsername = 'user';
-//   const testPassword = 'pass';
+class MockConnectivityStatusService extends Mock
+    implements ConnectivityStatusService {}
 
-//   final serverAddressField = find.byKey(const ValueKey('login-server-address'));
-//   final usernameField = find.byKey(const ValueKey('login-username'));
-//   final passwordField = find.byKey(const ValueKey('login-password'));
-//   final loginBtn = find.byKey(const ValueKey('login-login-button'));
+class MockLocalAuthService extends Mock implements LocalAuthenticationService {}
 
-//   testWidgets('Test successful login flow', (WidgetTester tester) async {
-//     await initAndLaunchTestApp(tester, () async {
-//       // Initialize dat for mocked classes
-//       when((getIt<ConnectivityStatusService>()).connectivityChanges())
-//           .thenAnswer((i) => Stream.value(true));
-//       when((getIt<LocalVault>() as MockLocalVault)
-//               .loadAuthenticationInformation())
-//           .thenAnswer((realInvocation) async => null);
-//       when((getIt<LocalVault>() as MockLocalVault).loadApplicationSettings())
-//           .thenAnswer((realInvocation) async => ApplicationSettingsState(
-//                 preferredLocaleSubtag: 'en',
-//                 preferredThemeMode: ThemeMode.light,
-//                 isLocalAuthenticationEnabled: false,
-//                 preferredViewType: ViewType.list,
-//                 showInboxOnStartup: false,
-//               ));
-//       when(getIt<PaperlessAuthenticationApi>().login(
-//         username: testUsername,
-//         password: testPassword,
-//       )).thenAnswer((i) => Future.value("eyTestToken"));
+class MockSessionManager extends Mock implements SessionManager {}
 
-//       await getIt<ConnectivityCubit>().initialize();
-//       await getIt<ApplicationSettingsCubit>().initialize();
-//     });
+class MockLocalNotificationService extends Mock
+    implements LocalNotificationService {}
 
-//     // Mocked classes
+void main() async {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  const locale = Locale("en", "US");
+  const testServerUrl = 'https://example.com';
+  const testUsername = 'user';
+  const testPassword = 'pass';
 
-//     await t.binding.waitUntilFirstFrameRasterized;
-//     await tester.pumpAndSettle();
+  final hiveDirectory = await getTemporaryDirectory();
 
-//     await tester.enterText(serverAddressField, testServerUrl);
-//     await tester.pumpAndSettle();
+  late ConnectivityStatusService connectivityStatusService;
+  late MockPaperlessApiFactory paperlessApiFactory;
+  late AuthenticationCubit authenticationCubit;
+  late LocalNotificationService localNotificationService;
+  late SessionManager sessionManager;
+  final localAuthService = MockLocalAuthService();
 
-//     await tester.enterText(usernameField, testUsername);
-//     await tester.pumpAndSettle();
+  setUp(() async {
+    connectivityStatusService = MockConnectivityStatusService();
+    paperlessApiFactory = MockPaperlessApiFactory();
+    sessionManager = MockSessionManager();
+    localNotificationService = MockLocalNotificationService();
 
-//     await tester.enterText(passwordField, testPassword);
+    authenticationCubit = AuthenticationCubit(
+      localAuthService,
+      paperlessApiFactory,
+      sessionManager,
+      connectivityStatusService,
+      localNotificationService,
+    );
+    await initHive(
+      hiveDirectory,
+      locale.toString(),
+    );
+  });
+  testWidgets(
+      'A user shall be successfully logged in when providing correct credentials.',
+      (tester) async {
+    // Reset data to initial state with given [locale].
+    await Hive.globalSettingsBox.setValue(
+      GlobalSettings(
+        preferredLocaleSubtag: locale.toString(),
+        loggedInUserId: null,
+      ),
+    );
+    when(paperlessApiFactory.authenticationApi.login(
+      username: testUsername,
+      password: testPassword,
+    )).thenAnswer((_) async => "token");
 
-//     FocusManager.instance.primaryFocus?.unfocus();
-//     await tester.pumpAndSettle();
+    await initializeDefaultParameters();
 
-//     await tester.tap(loginBtn);
+    await tester.pumpWidget(
+      AppEntrypoint(
+        apiFactory: paperlessApiFactory,
+        authenticationCubit: authenticationCubit,
+        connectivityStatusService: connectivityStatusService,
+        localNotificationService: localNotificationService,
+        localAuthService: localAuthService,
+        sessionManager: sessionManager,
+      ),
+    );
+    await tester.binding.waitUntilFirstFrameRasterized;
+    await tester.pumpAndSettle();
 
-//     verify(getIt<PaperlessAuthenticationApi>().login(
-//       username: testUsername,
-//       password: testPassword,
-//     )).called(1);
-//   });
+    await tester.enterText(
+      find.byKey(TestKeys.login.serverAddressFormField),
+      testServerUrl,
+    );
+    await tester.pumpAndSettle();
 
-//   testWidgets('Test login validation missing password',
-//       (WidgetTester tester) async {
-//     await initAndLaunchTestApp(tester, () async {
-//       when((getIt<ConnectivityStatusService>() as MockConnectivityStatusService)
-//               .connectivityChanges())
-//           .thenAnswer((i) => Stream.value(true));
-//       when((getIt<LocalVault>() as MockLocalVault)
-//               .loadAuthenticationInformation())
-//           .thenAnswer((realInvocation) async => null);
+    await tester.press(find.byKey(TestKeys.login.continueButton));
 
-//       when((getIt<LocalVault>() as MockLocalVault).loadApplicationSettings())
-//           .thenAnswer((realInvocation) async => ApplicationSettingsState(
-//                 preferredLocaleSubtag: 'en',
-//                 preferredThemeMode: ThemeMode.light,
-//                 isLocalAuthenticationEnabled: false,
-//                 preferredViewType: ViewType.list,
-//                 showInboxOnStartup: false,
-//               ));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(TestKeys.login.usernameFormField),
+      findsOneWidget,
+    );
 
-//       await getIt<ConnectivityCubit>().initialize();
-//       await getIt<ApplicationSettingsCubit>().initialize();
-//     });
-//     // Mocked classes
+    await tester.enterText(
+      find.byKey(TestKeys.login.usernameFormField),
+      testUsername,
+    );
+    await tester.enterText(
+      find.byKey(TestKeys.login.passwordFormField),
+      testUsername,
+    );
+    await tester.pumpAndSettle();
 
-//     // Initialize dat for mocked classes
+    await tester.press(find.byKey(TestKeys.login.loginButton));
+    await tester.pumpAndSettle();
 
-//     await t.binding.waitUntilFirstFrameRasterized;
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(serverAddressField, testServerUrl);
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(usernameField, testUsername);
-//     await tester.pumpAndSettle();
-
-//     FocusManager.instance.primaryFocus?.unfocus();
-//     await tester.pumpAndSettle();
-
-//     await tester.tap(loginBtn);
-//     await tester.pumpAndSettle();
-
-//     verifyNever(
-//         (getIt<PaperlessAuthenticationApi>() as MockPaperlessAuthenticationApi)
-//             .login(
-//       username: testUsername,
-//       password: testPassword,
-//     ));
-//     expect(
-//       find.textContaining(t.translations.passwordMustNotBeEmpty),
-//       findsOneWidget,
-//     );
-//   });
-
-//   testWidgets('Test login validation missing username',
-//       (WidgetTester tester) async {
-//     await initAndLaunchTestApp(tester, () async {
-//       when((getIt<ConnectivityStatusService>() as MockConnectivityStatusService)
-//               .connectivityChanges())
-//           .thenAnswer((i) => Stream.value(true));
-//       when((getIt<LocalVault>() as MockLocalVault)
-//               .loadAuthenticationInformation())
-//           .thenAnswer((realInvocation) async => null);
-//       when((getIt<LocalVault>() as MockLocalVault).loadApplicationSettings())
-//           .thenAnswer((realInvocation) async => ApplicationSettingsState(
-//                 preferredLocaleSubtag: 'en',
-//                 preferredThemeMode: ThemeMode.light,
-//                 isLocalAuthenticationEnabled: false,
-//                 preferredViewType: ViewType.list,
-//                 showInboxOnStartup: false,
-//               ));
-//       await getIt<ConnectivityCubit>().initialize();
-//       await getIt<ApplicationSettingsCubit>().initialize();
-//     });
-
-//     await t.binding.waitUntilFirstFrameRasterized;
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(serverAddressField, testServerUrl);
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(passwordField, testPassword);
-//     await tester.pumpAndSettle();
-
-//     FocusManager.instance.primaryFocus?.unfocus();
-//     await tester.pumpAndSettle();
-
-//     await tester.tap(loginBtn);
-//     await tester.pumpAndSettle();
-
-//     verifyNever(
-//         (getIt<PaperlessAuthenticationApi>() as MockPaperlessAuthenticationApi)
-//             .login(
-//       username: testUsername,
-//       password: testPassword,
-//     ));
-//     expect(
-//       find.textContaining(t.translations.usernameMustNotBeEmpty),
-//       findsOneWidget,
-//     );
-//   });
-
-//   testWidgets('Test login validation missing server address',
-//       (WidgetTester tester) async {
-//     initAndLaunchTestApp(tester, () async {
-//       when((getIt<ConnectivityStatusService>()).connectivityChanges())
-//           .thenAnswer((i) => Stream.value(true));
-
-//       when((getIt<LocalVault>()).loadAuthenticationInformation())
-//           .thenAnswer((realInvocation) async => null);
-
-//       when((getIt<LocalVault>()).loadApplicationSettings())
-//           .thenAnswer((realInvocation) async => ApplicationSettingsState(
-//                 preferredLocaleSubtag: 'en',
-//                 preferredThemeMode: ThemeMode.light,
-//                 isLocalAuthenticationEnabled: false,
-//                 preferredViewType: ViewType.list,
-//                 showInboxOnStartup: false,
-//               ));
-
-//       await getIt<ConnectivityCubit>().initialize();
-//       await getIt<ApplicationSettingsCubit>().initialize();
-//     });
-
-//     await t.binding.waitUntilFirstFrameRasterized;
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(usernameField, testUsername);
-//     await tester.pumpAndSettle();
-
-//     await tester.enterText(passwordField, testPassword);
-//     await tester.pumpAndSettle();
-
-//     FocusManager.instance.primaryFocus?.unfocus();
-//     await tester.pumpAndSettle();
-
-//     await tester.tap(loginBtn);
-//     await tester.pumpAndSettle();
-
-//     verifyNever(getIt<PaperlessAuthenticationApi>().login(
-//       username: testUsername,
-//       password: testPassword,
-//     ));
-//     expect(
-//       find.textContaining(
-//           t.translations.loginPageServerUrlValidatorMessageText),
-//       findsOneWidget,
-//     );
-//   });
-// }
+    expect(
+      find.byKey(TestKeys.login.loggingInScreen),
+      findsOneWidget,
+    );
+  });
+}

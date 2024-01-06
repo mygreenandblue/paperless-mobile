@@ -82,14 +82,14 @@ SystemUiOverlayStyle buildOverlayStyle(
     Brightness.light => SystemUiOverlayStyle.dark.copyWith(
         systemNavigationBarColor: color,
         systemNavigationBarDividerColor: color,
-        // statusBarColor: theme.colorScheme.background,
+        statusBarColor: theme.colorScheme.background,
         // statusBarColor: theme.colorScheme.background,
         // systemNavigationBarDividerColor: theme.colorScheme.surface,
       ),
     Brightness.dark => SystemUiOverlayStyle.light.copyWith(
         systemNavigationBarColor: color,
         systemNavigationBarDividerColor: color,
-        // statusBarColor: theme.colorScheme.background,
+        statusBarColor: theme.colorScheme.background,
         // statusBarColor: theme.colorScheme.background,
         // systemNavigationBarDividerColor: theme.colorScheme.surface,
       ),

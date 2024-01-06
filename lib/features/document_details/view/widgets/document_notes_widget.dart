@@ -92,6 +92,8 @@ class _DocumentNotesWidgetState extends State<DocumentNotesWidget> {
                     label: Text(S.of(context)!.addNote),
                     onPressed: () async {
                       _formKey.currentState?.save();
+                      FocusScope.of(context).unfocus();
+
                       if (_formKey.currentState?.validate() ?? false) {
                         setState(() {
                           _isNoteSubmitting = true;
