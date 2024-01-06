@@ -6,11 +6,13 @@ import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 class RelativeDateRangePickerHelper extends StatefulWidget {
   final FormFieldState<DateRangeQuery> field;
   final void Function(DateRangeQuery value)? onChanged;
+  final EdgeInsets padding;
 
   const RelativeDateRangePickerHelper({
     super.key,
     required this.field,
     this.onChanged,
+    required this.padding,
   });
 
   @override
@@ -24,25 +26,32 @@ class _RelativeDateRangePickerHelperState
   Widget build(BuildContext context) {
     return SizedBox(
       height: 64,
-      child: ListView.separated(
-        itemCount: _options.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8.0),
-        itemBuilder: (context, index) {
-          final option = _options[index];
-          return ColoredChipWrapper(
-            child: FilterChip(
-              label: Text(option.title),
-              onSelected: (isSelected) {
-                final value =
-                    isSelected ? option.value : const RelativeDateRangeQuery();
-                widget.field.didChange(value);
-                widget.onChanged?.call(value);
-              },
-              selected: widget.field.value == option.value,
-            ),
-          );
-        },
+      child: CustomScrollView(
         scrollDirection: Axis.horizontal,
+        slivers: [
+          SliverToBoxAdapter(child: SizedBox(width: widget.padding.left)),
+          SliverList.separated(
+            itemCount: _options.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8.0),
+            itemBuilder: (context, index) {
+              final option = _options[index];
+              return ColoredChipWrapper(
+                child: FilterChip(
+                  label: Text(option.title),
+                  onSelected: (isSelected) {
+                    final value = isSelected
+                        ? option.value
+                        : const RelativeDateRangeQuery();
+                    widget.field.didChange(value);
+                    widget.onChanged?.call(value);
+                  },
+                  selected: widget.field.value == option.value,
+                ),
+              );
+            },
+          ),
+          SliverToBoxAdapter(child: SizedBox(width: widget.padding.right))
+        ],
       ),
     );
   }

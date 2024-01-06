@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
@@ -93,14 +94,14 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
 
   List<Widget> _buildFormFieldList(LabelRepository labelRepository) {
     return [
-      _buildQueryFormField(),
+      _buildQueryFormField().paddedSymmetrically(horizontal: 12),
       Align(
         alignment: Alignment.centerLeft,
         child: Text(
           S.of(context)!.advanced,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-      ),
+      ).paddedLTRB(12, 16, 12, 0),
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkCreatedAt,
         initialValue: widget.initialFilter.created,
@@ -108,6 +109,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
         onChanged: (_) {
           _checkQueryConstraints();
         },
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       ),
       FormBuilderExtendedDateRangePicker(
         name: DocumentFilterForm.fkAddedAt,
@@ -116,17 +118,28 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
         onChanged: (_) {
           _checkQueryConstraints();
         },
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       ),
-      _buildCorrespondentFormField(labelRepository.correspondents),
-      _buildDocumentTypeFormField(labelRepository.documentTypes),
-      _buildStoragePathFormField(labelRepository.storagePaths),
-      _buildTagsFormField(labelRepository.tags),
-    ]
-        .map((w) => SliverPadding(
-              padding: widget.padding,
-              sliver: SliverToBoxAdapter(child: w),
-            ))
-        .toList();
+      _buildCorrespondentFormField(labelRepository.correspondents)
+          .paddedSymmetrically(
+        horizontal: 16,
+        vertical: 4,
+      ),
+      _buildDocumentTypeFormField(labelRepository.documentTypes)
+          .paddedSymmetrically(
+        horizontal: 16,
+        vertical: 4,
+      ),
+      _buildStoragePathFormField(labelRepository.storagePaths)
+          .paddedSymmetrically(
+        horizontal: 16,
+        vertical: 4,
+      ),
+      _buildTagsFormField(labelRepository.tags).paddedSymmetrically(
+        horizontal: 16,
+        vertical: 4,
+      ),
+    ].map((e) => SliverToBoxAdapter(child: e)).toList();
   }
 
   void _checkQueryConstraints() {

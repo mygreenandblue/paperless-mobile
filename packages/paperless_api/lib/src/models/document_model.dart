@@ -73,7 +73,7 @@ class DocumentModel extends Equatable {
     this.userCanChange,
     this.permissions,
     this.customFields = const [],
-    this.notes = const [],
+    this.notes = const [] = const [],
   });
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) =>

@@ -115,11 +115,11 @@ class FileService {
         formatBytes(await getDirSizeInBytes(consumptionDir));
 
     logger.ft(
-      "Removing scans...",
+      "Clearing scans directory...",
       className: runtimeType.toString(),
       methodName: "clearUserData",
     );
-    await _temporaryScansDirectory.delete(recursive: true);
+    await _temporaryScansDirectory.clear();
     logger.ft(
       "Removed $scanDirSize...",
       className: runtimeType.toString(),

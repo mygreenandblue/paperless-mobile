@@ -14,5 +14,6 @@ class Permissions with _$Permissions {
     @HiveField(1) required UsersAndGroupsPermissions change,
   }) = _Permissions;
 
-  factory Permissions.fromJson(Map<String, dynamic> json) => _$PermissionsFromJson(json);
+  factory Permissions.fromJson(Map<String, dynamic> json) =>
+      _$PermissionsFromJson(json);
 }
