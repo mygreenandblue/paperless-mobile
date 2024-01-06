@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/constants.dart';
 import 'package:paperless_mobile/core/bloc/transient_error.dart';
 import 'package:paperless_mobile/core/database/hive/hive_config.dart';
 import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
@@ -619,12 +620,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       final response = await dio.get(
         "/api/",
-        options: Options(
-          sendTimeout: timeout,
-        ),
+        options: Options(sendTimeout: timeout),
       );
-      final apiVersion =
+      int apiVersion =
           int.parse(response.headers.value('x-api-version') ?? "3");
+      if (apiVersion > latestSupportedApiVersion) {
+        logger.fw(
+          "The server is running a newer API version ($apiVersion) than the app supports (v$latestSupportedApiVersion), falling back to latest supported version (v$latestSupportedApiVersion). "
+          "Warning: This might lead to unexpected behavior!",
+          className: runtimeType.toString(),
+          methodName: '_getApiVersion',
+        );
+        apiVersion = latestSupportedApiVersion;
+      }
       logger.fd(
         "Successfully retrieved API version ($apiVersion).",
         className: runtimeType.toString(),
