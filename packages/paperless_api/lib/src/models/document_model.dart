@@ -52,7 +52,7 @@ class DocumentModel extends Equatable {
 
   /// Only present if full_perms=true
   final Permissions? permissions;
-  final Iterable<CustomFieldModel> customFields;
+  final Iterable<CustomFieldInstance> customFields;
 
   const DocumentModel({
     required this.id,
@@ -98,7 +98,7 @@ class DocumentModel extends Equatable {
     bool? userCanChange,
     Iterable<NoteModel>? notes,
     Permissions? permissions,
-    Iterable<CustomFieldModel>? customFields,
+    Iterable<CustomFieldInstance>? customFields,
   }) {
     return DocumentModel(
       id: id,

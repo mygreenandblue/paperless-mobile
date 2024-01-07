@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
+import 'package:paperless_mobile/features/login/model/client_certificate.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:path/path.dart' as p;
@@ -15,14 +15,16 @@ class ClientCertificateFormField extends StatefulWidget {
   static const fkClientCertificate = 'clientCertificate';
 
   final String? initialPassphrase;
+  final String? initialFilename;
   final Uint8List? initialBytes;
 
-  final ValueChanged<ClientCertificateFormModel?>? onChanged;
+  final ValueChanged<ClientCertificate?>? onChanged;
   const ClientCertificateFormField({
     super.key,
     this.onChanged,
     this.initialPassphrase,
     this.initialBytes,
+    this.initialFilename,
   });
 
   @override
@@ -32,23 +34,23 @@ class ClientCertificateFormField extends StatefulWidget {
 
 class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
     with AutomaticKeepAliveClientMixin {
-  File? _selectedFile;
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FormBuilderField<ClientCertificateFormModel?>(
+    return FormBuilderField<ClientCertificate?>(
       key: const ValueKey('login-client-cert'),
       name: ClientCertificateFormField.fkClientCertificate,
       onChanged: widget.onChanged,
       initialValue: widget.initialBytes != null
-          ? ClientCertificateFormModel(
+          ? ClientCertificate(
               bytes: widget.initialBytes!,
+              filename: widget.initialFilename!,
               passphrase: widget.initialPassphrase,
             )
           : null,
       builder: (field) {
         final theme =
-            Theme.of(context).copyWith(dividerColor: Colors.transparent); //new
+            Theme.of(context).copyWith(dividerColor: Colors.transparent);
         return Theme(
           data: theme,
           child: ExpansionTile(
@@ -74,11 +76,10 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
                             _buildSelectedFileText(field).paddedOnly(left: 8),
                           ],
                         ),
-                        if (_selectedFile != null)
+                        if (field.value?.filename != null)
                           IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () => setState(() {
-                              _selectedFile = null;
                               field.didChange(null);
                             }),
                           )
@@ -103,7 +104,7 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
                     //         : null,
                     //   ),
                     // ),
-                    if (_selectedFile != null) ...[
+                    if (field.value?.filename != null) ...[
                       ObscuredInputTextFormField(
                         key: const ValueKey('login-client-cert-passphrase'),
                         initialValue: field.value?.passphrase,
@@ -124,7 +125,7 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
   }
 
   Future<void> _onSelectFile(
-    FormFieldState<ClientCertificateFormModel?> field,
+    FormFieldState<ClientCertificate?> field,
   ) async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
@@ -137,21 +138,18 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
       showSnackBar(context, S.of(context)!.invalidCertificateFormat);
       return;
     }
-    File file = File(result.files.single.path!);
-    setState(() {
-      _selectedFile = file;
-    });
+    File file = File(path);
     final bytes = await file.readAsBytes();
 
-    final changedValue = field.value?.copyWith(bytes: bytes) ??
-        ClientCertificateFormModel(bytes: bytes);
+    final changedValue = ClientCertificate(
+      bytes: bytes,
+      filename: p.basename(path),
+    );
     field.didChange(changedValue);
   }
 
-  Widget _buildSelectedFileText(
-      FormFieldState<ClientCertificateFormModel?> field) {
+  Widget _buildSelectedFileText(FormFieldState<ClientCertificate?> field) {
     if (field.value == null) {
-      assert(_selectedFile == null);
       return Text(
         S.of(context)!.selectFile,
         style: Theme.of(context).textTheme.labelMedium?.apply(
@@ -159,9 +157,8 @@ class _ClientCertificateFormFieldState extends State<ClientCertificateFormField>
             ),
       );
     } else {
-      assert(_selectedFile != null);
       return Text(
-        _selectedFile!.path.split("/").last,
+        p.basename(field.value!.filename),
         style: const TextStyle(
           overflow: TextOverflow.ellipsis,
         ),

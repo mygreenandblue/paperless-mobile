@@ -12,7 +12,6 @@ import 'package:paperless_mobile/core/model/info_message_exception.dart';
 import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate_form_model.dart';
 import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
 import 'package:paperless_mobile/features/login/model/reachability_status.dart';
 import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
@@ -230,75 +229,14 @@ class _AddAccountPageState extends State<AddAccountPage> {
         ),
       ),
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.titleText),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: widget.bottomLeftButton != null
-              ? MainAxisAlignment.spaceBetween
-              : MainAxisAlignment.end,
-          children: [
-            if (widget.bottomLeftButton != null) widget.bottomLeftButton!,
-            FilledButton(
-              child: Text(S.of(context)!.loginPageSignInTitle),
-              onPressed: _reachabilityStatus == ReachabilityStatus.reachable &&
-                      !_isFormSubmitted
-                  ? _onSubmit
-                  : null,
-            ),
-          ],
-        ),
-      ),
-      resizeToAvoidBottomInset: true,
-      body: AutofillGroup(
-        child: FormBuilder(
-          key: _formKey,
-          child: ListView(
-            children: [
-              ServerAddressFormField(
-                initialValue: widget.initialServerUrl,
-                onChanged: (address) {
-                  _updateReachability(address);
-                },
-              ).padded(),
-              ClientCertificateFormField(
-                initialBytes: widget.initialClientCertificate?.bytes,
-                initialPassphrase: widget.initialClientCertificate?.passphrase,
-                onChanged: (_) => _updateReachability(),
-              ).padded(),
-              _buildStatusIndicator(),
-              if (_reachabilityStatus == ReachabilityStatus.reachable) ...[
-                UserCredentialsFormField(
-                  formKey: _formKey,
-                  initialUsername: widget.initialUsername,
-                  initialPassword: widget.initialPassword,
-                  onFieldsSubmitted: _onSubmit,
-                ),
-                Text(
-                  S.of(context)!.loginRequiredPermissionsHint,
-                  style: Theme.of(context).textTheme.bodySmall?.apply(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.6),
-                      ),
-                ).padded(16),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Future<ReachabilityStatus> _updateReachability([String? address]) async {
     setState(() {
       _isCheckingConnection = true;
     });
-    final certForm =
-        _formKey.currentState?.getRawValue<ClientCertificateFormModel>(
+    final selectedCertificate =
+        _formKey.currentState?.getRawValue<ClientCertificate>(
       ClientCertificateFormField.fkClientCertificate,
     );
     final status = await context
@@ -307,12 +245,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           address ??
               _formKey.currentState!
                   .getRawValue(ServerAddressFormField.fkServerAddress),
-          certForm != null
-              ? ClientCertificate(
-                  bytes: certForm.bytes,
-                  passphrase: certForm.passphrase,
-                )
-              : null,
+          selectedCertificate,
         );
     setState(() {
       _isCheckingConnection = false;
@@ -383,16 +316,10 @@ class _AddAccountPageState extends State<AddAccountPage> {
     });
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final form = _formKey.currentState!.value;
-      ClientCertificate? clientCert;
       final clientCertFormModel =
           form[ClientCertificateFormField.fkClientCertificate]
-              as ClientCertificateFormModel?;
-      if (clientCertFormModel != null) {
-        clientCert = ClientCertificate(
-          bytes: clientCertFormModel.bytes,
-          passphrase: clientCertFormModel.passphrase,
-        );
-      }
+              as ClientCertificate?;
+
       final credentials =
           form[UserCredentialsFormField.fkCredentials] as LoginFormCredentials;
       try {
@@ -401,7 +328,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           credentials.username!,
           credentials.password!,
           form[ServerAddressFormField.fkServerAddress],
-          clientCert,
+          clientCertFormModel,
         );
       } on PaperlessApiException catch (error) {
         showErrorMessage(context, error);

@@ -7,7 +7,7 @@ part 'custom_field_model.g.dart';
 @JsonSerializable()
 class CustomFieldModel with EquatableMixin {
   final int? id;
-  final String name;
+  final String? name;
   final CustomFieldDataType dataType;
 
   CustomFieldModel({
@@ -23,4 +23,19 @@ class CustomFieldModel with EquatableMixin {
       _$CustomFieldModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CustomFieldModelToJson(this);
+}
+
+/// An instance of the [CustomFieldModel].
+@JsonSerializable()
+class CustomFieldInstance {
+  final int? id;
+  final dynamic value;
+
+  const CustomFieldInstance({
+    this.id,
+    this.value,
+  });
+
+  factory CustomFieldInstance.fromJson(Map<String, dynamic> json) =>
+      _$CustomFieldInstanceFromJson(json);
 }
