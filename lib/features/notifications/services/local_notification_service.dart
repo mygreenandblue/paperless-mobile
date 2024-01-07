@@ -44,7 +44,7 @@ class LocalNotificationService {
     await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission();
+        ?.requestNotificationsPermission();
   }
 
   Future<void> notifyFileDownload({
@@ -56,7 +56,7 @@ class LocalNotificationService {
       "File download complete.",
       NotificationDetails(
         android: AndroidNotificationDetails(
-          NotificationChannel.fileDownload.id + "_${filePath.hashCode}",
+          "${NotificationChannel.fileDownload.id}_${filePath.hashCode}",
           NotificationChannel.fileDownload.name,
           importance: Importance.max,
           priority: Priority.high,
@@ -92,7 +92,7 @@ class LocalNotificationService {
           : tr.notificationDownloadingDocument,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          NotificationChannel.documentDownload.id + "_${document.id}",
+          "${NotificationChannel.documentDownload.id}_${document.id}",
           NotificationChannel.documentDownload.name,
           progress: ((progress ?? 0) * 100).toInt(),
           maxProgress: 100,
@@ -146,7 +146,7 @@ class LocalNotificationService {
           : tr.notificationDownloadingDocument,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          NotificationChannel.documentDownload.id + "_$filename",
+          "${NotificationChannel.documentDownload.id}_$filename",
           NotificationChannel.documentDownload.name,
           ongoing: !finished,
           indeterminate: true,

@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:pdfx/pdfx.dart';
+import 'package:pdfrx/pdfrx.dart';
 
 class DocumentView extends StatefulWidget {
   final Future<Uint8List> documentBytes;
@@ -10,27 +12,37 @@ class DocumentView extends StatefulWidget {
   final bool showAppBar;
   final bool showControls;
   const DocumentView({
-    Key? key,
+    super.key,
     required this.documentBytes,
     this.showAppBar = true,
     this.showControls = true,
     this.title,
-  }) : super(key: key);
+  });
 
   @override
   State<DocumentView> createState() => _DocumentViewState();
 }
 
 class _DocumentViewState extends State<DocumentView> {
-  late final PdfController _controller;
+  final PdfViewerController _controller = PdfViewerController();
   int _currentPage = 1;
   int? _totalPages;
+
   @override
   void initState() {
     super.initState();
-    final document =
-        widget.documentBytes.then((value) => PdfDocument.openData(value));
-    _controller = PdfController(document: document);
+    _controller.addListener(() {
+      if (mounted) {
+        if (_controller.pageNumber != null) {
+          setState(() {
+            _currentPage = _controller.pageNumber!;
+          });
+        }
+        setState(() {
+          _totalPages = _controller.pages.length;
+        });
+      }
+    });
   }
 
   @override
@@ -45,8 +57,7 @@ class _DocumentViewState extends State<DocumentView> {
         ? 0.milliseconds
         : 100.milliseconds;
     final canGoToNextPage = _totalPages != null && _currentPage < _totalPages!;
-    final canGoToPreviousPage =
-        _controller.pagesCount != null && _currentPage > 1;
+    final canGoToPreviousPage = _totalPages != null && _currentPage > 1;
     return Scaffold(
       appBar: widget.showAppBar
           ? AppBar(
@@ -63,9 +74,8 @@ class _DocumentViewState extends State<DocumentView> {
                         IconButton.filled(
                           onPressed: canGoToPreviousPage
                               ? () async {
-                                  await _controller.previousPage(
-                                    duration: pageTransitionDuration,
-                                    curve: Curves.easeOut,
+                                  await _controller.goToPage(
+                                    pageNumber: _currentPage - 1,
                                   );
                                 }
                               : null,
@@ -75,9 +85,8 @@ class _DocumentViewState extends State<DocumentView> {
                         IconButton.filled(
                           onPressed: canGoToNextPage
                               ? () async {
-                                  await _controller.nextPage(
-                                    duration: pageTransitionDuration,
-                                    curve: Curves.easeOut,
+                                  await _controller.goToPage(
+                                    pageNumber: _currentPage + 1,
                                   );
                                 }
                               : null,
@@ -86,14 +95,13 @@ class _DocumentViewState extends State<DocumentView> {
                       ],
                     ),
                   ),
-                  PdfPageNumber(
-                    controller: _controller,
-                    builder: (context, loadingState, page, pagesCount) {
-                      if (loadingState != PdfLoadingState.success) {
+                  Builder(
+                    builder: (context) {
+                      if (_totalPages == null) {
                         return const Text("-/-");
                       }
                       return Text(
-                        "$page/$pagesCount",
+                        "$_currentPage/$_totalPages",
                         style: Theme.of(context).textTheme.titleMedium,
                       ).padded();
                     },
@@ -102,21 +110,61 @@ class _DocumentViewState extends State<DocumentView> {
               ),
             )
           : null,
-      body: PdfView(
-        controller: _controller,
-        onDocumentLoaded: (document) {
-          if (mounted) {
-            setState(() {
-              _totalPages = document.pagesCount;
-            });
+      body: FutureBuilder<Uint8List>(
+        future: widget.documentBytes,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
-        },
-        onPageChanged: (page) {
-          if (mounted) {
-            setState(() {
-              _currentPage = page;
-            });
-          }
+
+          return PdfViewer.data(
+            snapshot.data!,
+            controller: _controller,
+            anchor: PdfPageAnchor.all,
+            displayParams: PdfViewerParams(
+              backgroundColor: Theme.of(context).colorScheme.background,
+              margin: 0,
+              layoutPages: (pages, params) {
+                final height =
+                    pages.fold(0.0, (prev, page) => max(prev, page.height)) +
+                        params.margin * 2;
+                final pageLayouts = <Rect>[];
+                double x = params.margin;
+                for (var page in pages) {
+                  pageLayouts.add(
+                    Rect.fromLTWH(
+                      x,
+                      (height - page.height) / 2, // center vertically
+                      page.width,
+                      page.height,
+                    ),
+                  );
+                  x += page.width + params.margin;
+                }
+                return PdfPageLayout(
+                  pageLayouts: pageLayouts,
+                  documentSize: Size(x, height),
+                );
+              },
+            ),
+            // controller: _controller,
+            // onDocumentLoaded: (document) {
+            //   if (mounted) {
+            //     setState(() {
+            //       _totalPages = document.pagesCount;
+            //     });
+            //   }
+            // },
+            // onPageChanged: (page) {
+            //   if (mounted) {
+            //     setState(() {
+            //       _currentPage = page;
+            //     });
+            //   }
+            // },
+          );
         },
       ),
     );
