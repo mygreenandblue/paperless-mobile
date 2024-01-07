@@ -69,13 +69,13 @@ class RelativeDateRangeQuery extends DateRangeQuery {
   DateTime get dateTime {
     switch (unit) {
       case DateRangeUnit.day:
-        return Jiffy().subtract(days: offset).dateTime;
+        return Jiffy.now().subtract(days: offset).dateTime;
       case DateRangeUnit.week:
-        return Jiffy().subtract(weeks: offset).dateTime;
+        return Jiffy.now().subtract(weeks: offset).dateTime;
       case DateRangeUnit.month:
-        return Jiffy().subtract(months: offset).dateTime;
+        return Jiffy.now().subtract(months: offset).dateTime;
       case DateRangeUnit.year:
-        return Jiffy().subtract(years: offset).dateTime;
+        return Jiffy.now().subtract(years: offset).dateTime;
     }
   }
 

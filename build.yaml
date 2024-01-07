@@ -5,4 +5,4 @@ targets:
         generate_for:
           - lib/**.dart
           - test/**.dart
-          - integration_test/**.dart
+          - integration_test/src/mocks/**.dart

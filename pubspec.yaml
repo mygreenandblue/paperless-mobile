@@ -40,33 +40,33 @@ dependencies:
   path_provider: ^2.0.10
   image: ^4.0.17
   photo_view: ^0.14.0
-  intl: ^0.18.1
+  intl: ^0.19.0
   flutter_svg: ^2.0.7
   url_launcher: ^6.1.2
-  file_picker: ^5.2.4
+  file_picker: ^6.1.1
   web_socket_channel: ^2.2.0
-  http: ^1.0.0
+  http: ^1.1.2
   flutter_cache_manager: ^3.3.0
   cached_network_image: ^3.2.1
-  shimmer: ^2.0.0
+  shimmer: ^3.0.0 
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
-  flutter_form_builder: ^8.0.0 
-  package_info_plus: ^4.0.1
+  flutter_form_builder: ^9.1.1
+  package_info_plus: ^5.0.1
   local_auth: ^2.1.2
-  connectivity_plus: ^4.0.0
+  connectivity_plus: ^5.0.2
   flutter_native_splash: ^2.2.11
-  share_plus: ^4.5.3
+  share_plus: ^7.2.1
   introduction_screen: ^3.0.2
   receive_sharing_intent: ^1.4.5
   uuid: ^4.1.0
-  flutter_typeahead: ^4.3.3
+  flutter_typeahead: ^5.0.1
   fluttertoast: ^8.1.1
   paperless_api:
     path: packages/paperless_api
   hive: ^2.2.3
   rxdart: ^0.27.7
-  badges: ^2.0.3
+  badges: ^3.1.2
   flutter_colorpicker: ^1.0.3
   provider: ^6.0.5
   dio: ^5.0.0
@@ -75,21 +75,21 @@ dependencies:
   pretty_dio_logger: ^1.2.0-beta-1
   collection: ^1.17.0
   device_info_plus: ^9.0.3
-  flutter_local_notifications: ^13.0.0
-  responsive_builder: ^0.4.3
+  flutter_local_notifications: ^16.3.0
+  responsive_builder: ^0.7.0
   open_filex: ^4.3.2
-  flutter_displaymode: ^0.5.0
+  flutter_displaymode: ^0.6.0
   dynamic_color: ^1.5.4
   flutter_html: ^3.0.0-alpha.6
   freezed_annotation: ^2.4.1
   animations: ^2.0.7
   hive_flutter: ^1.1.0
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^9.0.0
   sliver_tools: ^0.2.10
   webview_flutter: ^4.2.1
   printing: ^5.11.0
-  go_router: ^10.0.0
-  fl_chart: ^0.63.0
+  go_router: ^13.0.1
+  fl_chart: ^0.66.0
   palette_generator: ^0.3.3+2
   defer_pointer: ^0.0.2
   transparent_image: ^2.0.1
@@ -107,11 +107,10 @@ dependencies:
       ref: '4be9de9ffed5398fd7d5f44bbb07dcd3d3f1711b'
       path: packages/pdfx
   markdown: ^7.1.1
+  pdfrx: ^0.4.3
 
 dependency_overrides:
   intl: ^0.18.1
-  http: ^1.0.0
-
 
 dev_dependencies:
   integration_test:
@@ -121,7 +120,7 @@ dev_dependencies:
   build_runner: ^2.4.6
   bloc_test: ^9.1.0
   dependency_validator: ^3.0.0
-  flutter_lints: ^1.0.0
+  flutter_lints: ^3.0.1
   json_serializable: ^6.5.4
   freezed: ^2.4.1
   hive_generator: ^2.0.1

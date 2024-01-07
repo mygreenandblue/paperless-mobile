@@ -126,13 +126,12 @@ class FormBuilderColorPickerField extends FormBuilderField<Color> {
           onSaved: onSaved,
           enabled: enabled,
           onReset: onReset,
-          decoration: decoration,
           focusNode: focusNode,
           builder: (FormFieldState<Color?> field) {
             final state = field as FormBuilderColorPickerFieldState;
             return TextField(
               style: style,
-              decoration: state.decoration.copyWith(
+              decoration: decoration.copyWith(
                 suffixIcon: colorPreviewBuilder != null
                     ? colorPreviewBuilder(field.value)
                     : LayoutBuilder(

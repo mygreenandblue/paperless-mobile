@@ -44,13 +44,15 @@ class DocumentListItem extends DocumentItem {
         children: [
           Row(
             children: [
-              AbsorbPointer(
-                absorbing: isSelectionActive,
-                child: CorrespondentWidget(
-                  isClickable: isLabelClickable,
-                  correspondent:
-                      labelRepository.correspondents[document.correspondent],
-                  onSelected: onCorrespondentSelected,
+              Flexible(
+                child: AbsorbPointer(
+                  absorbing: isSelectionActive,
+                  child: CorrespondentWidget(
+                    isClickable: isLabelClickable,
+                    correspondent:
+                        labelRepository.correspondents[document.correspondent],
+                    onSelected: onCorrespondentSelected,
+                  ),
                 ),
               ),
             ],

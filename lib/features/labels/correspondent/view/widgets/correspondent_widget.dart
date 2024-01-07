@@ -9,13 +9,13 @@ class CorrespondentWidget extends StatelessWidget {
   final TextStyle? textStyle;
 
   const CorrespondentWidget({
-    Key? key,
+    super.key,
     required this.correspondent,
     this.textColor,
     this.isClickable = true,
     this.textStyle,
     this.onSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
