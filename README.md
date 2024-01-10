@@ -116,6 +116,7 @@ If you wish to support the development of this project, you can donate through G
 <a href="https://github.com/astubenbord/paperless-mobile/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=astubenbord/paperless-mobile" />
 </a>
+
 Made with [contrib.rocks](https://contrib.rocks).
 
 Want to contribute? Have a look at [the contributing guidelines and how to get started](https://github.com/astubenbord/paperless-mobile/blob/development/CONTRIBUTING.md).
