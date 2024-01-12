@@ -33,6 +33,11 @@ platform :android do |options|
       json_key_data: ENV['PLAY_STORE_CREDENTIALS'],
     )
   end
+
+  desc "Build the app"
+  lane :build do |options|
+    sh "$FLUTTER_ROOT/flutter build appbundle -v"
+  end
   
   desc "Promote track"
   lane :play_store_promote do |options|
