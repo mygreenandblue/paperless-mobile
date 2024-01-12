@@ -1,4 +1,4 @@
-name: Create GitHub Release
+name: Build the app
 on:
   # Enable manual run
   workflow_dispatch:
