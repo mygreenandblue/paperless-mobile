@@ -28,7 +28,7 @@ abstract class PaperlessDocumentsApi {
   String getThumbnailUrl(int docId);
   Future<Uint8List> downloadDocument(int id, {bool original});
   Future<void> downloadToFile(
-    DocumentModel document,
+    int id,
     String localFilePath, {
     bool original = false,
     void Function(double progress)? onProgressChanged,

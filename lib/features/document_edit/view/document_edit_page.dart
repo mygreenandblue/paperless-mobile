@@ -24,10 +24,9 @@ import 'package:paperless_mobile/routing/routes/labels_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
+
 class DocumentEditPage extends StatefulWidget {
-  const DocumentEditPage({
-    super.key
-  });
+  const DocumentEditPage({super.key});
 
   @override
   State<DocumentEditPage> createState() => _DocumentEditPageState();

@@ -168,7 +168,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     if (!file.existsSync()) {
       file.createSync();
       await _api.downloadToFile(
-        state.document!,
+        state.document!.id,
         file.path,
       );
     }
@@ -219,7 +219,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     // );
 
     await _api.downloadToFile(
-      state.document!,
+      state.document!.id,
       targetPath,
       original: downloadOriginal,
       onProgressChanged: (progress) {
@@ -255,7 +255,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       FileService.instance.temporaryDirectory,
     );
     await _api.downloadToFile(
-      state.document!,
+      state.document!.id,
       filePath,
       original: shareOriginal,
     );
@@ -282,7 +282,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       FileService.instance.temporaryDirectory,
     );
     await _api.downloadToFile(
-      state.document!,
+      state.document!.id,
       filePath,
       original: false,
     );

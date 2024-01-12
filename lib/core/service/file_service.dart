@@ -85,7 +85,7 @@ class FileService {
     bool create = false,
   }) async {
     final dir = getDirectory(type);
-    final filename = (fileName ?? const Uuid().v1()) + '.$extension';
+    final filename = '${fileName ?? const Uuid().v1()}.$extension';
     final file = File(p.join(dir.path, filename));
     if (create) {
       await file.create(recursive: true);
