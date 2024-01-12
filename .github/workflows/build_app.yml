@@ -66,7 +66,6 @@ jobs:
       - name: Build and publish GitHub release
         run: |
           cd /tmp/build/android
-          $FLUTTER_ROOT/flutter build appbundle --release
-          $FLUTTER_ROOT/flutter build apk --split-per-abi --release
+          bundle exec fastlane build
         env:
           GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
