@@ -167,7 +167,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                         child: DocumentView(
                           showAppBar: false,
                           showControls: false,
-                          documentBytes: context
+                          title: state.document.title,
+                          bytes: context
                               .read<PaperlessDocumentsApi>()
                               .downloadDocument(state.document.id),
                         ),

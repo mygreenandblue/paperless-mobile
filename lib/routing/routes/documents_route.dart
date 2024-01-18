@@ -14,7 +14,6 @@ import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubi
 import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
-import 'package:paperless_mobile/features/documents/view/pages/pdfrx_document_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/routing/navigation_keys.dart';
 import 'package:paperless_mobile/theme.dart';
@@ -112,12 +111,14 @@ class DocumentPreviewRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return PdfrxDocumentView(
-        bytes: context.read<PaperlessDocumentsApi>().downloadDocument(id));
     return DocumentView(
-      documentBytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
+      bytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
       title: title,
     );
+    // return DocumentView(
+    //   documentBytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
+    //   title: title,
+    // );
   }
 }
 

@@ -121,7 +121,7 @@ class _ScannerPageState extends State<ScannerPage>
                         ? () => Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => DocumentView(
-                                  documentBytes: _assembleFileBytes(
+                                  bytes: _assembleFileBytes(
                                     state.scans,
                                     forcePdf: true,
                                   ).then((file) => file.bytes),
