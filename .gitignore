@@ -34,6 +34,7 @@ android/key.properties
 .pub-cache/
 .pub/
 /build/
+.fvm/flutter_sdk
 
 # Fastlane related
 android/fastlane/report.xml
