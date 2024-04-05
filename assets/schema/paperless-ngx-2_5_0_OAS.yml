@@ -11,7 +11,6 @@ security:
   - BearerAuth: []
 
 paths:
-
   /documents/:
     get:
       summary: "Retrieves a paged list of all documents"
@@ -50,7 +49,7 @@ paths:
           schema:
             type: array
             items:
-              type: integer 
+              type: integer
         - in: query
           description: "Include documents with any tag (1) or no tags (0) assigned."
           name: is_tagged
@@ -98,7 +97,7 @@ paths:
         - in: query
           description: "The field to sort the results by"
           name: ordering
-          schema: 
+          schema:
             $ref: "#/components/schemas/Ordering"
         - in: query
           description: "Include documents created after the given date"
@@ -194,14 +193,16 @@ paths:
                     items:
                       $ref: "#/components/schemas/Document"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
+        401:
+          description: "Unauthorized"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
 
   /documents/{id}/:
     get:
@@ -220,15 +221,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Correspondent"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
 
   /ui_settings/:
     get:
@@ -241,8 +244,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UISettings"
-        403:
+        401:
           description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /correspondents/:
     get:
@@ -272,11 +277,33 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Correspondent"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
+
+    post:
+      summary: "Creates a new correspondent"
+      operationId: "createCorrespondent"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateCorrespondent" }
+      responses:
+        201:
+          description: Created
           content:
-            schema:
-              example: "You do not have permission to perform this action."
+            application/json:
+              schema: { $ref: "#/components/schemas/Correspondent" }
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /correspondents/{id}/:
     get:
@@ -295,15 +322,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Correspondent"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this correspondent."
+      operationId: "updateCorrespondent"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Correspondent" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Correspondent" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this correspondent."
+      operationId: "patchCorrespondent"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PatchCorrespondent" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Correspondent" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this correspondent."
+      operationId: "deleteCorrespondent"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /storage_paths/:
     get:
@@ -333,11 +406,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/StoragePath"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /storage_paths/{id}/:
     get:
@@ -356,15 +428,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/StoragePath"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this storage path."
+      operationId: "updateStoragePath"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StoragePath" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoragePath" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this storage path."
+      operationId: "patchStoragePath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/EditableStoragePathProperties" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoragePath" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this storage path."
+      operationId: "deleteStoragePath"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /document_types/:
     get:
@@ -394,11 +513,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/DocumentType"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /document_types/{id}/:
     get:
@@ -417,15 +535,63 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DocumentType"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this document type."
+      operationId: "updateDocumentType"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DocumentType" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DocmentType" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this document type"
+      operationId: "patchDocumentType"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/EditableDocumentTypeProperties" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DocumentType" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this document type."
+      operationId: "deleteDocumentType"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+
   /tags/:
     get:
       summary: "Retrieves a paged list of all tags"
@@ -454,11 +620,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Tag"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /tags/{id}/:
     get:
@@ -477,15 +642,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tag"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this tag."
+      operationId: "updateTag"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Tag" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Tag" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this tag."
+      operationId: "patchTag"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EditableTagProperties" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Tag" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this tag."
+      operationId: "deleteTag"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /custom_fields/:
     get:
@@ -515,15 +726,17 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/CustomField"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
 
   /custom_fields/{id}/:
     get:
@@ -542,15 +755,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CustomField"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this custom field."
+      operationId: "updateCustomField"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CustomField" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomField" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this custom field."
+      operationId: "patchCustomField"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/EditableCustomFieldProperties" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomField" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this custom field."
+      operationId: "deleteCustomField"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /logs/:
     get:
@@ -565,8 +825,10 @@ paths:
                 type: array
                 items: { type: string }
                 example: ["paperless"]
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
 
   /logs/{type}/:
     get:
@@ -587,18 +849,20 @@ paths:
               schema:
                 type: array
                 items: { type: string }
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
 
   /saved_views/:
-    get: 
+    get:
       summary: Retrieves a paged list of all saved views.
       operationId: "getAllSavedViews"
       parameters:
@@ -625,11 +889,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/SavedView"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /saved_views/{id}/:
     get:
@@ -648,18 +911,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SavedView"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
-  
+                  detail: { type: string }
+    put:
+      summary: "Updates this saved view."
+      operationId: "updateSavedView"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SavedView" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SavedView" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    patch:
+      summary: "Patches this saved view."
+      operationId: "patchSavedView"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EditableSavedViewProperties" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SavedView" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this saved view."
+      operationId: "deleteSavedView"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+
   /tasks/:
-    get: 
+    get:
       summary: Retrieves a paged list of all tasks.
       operationId: "getAllTasks"
       responses:
@@ -669,13 +978,12 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: "#/components/schemas/Task"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /tasks/{id}/:
     get:
@@ -694,15 +1002,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
 
   /users/:
     get:
@@ -732,11 +1042,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/User"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /users/{id}/:
     get:
@@ -755,15 +1064,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this user."
+      operationId: "updateUser"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/User" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this user."
+      operationId: "deleteUser"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /groups/:
     get:
@@ -793,11 +1131,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Group"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /groups/{id}/:
     get:
@@ -816,15 +1153,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Group"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this group."
+      operationId: "updateGroup"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Group" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this group."
+      operationId: "deleteGroup"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /profile/:
     get:
@@ -837,8 +1203,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfile"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
 
   /mail_accounts/:
     get:
@@ -868,12 +1236,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/MailAccount"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
-
+          description: "Forbidden"
 
   /mail_accounts/{id}/:
     get:
@@ -892,15 +1258,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MailAccount"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this mail account."
+      operationId: "udpateMailAccount"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MailAccount" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MailAccount" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this correspondent."
+      operationId: "deleteMailAccount"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /mail_rules/:
     get:
@@ -930,11 +1325,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/MailRule"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
+          description: "Forbidden"
 
   /mail_rules/{id}/:
     get:
@@ -953,15 +1347,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MailRule"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
+                  detail: { type: string }
+    put:
+      summary: "Updates this mail rule."
+      operationId: "updateMailRule"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MailRule" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MailRule" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this mail rule."
+      operationId: "deleteMailRule"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /share_links/:
     get:
@@ -991,12 +1414,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/ShareLink"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
-          content:
-            schema:
-              example: "You do not have permission to perform this action."
-
+          description: "Forbidden"
 
   /share_links/{id}/:
     get:
@@ -1015,16 +1436,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShareLink"
+        401:
+          description: "Unauthorized"
         403:
-          description: "Forbidden: The user is not authorized to view this entity."
+          description: "Forbidden"
         404:
           description: "Not Found"
-          content: 
+          content:
             application/json:
               schema:
                 properties:
-                  detail: {type: string}
-
+                  detail: { type: string }
+    put:
+      summary: "Updates this share link."
+      operationId: "updateShareLink"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareLink" }
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareLink" }
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    delete:
+      summary: "Deletes this share link."
+      operationId: "deleteShareLink"
+      responses:
+        204:
+          description: "Deleted"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
 components:
   securitySchemes:
@@ -1058,7 +1507,7 @@ components:
         user:
           type: object
           properties:
-            id: { type: integer }
+            id: { type: integer, readOnly: true }
             username: { type: string }
             is_superuser: { type: boolean }
         groups:
@@ -1081,7 +1530,7 @@ components:
     User:
       type: object
       properties:
-        id: { type: integer }
+        id: { type: integer, readOnly: true }
         username: { type: string }
         email: { type: string }
         password: { type: string }
@@ -1111,10 +1560,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UserPermission"
+
     Document:
       type: object
       properties:
-        id: { type: integer }
+        id: { type: integer, readOnly: true }
         correspondent: { type: integer }
         document_type: { type: integer }
         storage_path: { type: integer }
@@ -1182,7 +1632,6 @@ components:
             properties:
               field: { type: integer }
               value: {}
-
       required:
         - id
         - title
@@ -1191,10 +1640,11 @@ components:
         - checksum
         - original_file_name
         - archived_file_name
+
     Label:
       type: object
       properties:
-        id: { type: integer }
+        id: { type: integer, readOnly: true }
         name: { type: string }
         slug: { type: string }
         match: { type: string }
@@ -1219,18 +1669,79 @@ components:
         - id
         - name
         - slug
+
+    CreateLabel:
+      type: object
+      properties:
+        name: { type: string }
+        match: { type: string }
+        matching_algorithm:
+          type: integer
+          minimum: 0
+          maximum: 6
+        is_insensitive: { type: boolean }
+        owner: { type: integer }
+        set_permissions:
+          $ref: "#/components/schemas/SetPermissions"
+      required:
+        - name
+        - matching_algorithm
+
+    PatchLabel:
+      type: object
+      properties:
+        name: { type: string }
+        match: { type: string }
+        matching_algorithm:
+          type: integer
+          minimum: 0
+          maximum: 6
+        is_insensitive: { type: boolean }
+        owner: { type: integer }
+        set_permissions:
+          $ref: "#/components/schemas/SetPermissions"
+
     Correspondent:
       allOf:
         - $ref: "#/components/schemas/Label"
+    CreateCorrespondent:
+      allOf:
+        - $ref: "#/components/schemas/CreateLabel"
+    PatchCorrespondent:
+      allOf:
+        - $ref: "#/components/schemas/PatchLabel"
+
     StoragePath:
       allOf:
         - $ref: "#/components/schemas/Label"
         - type: object
           properties:
             path: { type: string }
+    CreateStoragePath:
+      allOf:
+        - $ref: "#/components/schemas/CreateLabel"
+        - type: object
+          properties:
+            path: { type: string }
+          required:
+            - path
+    PatchStoragePath:
+      allOf:
+        - $ref: "#/components/schemas/PatchLabel"
+        - type: object
+          properties:
+            path: { type: string }
+
     DocumentType:
       allOf:
         - $ref: "#/components/schemas/Label"
+    CreateDocumentType:
+      allOf:
+        - $ref: "#/components/schemas/CreateLabel"
+    PatchDocumentType:
+      allOf:
+        - $ref: "#/components/schemas/PatchLabel"
+
     Tag:
       allOf:
         - $ref: "#/components/schemas/Label"
@@ -1239,9 +1750,23 @@ components:
             color: { type: string }
             text_color: { type: string }
             is_inbox_tag: { type: boolean }
+    CreateTag:
+      allOf:
+        - $ref: "#/components/schemas/CreateLabel"
+        - type: object
+          properties:
+            color: { type: string }
+            is_inbox_tag: { type: boolean }
+    PatchTag:
+      allOf:
+        - $ref: "#/components/schemas/PatchLabel"
+        - type: object
+          properties:
+            color: { type: string }
+            is_inbox_tag: { type: boolean }
 
     SetPermissions:
-      description: Model to set permissions on an entity
+      description: Model used to set permissions on an object
       type: object
       writeOnly: true
       properties:
@@ -1263,6 +1788,7 @@ components:
             groups:
               type: array
               items: { type: integer }
+
     InheritedPermission:
       type: string
       enum:
@@ -1422,6 +1948,7 @@ components:
         - account.delete_emailaddress
         - documents.view_customfield
         - documents.view_uisettings
+
     UserPermission:
       type: string
       enum:
@@ -1497,34 +2024,55 @@ components:
         - change_mailrule
         - delete_mailrule
         - view_mailrule
+
     Note:
       type: object
+      properties:
+        id: { type: integer, readOnly: true }
+        note: { type: string }
+        created: { type: string, format: date-time }
+        user: { type: integer }
+        document: { type: integer }
       required:
         - id
         - created
         - user
         - document
-      properties:
-        id: { type: integer }
-        note: { type: string }
-        created: { type: string, format: date-time }
-        user: { type: integer }
-        document: { type: integer }
+
     CustomField:
       type: object
       properties:
-        id: { type: integer }
+        id: { type: integer, readOnly: true }
         name: { type: string }
-        data_type:
-          enum:
-            - documentlink
-            - url
-            - string
-            - monetary
-            - float
-            - integer
-            - boolean
-            - date
+        data_type: { $ref: "#/components/schemas/CustomFieldDataType" }
+      required:
+        - id
+        - name
+        - data_type
+
+    CreateCustomField:
+      type: object
+      properties:
+        name: { type: string }
+        data_type: { $ref: "#/components/schemas/CustomFieldDataType" }
+
+    PatchCustomField:
+      type: object
+      properties:
+        name: { type: string }
+
+    CustomFieldDataType:
+      type: string
+      enum:
+        - documentlink
+        - url
+        - string
+        - monetary
+        - float
+        - integer
+        - boolean
+        - date
+
     UserProfile:
       type: object
       properties:
@@ -1542,6 +2090,7 @@ components:
         - last_name
         - has_usable_password
         - social_accounts
+
     ShareLink:
       type: object
       properties:
@@ -1562,22 +2111,34 @@ components:
         - slug
         - document
         - file_version
+
     SavedView:
       type: object
       properties:
-        id: { type: integer }
+        id: { type: integer, readOnly: true }
         name: { type: string }
         show_on_dashboard: { type: boolean }
         show_in_sidebar: { type: boolean }
-        sort_field:
-          $ref: "#/components/schemas/SortField"
+        sort_field: { $ref: "#/components/schemas/SortField" }
         sort_reverse: { type: boolean }
         filter_rules:
           type: array
-          items:
-            $ref: "#/components/schemas/FilterRule"
+          items: { $ref: "#/components/schemas/FilterRule" }
         owner: { type: integer }
         user_can_change: { type: boolean }
+      required:
+        - id
+        - name
+        - show_on_dashboard
+        - show_in_sidebar
+        - filter_rules
+    PatchSavedView:
+      type: object
+      properties:
+        name: { type: string }
+        show_on_dashboard: { type: boolean }
+        show_in_sidebar: { type: boolean }
+
     SortField:
       type: string
       enum:
@@ -1590,6 +2151,7 @@ components:
         - modified
         - num_notes
         - owner
+
     FilterRule:
       type: object
       properties:
@@ -1600,22 +2162,24 @@ components:
         value: {}
       required:
         - rule_type
+
     Task:
       type: object
       properties:
-        id: {type: integer}
+        id: { type: integer, readOnly: true }
         task_id: { type: string }
         task_file_name: { type: string }
         date_created:
           type: string
           format: date-time
-        date_done: 
+        date_done:
           type: string
           format: date-time
-        type: 
+        type:
           $ref: "#/components/schemas/TaskType"
         status:
           $ref: "#/components/schemas/TaskStatus"
+
     TaskStatus:
       type: string
       enum:
@@ -1623,24 +2187,65 @@ components:
         - STARTED
         - SUCCESS
         - FAILURE
+
     TaskType:
       type: string
       enum:
         - file
+
     MailAccount:
       type: object
       properties:
-        id: {type: integer }
-        name: {type: string}
-        imap_server: {type: string}
-        imap_port: {type: integer}
-        imap_security: {type: integer}
-        username: {type: string}
-        password: { type: string}
-        character_set: {type: string}
-        is_token: {type: boolean}
-        owner: {type: integer}
-        user_can_change: {type: boolean}
+        id: { type: integer, readOnly: true }
+        name: { type: string }
+        imap_server: { type: string }
+        imap_port: { type: integer }
+        imap_security: { type: integer }
+        username: { type: string }
+        password: { type: string }
+        character_set: { type: string }
+        is_token: { type: boolean }
+        owner: { type: integer }
+        user_can_change: { type: boolean }
+      required:
+        - id
+        - name
+        - imap_server
+        - username
+        - password
+        - character_set
+        - is_token
+        - user_can_change
+    CreateMailAccount:
+      type: object
+      properties:
+        name: { type: string }
+        imap_server: { type: string }
+        imap_port: { type: integer }
+        imap_security: { type: integer }
+        username: { type: string }
+        password: { type: string }
+        character_set: { type: string }
+        is_token: { type: boolean }
+        owner: { type: integer }
+      required:
+        - name
+        - imap_server
+        - username
+        - password
+    PatchMailAccount:
+      type: object
+      properties:
+        name: { type: string }
+        imap_server: { type: string }
+        imap_port: { type: integer }
+        imap_security: { type: integer }
+        username: { type: string }
+        password: { type: string }
+        character_set: { type: string }
+        is_token: { type: boolean }
+        owner: { type: integer }
+        user_can_change: { type: boolean }
       required:
         - id
         - name
@@ -1653,31 +2258,31 @@ components:
     MailRule:
       type: object
       properties:
-        id: {type: integer}
-        name: {type: string}
-        account: {type: integer}
-        filter_from: {type: string}
-        filter_to: {type: string}
-        filter_subject: {type: string}
-        filter_body: {type: string}
-        filter_attachment_filename_include: {type: string}
-        filter_attachment_filename_exclude: {type: string}
-        maximum_age: {type: integer}
-        action: {type: integer}
-        action_paramter: {type: string}
-        assign_title_from: {type: integer}
+        id: { type: integer, readOnly: true }
+        name: { type: string }
+        account: { type: integer }
+        filter_from: { type: string }
+        filter_to: { type: string }
+        filter_subject: { type: string }
+        filter_body: { type: string }
+        filter_attachment_filename_include: { type: string }
+        filter_attachment_filename_exclude: { type: string }
+        maximum_age: { type: integer }
+        action: { type: integer }
+        action_paramter: { type: string }
+        assign_title_from: { type: integer }
         assign_tags:
           type: array
-          items: {type: integer}
-        assign_correspondent_from: {type: integer}
-        assign_correspondent: {type: integer}
-        assign_document_type: {type: integer}
-        assign_owner_from_rule: {type: boolean}
-        order: {type: integer}
-        attachment_type: {type: integer}
-        consumption_scope: {type: integer}
-        owner: {type: integer}
-        user_can_change: {type: boolean}
+          items: { type: integer }
+        assign_correspondent_from: { type: integer }
+        assign_correspondent: { type: integer }
+        assign_document_type: { type: integer }
+        assign_owner_from_rule: { type: boolean }
+        order: { type: integer }
+        attachment_type: { type: integer }
+        consumption_scope: { type: integer }
+        owner: { type: integer }
+        user_can_change: { type: boolean }
       required:
         - id
         - name
@@ -1687,7 +2292,7 @@ components:
         - order
     Ordering:
       type: string
-      enum: 
+      enum:
         - archive_serial_number
         - -archive_serial_number
         - correspondent__name
