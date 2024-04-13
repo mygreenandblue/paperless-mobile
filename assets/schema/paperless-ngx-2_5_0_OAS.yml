@@ -3,7 +3,7 @@ info:
   title: Paperless-ngx API Documentation
   version: "v2.5.0"
 servers:
-  - url: http://192.168.178.20:8015/api
+  - url: http://ld-nas:8015/api
     description: "Local development server"
 
 security:
@@ -255,6 +255,38 @@ paths:
       operationId: "getAllCorrespondents"
       parameters:
         - in: query
+          name: id__in
+          description: "Correspondent id in given values"
+          schema:
+            type: array
+            items: { type: integer }
+          explode: false
+          style: form
+        - in: query
+          name: id
+          description: "Correspondent id matches value"
+          schema: { type: integer }
+        - in: query
+          name: name__istartswith
+          description: "Correspondent name starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iendswith
+          description: "Correspondent name ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__icontains
+          description: "Correspondent name contains pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iexact
+          description: "Correspondent name exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          description: ""
+          schema: {$ref: "#/components/schemas/CorrespondentsOrdering"}
+        - in: query
           name: page
           schema:
             type: integer
@@ -281,7 +313,6 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-
     post:
       summary: "Creates a new correspondent"
       operationId: "createCorrespondent"
@@ -350,23 +381,6 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-    patch:
-      summary: "Patches this correspondent."
-      operationId: "patchCorrespondent"
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/PatchCorrespondent" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Correspondent" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
     delete:
       summary: "Deletes this correspondent."
       operationId: "deleteCorrespondent"
@@ -406,6 +420,25 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/StoragePath"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    post:
+      summary: "Creates a new storage path"
+      operationId: "createStoragePath"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateStoragePath" }
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StoragePath" }
+        400:
+          description: Bad Request
         401:
           description: "Unauthorized"
         403:
@@ -456,24 +489,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-    patch:
-      summary: "Patches this storage path."
-      operationId: "patchStoragePath"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/EditableStoragePathProperties" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/StoragePath" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
+  
     delete:
       summary: "Deletes this storage path."
       operationId: "deleteStoragePath"
@@ -513,6 +529,25 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/DocumentType"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    post:
+      summary: "Creates a new document type"
+      operationId: "createDocumentType"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateDocumentType" }
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DocumentType" }
+        400:
+          description: Bad Request
         401:
           description: "Unauthorized"
         403:
@@ -558,29 +593,12 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/DocmentType" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
-    patch:
-      summary: "Patches this document type"
-      operationId: "patchDocumentType"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/EditableDocumentTypeProperties" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
               schema: { $ref: "#/components/schemas/DocumentType" }
         401:
           description: "Unauthorized"
         403:
           description: "Forbidden"
+  
     delete:
       summary: "Deletes this document type."
       operationId: "deleteDocumentType"
@@ -620,6 +638,25 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Tag"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    post:
+      summary: "Creates a new tag"
+      operationId: "createTag"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateTag" }
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Tag" }
+        400:
+          description: Bad Request
         401:
           description: "Unauthorized"
         403:
@@ -670,23 +707,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-    patch:
-      summary: "Patches this tag."
-      operationId: "patchTag"
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/EditableTagProperties" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Tag" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
+  
     delete:
       summary: "Deletes this tag."
       operationId: "deleteTag"
@@ -737,6 +758,25 @@ paths:
               schema:
                 properties:
                   detail: { type: string }
+    post:
+      summary: "Creates a new custom field"
+      operationId: "createCustomField"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateCustomField" }
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CustomField" }
+        400:
+          description: Bad Request
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
 
   /custom_fields/{id}/:
     get:
@@ -783,24 +823,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-    patch:
-      summary: "Patches this custom field."
-      operationId: "patchCustomField"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/EditableCustomFieldProperties" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/CustomField" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
+  
     delete:
       summary: "Deletes this custom field."
       operationId: "deleteCustomField"
@@ -939,23 +962,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-    patch:
-      summary: "Patches this saved view."
-      operationId: "patchSavedView"
-      requestBody:
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/EditableSavedViewProperties" }
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SavedView" }
-        401:
-          description: "Unauthorized"
-        403:
-          description: "Forbidden"
+   
     delete:
       summary: "Deletes this saved view."
       operationId: "deleteSavedView"
@@ -1109,6 +1116,22 @@ paths:
       operationId: "getAllGroups"
       parameters:
         - in: query
+          description: "Group name starts with pattern"
+          name: name__istartswith
+          schema: { type: string }
+        - in: query
+          description: "Group name ends with pattern"
+          name: name__iendswith
+          schema: { type: string }
+        - in: query
+          description: "Group name contains pattern"
+          name: name__icontains
+          schema: { type: string }
+        - in: query
+          description: "Group name exactly matches pattern"
+          name: name__iexact
+          schema: { type: string }
+        - in: query
           name: page
           schema:
             type: integer
@@ -1131,6 +1154,25 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Group"
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+    post:
+      summary: "Creates a new group"
+      operationId: "createGroup"
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateGroup" }
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Group" }
+        400:
+          description: Bad Request
         401:
           description: "Unauthorized"
         403:
@@ -1412,8 +1454,8 @@ paths:
                 properties:
                   results:
                     type: array
-                    items:
-                      $ref: "#/components/schemas/ShareLink"
+                    items: { $ref: "#/components/schemas/ShareLink" }
+
         401:
           description: "Unauthorized"
         403:
@@ -1434,8 +1476,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/ShareLink"
+              schema: { $ref: "#/components/schemas/ShareLink" }
         401:
           description: "Unauthorized"
         403:
@@ -1525,8 +1566,8 @@ components:
             app_logo: { type: string }
         permissions:
           type: array
-          items:
-            $ref: "#/components/schemas/UserPermission"
+          items: { $ref: "#/components/schemas/UserPermission" }
+
     User:
       type: object
       properties:
@@ -1545,12 +1586,11 @@ components:
           items: { type: integer }
         user_permissions:
           type: array
-          items:
-            $ref: "#/components/schemas/UserPermission"
+          items: { $ref: "#/components/schemas/UserPermission" }
         inherited_permissions:
           type: array
-          items:
-            $ref: "#/components/schemas/InheritedPermission"
+          items: { $ref: "#/components/schemas/InheritedPermission" }
+
     Group:
       type: object
       properties:
@@ -1558,8 +1598,14 @@ components:
         name: { type: string }
         permissions:
           type: array
-          items:
-            $ref: "#/components/schemas/UserPermission"
+          items: { $ref: "#/components/schemas/UserPermission" }
+    CreateGroup:
+      type: object
+      properties:
+        name: { type: string }
+        permissions:
+          type: array
+          items: { $ref: "#/components/schemas/UserPermission" }
 
     Document:
       type: object
@@ -1687,50 +1733,66 @@ components:
         - name
         - matching_algorithm
 
-    PatchLabel:
+    UpdateLabel:
       type: object
       properties:
-        name: { type: string }
-        match: { type: string }
+        id: { type: integer, readOnly: true }
+        name: { type: string, maxLength: 128 }
+        slug: { type: string, readOnly: true}
+        match: { type: string, maxLength: 256 }
         matching_algorithm:
           type: integer
           minimum: 0
           maximum: 6
         is_insensitive: { type: boolean }
+        document_count: { type: integer, readOnly: true }
+        last_correspondence:
+          type: string
+          format: date-time
+          readOnly: true
         owner: { type: integer }
+        user_can_change: { type: boolean, readOnly: true }
         set_permissions:
           $ref: "#/components/schemas/SetPermissions"
-
+      required:
+        - name
+        
     Correspondent:
       allOf:
         - $ref: "#/components/schemas/Label"
     CreateCorrespondent:
       allOf:
         - $ref: "#/components/schemas/CreateLabel"
-    PatchCorrespondent:
+    UpdateCorrespondent:
       allOf:
-        - $ref: "#/components/schemas/PatchLabel"
+        - $ref: "#/components/schemas/UpdateLabel"
+
 
     StoragePath:
       allOf:
         - $ref: "#/components/schemas/Label"
         - type: object
           properties:
-            path: { type: string }
+            path: { type: string, maxLength: 512 }
+      required:
+        - path
     CreateStoragePath:
       allOf:
         - $ref: "#/components/schemas/CreateLabel"
         - type: object
           properties:
-            path: { type: string }
+            path: { type: string, maxLength: 512 }
           required:
             - path
-    PatchStoragePath:
+    UpdateStoragePath:
       allOf:
-        - $ref: "#/components/schemas/PatchLabel"
+        - $ref: "#/components/schemas/UpdateLabel"
         - type: object
           properties:
-            path: { type: string }
+            path: { type: string, maxLength: 512 }
+          required:
+            - path
+ 
 
     DocumentType:
       allOf:
@@ -1738,35 +1800,37 @@ components:
     CreateDocumentType:
       allOf:
         - $ref: "#/components/schemas/CreateLabel"
-    PatchDocumentType:
+    UpdateDocumentType:
       allOf:
-        - $ref: "#/components/schemas/PatchLabel"
+        - $ref: "#/components/schemas/UpdateLabel"
+
 
     Tag:
       allOf:
         - $ref: "#/components/schemas/Label"
         - type: object
           properties:
-            color: { type: string }
-            text_color: { type: string }
+            colour: { type: string }
+            text_color: { type: string, readOnly: true }
             is_inbox_tag: { type: boolean }
     CreateTag:
       allOf:
         - $ref: "#/components/schemas/CreateLabel"
         - type: object
           properties:
-            color: { type: string }
+            colour: { type: string }
             is_inbox_tag: { type: boolean }
-    PatchTag:
+    UpdateTag:
       allOf:
-        - $ref: "#/components/schemas/PatchLabel"
+        - $ref: "#/components/schemas/UpdateLabel"
         - type: object
           properties:
-            color: { type: string }
+            colour: { type: string }
             is_inbox_tag: { type: boolean }
 
+
     SetPermissions:
-      description: Model used to set permissions on an object
+      description: Set permissions on an object
       type: object
       writeOnly: true
       properties:
@@ -2056,10 +2120,16 @@ components:
         name: { type: string }
         data_type: { $ref: "#/components/schemas/CustomFieldDataType" }
 
-    PatchCustomField:
+    UpdateCustomField:
       type: object
       properties:
-        name: { type: string }
+        id: {type: integer, readOnly: true}
+        name: { type: string, maxLength: 128}
+        data_type: {$ref:  "#/components/schemas/CustomFieldDataType"}
+      required:
+        - name
+        - data_type
+
 
     CustomFieldDataType:
       type: string
@@ -2112,6 +2182,20 @@ components:
         - document
         - file_version
 
+    UpdateShareLink:
+      type: object
+      properties:
+        id: {type: integer, readOnly: true}
+        created: {type: string, format: date-time, readOnly: true}
+        expiration: {type: string, format: date-time}
+        slug: {type: string, readOnly: true}
+        document: {type: integer}
+        file_version:
+          type: string
+          enum:
+            - archive
+            - original
+
     SavedView:
       type: object
       properties:
@@ -2132,12 +2216,22 @@ components:
         - show_on_dashboard
         - show_in_sidebar
         - filter_rules
-    PatchSavedView:
+
+    UpdateSavedView:
       type: object
       properties:
-        name: { type: string }
-        show_on_dashboard: { type: boolean }
-        show_in_sidebar: { type: boolean }
+        id: {type: integer, readOnly: true}
+        name: {type: string, maxLength: 128}
+        show_on_dashboard: {type: boolean}
+        show_in_sidebar: {type: boolean}
+        sort_field: {$ref: "#/components/schemas/SortField"}
+        sort_reverse: {type: boolean}
+        filter_rules:
+          
+      required:
+        - name
+        - show_on_dashboard
+        - show_in_sidebar
 
     SortField:
       type: string
@@ -2233,28 +2327,7 @@ components:
         - imap_server
         - username
         - password
-    PatchMailAccount:
-      type: object
-      properties:
-        name: { type: string }
-        imap_server: { type: string }
-        imap_port: { type: integer }
-        imap_security: { type: integer }
-        username: { type: string }
-        password: { type: string }
-        character_set: { type: string }
-        is_token: { type: boolean }
-        owner: { type: integer }
-        user_can_change: { type: boolean }
-      required:
-        - id
-        - name
-        - imap_server
-        - username
-        - password
-        - character_set
-        - is_token
-        - user_can_change
+
     MailRule:
       type: object
       properties:
@@ -2311,3 +2384,17 @@ components:
         - -num_notes
         - owner
         - -owner
+
+    CorrespondentsOrdering:
+      type: string
+      enum: 
+        - name
+        - -name
+        - matching_algorithm
+        - -matching_algorithm
+        - match
+        - -match
+        - document_count
+        - -document_count
+        - last_correspondence
+        - -last_correspondence
