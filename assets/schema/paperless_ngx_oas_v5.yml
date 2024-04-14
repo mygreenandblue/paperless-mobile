@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 info:
   title: Paperless-ngx API Documentation
-  version: "v2.5.0"
+  version: "5"
 servers:
   - url: http://demo.paperless.home.local/api
     description: "Local development server"
@@ -210,11 +210,11 @@ paths:
       summary: "Retrieves a single document by id"
       operationId: "getDocumentById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -320,7 +320,12 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/CreateCorrespondent" }
+            schema:
+              {
+                $ref: "#/components/schemas/CreateCorrespondent",
+                required: true,
+              }
+
       responses:
         201:
           description: "Created"
@@ -342,10 +347,11 @@ paths:
       summary: "Retrieves a single correspondent by id"
       operationId: "getCorrespondentById"
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          schema:
+            type: integer
           required: true
-          schema: { type: integer }
       responses:
         200:
           description: "OK"
@@ -367,6 +373,12 @@ paths:
     put:
       summary: "Updates this correspondent."
       operationId: "updateCorrespondent"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -384,6 +396,12 @@ paths:
     delete:
       summary: "Deletes this correspondent."
       operationId: "deleteCorrespondent"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -497,11 +515,11 @@ paths:
       summary: "Retrieves a single storage path by id"
       operationId: "getStoragePathById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -523,6 +541,12 @@ paths:
     put:
       summary: "Updates this storage path."
       operationId: "updateStoragePath"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -537,10 +561,15 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-
     delete:
       summary: "Deletes this storage path."
       operationId: "deleteStoragePath"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -638,11 +667,11 @@ paths:
       summary: "Retrieves a single document type by id"
       operationId: "getDocumentTypeById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -664,6 +693,12 @@ paths:
     put:
       summary: "Updates this document type."
       operationId: "updateDocumentType"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -682,6 +717,12 @@ paths:
     delete:
       summary: "Deletes this document type."
       operationId: "deleteDocumentType"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -779,11 +820,11 @@ paths:
       summary: "Retrieves a single tag by id"
       operationId: "getTagById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -805,6 +846,12 @@ paths:
     put:
       summary: "Updates this tag."
       operationId: "updateTag"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -823,6 +870,12 @@ paths:
     delete:
       summary: "Deletes this tag."
       operationId: "deleteTag"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -927,11 +980,11 @@ paths:
       summary: "Retrieves a single custom field by id"
       operationId: "getCustomFieldById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -953,6 +1006,12 @@ paths:
     put:
       summary: "Updates this custom field."
       operationId: "updateCustomField"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -971,6 +1030,12 @@ paths:
     delete:
       summary: "Deletes this custom field."
       operationId: "deleteCustomField"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1067,11 +1132,11 @@ paths:
       summary: "Retrieves a single saved view by id"
       operationId: "getSavedViewById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1093,6 +1158,12 @@ paths:
     put:
       summary: "Updates this saved view."
       operationId: "updateSavedView"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1111,6 +1182,12 @@ paths:
     delete:
       summary: "Deletes this saved view."
       operationId: "deleteSavedView"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1142,11 +1219,11 @@ paths:
       summary: "Retrieves a single task by id"
       operationId: "getTaskById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1224,11 +1301,11 @@ paths:
       summary: "Retrieves a single user by id"
       operationId: "getUserById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1250,6 +1327,12 @@ paths:
     put:
       summary: "Updates this user."
       operationId: "updateUser"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1267,6 +1350,12 @@ paths:
     delete:
       summary: "Deletes this user."
       operationId: "deleteUser"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1352,11 +1441,11 @@ paths:
       summary: "Retrieves a single group by id"
       operationId: "getGroupById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1378,6 +1467,12 @@ paths:
     put:
       summary: "Updates this group."
       operationId: "updateGroup"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1395,6 +1490,12 @@ paths:
     delete:
       summary: "Deletes this group."
       operationId: "deleteGroup"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1458,11 +1559,11 @@ paths:
       summary: "Retrieves a single mail account by id"
       operationId: "getMailAccountById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1484,6 +1585,12 @@ paths:
     put:
       summary: "Updates this mail account."
       operationId: "udpateMailAccount"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1501,6 +1608,12 @@ paths:
     delete:
       summary: "Deletes this correspondent."
       operationId: "deleteMailAccount"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1548,11 +1661,11 @@ paths:
       summary: "Retrieves a single mail rule by id"
       operationId: "getMailRuleById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1574,6 +1687,12 @@ paths:
     put:
       summary: "Updates this mail rule."
       operationId: "updateMailRule"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1591,6 +1710,12 @@ paths:
     delete:
       summary: "Deletes this mail rule."
       operationId: "deleteMailRule"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -1694,11 +1819,11 @@ paths:
       summary: "Retrieves a single share link by id"
       operationId: "getShareLinkById"
       parameters:
-        - in: path
-          name: id
-          required: true
+        - name: id
+          in: path
           schema:
             type: integer
+          required: true
       responses:
         200:
           description: "OK"
@@ -1719,6 +1844,12 @@ paths:
     put:
       summary: "Updates this share link."
       operationId: "updateShareLink"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       requestBody:
         content:
           application/json:
@@ -1736,6 +1867,12 @@ paths:
     delete:
       summary: "Deletes this share link."
       operationId: "deleteShareLink"
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: integer
+          required: true
       responses:
         204:
           description: "Deleted"
@@ -2443,7 +2580,7 @@ components:
         first_name: { type: string }
         last_name: { type: string }
         auth_token: { type: string }
-        social_accounts: { type: array }
+        social_accounts: { type: array, items: {} }
         has_usable_password: { type: boolean }
       required:
         - email
@@ -2693,12 +2830,20 @@ components:
         - last_correspondence
         - -last_correspondence
     TagOrdering:
-      allOf:
-        - $ref: "#/components/schemas/LabelOrdering"
-        - type: string
-          enum:
-            - color
-            - -color
+      type: string
+      enum:
+        - color
+        - -color
+        - name
+        - -name
+        - matching_algorithm
+        - -matching_algorithm
+        - match
+        - -match
+        - document_count
+        - -document_count
+        - last_correspondence
+        - -last_correspondence
     UserOrdering:
       type: string
       enum:
