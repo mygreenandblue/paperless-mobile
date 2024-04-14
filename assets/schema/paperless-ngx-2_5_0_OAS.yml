@@ -3,7 +3,7 @@ info:
   title: Paperless-ngx API Documentation
   version: "v2.5.0"
 servers:
-  - url: http://ld-nas:8015/api
+  - url: http://demo.paperless.home.local/api
     description: "Local development server"
 
 security:
@@ -98,7 +98,7 @@ paths:
           description: "The field to sort the results by"
           name: ordering
           schema:
-            $ref: "#/components/schemas/Ordering"
+            $ref: "#/components/schemas/DocumentOrdering"
         - in: query
           description: "Include documents created after the given date"
           name: created__date__gt
@@ -154,7 +154,7 @@ paths:
           schema:
             type: string
         - in: query
-          description: ""
+          description: "Document title contains the given expression"
           name: title__icontains
           schema:
             type: string
@@ -164,7 +164,7 @@ paths:
           schema:
             type: string
         - in: query
-          description: ""
+          description: "Either document title or content contains the given string"
           name: title_content
           schema:
             type: string
@@ -179,9 +179,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -216,7 +217,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -239,7 +240,7 @@ paths:
       operationId: "getUISettings"
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -256,7 +257,7 @@ paths:
       parameters:
         - in: query
           name: id__in
-          description: "Correspondent id in given values"
+          description: "Id in given values"
           schema:
             type: array
             items: { type: integer }
@@ -264,28 +265,27 @@ paths:
           style: form
         - in: query
           name: id
-          description: "Correspondent id matches value"
+          description: "Id matches value"
           schema: { type: integer }
         - in: query
           name: name__istartswith
-          description: "Correspondent name starts with pattern"
+          description: "Name starts with pattern"
           schema: { type: string }
         - in: query
           name: name__iendswith
-          description: "Correspondent name ends with pattern"
+          description: "Name ends with pattern"
           schema: { type: string }
         - in: query
           name: name__icontains
-          description: "Correspondent name contains pattern"
+          description: "Name contains pattern"
           schema: { type: string }
         - in: query
           name: name__iexact
-          description: "Correspondent name exactly matches pattern"
+          description: "Name exactly matches pattern"
           schema: { type: string }
         - in: query
           name: ordering
-          description: ""
-          schema: {$ref: "#/components/schemas/CorrespondentsOrdering"}
+          schema: { $ref: "#/components/schemas/LabelOrdering" }
         - in: query
           name: page
           schema:
@@ -296,9 +296,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -322,12 +323,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateCorrespondent" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Correspondent" }
         400:
-          description: Bad Request
+          description: "Bad Request"
           content:
             application/json:
               schema: {}
@@ -344,11 +345,10 @@ paths:
         - in: path
           name: id
           required: true
-          schema:
-            type: integer
+          schema: { type: integer }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -373,7 +373,7 @@ paths:
             schema: { $ref: "#/components/schemas/Correspondent" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Correspondent" }
@@ -398,6 +398,53 @@ paths:
       operationId: "getAllStoragePaths"
       parameters:
         - in: query
+          name: id__in
+          description: "Id in given values"
+          schema:
+            type: array
+            items: { type: integer }
+          explode: false
+          style: form
+        - in: query
+          name: id
+          description: "Id matches value"
+          schema: { type: integer }
+        - in: query
+          name: name__istartswith
+          description: "Name starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iendswith
+          description: "Name ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__icontains
+          description: "Name contains pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iexact
+          description: "Name exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: path__istartswith
+          description: "Path starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: path__iendswith
+          description: "Path ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: path__icontains
+          description: "Path contains pattern"
+          schema: { type: string }
+        - in: query
+          name: path__iexact
+          description: "Path exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/LabelOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -407,9 +454,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -433,12 +481,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateStoragePath" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/StoragePath" }
         400:
-          description: Bad Request
+          description: "Bad Request"
         401:
           description: "Unauthorized"
         403:
@@ -456,7 +504,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -481,7 +529,7 @@ paths:
             schema: { $ref: "#/components/schemas/StoragePath" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/StoragePath" }
@@ -489,7 +537,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-  
+
     delete:
       summary: "Deletes this storage path."
       operationId: "deleteStoragePath"
@@ -507,6 +555,37 @@ paths:
       operationId: "getAllDocumentTypes"
       parameters:
         - in: query
+          name: id__in
+          description: "Id in given values"
+          schema:
+            type: array
+            items: { type: integer }
+          explode: false
+          style: form
+        - in: query
+          name: id
+          description: "Id matches value"
+          schema: { type: integer }
+        - in: query
+          name: name__istartswith
+          description: "Name starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iendswith
+          description: "Name ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__icontains
+          description: "Name contains pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iexact
+          description: "Name exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/LabelOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -516,9 +595,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -542,12 +622,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateDocumentType" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/DocumentType" }
         400:
-          description: Bad Request
+          description: "Bad Request"
         401:
           description: "Unauthorized"
         403:
@@ -565,7 +645,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -590,7 +670,7 @@ paths:
             schema: { $ref: "#/components/schemas/DocumentType" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/DocumentType" }
@@ -598,7 +678,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-  
+
     delete:
       summary: "Deletes this document type."
       operationId: "deleteDocumentType"
@@ -616,6 +696,37 @@ paths:
       operationId: "getAllTags"
       parameters:
         - in: query
+          name: id__in
+          description: "Id in given values"
+          schema:
+            type: array
+            items: { type: integer }
+          explode: false
+          style: form
+        - in: query
+          name: id
+          description: "Id matches value"
+          schema: { type: integer }
+        - in: query
+          name: name__istartswith
+          description: "Name starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iendswith
+          description: "Name ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__icontains
+          description: "Name contains pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iexact
+          description: "Name exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/TagOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -625,9 +736,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -651,12 +763,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateTag" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Tag" }
         400:
-          description: Bad Request
+          description: "Bad Request"
         401:
           description: "Unauthorized"
         403:
@@ -674,7 +786,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -699,7 +811,7 @@ paths:
             schema: { $ref: "#/components/schemas/Tag" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Tag" }
@@ -707,7 +819,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-  
+
     delete:
       summary: "Deletes this tag."
       operationId: "deleteTag"
@@ -725,6 +837,37 @@ paths:
       operationId: "getAllCustomFields"
       parameters:
         - in: query
+          name: id__in
+          description: "Id in given values"
+          schema:
+            type: array
+            items: { type: integer }
+          explode: false
+          style: form
+        - in: query
+          name: id
+          description: "Id matches value"
+          schema: { type: integer }
+        - in: query
+          name: name__istartswith
+          description: "Name starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iendswith
+          description: "Name ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: name__icontains
+          description: "Name contains pattern"
+          schema: { type: string }
+        - in: query
+          name: name__iexact
+          description: "Name exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/LabelOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -734,9 +877,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -767,12 +911,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateCustomField" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CustomField" }
         400:
-          description: Bad Request
+          description: "Bad Request"
         401:
           description: "Unauthorized"
         403:
@@ -790,7 +934,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -815,7 +959,7 @@ paths:
             schema: { $ref: "#/components/schemas/CustomField" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CustomField" }
@@ -823,7 +967,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-  
+
     delete:
       summary: "Deletes this custom field."
       operationId: "deleteCustomField"
@@ -841,7 +985,7 @@ paths:
       operationId: "getAllLogTypes"
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -866,7 +1010,7 @@ paths:
           example: paperless
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -899,9 +1043,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -929,7 +1074,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -954,7 +1099,7 @@ paths:
             schema: { $ref: "#/components/schemas/SavedView" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/SavedView" }
@@ -962,7 +1107,7 @@ paths:
           description: "Unauthorized"
         403:
           description: "Forbidden"
-   
+
     delete:
       summary: "Deletes this saved view."
       operationId: "deleteSavedView"
@@ -980,7 +1125,7 @@ paths:
       operationId: "getAllTasks"
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1004,7 +1149,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1027,6 +1172,25 @@ paths:
       operationId: "getAllUsers"
       parameters:
         - in: query
+          name: username__istartswith
+          description: "Username starts with pattern"
+          schema: { type: string }
+        - in: query
+          name: username__iendswith
+          description: "Username ends with pattern"
+          schema: { type: string }
+        - in: query
+          name: username__icontains
+          description: "Username contains pattern"
+          schema: { type: string }
+        - in: query
+          name: username__iexact
+          description: "Username exactly matches pattern"
+          schema: { type: string }
+        - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/UserOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -1036,9 +1200,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1066,7 +1231,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1091,7 +1256,7 @@ paths:
             schema: { $ref: "#/components/schemas/User" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/User" }
@@ -1132,6 +1297,9 @@ paths:
           name: name__iexact
           schema: { type: string }
         - in: query
+          name: ordering
+          schema: { $ref: "#/components/schemas/GroupOrdering" }
+        - in: query
           name: page
           schema:
             type: integer
@@ -1141,9 +1309,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1167,12 +1336,12 @@ paths:
             schema: { $ref: "#/components/schemas/CreateGroup" }
       responses:
         201:
-          description: Created
+          description: "Created"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Group" }
         400:
-          description: Bad Request
+          description: "Bad Request"
         401:
           description: "Unauthorized"
         403:
@@ -1190,7 +1359,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1215,7 +1384,7 @@ paths:
             schema: { $ref: "#/components/schemas/Group" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Group" }
@@ -1240,7 +1409,7 @@ paths:
       operationId: "getProfile"
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1265,9 +1434,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1295,7 +1465,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1320,7 +1490,7 @@ paths:
             schema: { $ref: "#/components/schemas/MailAccount" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/MailAccount" }
@@ -1354,9 +1524,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1384,7 +1555,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1409,7 +1580,7 @@ paths:
             schema: { $ref: "#/components/schemas/MailRule" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/MailRule" }
@@ -1434,6 +1605,62 @@ paths:
       operationId: "getAllShareLinks"
       parameters:
         - in: query
+          name: created__year
+          description: "Created year"
+          schema: {type: number} 
+        - in: query
+          name: created__month
+          description: "Created month"
+          schema: {type: number} 
+        - in: query
+          name: created__day
+          description: "Created day"
+          schema: {type: number} 
+        - in: query
+          name: created__date__gt
+          description: "Created after date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: created__gt
+          description: "Created after date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: created__date__lt
+          description: "Created  before date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: created__lt
+          description: "Created before date"
+          schema: {type: string, format: date-time}
+        - in: query
+          name: expiration__year
+          description: "Expires in year"
+          schema: {type: number} 
+        - in: query
+          name: expiration__month
+          description: "Expires at month"
+          schema: {type: number} 
+        - in: query
+          name: expiration__day
+          description: "Expires at day"
+          schema: {type: number} 
+        - in: query
+          name: expiration__date__gt
+          description: "Expires after date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: expiration__gt
+          description: "Expires after date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: expiration__date__lt
+          description: "Expires before date"
+          schema: {type: string, format: date-time} 
+        - in: query
+          name: expiration__lt
+          description: "Expires before date"
+          schema: {type: string, format: date-time}
+        - in: query
           name: page
           schema:
             type: integer
@@ -1443,9 +1670,10 @@ paths:
           schema:
             type: integer
             maximum: 100000
+            default: 25
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema:
@@ -1473,7 +1701,7 @@ paths:
             type: integer
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ShareLink" }
@@ -1497,7 +1725,7 @@ paths:
             schema: { $ref: "#/components/schemas/ShareLink" }
       responses:
         200:
-          description: OK
+          description: "OK"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ShareLink" }
@@ -1738,7 +1966,7 @@ components:
       properties:
         id: { type: integer, readOnly: true }
         name: { type: string, maxLength: 128 }
-        slug: { type: string, readOnly: true}
+        slug: { type: string, readOnly: true }
         match: { type: string, maxLength: 256 }
         matching_algorithm:
           type: integer
@@ -1756,7 +1984,7 @@ components:
           $ref: "#/components/schemas/SetPermissions"
       required:
         - name
-        
+
     Correspondent:
       allOf:
         - $ref: "#/components/schemas/Label"
@@ -1766,7 +1994,6 @@ components:
     UpdateCorrespondent:
       allOf:
         - $ref: "#/components/schemas/UpdateLabel"
-
 
     StoragePath:
       allOf:
@@ -1792,7 +2019,6 @@ components:
             path: { type: string, maxLength: 512 }
           required:
             - path
- 
 
     DocumentType:
       allOf:
@@ -1803,7 +2029,6 @@ components:
     UpdateDocumentType:
       allOf:
         - $ref: "#/components/schemas/UpdateLabel"
-
 
     Tag:
       allOf:
@@ -1828,9 +2053,8 @@ components:
             colour: { type: string }
             is_inbox_tag: { type: boolean }
 
-
     SetPermissions:
-      description: Set permissions on an object
+      description: "Set permissions on an object"
       type: object
       writeOnly: true
       properties:
@@ -2123,13 +2347,12 @@ components:
     UpdateCustomField:
       type: object
       properties:
-        id: {type: integer, readOnly: true}
-        name: { type: string, maxLength: 128}
-        data_type: {$ref:  "#/components/schemas/CustomFieldDataType"}
+        id: { type: integer, readOnly: true }
+        name: { type: string, maxLength: 128 }
+        data_type: { $ref: "#/components/schemas/CustomFieldDataType" }
       required:
         - name
         - data_type
-
 
     CustomFieldDataType:
       type: string
@@ -2185,11 +2408,11 @@ components:
     UpdateShareLink:
       type: object
       properties:
-        id: {type: integer, readOnly: true}
-        created: {type: string, format: date-time, readOnly: true}
-        expiration: {type: string, format: date-time}
-        slug: {type: string, readOnly: true}
-        document: {type: integer}
+        id: { type: integer, readOnly: true }
+        created: { type: string, format: date-time, readOnly: true }
+        expiration: { type: string, format: date-time }
+        slug: { type: string, readOnly: true }
+        document: { type: integer }
         file_version:
           type: string
           enum:
@@ -2220,14 +2443,14 @@ components:
     UpdateSavedView:
       type: object
       properties:
-        id: {type: integer, readOnly: true}
-        name: {type: string, maxLength: 128}
-        show_on_dashboard: {type: boolean}
-        show_in_sidebar: {type: boolean}
-        sort_field: {$ref: "#/components/schemas/SortField"}
-        sort_reverse: {type: boolean}
+        id: { type: integer, readOnly: true }
+        name: { type: string, maxLength: 128 }
+        show_on_dashboard: { type: boolean }
+        show_in_sidebar: { type: boolean }
+        sort_field: { $ref: "#/components/schemas/SortField" }
+        sort_reverse: { type: boolean }
         filter_rules:
-          
+
       required:
         - name
         - show_on_dashboard
@@ -2363,7 +2586,7 @@ components:
         - maximum_age
         - action
         - order
-    Ordering:
+    DocumentOrdering:
       type: string
       enum:
         - archive_serial_number
@@ -2385,9 +2608,9 @@ components:
         - owner
         - -owner
 
-    CorrespondentsOrdering:
+    LabelOrdering:
       type: string
-      enum: 
+      enum:
         - name
         - -name
         - matching_algorithm
@@ -2398,3 +2621,20 @@ components:
         - -document_count
         - last_correspondence
         - -last_correspondence
+    TagOrdering:
+      allOf:
+        - $ref: "#/components/schemas/LabelOrdering"
+        - type: string
+          enum:
+            - color
+            - -color
+    UserOrdering:
+      type: string
+      enum:
+        - username
+        - -username
+    GroupOrdering:
+      type: string
+      enum:
+        - name
+        - -name
