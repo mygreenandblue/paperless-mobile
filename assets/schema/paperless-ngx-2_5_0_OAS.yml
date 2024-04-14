@@ -1607,59 +1607,59 @@ paths:
         - in: query
           name: created__year
           description: "Created year"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: created__month
           description: "Created month"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: created__day
           description: "Created day"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: created__date__gt
           description: "Created after date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: created__gt
           description: "Created after date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: created__date__lt
           description: "Created  before date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: created__lt
           description: "Created before date"
-          schema: {type: string, format: date-time}
+          schema: { type: string, format: date-time }
         - in: query
           name: expiration__year
           description: "Expires in year"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: expiration__month
           description: "Expires at month"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: expiration__day
           description: "Expires at day"
-          schema: {type: number} 
+          schema: { type: integer }
         - in: query
           name: expiration__date__gt
           description: "Expires after date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: expiration__gt
           description: "Expires after date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: expiration__date__lt
           description: "Expires before date"
-          schema: {type: string, format: date-time} 
+          schema: { type: string, format: date-time }
         - in: query
           name: expiration__lt
           description: "Expires before date"
-          schema: {type: string, format: date-time}
+          schema: { type: string, format: date-time }
         - in: query
           name: page
           schema:
@@ -1792,6 +1792,75 @@ components:
                 backend_setting: { type: string }
             app_title: { type: string }
             app_logo: { type: string }
+            bulk_edit:
+              type: object
+              properties:
+                apply_on_close: { type: boolean }
+                confirmation_dialogs: { type: boolean }
+            documentListSize: { type: integer }
+            slim_sidebar: { type: boolean }
+            dark_mode:
+              type: object
+              properties:
+                use_system: { type: boolean }
+                enabled:
+                  type: string
+                  enum:
+                    - true
+                    - false
+            theme:
+              type: object
+              properties:
+                color: { type: string }
+            document_details:
+              type: object
+              properties:
+                native_pdf_viewer: { type: boolean }
+            date_display:
+              type: object
+              properties:
+                date_locale:
+                  type: string
+                  default: ""
+                date_format:
+                  type: string
+                  enum:
+                    - shortDate
+                    - mediumDate
+                    - longDate
+            notifications:
+              type: object
+              properties:
+                consumer_new_documents: { type: boolean }
+                consumer_success: { type: boolean }
+                consumer_failed: { type: boolean }
+                consumer_suppress_on_dashboard: { type: boolean }
+            notes_enabled: { type: boolean }
+            saved_views:
+              type: object
+              properties:
+                warn_on_unsaved_changes: { type: boolean }
+            permissions:
+              type: object
+              properties:
+                default_owner: { type: integer }
+                default_view_users:
+                  type: array
+                  items: { type: integer }
+                default_view_groups:
+                  type: array
+                  items: { type: integer }
+                default_edit_users:
+                  type: array
+                  items: { type: integer }
+                default_edit_groups:
+                  type: array
+                  items: { type: integer }
+            document_editing:
+              type: object
+              properties:
+                remove_inbox_tags: { type: boolean }
+            language: { type: string }
         permissions:
           type: array
           items: { $ref: "#/components/schemas/UserPermission" }
@@ -2450,6 +2519,8 @@ components:
         sort_field: { $ref: "#/components/schemas/SortField" }
         sort_reverse: { type: boolean }
         filter_rules:
+          type: array
+          items: { $ref: "#/components/schemas/FilterRule" }
 
       required:
         - name
