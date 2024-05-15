@@ -202,7 +202,7 @@ class _ScannerPageState extends State<ScannerPage>
           if (!isGranted) {
             showSnackBar(
               context,
-              "Please grant Paperless Mobile permissions to access your filesystem.",
+              "Please grant EDMS Mobile permissions to access your filesystem.",
               action: SnackBarActionConfig(
                 label: "OK",
                 onPressed: openAppSettings,
@@ -236,7 +236,9 @@ class _ScannerPageState extends State<ScannerPage>
       dev.log('[ScannerPage] Created temporary file: ${file.path}');
     }
 
-    final success = await EdgeDetection.detectEdge(file.path);
+    final success = await EdgeDetection.detectEdge(
+      file.path,
+    );
     if (!success) {
       if (kDebugMode) {
         dev.log(

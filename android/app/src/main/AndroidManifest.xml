@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.astubenbord.paperless_mobile">
-    <application android:label="Paperless Mobile"
+    <application android:label="EDMS Mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"

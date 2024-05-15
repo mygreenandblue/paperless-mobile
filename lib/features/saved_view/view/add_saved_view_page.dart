@@ -89,11 +89,7 @@ class _AddSavedViewPageState extends State<AddSavedViewPage> {
             ),
             //TODO: INTL or remove
             HintCard(
-              hintText:
-                  "Saved views can currently only be edited by changing the "
-                  "document filter. Therefore, go to the documents page, select "
-                  "this view, add the filters you want this view to have and "
-                  "save it by pressing 'Save changes' in the view menu.",
+              hintText: S.of(context)!.hintAddDoc,
             ),
           ],
         ),

@@ -22,7 +22,7 @@
     <img src="assets/logos/paperless_logo_green.png" alt="Logo" width="80" height="80">
   </a>
 
-<h2 align="center">Paperless Mobile</h2>
+<h2 align="center">EDMS Mobile</h2>
 
   <p align="center">
     An (almost) fully fledged mobile paperless client.
@@ -47,7 +47,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-Paperless Mobile brings <a href="https://github.com/paperless-ngx/paperless-ngx">paperless-ngx</a> to your smartphone without any compromises. While you can use paperless-ngx from a mobile browser, managing your documents this way is often a tedious and slow process. The app integrates a custom scanner, biometric authentication and many more conveniences to help you make the transition from a paper-based to a fully digital office experience.
+EDMS Mobile brings <a href="https://github.com/paperless-ngx/paperless-ngx">paperless-ngx</a> to your smartphone without any compromises. While you can use paperless-ngx from a mobile browser, managing your documents this way is often a tedious and slow process. The app integrates a custom scanner, biometric authentication and many more conveniences to help you make the transition from a paper-based to a fully digital office experience.
 
 ### :rocket: Highlights
 :heavy_check_mark: **View** your documents at a glance<br>
@@ -55,7 +55,7 @@ Paperless Mobile brings <a href="https://github.com/paperless-ngx/paperless-ngx"
 :heavy_check_mark: **Share**, **download** and **preview** files<br>
 :heavy_check_mark: **Manage** and assign labels<br>
 :heavy_check_mark: **Scan** and upload documents to paperless<br>
-:heavy_check_mark: **Upload existing documents** from other apps via Paperless Mobile<br>
+:heavy_check_mark: **Upload existing documents** from other apps via EDMS Mobile<br>
 :heavy_check_mark: Easily process and manage new documents in the dedicated **inbox**<br>
 :heavy_check_mark: **Search** for documents using a wide range of filter criteria<br>
 :heavy_check_mark: **Secure** your data with a **biometric factor**<br>

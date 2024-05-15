@@ -29,7 +29,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AddAccountPage(
-      titleText: S.of(context)!.connectToPaperless,
+      titleText: S.of(context)!.connectToEdms,
       submitText: S.of(context)!.signIn,
       onSubmit: _onLogin,
       showLocalAccounts: true,

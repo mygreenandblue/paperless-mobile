@@ -10,16 +10,32 @@ import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/generated/assets.gen.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:paperless_mobile/routing/routes/briefcase_route.dart';
 import 'package:paperless_mobile/routing/routes/documents_route.dart';
+import 'package:paperless_mobile/routing/routes/landing_route.dart';
 import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
 import 'package:paperless_mobile/routing/routes/settings_route.dart';
+import 'package:paperless_mobile/routing/routes/shelf_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
+import 'package:paperless_mobile/routing/routes/warehouse_route.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
+
+  @override
+  _AppDrawerState createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  int _selectedTileIndex = -1;
+  Color _getTitleColor(int tileIndex) {
+    return _selectedTileIndex == tileIndex
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondary;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,166 +43,192 @@ class AppDrawer extends StatelessWidget {
     final username = currentAccount.paperlessUser.username;
     final serverUrl =
         currentAccount.serverUrl.replaceAll(RegExp(r'https?://'), '');
+
     return SafeArea(
       child: Drawer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const $AssetsLogosGen()
-                    .paperlessLogoGreenSvg
-                    .svg(width: 32, height: 32),
-                SizedBox(width: 8),
-                Text(
-                  "Paperless Mobile",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ).paddedLTRB(8, 8, 8, 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  S.of(context)!.loggedInAs(username),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.5),
-                      ),
-                ),
-                Text(
-                  serverUrl,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.5),
-                      ),
-                ),
-              ],
-            ).paddedSymmetrically(horizontal: 16),
-            const Divider(),
-            ListTile(
-              dense: true,
-              title: Text(S.of(context)!.aboutThisApp),
-              leading: const Icon(Icons.info_outline),
-              onTap: () => _showAboutDialog(context),
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.favorite_outline),
-              title: Text(S.of(context)!.donate),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    icon: const Icon(Icons.favorite),
-                    title: Text(S.of(context)!.donate),
-                    content: Text(
-                      S.of(context)!.donationDialogContent,
-                    ),
-                    actionsAlignment: MainAxisAlignment.spaceBetween,
-                    actions: [
-                      const Text("~ Anton"),
-                      TextButton(
-                        onPressed: Navigator.of(context).pop,
-                        child: Text(S.of(context)!.gotIt),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.bug_report_outlined),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Text(S.of(context)!.reportABug),
-                  const Icon(
-                    Icons.open_in_new,
-                    size: 16,
-                  )
+                  const $AssetsLogosGen()
+                      .onlyLogoPng
+                      .image(width: 32, height: 32),
+                  const SizedBox(width: 8),
+                  Text(
+                    "EDMS Mobile",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ).paddedLTRB(8, 8, 8, 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    S.of(context)!.loggedInAs(username),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.5),
+                        ),
+                  ),
+                  Text(
+                    serverUrl,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.5),
+                        ),
+                  ),
+                ],
+              ).paddedSymmetrically(horizontal: 16),
+              const Divider(),
+
+              ListTile(
+                dense: true,
+                title: Text(
+                  S.of(context)!.aboutThisApp,
+                ),
+                leading: const Icon(Icons.info_outline),
+                onTap: () => _showAboutDialog(context),
+              ),
+              ExpansionTile(
+                leading: const Icon(Icons.warehouse_outlined),
+                title: Text(
+                  S.of(context)!.physicalWarehouse,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                children: [
+                  ListTile(
+                    title: Text(
+                      S.of(context)!.warehouse,
+                      style: TextStyle(color: _getTitleColor(1), fontSize: 13),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedTileIndex = 1;
+                      });
+                      WarehouseRoute().push(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(
+                      S.of(context)!.shelf,
+                      style: TextStyle(color: _getTitleColor(2), fontSize: 13),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedTileIndex = 2;
+                      });
+                      ShelfRoute().push(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(
+                      S.of(context)!.briefcase,
+                      style: TextStyle(color: _getTitleColor(3), fontSize: 13),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedTileIndex = 3;
+                      });
+                      BriefcaseRoute().push(context);
+                    },
+                  ),
                 ],
               ),
-              onTap: () {
-                launchUrlString(
-                  'https://github.com/astubenbord/paperless-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-            ),
-            ListTile(
-              dense: true,
-              leading: Assets.images.githubMark.svg(
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.onBackground,
-                  BlendMode.srcIn,
+              // ListTile(
+              //   dense: true,
+              //   leading: const Icon(Icons.bug_report_outlined),
+              //   title: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Text(S.of(context)!.reportABug),
+              //       const Icon(
+              //         Icons.open_in_new,
+              //         size: 16,
+              //       )
+              //     ],
+              //   ),
+              //   onTap: () {
+              //     launchUrlString(
+              //       'https://github.com/astubenbord/paperless-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
+              //       mode: LaunchMode.externalApplication,
+              //     );
+              //   },
+              // ),
+              // ListTile(
+              //   dense: true,
+              //   leading: Assets.images.githubMark.svg(
+              //     colorFilter: ColorFilter.mode(
+              //       Theme.of(context).colorScheme.onBackground,
+              //       BlendMode.srcIn,
+              //     ),
+              //     height: 24,
+              //     width: 24,
+              //   ),
+              //   title: Text(S.of(context)!.sourceCode),
+              //   trailing: const Icon(
+              //     Icons.open_in_new,
+              //     size: 16,
+              //   ),
+              //   onTap: () {
+              //     launchUrlString(
+              //       "https://github.com/astubenbord/paperless-mobile",
+              //       mode: LaunchMode.externalApplication,
+              //     );
+              //   },
+              // ),
+              Consumer<ConsumptionChangeNotifier>(
+                builder: (context, value, child) {
+                  final files = value.pendingFiles;
+                  final child = ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.drive_folder_upload_outlined),
+                    title: Text(S.of(context)!.pendingFiles),
+                    onTap: () {
+                      UploadQueueRoute().push(context);
+                    },
+                    trailing: Text(
+                      '${files.length}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  );
+                  if (files.isEmpty) {
+                    return child;
+                  }
+                  return child
+                      .animate(
+                        onPlay: (c) => c.repeat(reverse: true),
+                        autoPlay: !MediaQuery.disableAnimationsOf(context),
+                      )
+                      .fade(duration: 1.seconds, begin: 1, end: 0.3);
+                },
+              ),
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.settings_outlined),
+                title: Text(
+                  S.of(context)!.settings,
                 ),
-                height: 24,
-                width: 24,
+                onTap: () => SettingsRoute().push(context),
               ),
-              title: Text(S.of(context)!.sourceCode),
-              trailing: const Icon(
-                Icons.open_in_new,
-                size: 16,
-              ),
-              onTap: () {
-                launchUrlString(
-                  "https://github.com/astubenbord/paperless-mobile",
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-            ),
-            Consumer<ConsumptionChangeNotifier>(
-              builder: (context, value, child) {
-                final files = value.pendingFiles;
-                final child = ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.drive_folder_upload_outlined),
-                  title: const Text("Pending Files"),
-                  onTap: () {
-                    UploadQueueRoute().push(context);
-                  },
-                  trailing: Text(
-                    '${files.length}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                );
-                if (files.isEmpty) {
-                  return child;
-                }
-                return child
-                    .animate(
-                      onPlay: (c) => c.repeat(reverse: true),
-                      autoPlay: !MediaQuery.disableAnimationsOf(context),
-                    )
-                    .fade(duration: 1.seconds, begin: 1, end: 0.3);
-              },
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.settings_outlined),
-              title: Text(
-                S.of(context)!.settings,
-              ),
-              onTap: () => SettingsRoute().push(context),
-            ),
-            const Divider(),
-            Text(
-              S.of(context)!.views,
-              textAlign: TextAlign.left,
-              style: Theme.of(context).textTheme.labelLarge,
-            ).padded(16),
-            _buildSavedViews(),
-          ],
+              const Divider(),
+              Text(
+                S.of(context)!.views,
+                textAlign: TextAlign.left,
+                style: Theme.of(context).textTheme.labelLarge,
+              ).padded(16),
+              _buildSavedViews(),
+            ],
+          ),
         ),
       ),
     );
@@ -250,101 +292,43 @@ class AppDrawer extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    // final theme = Theme.of(context);
+    // final colorScheme = theme.colorScheme;
     showAboutDialog(
       context: context,
-      applicationIcon: const ImageIcon(
-        AssetImage('assets/logos/paperless_logo_green.png'),
-      ),
-      applicationName: 'Paperless Mobile',
-      applicationVersion: packageInfo.version + '+' + packageInfo.buildNumber,
+      applicationIcon:
+          const $AssetsLogosGen().onlyLogoPng.image(width: 32, height: 32),
+      applicationName: 'EDMS Mobile',
+      applicationVersion: '${packageInfo.version}+${packageInfo.buildNumber}',
       children: [
-        Text(S.of(context)!.developedBy('Anton Stubenbord')),
-        const SizedBox(height: 16),
-        Text(
-          "Source Code",
-          style: theme.textTheme.titleMedium,
-        ),
-        RichText(
-          text: TextSpan(
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: colorScheme.onSurface),
-            children: [
-              TextSpan(
-                text: S.of(context)!.findTheSourceCodeOn,
-              ),
-              TextSpan(
-                text: ' GitHub',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launchUrlString(
-                      'https://github.com/astubenbord/paperless-mobile',
-                      mode: LaunchMode.externalApplication,
-                    );
-                  },
-              ),
-              const TextSpan(text: '.'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Credits',
-          style: theme.textTheme.titleMedium
-              ?.copyWith(color: colorScheme.onSurface),
-        ),
-        RichText(
-          text: TextSpan(
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: colorScheme.onSurface),
-            children: [
-              const TextSpan(
-                text: 'Onboarding images by ',
-              ),
-              TextSpan(
-                text: 'pch.vector',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    launchUrlString(
-                        'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
-                  },
-              ),
-              const TextSpan(
-                text: ' on Freepik.',
-              ),
-            ],
-          ),
-        ),
+        Text(S.of(context)!.developedBy('TC Group')),
       ],
     );
   }
 
-  Widget _buildOnboardingImageCredits() {
-    return RichText(
-      text: TextSpan(
-        children: [
-          const TextSpan(
-            text: 'Onboarding images by ',
-          ),
-          TextSpan(
-            text: 'pch.vector',
-            style: const TextStyle(color: Colors.blue),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                launchUrlString(
-                    'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
-              },
-          ),
-          const TextSpan(
-            text: ' on Freepik.',
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildOnboardingImageCredits() {
+  //   return RichText(
+  //     text: TextSpan(
+  //       children: [
+  //         const TextSpan(
+  //           text: 'Onboarding images by ',
+  //         ),
+  //         TextSpan(
+  //           text: 'pch.vector',
+  //           style: const TextStyle(color: Colors.blue),
+  //           recognizer: TapGestureRecognizer()
+  //             ..onTap = () {
+  //               launchUrlString(
+  //                   'https://www.freepik.com/free-vector/business-team-working-cogwheel-mechanism-together_8270974.htm#query=setting&position=4&from_view=author');
+  //             },
+  //         ),
+  //         const TextSpan(
+  //           text: ' on Freepik.',
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 //Wrap(

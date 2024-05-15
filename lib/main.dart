@@ -366,17 +366,17 @@ class _GoRouterShellState extends State<GoRouterShell> {
             return MaterialApp.router(
               builder: (context, child) {
                 return AnnotatedRegion<SystemUiOverlayStyle>(
-                  child: child!,
                   value: buildOverlayStyle(
                     Theme.of(context),
                     systemNavigationBarColor:
                         Theme.of(context).colorScheme.background,
                   ),
+                  child: child!,
                 );
               },
               routerConfig: _router,
               debugShowCheckedModeBanner: false,
-              title: "Paperless Mobile",
+              title: "EDMS Mobile",
               theme: buildTheme(
                 brightness: Brightness.light,
                 dynamicScheme: lightDynamic,
@@ -400,6 +400,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 Locale('ru'),
                 Locale('tr'),
                 Locale('it'),
+                Locale('vi'),
               ],
               localeResolutionCallback: (locale, supportedLocales) {
                 if (locale == null) {
@@ -423,7 +424,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 }
                 return supportedLocales.first;
               },
-              locale: locale,
+              locale: const Locale('vi'),
               localizationsDelegates: S.localizationsDelegates,
             );
           },

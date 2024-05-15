@@ -43,7 +43,7 @@ class SettingsPage extends StatelessWidget {
           const SkipDocumentPreprationOnShareSetting(),
           _buildSectionHeader(context, S.of(context)!.storage),
           const ClearCacheSetting(),
-          _buildSectionHeader(context, 'Accessibility'),
+          _buildSectionHeader(context, S.of(context)!.accessibility),
           const DisableAnimationsSetting(),
           _buildSectionHeader(context, S.of(context)!.misc),
           const AppLogsTile(),

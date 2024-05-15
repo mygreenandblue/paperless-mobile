@@ -79,15 +79,12 @@ class _AddAccountPageState extends State<AddAccountPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Assets.logos.paperlessLogoGreenPng.image(
-                width: 150,
+              Assets.logos.logoNoBG1.image(
+                fit: BoxFit.cover,
+                width: 200,
                 height: 150,
               ),
-              Text(
-                'Paperless Mobile',
-                style: Theme.of(context).textTheme.displaySmall,
-              ).padded(),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Expanded(
                 child: PageView(
                   physics: NeverScrollableScrollPhysics(),
@@ -126,14 +123,15 @@ class _AddAccountPageState extends State<AddAccountPage> {
                             //   },
                             //   icon: Icon(Icons.settings),
                             // ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             FilledButton.icon(
                               onPressed: () async {
                                 final status = await _updateReachability();
                                 if (status == ReachabilityStatus.reachable) {
                                   Future.delayed(1.seconds, () {
                                     _pageController.nextPage(
-                                      duration: Duration(milliseconds: 300),
+                                      duration:
+                                          const Duration(milliseconds: 300),
                                       curve: Curves.easeInOut,
                                     );
                                   });
@@ -152,8 +150,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
                                     )
                                   : _reachabilityStatus ==
                                           ReachabilityStatus.reachable
-                                      ? Icon(Icons.done)
-                                      : Icon(Icons.arrow_forward),
+                                      ? const Icon(Icons.done)
+                                      : const Icon(Icons.arrow_forward),
                               label: Text(S.of(context)!.continueLabel),
                             ),
                           ],

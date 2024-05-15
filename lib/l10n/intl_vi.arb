@@ -1,0 +1,1074 @@
+{
+  "developedBy": "Developed by {name}.",
+  "@developedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "addAnotherAccount": "Thêm một tài khoản khác",
+  "@addAnotherAccount": {},
+  "account": "Tài khoản",
+  "@account": {},
+  "addCorrespondent": "Thêm người biên tập mới",
+  "@addCorrespondent": {
+    "description": "Title when adding a new correspondent"
+  },
+  "addDocumentType": "Loại tài liệu",
+  "@addDocumentType": {
+    "description": "Title when adding a new document type"
+  },
+  "addStoragePath": "Vị trí lưu trữ",
+  "@addStoragePath": {
+    "description": "Title when adding a new storage path"
+  },
+  "addTag": "Thêm tag mới",
+  "@addTag": {
+    "description": "Title when adding a new tag"
+  },
+  "aboutThisApp": "Về ứng dụng này",
+  "@aboutThisApp": {
+    "description": "Label for about this app tile displayed in the drawer"
+  },
+  "loggedInAs": "Đã đăng nhập với {name}",
+  "@loggedInAs": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "disconnect": "Mất kết nối",
+  "@disconnect": {
+    "description": "Logout button label"
+  },
+  "reportABug": "Báo cáo lỗi",
+  "@reportABug": {},
+  "settings": "Cài đặt",
+  "@settings": {},
+  "authenticateOnAppStart": "Xác thực khi bắt đầu ứng dụng",
+  "@authenticateOnAppStart": {
+    "description": "Description of the biometric authentication settings tile"
+  },
+  "biometricAuthentication": "Xác thực sinh trắc học",
+  "@biometricAuthentication": {},
+  "authenticateToToggleBiometricAuthentication": "{mode, select, enable{Authenticate to enable biometric authentication} disable{Authenticate to disable biometric authentication} other{}}",
+  "@authenticateToToggleBiometricAuthentication": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "documents": "Tài liệu",
+  "@documents": {},
+  "inbox": "Hộp thư đến",
+  "@inbox": {},
+  "labels": "Nhãn",
+  "@labels": {},
+  "scanner": "Quét",
+  "@scanner": {},
+  "startTyping": "Bắt đầu nhập...",
+  "@startTyping": {},
+  "doYouReallyWantToDeleteThisView": "Bạn có thực sự muốn xóa chế độ xem này?",
+  "@doYouReallyWantToDeleteThisView": {},
+  "deleteView": "Xóa chế độ xem {name}?",
+  "@deleteView": {},
+  "addedAt": "Thời gian thêm",
+  "@addedAt": {},
+  "archiveSerialNumber": "Lưu trữ số sê-ri",
+  "@archiveSerialNumber": {},
+  "asn": "ASN",
+  "@asn": {},
+  "correspondent": "Người biên tập",
+  "@correspondent": {},
+  "createdAt": "Thời gian tạo",
+  "@createdAt": {},
+  "documentSuccessfullyDeleted": "Đã xóa tài liệu thành công.",
+  "@documentSuccessfullyDeleted": {},
+  "assignAsn": "Chỉ định ASN",
+  "@assignAsn": {},
+  "deleteDocumentTooltip": "Xóa",
+  "@deleteDocumentTooltip": {
+    "description": "Tooltip shown for the delete button on details page"
+  },
+  "downloadDocumentTooltip": "Tải xuống",
+  "@downloadDocumentTooltip": {
+    "description": "Tooltip shown for the download button on details page"
+  },
+  "editDocumentTooltip": "Chỉnh sửa",
+  "@editDocumentTooltip": {
+    "description": "Tooltip shown for the edit button on details page"
+  },
+  "loadFullContent": "Tải nội dung đầy đủ",
+  "@loadFullContent": {},
+  "noAppToDisplayPDFFilesFound": "Ứng dụng không tìm thấy file PDF để hiển thị!",
+  "@noAppToDisplayPDFFilesFound": {},
+  "openInSystemViewer": "Mở trong hệ thống",
+  "@openInSystemViewer": {},
+  "couldNotOpenFilePermissionDenied": "Không thể mở file: Cấp quyền bị từ chối.",
+  "@couldNotOpenFilePermissionDenied": {},
+  "previewTooltip": "Xem lại",
+  "@previewTooltip": {
+    "description": "Tooltip shown for the preview button on details page"
+  },
+  "shareTooltip": "Chia sẻ",
+  "@shareTooltip": {
+    "description": "Tooltip shown for the share button on details page"
+  },
+  "similarDocuments": "Tài liệu Tương tự",
+  "@similarDocuments": {
+      "description": "Nhãn hiển thị trên thanh tab trên trang chi tiết"
+  },
+  "content": "Nội dung",
+  "@content": {
+      "description": "Nhãn hiển thị trên thanh tab trên trang chi tiết"
+  },
+  "metaData": "Dữ liệu Meta",
+  "@metaData": {
+      "description": "Nhãn hiển thị trên thanh tab trên trang chi tiết"
+  },
+  "overview": "Tổng quan",
+  "@overview": {
+      "description": "Nhãn hiển thị trên thanh tab trên trang chi tiết"
+  },
+  "documentType": "Loại Tài liệu",
+  "@documentType": {},
+  "archivedPdf": "Lưu trữ (pdf)",
+  "@archivedPdf": {
+      "description": "Tùy chọn để chọn khi tải xuống một tài liệu"
+  },
+  "chooseFiletype": "Chọn loại tệp",
+  "@chooseFiletype": {},
+  "original": "Bản gốc",
+  "@original": {
+      "description": "Tùy chọn để chọn khi tải xuống một tài liệu"
+  },
+  "documentSuccessfullyDownloaded": "Tài liệu đã tải xuống thành công.",
+  "@documentSuccessfullyDownloaded": {},
+  "suggestions": "Gợi ý: ",
+  "@suggestions": {},
+  "editDocument": "Chỉnh sửa Tài liệu",
+  "@editDocument": {},
+  "advanced": "Nâng cao",
+  "@advanced": {},
+  "apply": "Áp dụng",
+  "@apply": {},
+  "extended": "Mở rộng",
+  "@extended": {},
+  "titleAndContent": "Tiêu đề & Nội dung",
+  "@titleAndContent": {},
+  "title": "Tiêu đề",
+  "@title": {},
+  "reset": "Đặt lại",
+  "@reset": {},
+  "filterDocuments": "Lọc Tài liệu",
+  "@filterDocuments": {
+      "description": "Tiêu đề của bộ lọc tài liệu"
+  },
+  "originalMD5Checksum": "MD5-Checksum Gốc",
+  "@originalMD5Checksum": {},
+  "mediaFilename": "Tên tệp Phương tiện",
+  "@mediaFilename": {},
+  "originalFileSize": "Kích thước Tệp Gốc",
+  "@originalFileSize": {},
+  "originalMIMEType": "Loại MIME Gốc",
+  "@originalMIMEType": {},
+  "modifiedAt": "Sửa đổi lúc",
+  "@modifiedAt": {},
+  "preview": "Xem trước",
+  "@preview": {
+      "description": "Tiêu đề của trang xem trước tài liệu"
+  },
+  "scanADocument": "Quét một tài liệu",
+  "@scanADocument": {},
+  "noDocumentsScannedYet": "Chưa có tài liệu nào được quét.",
+  "@noDocumentsScannedYet": {},
+  "or": "hoặc",
+  "@or": {
+      "description": "Sử dụng trên trang quét giữa hai hành động chính khi không có quét nào được chụp."
+  },
+  "deleteAllScans": "Xóa tất cả các quét",
+  "@deleteAllScans": {},
+  "uploadADocumentFromThisDevice": "Tải lên một tài liệu từ thiết bị này",
+  "@uploadADocumentFromThisDevice": {
+      "description": "Nhãn nút trên trang quét"
+  },
+  "noMatchesFound": "Không tìm thấy kết quả nào.",
+  "@noMatchesFound": {
+      "description": "Hiển thị khi không tìm thấy tài liệu nào trong tìm kiếm tài liệu."
+  },
+  "removeFromSearchHistory": "Xóa khỏi lịch sử tìm kiếm?",
+  "@removeFromSearchHistory": {},
+  "results": "Kết quả",
+  "@results": {
+      "description": "Nhãn hiển thị phía trên kết quả tìm kiếm trong tìm kiếm tài liệu."
+  },
+  "searchDocuments": "Tìm kiếm tài liệu",
+  "@searchDocuments": {},
+  "resetFilter": "Đặt lại bộ lọc",
+  "@resetFilter": {},
+  "lastMonth": "Tháng Trước",
+  "@lastMonth": {},
+  "last7Days": "7 Ngày Qua",
+  "@last7Days": {},
+  "last3Months": "3 Tháng Qua",
+  "@last3Months": {},
+  "lastYear": "Năm Trước",
+  "@lastYear": {},
+  "search": "Tìm kiếm",
+  "@search": {},
+  "documentsSuccessfullyDeleted": "Tài liệu đã được xóa thành công.",
+  "@documentsSuccessfullyDeleted": {},
+  "thereSeemsToBeNothingHere": "Có vẻ như không có gì ở đây...",
+  "@thereSeemsToBeNothingHere": {},
+  "oops": "Rất tiếc.",
+  "@oops": {},
+  "newDocumentAvailable": "Có tài liệu mới!",
+  "@newDocumentAvailable": {},
+  "orderBy": "Sắp xếp Theo",
+  "@orderBy": {},
+  "thisActionIsIrreversibleDoYouWishToProceedAnyway": "Hành động này không thể đảo ngược. Bạn có muốn tiếp tục không?",
+  "@thisActionIsIrreversibleDoYouWishToProceedAnyway": {},
+  "confirmDeletion": "Xác nhận xóa",
+  "@confirmDeletion": {},
+  "areYouSureYouWantToDeleteTheFollowingDocuments": "{count, plural, one{Bạn có chắc chắn muốn xóa tài liệu sau đây không?} other{Bạn có chắc chắn muốn xóa các tài liệu sau đây không?}}",
+  "@areYouSureYouWantToDeleteTheFollowingDocuments": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "countSelected": "{count} đã chọn",
+  "@countSelected": {
+      "description": "Hiển thị trong thanh ứng dụng khi ít nhất một tài liệu được chọn.",
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "storagePath": "Đường dẫn Lưu trữ",
+  "@storagePath": {},
+  "prepareDocument": "Chuẩn bị tài liệu",
+  "@prepareDocument": {},
+  "tags": "Thẻ",
+  "@tags": {},
+  "documentSuccessfullyUpdated": "Tài liệu đã được cập nhật thành công.",
+  "@documentSuccessfullyUpdated": {},
+  "fileName": "Tên Tệp",
+  "@fileName": {},
+  "synchronizeTitleAndFilename": "Đồng bộ tiêu đề và tên tệp",
+  "@synchronizeTitleAndFilename": {},
+  "reload": "Tải lại",
+  "@reload": {},
+  "documentSuccessfullyUploadedProcessing": "Tài liệu đã được tải lên thành công, đang xử lý...",
+  "@documentSuccessfullyUploadedProcessing": {},
+  "deleteLabelWarningText": "Nhãn này chứa các tham chiếu đến các tài liệu khác. Bằng cách xóa nhãn này, tất cả các tham chiếu sẽ bị xóa. Tiếp tục?",
+  "@deleteLabelWarningText": {},
+  "couldNotAcknowledgeTasks": "Không thể xác nhận các nhiệm vụ.",
+  "@couldNotAcknowledgeTasks": {},
+  "authenticationFailedPleaseTryAgain": "Xác thực thất bại, vui lòng thử lại.",
+  "@authenticationFailedPleaseTryAgain": {},
+  "anErrorOccurredWhileTryingToAutocompleteYourQuery": "Đã xảy ra lỗi khi cố gắng tự động hoàn thành truy vấn của bạn.",
+  "@anErrorOccurredWhileTryingToAutocompleteYourQuery": {},
+  "biometricAuthenticationFailed": "Xác thực sinh trắc học thất bại.",
+  "@biometricAuthenticationFailed": {},
+  "biometricAuthenticationNotSupported": "Xác thực sinh trắc học không được hỗ trợ trên thiết bị này.",
+  "@biometricAuthenticationNotSupported": {},
+  "couldNotBulkEditDocuments": "Không thể chỉnh sửa tài liệu hàng loạt.",
+  "@couldNotBulkEditDocuments": {},
+  "couldNotCreateCorrespondent": "Không thể tạo người liên hệ, vui lòng thử lại.",
+  "@couldNotCreateCorrespondent": {},
+  "couldNotLoadCorrespondents": "Không thể tải các người liên hệ.",
+  "@couldNotLoadCorrespondents": {},
+  "couldNotCreateSavedView": "Không thể tạo chế độ xem đã lưu, vui lòng thử lại.",
+  "@couldNotCreateSavedView": {},
+  "couldNotDeleteSavedView": "Không thể xóa chế độ xem đã lưu, vui lòng thử lại",
+  "@couldNotDeleteSavedView": {},
+  "youAreCurrentlyOffline": "Bạn hiện đang ngoại tuyến. Vui lòng đảm bảo bạn đã kết nối với internet.",
+  "@youAreCurrentlyOffline": {},
+  "couldNotAssignArchiveSerialNumber": "Không thể gán số lưu trữ cho tài liệu.",
+  "@couldNotAssignArchiveSerialNumber": {},
+  "couldNotDeleteDocument": "Không thể xóa tài liệu, vui lòng thử lại.",
+  "@couldNotDeleteDocument": {},
+  "couldNotLoadDocuments": "Không thể tải tài liệu, vui lòng thử lại.",
+  "@couldNotLoadDocuments": {},
+  "couldNotLoadDocumentPreview": "Không thể tải xem trước tài liệu.",
+  "@couldNotLoadDocumentPreview": {},
+  "couldNotCreateDocument": "Không thể tạo tài liệu, vui lòng thử lại.",
+  "@couldNotCreateDocument": {},
+  "couldNotLoadDocumentTypes": "Không thể tải loại tài liệu, vui lòng thử lại.",
+  "@couldNotLoadDocumentTypes": {},
+  "couldNotUpdateDocument": "Không thể cập nhật tài liệu, vui lòng thử lại.",
+  "@couldNotUpdateDocument": {},
+  "couldNotUploadDocument": "Không thể tải tài liệu lên, vui lòng thử lại.",
+  "@couldNotUploadDocument": {},
+  "invalidCertificateOrMissingPassphrase": "Chứng chỉ không hợp lệ hoặc thiếu passphrase, vui lòng thử lại",
+  "@invalidCertificateOrMissingPassphrase": {},
+  "couldNotLoadSavedViews": "Không thể tải các chế độ xem đã lưu.",
+  "@couldNotLoadSavedViews": {},
+  "aClientCertificateWasExpectedButNotSent": "Một chứng chỉ khách hàng đã được mong đợi nhưng không được gửi. Vui lòng cung cấp một chứng chỉ khách hàng hợp lệ.",
+  "@aClientCertificateWasExpectedButNotSent": {},
+  "userIsNotAuthenticated": "Người dùng chưa được xác thực.",
+  "@userIsNotAuthenticated": {},
+  "requestTimedOut": "Yêu cầu tới máy chủ đã hết thời gian.",
+  "@requestTimedOut": {},
+  "anErrorOccurredRemovingTheScans": "Đã xảy ra lỗi khi xóa các quét.",
+  "@anErrorOccurredRemovingTheScans": {},
+  "couldNotReachYourPaperlessServer": "Không thể kết nối tới máy chủ Paperless của bạn, liệu nó có hoạt động không?",
+  "@couldNotReachYourPaperlessServer": {},
+  "couldNotLoadSimilarDocuments": "Không thể tải tài liệu tương tự.",
+  "@couldNotLoadSimilarDocuments": {},
+  "couldNotCreateStoragePath": "Không thể tạo đường dẫn lưu trữ, vui lòng thử lại.",
+  "@couldNotCreateStoragePath": {},
+  "couldNotLoadStoragePaths": "Không thể tải đường dẫn lưu trữ.",
+  "@couldNotLoadStoragePaths": {},
+  "couldNotLoadSuggestions": "Không thể tải gợi ý.",
+  "@couldNotLoadSuggestions": {},
+  "couldNotCreateTag": "Không thể tạo thẻ, vui lòng thử lại.",
+  "@couldNotCreateTag": {},
+  "couldNotLoadTags": "Không thể tải các thẻ.",
+  "@couldNotLoadTags": {},
+  "anUnknownErrorOccurred": "Đã xảy ra lỗi không xác định.",
+  "@anUnknownErrorOccurred": {},
+  "fileFormatNotSupported": "Định dạng tệp này không được hỗ trợ.",
+  "@fileFormatNotSupported": {},
+  "report": "BÁO CÁO",
+  "@report": {},
+  "absolute": "Tuyệt đối",
+  "@absolute": {},
+  "hintYouCanAlsoSpecifyRelativeValues": "Gợi ý: Ngoài các ngày cụ thể, bạn cũng có thể chỉ định một phạm vi thời gian liên quan đến ngày hiện tại.",
+  "@hintYouCanAlsoSpecifyRelativeValues": {
+      "description": "Hiển thị trong trình chọn phạm vi ngày mở rộng"
+  },
+  "amount": "Số lượng",
+  "@amount": {},
+  "relative": "Tương đối",
+  "@relative": {},
+  "last": "Cuối cùng",
+  "@last": {},
+  "timeUnit": "Đơn vị thời gian",
+  "@timeUnit": {},
+  "selectDateRange": "Chọn phạm vi ngày",
+  "@selectDateRange": {},
+  "after": "Sau",
+  "@after": {},
+  "before": "Trước",
+  "@before": {},
+  "days": "{count, plural, zero{ngày} one{ngày} other{ngày}}",
+  "@days": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "lastNDays": "{count, plural, zero{} one{Hôm qua} other{Trong {count} ngày qua}}",
+  "@lastNDays": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "lastNMonths": "{count, plural, zero{} one{Tháng trước} other{Trong {count} tháng qua}}",
+  "@lastNMonths": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "lastNWeeks": "{count, plural, zero{} one{Tuần trước} other{Trong {count} tuần qua}}",
+  "@lastNWeeks": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "lastNYears": "{count, plural, zero{} one{Năm trước} other{Trong {count} năm qua}}",
+  "@lastNYears": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "months": "{count, plural, zero{} one{tháng} other{tháng}}",
+  "@months": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "weeks": "{count, plural, zero{} one{tuần} other{tuần}}",
+  "@weeks": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "years": "{count, plural, zero{} one{năm} other{năm}}",
+  "@years": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "gotIt": "Đã hiểu!",
+  "@gotIt": {},
+  "cancel": "Hủy",
+  "@cancel": {},
+  "close": "Đóng",
+  "@close": {},
+  "create": "Tạo",
+  "@create": {},
+  "delete": "Xóa",
+  "@delete": {},
+  "edit": "Chỉnh sửa",
+  "@edit": {},
+  "ok": "Đồng ý",
+  "@ok": {},
+  "save": "Lưu",
+  "@save": {},
+  "select": "Chọn",
+  "@select": {},
+  "saveChanges": "Lưu thay đổi",
+  "@saveChanges": {},
+  "upload": "Tải lên",
+  "@upload": {},
+  "youreOffline": "Bạn đang ở chế độ ngoại tuyến.",
+  "@youreOffline": {},
+  "deleteDocument": "Xóa tài liệu",
+  "@deleteDocument": {
+      "description": "Sử dụng như một nhãn hành động trên mỗi mục hộp thư đến"
+  },
+  "removeDocumentFromInbox": "Tài liệu đã được loại bỏ khỏi hộp thư đến.",
+  "@removeDocumentFromInbox": {},
+  "areYouSureYouWantToMarkAllDocumentsAsSeen": "Bạn có chắc chắn muốn đánh dấu tất cả tài liệu đã xem chưa? Điều này sẽ thực hiện một hoạt động chỉnh sửa hàng loạt loại bỏ tất cả các thẻ hộp thư đến khỏi các tài liệu. Hành động này không thể hoàn tác! Bạn có chắc chắn muốn tiếp tục?",
+  "@areYouSureYouWantToMarkAllDocumentsAsSeen": {},
+  "markAllAsSeen": "Đánh dấu tất cả đã xem?",
+  "@markAllAsSeen": {},
+  "allSeen": "Tất cả đã xem",
+  "@allSeen": {},
+  "markAsSeen": "Đánh dấu đã xem",
+  "@markAsSeen": {},
+  "refresh": "Làm mới",
+  "@refresh": {},
+  "youDoNotHaveUnseenDocuments": "Bạn không có tài liệu chưa xem.",
+  "@youDoNotHaveUnseenDocuments": {},
+  "quickAction": "Hành động nhanh",
+  "@quickAction": {},
+  "suggestionSuccessfullyApplied": "Gợi ý được áp dụng thành công.",
+  "@suggestionSuccessfullyApplied": {},
+  "today": "Hôm nay",
+  "@today": {},
+  "undo": "Hoàn tác",
+  "@undo": {},
+  "nUnseen": "{count} chưa xem",
+  "@nUnseen": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "swipeLeftToMarkADocumentAsSeen": "Gợi ý: Vuốt sang trái để đánh dấu một tài liệu là đã xem và loại bỏ tất cả các thẻ hộp thư đến khỏi tài liệu.",
+  "@swipeLeftToMarkADocumentAsSeen": {},
+  "yesterday": "Hôm qua",
+  "@yesterday": {},
+  "anyAssigned": "Được gán cho bất kỳ ai",
+  "@anyAssigned": {},
+  "noItemsFound": "Không tìm thấy mục nào!",
+  "@noItemsFound": {},
+  "caseIrrelevant": "Không phân biệt chữ hoa, chữ thường",
+  "@caseIrrelevant": {},
+  "matchingAlgorithm": "Thuật toán phù hợp",
+  "@matchingAlgorithm": {},
+  "match": "Phù hợp",
+  "@match": {},
+  "name": "Tên",
+  "@name": {},
+  "notAssigned": "Chưa được gán",
+  "@notAssigned": {},
+  "addNewCorrespondent": "Thêm người liên hệ mới",
+  "@addNewCorrespondent": {},
+  "noCorrespondentsSetUp": "Bạn dường như chưa thiết lập bất kỳ người liên hệ nào.",
+  "@noCorrespondentsSetUp": {},
+  "correspondents": "Người liên hệ",
+  "@correspondents": {},
+  "addNewDocumentType": "Thêm loại tài liệu mới",
+  "@addNewDocumentType": {},
+  "noDocumentTypesSetUp": "Bạn dường như chưa thiết lập bất kỳ loại tài liệu nào.",
+  "@noDocumentTypesSetUp": {},
+  "documentTypes": "Loại tài liệu",
+  "@documentTypes": {},
+  "addNewStoragePath": "Thêm đường dẫn lưu trữ mới",
+  "@addNewStoragePath": {},
+  "noStoragePathsSetUp": "Bạn dường như chưa thiết lập bất kỳ đường dẫn lưu trữ nào.",
+  "@noStoragePathsSetUp": {},
+  "storagePaths": "Đường dẫn lưu trữ",
+  "@storagePaths": {},
+  "addNewTag": "Thêm thẻ mới",
+  "@addNewTag": {},
+  "noTagsSetUp": "Bạn dường như chưa thiết lập bất kỳ thẻ nào.",
+  "@noTagsSetUp": {},
+  "linkedDocuments": "Tài liệu Liên kết",
+  "@linkedDocuments": {},
+  "advancedSettings": "Cài đặt Nâng cao",
+  "@advancedSettings": {},
+  "passphrase": "Mật khẩu",
+  "@passphrase": {},
+  "configureMutualTLSAuthentication": "Cấu hình Xác thực TLS Tương hỗ",
+  "@configureMutualTLSAuthentication": {},
+  "invalidCertificateFormat": "Định dạng chứng chỉ không hợp lệ, chỉ .pfx được cho phép",
+  "@invalidCertificateFormat": {},
+  "clientcertificate": "Chứng chỉ khách hàng",
+  "@clientcertificate": {},
+  "selectFile": "Chọn tệp...",
+  "@selectFile": {},
+  "continueLabel": "Tiếp tục",
+  "@continueLabel": {},
+  "incorrectOrMissingCertificatePassphrase": "Passphrase chứng chỉ không chính xác hoặc thiếu.",
+  "@incorrectOrMissingCertificatePassphrase": {},
+  "connect": "Kết nối",
+  "@connect": {},
+  "password": "Mật khẩu",
+  "@password": {},
+  "passwordMustNotBeEmpty": "Mật khẩu không được để trống.",
+  "@passwordMustNotBeEmpty": {},
+  "connectionTimedOut": "Kết nối đã hết thời gian.",
+  "@connectionTimedOut": {},
+  "loginPageReachabilityMissingClientCertificateText": "Một chứng chỉ khách hàng đã được mong đợi nhưng không được gửi. Vui lòng cung cấp một chứng chỉ.",
+  "@loginPageReachabilityMissingClientCertificateText": {},
+  "couldNotEstablishConnectionToTheServer": "Không thể thiết lập kết nối tới máy chủ.",
+  "@couldNotEstablishConnectionToTheServer": {},
+  "connectionSuccessfulylEstablished": "Kết nối đã được thiết lập thành công.",
+  "@connectionSuccessfulylEstablished": {},
+  "hostCouldNotBeResolved": "Máy chủ không thể được giải quyết. Vui lòng kiểm tra địa chỉ máy chủ và kết nối internet của bạn.",
+
+
+  "@hostCouldNotBeResolved": {},
+  "serverAddress": "Địa chỉ IP máy chủ",
+  "@serverAddress": {},
+  "invalidAddress": "Địa chỉ không hợp lệ.",
+  "@invalidAddress": {},
+  "serverAddressMustIncludeAScheme": "Địa chỉ máy chủ phải bao gồm một lược đồ.",
+  "@serverAddressMustIncludeAScheme": {},
+  "serverAddressMustNotBeEmpty": "Địa chỉ máy chủ không được để trống.",
+  "@serverAddressMustNotBeEmpty": {},
+  "signIn": "Đăng nhập",
+  "@signIn": {},
+  "loginPageSignInTitle": "Đăng nhập",
+  "@loginPageSignInTitle": {},
+  "signInToServer": "Đăng nhập vào {serverAddress}",
+  "@signInToServer": {
+      "placeholders": {
+          "serverAddress": {}
+      }
+  },
+  "connectToEdms": "Kết nối với EDMS",
+  "@connectToEdms": {},
+  "username": "Tên người dùng",
+  "@username": {},
+  "usernameMustNotBeEmpty": "Tên người dùng không được để trống.",
+  "@usernameMustNotBeEmpty": {},
+  "documentContainsAllOfTheseWords": "Tài liệu chứa tất cả các từ này",
+  "@documentContainsAllOfTheseWords": {},
+  "all": "Tất cả",
+  "@all": {},
+  "documentContainsAnyOfTheseWords": "Tài liệu chứa bất kỳ từ nào trong số này",
+  "@documentContainsAnyOfTheseWords": {},
+  "any": "Bất kỳ",
+  "@any": {},
+  "learnMatchingAutomatically": "Tự động học phù hợp",
+  "@learnMatchingAutomatically": {},
+  "auto": "Tự động",
+  "@auto": {},
+  "documentContainsThisString": "Tài liệu chứa chuỗi này",
+  "@documentContainsThisString": {},
+  "exact": "Chính xác",
+  "@exact": {},
+  "documentContainsAWordSimilarToThisWord": "Tài liệu chứa một từ tương tự với từ này",
+  "@documentContainsAWordSimilarToThisWord": {},
+  "fuzzy": "Mờ",
+  "@fuzzy": {},
+  "documentMatchesThisRegularExpression": "Tài liệu phù hợp với biểu thức chính quy này",
+  "@documentMatchesThisRegularExpression": {},
+  "regularExpression": "Biểu thức chính quy",
+  "@regularExpression": {},
+  "anInternetConnectionCouldNotBeEstablished": "Không thể thiết lập kết nối internet.",
+  "@anInternetConnectionCouldNotBeEstablished": {},
+  "done": "Hoàn thành",
+  "@done": {},
+  "next": "Tiếp theo",
+  "@next": {},
+  "couldNotAccessReceivedFile": "Không thể truy cập tệp nhận được. Vui lòng thử mở ứng dụng trước khi chia sẻ.",
+  "@couldNotAccessReceivedFile": {},
+  "newView": "Tạo Mới",
+  "@newView": {},
+  "createsASavedViewBasedOnTheCurrentFilterCriteria": "Tạo một chế độ xem được lưu dựa trên các tiêu chí lọc hiện tại.",
+  "@createsASavedViewBasedOnTheCurrentFilterCriteria": {},
+  "createViewsToQuicklyFilterYourDocuments": "Tạo chế độ xem để lọc nhanh tài liệu của bạn.",
+  "@createViewsToQuicklyFilterYourDocuments": {},
+  "nFiltersSet": "{count, plural, zero{{count} bộ lọc được thiết lập} one{{count} bộ lọc được thiết lập} other{{count} bộ lọc được thiết lập}}",
+  "@nFiltersSet": {
+      "placeholders": {
+          "count": {}
+      }
+  },
+  "showInSidebar": "Hiển thị trong thanh bên",
+  "@showInSidebar": {},
+  "showOnDashboard": "Hiển thị trên bảng điều khiển",
+  "@showOnDashboard": {},
+  "views": "Các chế độ xem",
+  "@views": {},
+  "clearAll": "Xóa tất cả",
+  "@clearAll": {},
+  "scan": "Quét",
+  "@scan": {},
+  "previewScan": "Xem trước",
+  "@previewScan": {},
+  "scrollToTop": "Cuộn lên đầu",
+  "@scrollToTop": {},
+  "paperlessServerVersion": "Phiên bản máy chủ Paperless",
+  "@paperlessServerVersion": {},
+  "darkTheme": "Chủ đề Tối",
+  "@darkTheme": {},
+  "lightTheme": "Chủ đề Sáng",
+  "@lightTheme": {},
+  "systemTheme": "Sử dụng chủ đề hệ thống",
+  "@systemTheme": {},
+  "appearance": "Giao diện",
+  "@appearance": {},
+  "languageAndVisualAppearance": "Ngôn ngữ và giao diện",
+  "@languageAndVisualAppearance": {},
+  "applicationSettings": "Cài đặt ứng dụng",
+  "@applicationSettings": {},
+  "colorSchemeHint": "Chọn giữa một bảng màu cổ điển lấy cảm hứng từ màu xanh truyền thống của Paperless hoặc sử dụng bảng màu động dựa trên chủ đề hệ thống của bạn.",
+  "@colorSchemeHint": {},
+  "colorSchemeNotSupportedWarning": "Chủ đề động chỉ được hỗ trợ cho các thiết bị chạy Android 12 trở lên. Việc chọn tùy chọn 'Động' có thể không có hiệu lực tùy thuộc vào việc triển khai của hệ điều hành của bạn.",
+  "@colorSchemeNotSupportedWarning": {},
+  "colors": "Màu sắc",
+  "@colors": {},
+  "language": "Ngôn ngữ",
+  "@language": {},
+  "security": "Bảo mật",
+  "@security": {},
+  "mangeFilesAndStorageSpace": "Quản lý tệp và không gian lưu trữ",
+  "@mangeFilesAndStorageSpace": {},
+  "storage": "Lưu trữ",
+  "@storage": {},
+  "dark": "Tối",
+  "@dark": {},
+  "light": "Sáng",
+  "@light": {},
+  "system": "Hệ thống",
+  "@system": {},
+  "ascending": "Tăng dần",
+  "@ascending": {},
+  "descending": "Giảm dần",
+  "@descending": {},
+  "storagePathDay": "ngày",
+  "@storagePathDay": {},
+  "storagePathMonth": "tháng",
+  "@storagePathMonth": {},
+  "storagePathYear": "năm",
+  "@storagePathYear": {},
+  "color": "Màu",
+  "@color": {},
+  "filterTags": "Lọc thẻ...",
+  "@filterTags": {},
+  "inboxTag": "Thẻ Hộp thư đến",
+  "@inboxTag": {},
+  "uploadInferValuesHint": "Nếu bạn chỉ định giá trị cho các trường này, máy chủ Paperless của bạn sẽ không tự động rút ra một giá trị. Nếu bạn muốn các giá trị này được tự động điền vào bởi máy chủ của bạn, hãy để trống các trường.",
+  "@uploadInferValuesHint": {},
+  "useTheConfiguredBiometricFactorToAuthenticate": "Sử dụng yếu tố sinh trắc học được cấu hình để xác thực và mở khóa tài liệu của bạn.",
+  "@useTheConfiguredBiometricFactorToAuthenticate": {},
+  "verifyYourIdentity": "Xác minh danh tính của bạn",
+  "@verifyYourIdentity": {},
+  "verifyIdentity": "Xác minh danh tính",
+  "@verifyIdentity": {},
+  "detailed": "Chi tiết",
+  "@detailed": {},
+  "grid": "Lưới",
+  "@grid": {},
+  "list": "Danh sách",
+  "@list": {},
+  "remove": "Xóa bỏ",
+  "removeQueryFromSearchHistory": "Xóa truy vấn khỏi lịch sử tìm kiếm?",
+  "dynamicColorScheme": "Động",
+  "@dynamicColorScheme": {},
+  "classicColorScheme": "Cổ điển",
+  "@classicColorScheme": {},
+  "notificationDownloadComplete": "Tải xuống hoàn tất",
+  "@notificationDownloadComplete": {
+      "description": "Tiêu đề thông báo khi một tải xuống đã hoàn tất."
+  },
+  "notificationDownloadingDocument": "Đang tải tài liệu",
+  "@notificationDownloadingDocument": {
+      "description": "Tiêu đề thông báo được hiển thị khi tải xuống tài liệu đang chờ xử lý"
+  },
+  "archiveSerialNumberUpdated": "Cập nhật Số serial Lưu trữ.",
+  "@archiveSerialNumberUpdated": {
+      "description": "Thông báo được hiển thị khi ASN đã được cập nhật."
+  },
+  "donateCoffee": "Mua cho tôi một cốc cà phê",
+  "@donateCoffee": {
+      "description": "Nhãn được hiển thị trong ngăn ứng dụng"
+  },
+  "thisFieldIsRequired": "Trường này là bắt buộc!",
+  "@thisFieldIsRequired": {
+      "description": "Thông báo được hiển thị dưới trường biểu mẫu khi một trường bắt buộc chưa được điền."
+  },
+  "confirm": "Xác nhận",
+  "confirmAction": "Xác nhận hành động",
+  "@confirmAction": {
+      "description": "Thường được sử dụng như một tiêu đề để xác nhận một hành động đã được chọn trước đó"
+  },
+  "areYouSureYouWantToContinue": "Bạn có chắc chắn muốn tiếp tục không?",
+  "bulkEditTagsAddMessage": "{count, plural, one{Thao tác này sẽ thêm các thẻ {tags} vào tài liệu đã chọn.} other{Thao tác này sẽ thêm các thẻ {tags} vào {count} tài liệu đã chọn.}}",
+  "@bulkEditTagsAddMessage": {
+      "description": "Thông báo của hộp thoại xác nhận khi thêm nhiều thẻ."
+  },
+  "bulkEditTagsRemoveMessage": "{count, plural, one{Thao tác này sẽ xóa các thẻ {tags} khỏi tài liệu đã chọn.} other{Thao tác này sẽ xóa các thẻ {tags} khỏi {count} tài liệu đã chọn.}}",
+  "@bulkEditTagsRemoveMessage": {
+      "description": "Thông báo của hộp thoại xác nhận khi xóa nhiều thẻ."
+  },
+  "bulkEditTagsModifyMessage": "{count, plural, one{Thao tác này sẽ thêm các thẻ {addTags} và xóa các thẻ {removeTags} khỏi tài liệu đã chọn.} other{Thao tác này sẽ thêm các thẻ {addTags} và xóa các thẻ {removeTags} khỏi {count} tài liệu đã chọn.}}",
+  "@bulkEditTagsModifyMessage": {
+      "description": "Thông báo của hộp thoại xác nhận khi thêm và xóa thẻ cùng một lúc."
+  },
+  "bulkEditCorrespondentAssignMessage": "{count, plural, one{Thao tác này sẽ gán người liên hệ {correspondent} cho tài liệu đã chọn.} other{Thao tác này sẽ gán người liên hệ {correspondent} cho {count} tài liệu đã chọn.}}",
+  "bulkEditDocumentTypeAssignMessage": "{count, plural, one{Thao tác này sẽ gán loại tài liệu {docType} cho tài liệu đã chọn.} other{Thao tác này sẽ gán loại tài liệu {docType} cho {count} tài liệu đã chọn.}}",
+  "bulkEditStoragePathAssignMessage": "{count, plural, one{Thao tác này sẽ gán đường dẫn lưu trữ {path} cho tài liệu đã chọn.} other{Thao tác này sẽ gán đường dẫn lưu trữ {path} cho {count} tài liệu đã chọn.}}",
+  "bulkEditCorrespondentRemoveMessage": "{count, plural, one{Thao tác này sẽ xóa người liên hệ khỏi tài liệu đã chọn.} other{Thao tác này sẽ xóa người liên hệ khỏi {count} tài liệu đã chọn.}}",
+  "bulkEditDocumentTypeRemoveMessage": "{count, plural, one{Thao tác này sẽ xóa loại tài liệu khỏi tài liệu đã chọn.} other{Thao tác này sẽ xóa loại tài liệu khỏi {count} tài liệu đã chọn.}}",
+  "bulkEditStoragePathRemoveMessage": "{count, plural, one{Thao tác này sẽ xóa đường dẫn lưu trữ khỏi tài liệu đã chọn.} other{Thao tác này sẽ xóa đường dẫn lưu trữ khỏi {count} tài liệu đã chọn.}}",
+  "anyTag": "Bất kỳ",
+  "@anyTag": {
+      "description": "Nhãn hiển thị khi bất kỳ thẻ nào cũng phải được lọc"
+  },
+  "allTags": "Tất cả",
+  "@allTags": {
+      "description": "Nhãn hiển thị khi một tài liệu phải được gán cho tất cả các thẻ đã chọn"
+  },
+  "switchingAccountsPleaseWait": "Chuyển tài khoản. Vui lòng đợi...",
+  "@switchingAccountsPleaseWait": {
+      "description": "Thông báo được hiển thị trong khi đang chuyển tài khoản."
+  },
+  "testConnection": "Kiểm tra kết nối",
+  "@testConnection": {
+      "description": "Nhãn nút hiển thị trên trang đăng nhập. Cho phép người dùng kiểm tra xem máy chủ có thể kết nối được hay không."
+  },
+  "accounts": "Tài khoản",
+  "@accounts": {
+      "description": "Tiêu đề của hộp thoại quản lý tài khoản"
+  },
+  "addAccount": "Thêm tài khoản",
+  "@addAccount": {
+      "description": "Nhãn của hành động thêm tài khoản"
+  },
+  "switchAccount": "Chuyển",
+  "@switchAccount": {
+      "description": "Nhãn cho hành động chuyển tài khoản"
+  },
+  "logout": "Đăng xuất",
+  "@logout": {
+      "description": "Nhãn đăng xuất chung"
+  },
+  "switchAccountTitle": "Chuyển tài khoản",
+  "@switchAccountTitle": {
+      "description": "Tiêu đề của hộp thoại được hiển thị sau khi thêm một tài khoản, hỏi người dùng liệu họ có muốn chuyển sang tài khoản mới thêm không."
+  },
+  "switchToNewAccount": "Bạn có muốn chuyển sang tài khoản mới không? Bạn có thể chuyển lại bất kỳ lúc nào.",
+  "@switchToNewAccount": {
+      "description": "Nội dung của hộp thoại được hiển thị sau khi thêm một tài khoản, hỏi người dùng liệu họ có muốn chuyển sang tài khoản mới thêm không."
+  },
+  "sourceCode": "Mã nguồn",
+  "findTheSourceCodeOn": "Tìm mã nguồn trên",
+  "@findTheSourceCodeOn": {
+      "description": "Văn bản trước liên kết đến GitHub của EDMS Mobile"
+  },
+  "rememberDecision": "Ghi nhớ quyết định của tôi",
+  "defaultDownloadFileType": "Loại tệp tải xuống mặc định",
+  "@defaultDownloadFileType": {
+      "description": "Nhãn chỉ định loại tệp mặc định để tải xuống (một trong các tùy chọn: lưu trữ, ban đầu và luôn hỏi)"
+  },
+  "defaultShareFileType": "Loại tệp chia sẻ mặc định",
+  "@defaultShareFileType": {
+      "description": "Nhãn chỉ định loại tệp mặc định để chia sẻ (một trong các tùy chọn: lưu trữ, ban đầu và luôn hỏi)"
+  },
+  "alwaysAsk": "Luôn hỏi",
+  "@alwaysAsk": {
+      "description": "Tùy chọn để chọn khi ứng dụng luôn hỏi người dùng về loại tệp nào sẽ sử dụng"
+  },
+  "disableMatching": "Không tự động gắn thẻ tài liệu",
+  "@disableMatching": {
+      "description": "Một trong các tùy chọn cho việc tự động gắn thẻ tài liệu"
+  },
+  "none": "Không",
+  "@none": {
+      "description": "Một trong các giá trị enum có sẵn của thuật toán phù hợp cho các thẻ"
+  },
+  "logInToExistingAccount": "Đăng nhập vào tài khoản hiện có",
+  "@logInToExistingAccount": {
+      "description": "Tiêu đề được hiển thị trên trang đăng nhập nếu ít nhất một người dùng đã được biết đến trong ứng dụng."
+  },
+  "print": "In",
+  "@print": {
+      "description": "Chú giải cho nút in"
+  },
+  "managePermissions": "Quản lý quyền",
+  "@managePermissions": {
+      "description": "Nút dẫn người dùng đến trang quản lý quyền"
+  },
+  "errorRetrievingServerVersion": "Đã xảy ra lỗi khi cố gắng xác định phiên bản máy chủ.",
+  "@errorRetrievingServerVersion": {
+      "description": "Thông báo được hiển thị ở dưới cùng của trang cài đặt khi không thể xác định được phiên bản máy chủ từ xa."
+  },
+  "resolvingServerVersion": "Đang xác định phiên bản máy chủ...",
+  "@resolvingServerVersion": {
+      "description": "Thông báo được hiển thị trong khi ứng dụng đang tải phiên bản máy chủ từ xa."
+  },
+  "goToLogin": "Đi đến đăng nhập",
+  "@goToLogin": {
+      "description": "Nhãn của nút hiển thị trên trang đăng nhập để bỏ qua việc đăng nhập vào các tài khoản hiện có và chuyển hướng người dùng đến trang đăng nhập"
+  },
+  "export": "Xuất",
+  "@export": {
+      "description": "Nhãn cho nút xuất hình ảnh quét sang PDF (trước khi tải lên)"
+  },
+  "invalidFilenameCharacter": "Tìm thấy ký tự không hợp lệ trong tên tệp: {characters}",
+  "@invalidFilenameCharacter": {
+      "description": "Để xác nhận tên tệp trong hộp thoại xuất"
+  },
+  "exportScansToPdf": "Xuất hình ảnh quét sang PDF",
+  "@exportScansToPdf": {
+      "description": "Tiêu đề của hộp thoại cảnh báo khi xuất hình ảnh quét sang pdf"
+  },
+  "allScansWillBeMerged": "Tất cả các hình ảnh quét sẽ được hợp nhất thành một tệp PDF duy nhất.",
+  "behavior": "Hành vi",
+  "@behavior": {
+      "description": "Tiêu đề của các cài đặt liên quan đến hành vi ứng dụng"
+  },
+  "theme": "Giao diện",
+  "@theme": {
+      "description": "Tiêu đề của cài đặt chế độ giao diện"
+  },
+  "clearCache": "Xóa bộ nhớ cache",
+  "@clearCache": {
+      "description": "Tiêu đề của cài đặt xóa bộ nhớ cache"
+  },
+  "freeBytes": "Dung lượng trống {byteString}",
+  "@freeBytes": {
+      "description": "Văn bản hiển thị cho cài đặt xóa bộ nhớ"
+  },
+  "calculatingDots": "Đang tính toán...",
+  "@calculatingDots": {
+      "description": "Văn bản hiển thị khi kích thước byte vẫn đang được tính toán"
+  },
+  "freedDiskSpace": "Đã giải phóng thành công {bytes} của không gian đĩa.",
+  "@freedDiskSpace": {
+      "description": "Thông báo được hiển thị sau khi xóa bộ nhớ"
+  },
+  "uploadScansAsPdf": "Tải hình ảnh quét lên dưới dạng PDF",
+  "@uploadScansAsPdf": {
+      "description": "Tiêu đề của cài đặt chuyển đổi hình ảnh quét thành PDF trước khi tải lên"
+  },
+  "convertSinglePageScanToPdf": "Luôn chuyển đổi hình ảnh quét một trang thành PDF trước khi tải lên",
+  "@convertSinglePageScanToPdf": {
+      "description": "mô tả của cài đặt tải hình ảnh quét dưới dạng PDF"
+  },
+  "loginRequiredPermissionsHint": "Sử dụng EDMS Mobile yêu cầu một tập hợp tối thiểu các quyền người dùng kể từ phiên bản paperless-ngx 1.14.0 trở lên. Do đó, hãy đảm bảo rằng người dùng cần đăng nhập có quyền xem người dùng khác (Người dùng → Xem) và cài đặt (UISettings → Xem). Nếu bạn không có các quyền này, vui lòng liên hệ với quản trị viên của máy chủ paperless-ngx của bạn.",
+  "@loginRequiredPermissionsHint": {
+      "description": "Gợi ý được hiển thị trên trang đăng nhập thông báo cho người dùng về các quyền cần thiết để sử dụng ứng dụng."
+  },
+  "missingPermissions": "Bạn không có các quyền cần thiết để thực hiện hành động này.",
+  "@missingPermissions": {
+      "description": "Thông báo được hiển thị trong một thanh snackbar khi một người dùng không có các quyền cần thiết thực hiện một hành động."
+  },
+  "editView": "Chỉnh sửa xem",
+  "@editView": {
+      "description": "Tiêu đề của trang chỉnh sửa xem đã lưu"
+  },
+  "donate": "Quyên góp",
+  "@donate": {
+      "description": "Nhãn của nút quyên góp trong ứng dụng"
+  },
+  "donationDialogContent": "Cảm ơn bạn đã xem xét hỗ trợ ứng dụng này! Do chính sách thanh toán của cả Google và Apple, không có liên kết nào dẫn đến quyên góp có thể được hiển thị trong ứng dụng. Ngay cả việc liên kết đến trang dự án cũng không được phép trong bối cảnh này. Do đó, hãy xem xét phần 'Quyên góp' trong Tệp README của dự án. Sự ủng hộ của bạn được đánh giá cao và giữ cho việc phát triển ứng dụng này sống. Cảm ơn!",
+  "@donationDialogContent": {
+      "description": "Văn bản được hiển thị trong hộp thoại quyên góp"
+  },
+  "noDocumentsFound": "Không tìm thấy tài liệu nào.",
+  "@noDocumentsFound": {
+      "description": "Thông báo được hiển thị khi không tìm thấy tài liệu nào."
+  },
+  "couldNotDeleteCorrespondent": "Không thể xóa người đại diện, vui lòng thử lại.",
+  "@couldNotDeleteCorrespondent": {
+      "description": "Thông báo được hiển thị trong thanh snackbar khi không thể xóa người đại diện."
+  },
+  "couldNotDeleteDocumentType": "Không thể xóa loại tài liệu, vui lòng thử lại.",
+  "@couldNotDeleteDocumentType": {
+      "description": "Thông báo được hiển thị khi không thể xóa loại tài liệu"
+  },
+  "couldNotDeleteTag": "Không thể xóa thẻ, vui lòng thử lại.",
+  "@couldNotDeleteTag": {
+      "description": "Thông báo được hiển thị khi không thể xóa thẻ"
+  },
+  "couldNotDeleteStoragePath": "Không thể xóa đường dẫn lưu trữ, vui lòng thử lại.",
+  "@couldNotDeleteStoragePath": {
+      "description": "Thông báo được hiển thị khi không thể xóa đường dẫn lưu trữ"
+  },
+  "couldNotUpdateCorrespondent": "Không thể cập nhật người đại diện, vui lòng thử lại.",
+  "@couldNotUpdateCorrespondent": {
+      "description": "Thông báo được hiển thị khi không thể cập nhật người đại diện"
+  },
+  "couldNotUpdateDocumentType": "Không thể cập nhật loại tài liệu, vui lòng thử lại.",
+  "@couldNotUpdateDocumentType": {
+      "description": "Thông báo được hiển thị khi không thể cập nhật loại tài liệu"
+  },
+  "couldNotUpdateTag": "Không thể cập nhật thẻ, vui lòng thử lại.",
+  "@couldNotUpdateTag": {
+      "description": "Thông báo được hiển thị khi không thể cập nhật thẻ"
+  },
+  "couldNotLoadServerInformation": "Không thể tải thông tin máy chủ.",
+  "@couldNotLoadServerInformation": {
+      "description": "Thông báo được hiển thị khi không thể tải thông tin máy chủ"
+  },
+  "couldNotLoadStatistics": "Không thể tải thống kê máy chủ.",
+  "@couldNotLoadStatistics": {
+      "description": "Thông báo được hiển thị khi không thể tải thống kê máy chủ"
+  },
+  "couldNotLoadUISettings": "Không thể tải cài đặt giao diện người dùng.",
+  "@couldNotLoadUISettings": {
+      "description": "Thông báo được hiển thị khi không thể tải cài đặt giao diện người dùng"
+  },
+  "couldNotLoadTasks": "Không thể tải các tác vụ.",
+  "@couldNotLoadTasks": {
+      "description": "Thông báo được hiển thị khi các tác vụ (ví dụ: tài liệu tiêu thụ) không thể được tải"
+  },
+  "userNotFound": "Không thể tìm thấy người dùng.",
+  "@userNotFound": {
+      "description": "Thông báo được hiển thị khi không thể tìm thấy người dùng đã chỉ định (ví dụ: theo id)"
+  },
+  "couldNotUpdateSavedView": "Không thể cập nhật xem đã lưu, vui lòng thử lại.",
+  "@couldNotUpdateSavedView": {
+      "description": "Thông báo được hiển thị khi không thể cập nhật xem đã lưu"
+  },
+  "couldNotUpdateStoragePath": "Không thể cập nhật đường dẫn lưu trữ, vui lòng thử lại.",
+  "savedViewSuccessfullyUpdated": "Xem đã lưu được cập nhật thành công.",
+  "@savedViewSuccessfullyUpdated": {
+      "description": "Thông báo được hiển thị khi một xem đã lưu được cập nhật thành công."
+  },
+  "discardChanges": "Hủy thay đổi?",
+  "@discardChanges": {
+      "description": "Tiêu đề của hộp thoại cảnh báo được hiển thị khi một người dùng cố gắng đóng một xem với các thay đổi chưa được lưu."
+  },
+  "savedViewChangedDialogContent": "Các điều kiện bộ lọc của xem đang hoạt động đã thay đổi. Bằng cách đặt lại bộ lọc, những thay đổi này sẽ bị mất. Bạn vẫn muốn tiếp tục?",
+  "@savedViewChangedDialogContent": {
+      "description": "Nội dung của hộp thoại cảnh báo được hiển thị khi tất cả các điều kiện sau đây đều áp dụng:\r\n* Người dùng đã chọn xem đã lưu\r\n* Người dùng đã thực hiện các thay đổi vào bộ lọc tài liệu hiện tại\r\n* Người dùng bây giờ cố gắng đặt lại bộ lọc này mà không có các thay đổi đã được lưu vào xem."
+  },
+  "createFromCurrentFilter": "Tạo từ bộ lọc hiện tại",
+  "@createFromCurrentFilter": {
+      "description": "Chú giải của nút 'Xem đã lưu mới'"
+  },
+  "home": "Trang chủ",
+  "@home": {
+      "description": "Nhãn của tuyến đường 'Trang chủ'"
+  },
+  "welcomeUser": "Chào mừng, {name}!",
+  "@welcomeUser": {
+      "description": "Thông báo trên cùng được hiển thị trên trang chính"
+  },
+  "statistics": "Thống kê",
+  "documentsInInbox": "Tài liệu trong hộp thư đến",
+  "totalDocuments": "Tổng số tài liệu",
+  "totalCharacters": "Tổng số ký tự",
+  "showAll": "Hiển thị tất cả",
+  "@showAll": {
+      "description": "Nhãn của nút hiển thị trên xem trước xem đã lưu để mở xem này trong trang tài liệu"
+  },
+  "userAlreadyExists": "Người dùng này đã tồn tại.",
+  "@userAlreadyExists": {
+      "description": "Thông báo lỗi được hiển thị khi người dùng cố gắng thêm một tài khoản đã tồn tại."
+  },
+  "youDidNotSaveAnyViewsYet": "Bạn chưa lưu bất kỳ xem nào, hãy tạo một xem và nó sẽ được hiển thị ở đây.",
+  "@youDidNotSaveAnyViewsYet": {
+      "description": "Thông báo được hiển thị khi chưa có xem đã lưu nào."
+  },
+  "tryAgain": "Thử lại",
+  "discardFile": "Hủy tệp?",
+  "discard": "Hủy bỏ",
+  "backToLogin": "Quay lại đăng nhập",
+  "skipEditingReceivedFiles": "Bỏ qua việc chỉnh sửa tệp nhận được",
+  "uploadWithoutPromptingUploadForm": "Luôn tải lên mà không cần hỏi biểu mẫu tải lên khi chia sẻ tệp với ứng dụng.",
+  "authenticatingDots": "Đang xác thực...",
+  "@authenticatingDots": {
+      "description": "Thông báo được hiển thị khi ứng dụng đang xác thực người dùng"
+  },
+  "persistingUserInformation": "Đang lưu thông tin người dùng...",
+  "fetchingUserInformation": "Đang tải thông tin người dùng...",
+  "@fetchingUserInformation": {
+      "description": "Thông báo được hiển thị khi ứng dụng tải dữ liệu người dùng từ máy chủ"
+  },
+  "restoringSession": "Đang khôi phục phiên làm việc...",
+  "@restoringSession": {
+      "description": "Thông báo được hiển thị khi người dùng mở ứng dụng và cố gắng xác thực và đăng nhập lại phiên trước đó"
+  },
+  "documentsAssigned": "{count, plural, zero{Không có tài liệu} one{1 tài liệu} other{{count} tài liệu}}",
+  "@documentsAssigned": {
+      "description": "Văn bản được hiển thị với một người đại diện, loại tài liệu vv. để chỉ số lượng tài liệu mà bộ lọc này tối đa sẽ thu được."
+  },
+  "discardChangesWarning": "Bạn có thay đổi chưa được lưu. Tiếp tục, tất cả thay đổi sẽ bị mất. Bạn có muốn hủy bỏ các thay đổi này?",
+  "@discardChangesWarning": {
+      "description": "Thông báo cảnh báo được hiển thị khi người dùng cố gắng đóng một tuyến đường mà không lưu các thay đổi."
+  },
+  "changelog": "Nhật ký thay đổi",
+  "noLogsFoundOn": "Không tìm thấy nhật ký nào trên {date}.",
+  "logfileBottomReached": "Bạn đã đạt đến đáy của tệp nhật ký này.",
+  "appLogs": "Nhật ký ứng dụng {date}",
+  "saveLogsToFile": "Lưu nhật ký vào tệp",
+  "copyToClipboard": "Sao chép vào bảng ghi",
+  "couldNotLoadLogfileFrom": "Không thể tải tệp nhật ký từ {date}.",
+  "loadingLogsFrom": "Đang tải nhật ký từ {date}...",
+  "clearLogs": "Xóa nhật ký từ {date}",
+  "showPdf": "Hiển thị PDF",
+  "@showPdf": {
+      "description": "Chú giải được hiển thị trên nút \"hiển thị pdf\" trên trang chỉnh sửa tài liệu"
+  },
+  "hidePdf": "Ẩn PDF",
+  "@hidePdf": {
+      "description": "Chú giải được hiển thị trên biểu tượng nút \"hiển thị pdf\" trên trang chỉnh sửa tài liệu"
+  },
+  "misc": "Khác",
+  "loggingOut": "Đang đăng xuất...",
+  "testingConnection": "Đang kiểm tra kết nối...",
+  "@testingConnection": {
+      "description": "Văn bản được hiển thị trong khi ứng dụng cố gắng thiết lập kết nối đến máy chủ được chỉ định."
+  },
+  "version": "Phiên bản {versionCode}",
+  "notes": "{count, plural, zero{Ghi chú} one{Ghi chú} other{Ghi chú}}",
+  "addNote": "Thêm ghi chú",
+  "newerVersionAvailable": "Có phiên bản mới:",
+  "dateOutOfRange": "Ngày phải nằm trong khoảng {firstDate} và {lastDate}.",
+  "@dateOutOfRange": {
+      "description": "Thông báo lỗi được hiển thị khi người dùng cố gắng chọn một ngày nằm ngoài phạm vi cho phép.",
+      "placeholders": {
+          "firstDate": {
+              "type": "DateTime",
+              "format": "yMd"
+          },
+          "lastDate": {
+              "type": "DateTime",
+              "format": "yMd"
+          }
+      }
+  },
+  "permissions": "Quyền",
+  "newNote": "Ghi chú mới",
+  "notesMarkdownSyntaxSupportHint": "EDMS Mobile có thể hiển thị ghi chú bằng cú pháp markdown cơ bản. Hãy thử nó ngay bây giờ!",
+  "pendingFiles": "Tài liệu đang chờ",
+  "@pendingFiles": {},
+  "pendingFilesEmpty": "Không có tài liệu chờ",
+  "@pendingFilesEmpty":{},
+  "accessibility": "Khả năng tiếp cận",
+  "@accessibility": {},
+  "disableAnimations": "Vô hiệu hóa",
+  "@disableAnimations": {},
+  "disableAnimationsDes": "Vô hiệu hóa chuyển tiếp trang và hầu hết các hoạt ảnh. Giải pháp tạm thời cho đến khi có thể sử dụng cài đặt trợ năng hệ thống.",
+  "@disableAnimationsDes": {},
+  "hintAddDoc": "Chế độ xem đã lưu hiện chỉ có thể được chỉnh sửa bằng cách thay đổi bộ lọc tài liệu. Do đó, hãy truy cập trang tài liệu, chọn chế độ xem này, thêm các bộ lọc bạn muốn chế độ xem này có và lưu nó bằng cách nhấn 'Lưu thay đổi' trong menu chế độ xem.",
+  "physicalWarehouse": "Kho vật lý",
+  "warehouse": "Kho",
+  "shelf": "Giá/kệ",
+  "briefcase": "Hộp/cặp",
+  "addWarehouse": "Thêm kho mới",
+  "addShelf": "Thêm giá/kệ mới",
+  "addBriefcase": "Thêm hộp/cặp mới",
+  "warehouseName": "Tên kho",
+  "shelfName": "Tên giá/kệ",
+  "briefcaseName": "Tên hộp/cặp",
+  "editWarehouse": "Chỉnh sửa kho",
+  "editShelf": "Chỉnh sửa giá/kệ",
+  "editBriefcase": "Chỉnh sửa hộp/cặp"
+}

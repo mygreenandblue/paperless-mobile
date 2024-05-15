@@ -544,8 +544,8 @@
       "serverAddress": {}
     }
   },
-  "connectToPaperless": "Connect to Paperless",
-  "@connectToPaperless": {},
+  "connectToEdms": "Connect to EDMS",
+  "@connectToEdms": {},
   "username": "Username",
   "@username": {},
   "usernameMustNotBeEmpty": "Username must not be empty.",
@@ -765,7 +765,7 @@
   "sourceCode": "Source Code",
   "findTheSourceCodeOn": "Find the source code on",
   "@findTheSourceCodeOn": {
-    "description": "Text before link to Paperless Mobile GitHub"
+    "description": "Text before link to EDMS Mobile GitHub"
   },
   "rememberDecision": "Remember my decision",
   "defaultDownloadFileType": "Default Download File Type",
@@ -857,7 +857,7 @@
   "@convertSinglePageScanToPdf": {
     "description": "description of the upload scans as pdf setting"
   },
-  "loginRequiredPermissionsHint": "Using Paperless Mobile requires a minimum set of user permissions since paperless-ngx 1.14.0 and higher. Therefore, please make sure that the user to be logged in has the permission to view other users (User → View) and the settings (UISettings → View). If you do not have these permissions, please contact an administrator of your paperless-ngx server.",
+  "loginRequiredPermissionsHint": "Using EDMS Mobile requires a minimum set of user permissions since paperless-ngx 1.14.0 and higher. Therefore, please make sure that the user to be logged in has the permission to view other users (User → View) and the settings (UISettings → View). If you do not have these permissions, please contact an administrator of your paperless-ngx server.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
   },
@@ -1044,5 +1044,29 @@
   },
   "permissions": "Permissions",
   "newNote": "New note",
-  "notesMarkdownSyntaxSupportHint": "Paperless Mobile can render notes using basic markdown syntax. Try it out!"
+  "notesMarkdownSyntaxSupportHint": "EDMS Mobile can render notes using basic markdown syntax. Try it out!",
+  "pendingFiles": "Pending files",
+  "@pendingFiles": {},
+  "pendingFilesEmpty": "Pending files empty",
+  "@pendingFilesEmpty":{},
+  "accessibility": "Accessibility",
+  "@accessibility": {},
+  "disableAnimations": "Disable Animations",
+  "@disableAnimations": {},
+  "disableAnimationsDes": "Disables page transitions and most animations. Temporary workaround until system accessibility settings can be used.",
+  "@disableAnimationsDes": {},
+  "hintAddDoc": "Saved views can currently only be edited by changing the document filter. Therefore, go to the documents page, select this view, add the filters you want this view to have and save it by pressing 'Save changes' in the view menu.",
+  "physicalWarehouse": "Physical warehouse",
+  "warehouse": "Warehouse",
+  "shelf": "Shelf",
+  "briefcase": "Briefcase",
+  "addWarehouse": "Add warehouse",
+  "addShelf": "Add shelf",
+  "addBriefcase": "Add briefcase",
+  "warehouseName": "Warehouse name",
+  "shelfName": "Shelf name",
+  "briefcaseName": "Briefcase name",
+  "editWarehouse": "Edit warehouse",
+  "editShelf": "Edit shelf",
+  "editBriefcase": "Edit briefcase"
 }

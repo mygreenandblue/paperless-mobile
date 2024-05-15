@@ -10,9 +10,8 @@ class DisableAnimationsSetting extends StatelessWidget {
     return GlobalSettingsBuilder(builder: (context, settings) {
       return SwitchListTile(
         value: settings.disableAnimations,
-        title: Text('Disable animations'),
-        subtitle: Text('Disables page transitions and most animations.'
-            ' Temporary workaround until system accessibility settings can be used.'),
+        title: Text(S.of(context)!.disableAnimations),
+        subtitle: Text(S.of(context)!.disableAnimationsDes),
         onChanged: (val) async {
           settings.disableAnimations = val;
           settings.save();

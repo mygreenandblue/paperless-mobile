@@ -24,6 +24,7 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'ca': LanguageOption('Català', true),
     'ru': LanguageOption('Русский', true),
     'it': LanguageOption('Italiano', true),
+    'vi': LanguageOption('Vietnamese', true),
   };
 
   @override
