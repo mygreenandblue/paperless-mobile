@@ -14,6 +14,7 @@ abstract class DocumentItem extends StatelessWidget {
   final void Function(int? correspondentId)? onCorrespondentSelected;
   final void Function(int? documentTypeId)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
+  final void Function(int? briefcaseId)? onWarehouseSelected;
 
   const DocumentItem({
     super.key,
@@ -25,6 +26,7 @@ abstract class DocumentItem extends StatelessWidget {
     required this.isLabelClickable,
     this.onTagSelected,
     this.onCorrespondentSelected,
+    this.onWarehouseSelected,
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
     required this.enableHeroAnimation,

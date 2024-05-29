@@ -23,7 +23,11 @@ enum PermissionTarget {
   uiSettings("uisettings"),
   user("user"),
   logentry("logentry"),
-  permission("permission");
+  permission("permission"),
+
+  warehouse("warehouse"),
+  shelf("shelf"),
+  briefcase("briefcase");
 
   final String value;
   const PermissionTarget(this.value);

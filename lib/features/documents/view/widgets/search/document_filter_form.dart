@@ -5,9 +5,11 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:paperless_mobile/features/physical_warehouse/view/form/physical_warehouse_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 import 'text_query_form_field.dart';
@@ -19,6 +21,7 @@ class DocumentFilterForm extends StatefulWidget {
   static const fkQuery = "query";
   static const fkCreatedAt = DocumentModel.createdKey;
   static const fkAddedAt = DocumentModel.addedKey;
+  static const fkWarehouse = DocumentModel.warehouseKey;
 
   static DocumentFilter assembleFilter(
     GlobalKey<FormBuilderState> formKey,
@@ -41,6 +44,8 @@ class DocumentFilterForm extends StatefulWidget {
       created: (v[DocumentFilterForm.fkCreatedAt] as DateRangeQuery),
       added: (v[DocumentFilterForm.fkAddedAt] as DateRangeQuery),
       page: 1,
+      warehousesId: v[DocumentFilterForm.fkWarehouse] as IdQueryParameter? ??
+          DocumentFilter.initial.warehousesId,
     );
   }
 
@@ -75,13 +80,14 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
   @override
   Widget build(BuildContext context) {
     final labelRepository = context.watch<LabelRepository>();
+    final warehouseRepository = context.watch<WarehouseRepository>();
     return FormBuilder(
       key: widget.formKey,
       child: CustomScrollView(
         controller: widget.scrollController,
         slivers: [
           if (widget.header != null) widget.header!,
-          ..._buildFormFieldList(labelRepository),
+          ..._buildFormFieldList(labelRepository, warehouseRepository),
           const SliverToBoxAdapter(
             child: SizedBox(
               height: 32,
@@ -92,7 +98,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
     );
   }
 
-  List<Widget> _buildFormFieldList(LabelRepository labelRepository) {
+  List<Widget> _buildFormFieldList(LabelRepository labelRepository,
+      WarehouseRepository warehouseRepository) {
     return [
       _buildQueryFormField().paddedSymmetrically(horizontal: 12),
       Align(
@@ -136,6 +143,11 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
         vertical: 4,
       ),
       _buildTagsFormField(labelRepository.tags).paddedSymmetrically(
+        horizontal: 16,
+        vertical: 4,
+      ),
+      _buildWarehouseFormField(warehouseRepository.briefcases)
+          .paddedSymmetrically(
         horizontal: 16,
         vertical: 4,
       ),
@@ -217,6 +229,18 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       allowExclude: false,
       allowOnlySelection: false,
       allowCreation: false,
+    );
+  }
+
+  Widget _buildWarehouseFormField(Map<int, WarehouseModel> warehouses) {
+    return WarehouseFormField<WarehouseModel>(
+      name: DocumentFilterForm.fkWarehouse,
+      options: warehouses,
+      labelText: S.of(context)!.briefcase,
+      initialValue: widget.initialFilter.warehousesId,
+      prefixIcon: const Icon(Icons.warehouse),
+      allowSelectUnassigned: false,
+      canCreateNewWarehouse: true,
     );
   }
 }

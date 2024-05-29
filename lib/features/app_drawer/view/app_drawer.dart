@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,17 +9,13 @@ import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart
 import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
 import 'package:paperless_mobile/generated/assets.gen.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/briefcase_route.dart';
 import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/landing_route.dart';
 import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
 import 'package:paperless_mobile/routing/routes/settings_route.dart';
-import 'package:paperless_mobile/routing/routes/shelf_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
-import 'package:paperless_mobile/routing/routes/warehouse_route.dart';
+import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -115,7 +110,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       setState(() {
                         _selectedTileIndex = 1;
                       });
-                      WarehouseRoute().push(context);
+                      PhysicalWarehouseRoute(type: 'Warehouse').push(context);
                     },
                   ),
                   ListTile(
@@ -127,7 +122,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       setState(() {
                         _selectedTileIndex = 2;
                       });
-                      ShelfRoute().push(context);
+                      PhysicalWarehouseRoute(type: 'Shelf').push(context);
                     },
                   ),
                   ListTile(
@@ -139,7 +134,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       setState(() {
                         _selectedTileIndex = 3;
                       });
-                      BriefcaseRoute().push(context);
+                      PhysicalWarehouseRoute(type: 'Boxcase').push(context);
                     },
                   ),
                 ],

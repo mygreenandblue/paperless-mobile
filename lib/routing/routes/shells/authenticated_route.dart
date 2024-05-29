@@ -15,18 +15,16 @@ import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart
 import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
 import 'package:paperless_mobile/routing/navigation_keys.dart';
 import 'package:paperless_mobile/routing/routes.dart';
-import 'package:paperless_mobile/routing/routes/briefcase_route.dart';
 import 'package:paperless_mobile/routing/routes/documents_route.dart';
 import 'package:paperless_mobile/routing/routes/inbox_route.dart';
 import 'package:paperless_mobile/routing/routes/labels_route.dart';
 import 'package:paperless_mobile/routing/routes/landing_route.dart';
 import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
 import 'package:paperless_mobile/routing/routes/scanner_route.dart';
-import 'package:paperless_mobile/routing/routes/shelf_route.dart';
 import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/scaffold_shell_route.dart';
 import 'package:paperless_mobile/routing/routes/settings_route.dart';
-import 'package:paperless_mobile/routing/routes/warehouse_route.dart';
+import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:provider/provider.dart';
 
 /// Key used to access
@@ -35,28 +33,17 @@ part 'authenticated_route.g.dart';
 
 @TypedShellRoute<AuthenticatedRoute>(
   routes: [
-    TypedGoRoute<WarehouseRoute>(
-        path: "/warehouse",
-        name: R.warehouse,
+    TypedGoRoute<PhysicalWarehouseRoute>(
+        path: "/physicalWarehouse",
+        name: R.physicalWarehouse,
         routes: [
-          TypedGoRoute<CreateWarehouseRoute>(
-            path: "createWarehouse",
-            name: R.createWarehouse,
+          TypedGoRoute<CreatePhysicalWarehouseRoute>(
+            path: "createPhysicalWarehouse",
+            name: R.createPhysicalWarehouse,
           ),
-        ]),
-    TypedGoRoute<ShelfRoute>(path: "/shelf", name: R.shelf, routes: [
-      TypedGoRoute<CreateShelfRoute>(
-        path: "createShelf",
-        name: R.createShelf,
-      ),
-    ]),
-    TypedGoRoute<BriefcaseRoute>(
-        path: "/briefcase",
-        name: R.briefcase,
-        routes: [
-          TypedGoRoute<CreateBriefcaseRoute>(
-            path: "createBriefcase",
-            name: R.createBriefcase,
+          TypedGoRoute<EditPhysicalWarehouseRoute>(
+            path: "editPhysicalWarehouse",
+            name: R.editPhysicalWarehouse,
           ),
         ]),
     TypedGoRoute<SettingsRoute>(

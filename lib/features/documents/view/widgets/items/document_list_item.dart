@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:paperless_mobile/features/physical_warehouse/view/widgets/briefcase_widget.dart';
 import 'package:provider/provider.dart';
 
 class DocumentListItem extends DocumentItem {
@@ -19,6 +21,7 @@ class DocumentListItem extends DocumentItem {
     required super.isSelectionActive,
     required super.isLabelClickable,
     super.onCorrespondentSelected,
+    super.onWarehouseSelected,
     super.onDocumentTypeSelected,
     super.onSelected,
     super.onStoragePathSelected,
@@ -30,8 +33,10 @@ class DocumentListItem extends DocumentItem {
   @override
   Widget build(BuildContext context) {
     final labelRepository = context.watch<LabelRepository>();
+    final warehouseRepository = context.watch<WarehouseRepository>();
 
     return ListTile(
+      titleAlignment: ListTileTitleAlignment.center,
       tileColor: backgroundColor,
       dense: true,
       selected: isSelected,
@@ -43,6 +48,7 @@ class DocumentListItem extends DocumentItem {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: AbsorbPointer(
@@ -52,6 +58,20 @@ class DocumentListItem extends DocumentItem {
                     correspondent:
                         labelRepository.correspondents[document.correspondent],
                     onSelected: onCorrespondentSelected,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 4,
+              ),
+              Flexible(
+                child: AbsorbPointer(
+                  absorbing: isSelectionActive,
+                  child: BriefcaseWidget(
+                    isClickable: isLabelClickable,
+                    briefcase:
+                        warehouseRepository.briefcases[document.warehouses],
+                    onSelected: onWarehouseSelected,
                   ),
                 ),
               ),
@@ -90,7 +110,8 @@ class DocumentListItem extends DocumentItem {
             documentId: document.id,
             title: document.title,
             fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
+            scale: 1.1,
+            alignment: Alignment.center,
             enableHero: enableHeroAnimation,
           ),
         ),

@@ -11,6 +11,7 @@ import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
@@ -18,9 +19,11 @@ import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubi
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:paperless_mobile/features/physical_warehouse/view/form/physical_warehouse_form_field.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
@@ -41,6 +44,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   static const fkCreatedDate = "createdAtDate";
   static const fkStoragePath = 'storagePath';
   static const fkContent = 'content';
+  static const fkwarehouse = 'warehouses';
 
   final _formKey = GlobalKey<FormBuilderState>();
 
@@ -81,17 +85,20 @@ class _DocumentEditPageState extends State<DocumentEditPage>
               storagePath,
               tags,
               createdAt,
-              content
+              content,
+              warehouses,
             ) = _currentValues;
             final isContentTouched =
                 _formKey.currentState?.fields[fkContent]?.isDirty ?? false;
+
             return doc.title != title ||
                 doc.correspondent != correspondent ||
                 doc.documentType != documentType ||
                 doc.storagePath != storagePath ||
                 !const UnorderedIterableEquality().equals(doc.tags, tags) ||
                 doc.created != createdAt ||
-                (doc.content != content && isContentTouched);
+                (doc.content != content && isContentTouched) ||
+                doc.warehouses != warehouses;
           },
           child: FormBuilder(
             key: _formKey,
@@ -103,15 +110,15 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                     tooltip: _isShowingPdf
                         ? S.of(context)!.hidePdf
                         : S.of(context)!.showPdf,
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     icon: AnimatedCrossFade(
                       duration: _animationController.duration!,
                       reverseDuration: _animationController.reverseDuration,
                       crossFadeState: _isShowingPdf
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond,
-                      firstChild: Icon(Icons.visibility_off_outlined),
-                      secondChild: Icon(Icons.visibility_outlined),
+                      firstChild: const Icon(Icons.visibility_off_outlined),
+                      secondChild: const Icon(Icons.visibility_outlined),
                     ),
                     onPressed: () {
                       if (_isShowingPdf) {
@@ -191,15 +198,16 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     UserModel currentUser,
   ) {
     final labelRepository = context.watch<LabelRepository>();
+    final warehouseRepository = context.watch<WarehouseRepository>();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: TabBarView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           ListView(
             children: [
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTitleFormField(state.document.title).padded(),
               _buildCreatedAtFormField(
                 state.document.created,
@@ -295,6 +303,30 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                   ),
                 ).padded(),
 
+              // if (currentUser.canViewBriefcase)
+              Column(
+                children: [
+                  WarehouseFormField<WarehouseModel>(
+                    showAnyAssignedOption: false,
+                    showNotAssignedOption: false,
+                    onAddWarehouse: (currentInput) =>
+                        CreatePhysicalWarehouseRoute(type: 'briefcase')
+                            .push<WarehouseModel>(context),
+                    addWarehouseText: S.of(context)!.addBriefcase,
+                    labelText: S.of(context)!.briefcase,
+                    options: warehouseRepository.briefcases,
+                    initialValue: state.document.warehouses != null
+                        ? SetIdQueryParameter(id: state.document.warehouses!)
+                        : const UnsetIdQueryParameter(),
+                    name: fkwarehouse,
+                    prefixIcon: const Icon(Icons.warehouse_outlined),
+                    allowSelectUnassigned: true,
+                    canCreateNewWarehouse: currentUser.canViewBriefcase,
+                    suggestions: filteredSuggestions?.warehouses ?? [],
+                  ),
+                ],
+              ).padded(),
+
               const SizedBox(height: 140),
             ],
           ),
@@ -319,15 +351,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     );
   }
 
-  (
-    String? title,
-    int? correspondent,
-    int? documentType,
-    int? storagePath,
-    List<int>? tags,
-    DateTime? createdAt,
-    String? content,
-  ) get _currentValues {
+  (String?, int?, int?, int?, List<int>?, DateTime?, String?, int?)
+      get _currentValues {
     final fkState = _formKey.currentState!;
 
     final correspondentParam =
@@ -339,6 +364,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     final tagsParam = fkState.getRawValue<TagsQuery?>(fkTags);
     final title = fkState.getRawValue<String?>(fkTitle);
     final created = fkState.getRawValue<FormDateTime?>(fkCreatedDate);
+    final warehouseParam = fkState.getRawValue<IdQueryParameter?>(fkwarehouse);
     final correspondent = switch (correspondentParam) {
       SetIdQueryParameter(id: var id) => id,
       _ => null,
@@ -355,6 +381,11 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       IdsTagsQuery(include: var i) => i,
       _ => null,
     };
+    final warehouses = switch (warehouseParam) {
+      SetIdQueryParameter(id: var id) => id,
+      _ => null,
+    };
+
     final content = fkState.getRawValue<String?>(fkContent);
 
     return (
@@ -364,7 +395,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       storagePath,
       tags,
       created?.toDateTime(),
-      content
+      content,
+      warehouses,
     );
   }
 
@@ -377,8 +409,10 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         storagePath,
         tags,
         createdAt,
-        content
+        content,
+        warehouses,
       ) = _currentValues;
+
       var mergedDocument = document.copyWith(
         title: title,
         created: createdAt,
@@ -387,6 +421,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         storagePath: () => storagePath,
         tags: tags,
         content: content,
+        warehouses: () => warehouses,
       );
 
       try {
@@ -406,7 +441,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       decoration: InputDecoration(
         label: Text(S.of(context)!.title),
         suffixIcon: IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () {
             _formKey.currentState?.fields[fkTitle]?.didChange(null);
           },

@@ -90,6 +90,7 @@ class EditDocumentRoute extends GoRouteData {
           context.read(),
           context.read(),
           context.read(),
+          context.read(),
           document: $extra,
         )..loadFieldSuggestions(),
         child: const DocumentEditPage(),

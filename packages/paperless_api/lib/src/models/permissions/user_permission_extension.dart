@@ -47,6 +47,13 @@ extension UserPermissionExtension on UserModel {
   bool get canViewSavedViews =>
       hasPermission(PermissionAction.view, PermissionTarget.savedView);
 
+  bool get canViewWarehouse =>
+      hasPermission(PermissionAction.view, PermissionTarget.warehouse);
+  bool get canViewShelf =>
+      hasPermission(PermissionAction.view, PermissionTarget.shelf);
+  bool get canViewBriefcase =>
+      hasPermission(PermissionAction.view, PermissionTarget.briefcase);
+
   bool get canEditDocuments =>
       hasPermission(PermissionAction.change, PermissionTarget.document);
   bool get canEditCorrespondents =>

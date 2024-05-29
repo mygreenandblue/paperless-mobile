@@ -13,16 +13,19 @@ import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
 import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:paperless_mobile/features/physical_warehouse/view/form/physical_warehouse_form_field.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentUploadResult {
@@ -71,6 +74,7 @@ class _DocumentUploadPreparationPageState
   @override
   Widget build(BuildContext context) {
     final labelRepository = context.watch<LabelRepository>();
+    final warehouseRepository = context.watch<WarehouseRepository>();
     return BlocBuilder<DocumentUploadCubit, DocumentUploadState>(
       builder: (context, state) {
         return Scaffold(
@@ -285,6 +289,28 @@ class _DocumentUploadPreparationPageState
                                 allowOnlySelection: true,
                                 options: labelRepository.tags,
                               ),
+
+                            //briefcase
+                            // if (context
+                            //     .watch<LocalUserAccount>()
+                            //     .paperlessUser
+                            //     .canViewBriefcase)
+                            WarehouseFormField<WarehouseModel>(
+                              showAnyAssignedOption: false,
+                              showNotAssignedOption: false,
+                              onAddWarehouse: (initialName) =>
+                                  CreatePhysicalWarehouseRoute(
+                                type: 'briefcase',
+                                name: initialName,
+                              ).push<WarehouseModel>(context),
+                              addWarehouseText: S.of(context)!.addBriefcase,
+                              labelText: "${S.of(context)!.briefcase} *",
+                              name: DocumentModel.warehouseKey,
+                              options: warehouseRepository.briefcases,
+                              prefixIcon: const Icon(Icons.warehouse_outlined),
+                              allowSelectUnassigned: true,
+                              canCreateNewWarehouse: true,
+                            ),
                             Text(
                               "* " + S.of(context)!.uploadInferValuesHint,
                               style: Theme.of(context).textTheme.bodySmall,
@@ -318,6 +344,8 @@ class _DocumentUploadPreparationPageState
         final tagsParam = formValues[DocumentModel.tagsKey] as TagsQuery?;
         final createdAt = formValues[DocumentModel.createdKey] as FormDateTime?;
         final title = formValues[DocumentModel.titleKey] as String;
+        final warehouseParam =
+            formValues[DocumentModel.warehouseKey] as IdQueryParameter?;
         final correspondent = switch (correspondentParam) {
           SetIdQueryParameter(id: var id) => id,
           _ => null,
@@ -329,6 +357,10 @@ class _DocumentUploadPreparationPageState
         final tags = switch (tagsParam) {
           IdsTagsQuery(include: var ids) => ids,
           _ => const <int>[],
+        };
+        final warehouses = switch (warehouseParam) {
+          SetIdQueryParameter(id: var id) => id,
+          _ => null,
         };
 
         final asn = formValues[DocumentModel.asnKey] as int?;
@@ -347,6 +379,7 @@ class _DocumentUploadPreparationPageState
           tags: tags,
           createdAt: createdAt?.toDateTime(),
           asn: asn,
+          warehouse: warehouses,
         );
         showSnackBar(
           context,

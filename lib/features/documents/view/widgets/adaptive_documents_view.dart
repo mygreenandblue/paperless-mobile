@@ -24,6 +24,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
   final void Function(int? id)? onCorrespondentSelected;
   final void Function(int? id)? onDocumentTypeSelected;
   final void Function(int? id)? onStoragePathSelected;
+  final void Function(int? id)? onWarehouseSelected;
 
   bool get showLoadingPlaceholder => !hasLoaded && isLoading;
 
@@ -38,6 +39,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     required this.isLabelClickable,
     this.onTagSelected,
     this.onCorrespondentSelected,
+    this.onWarehouseSelected,
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
     required this.isLoading,
@@ -51,6 +53,7 @@ abstract class AdaptiveDocumentsView extends StatelessWidget {
     this.onSelected,
     this.onTap,
     this.onCorrespondentSelected,
+    this.onWarehouseSelected,
     this.onDocumentTypeSelected,
     this.onStoragePathSelected,
     this.onTagSelected,
@@ -71,6 +74,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
     required super.hasInternetConnection,
     required super.isLabelClickable,
     super.onCorrespondentSelected,
+    super.onWarehouseSelected,
     super.onDocumentTypeSelected,
     super.onStoragePathSelected,
     super.onSelected,
@@ -116,6 +120,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
             onDocumentTypeSelected: onDocumentTypeSelected,
             onStoragePathSelected: onStoragePathSelected,
             enableHeroAnimation: enableHeroAnimation,
+            onWarehouseSelected: onWarehouseSelected,
           );
         },
       ),
@@ -141,6 +146,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
             isSelectionActive: selectedDocumentIds.isNotEmpty,
             onTagSelected: onTagSelected,
             onCorrespondentSelected: onCorrespondentSelected,
+            onWarehouseSelected: onWarehouseSelected,
             onDocumentTypeSelected: onDocumentTypeSelected,
             onStoragePathSelected: onStoragePathSelected,
             enableHeroAnimation: enableHeroAnimation,
@@ -177,6 +183,7 @@ class SliverAdaptiveDocumentsView extends AdaptiveDocumentsView {
           onDocumentTypeSelected: onDocumentTypeSelected,
           onStoragePathSelected: onStoragePathSelected,
           enableHeroAnimation: enableHeroAnimation,
+          onWarehouseSelected: onWarehouseSelected,
         ).paddedSymmetrically(horizontal: 4);
       },
     );

@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
 
 part 'document_edit_state.dart';
@@ -14,9 +15,11 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
   final DocumentModel _initialDocument;
   final PaperlessDocumentsApi _docsApi;
   final LabelRepository _labelRepository;
+  final WarehouseRepository _warehouseRepository;
   final DocumentChangedNotifier _notifier;
 
   DocumentEditCubit(
+    this._warehouseRepository,
     this._labelRepository,
     this._docsApi,
     this._notifier, {
@@ -73,6 +76,17 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
       );
       _labelRepository.findCorrespondent(
           (document.correspondent ?? _initialDocument.correspondent)!);
+    }
+    if (document.warehouses != _initialDocument.warehouses) {
+      logger.fd(
+        "Briefcase assigned to document ${document.id} has changed "
+        "(${_initialDocument.warehouses} -> ${document.warehouses}). "
+        "Reloading briefcase ${document.warehouses}...",
+        className: runtimeType.toString(),
+        methodName: "updateDocument",
+      );
+      _warehouseRepository
+          .findBriefcase((document.warehouses ?? _initialDocument.warehouses)!);
     }
     if (document.storagePath != _initialDocument.storagePath) {
       logger.fd(

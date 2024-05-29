@@ -62,6 +62,9 @@ class DocumentFilter extends Equatable {
   @HiveField(14)
   final int? selectedView;
 
+  @HiveField(15)
+  final IdQueryParameter warehousesId;
+
   const DocumentFilter({
     this.documentType = const UnsetIdQueryParameter(),
     this.correspondent = const UnsetIdQueryParameter(),
@@ -78,6 +81,7 @@ class DocumentFilter extends Equatable {
     this.modified = const UnsetDateRangeQuery(),
     this.moreLike,
     this.selectedView,
+    this.warehousesId = const UnsetIdQueryParameter(),
   });
 
   bool get forceExtendedQuery {
@@ -99,6 +103,7 @@ class DocumentFilter extends Equatable {
       ...created.toQueryParameter(DateRangeQueryField.created).entries,
       ...modified.toQueryParameter(DateRangeQueryField.modified).entries,
       ...query.toQueryParameter().entries,
+      ...warehousesId.toQueryParameter('warehouses').entries,
     ];
     if (sortField != null) {
       params.add(
@@ -144,6 +149,7 @@ class DocumentFilter extends Equatable {
     TextQuery? query,
     int? Function()? moreLike,
     int? Function()? selectedView,
+    IdQueryParameter? warehousesId,
   }) {
     final newFilter = DocumentFilter(
       pageSize: pageSize ?? this.pageSize,
@@ -162,6 +168,7 @@ class DocumentFilter extends Equatable {
       moreLike: moreLike != null ? moreLike.call() : this.moreLike,
       selectedView:
           selectedView != null ? selectedView.call() : this.selectedView,
+      warehousesId: warehousesId ?? this.warehousesId,
     );
     if (query?.queryType != QueryType.extended &&
         newFilter.forceExtendedQuery) {
@@ -188,7 +195,8 @@ class DocumentFilter extends Equatable {
           title: document.title,
           content: document.content,
           asn: document.archiveSerialNumber,
-        );
+        ) &&
+        warehousesId.matches(document.warehouses);
   }
 
   int get appliedFiltersCount => [
@@ -228,6 +236,10 @@ class DocumentFilter extends Equatable {
           UnsetIdQueryParameter() => 0,
           _ => 1,
         },
+        switch (warehousesId) {
+          UnsetIdQueryParameter() => 0,
+          _ => 1,
+        },
         (query.queryText?.isNotEmpty ?? false) ? 1 : 0,
       ].fold(0, (previousValue, element) => previousValue + element);
 
@@ -248,5 +260,6 @@ class DocumentFilter extends Equatable {
         query,
         moreLike,
         selectedView,
+        warehousesId
       ];
 }

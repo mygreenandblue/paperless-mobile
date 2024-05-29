@@ -428,6 +428,8 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   onTagSelected: allowToggleFilter ? _addTagToFilter : null,
                   onCorrespondentSelected:
                       allowToggleFilter ? _addCorrespondentToFilter : null,
+                  onWarehouseSelected:
+                      allowToggleFilter ? _addWarehouseToFilter : null,
                   onDocumentTypeSelected:
                       allowToggleFilter ? _addDocumentTypeToFilter : null,
                   onStoragePathSelected:
@@ -587,6 +589,36 @@ class _DocumentsPageState extends State<DocumentsPage> {
         default:
           cubit.updateCurrentFilter((filter) => filter.copyWith(
                 correspondent: SetIdQueryParameter(id: correspondentId),
+              ));
+          break;
+      }
+    } on PaperlessApiException catch (error, stackTrace) {
+      showErrorMessage(context, error, stackTrace);
+    }
+  }
+
+  void _addWarehouseToFilter(int? warehousesId) {
+    if (warehousesId == null) return;
+    final cubit = context.read<DocumentsCubit>();
+
+    try {
+      switch (cubit.state.filter.warehousesId) {
+        case SetIdQueryParameter(id: var id):
+          if (id == warehousesId) {
+            cubit.updateCurrentFilter(
+              (filter) =>
+                  filter.copyWith(warehousesId: const UnsetIdQueryParameter()),
+            );
+          } else {
+            cubit.updateCurrentFilter(
+              (filter) => filter.copyWith(
+                  warehousesId: SetIdQueryParameter(id: warehousesId)),
+            );
+          }
+          break;
+        default:
+          cubit.updateCurrentFilter((filter) => filter.copyWith(
+                warehousesId: SetIdQueryParameter(id: warehousesId),
               ));
           break;
       }

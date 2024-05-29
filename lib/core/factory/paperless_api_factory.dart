@@ -27,4 +27,8 @@ abstract class PaperlessApiFactory {
     Dio dio, {
     required int apiVersion,
   });
+  PhysicalWarehouseApi createWarehousesApi(
+    Dio dio, {
+    required int apiVersion,
+  });
 }

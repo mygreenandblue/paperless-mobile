@@ -9,11 +9,13 @@ import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:paperless_mobile/features/physical_warehouse/view/widgets/briefcase_widget.dart';
 import 'package:provider/provider.dart';
 
 class DocumentDetailedItem extends DocumentItem {
@@ -27,6 +29,7 @@ class DocumentDetailedItem extends DocumentItem {
     required super.isLabelClickable,
     required super.enableHeroAnimation,
     super.onCorrespondentSelected,
+    super.onWarehouseSelected,
     super.onDocumentTypeSelected,
     super.onSelected,
     super.onStoragePathSelected,
@@ -56,6 +59,7 @@ class DocumentDetailedItem extends DocumentItem {
         ? min(600.0, availableHeight)
         : min(500.0, availableHeight);
     final labelRepository = context.watch<LabelRepository>();
+    final warehouseRepository = context.watch<WarehouseRepository>();
     return Card(
       color: isSelected ? Theme.of(context).colorScheme.inversePrimary : null,
       child: InkWell(
@@ -108,6 +112,13 @@ class DocumentDetailedItem extends DocumentItem {
                 correspondent:
                     labelRepository.correspondents[document.correspondent],
               ).paddedLTRB(8, 8, 8, 0),
+            BriefcaseWidget(
+              onSelected: onWarehouseSelected,
+              textStyle: Theme.of(context).textTheme.titleSmall?.apply(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+              briefcase: warehouseRepository.briefcases[document.warehouses],
+            ).paddedLTRB(8, 8, 8, 0),
             Text(
               document.title.isEmpty ? '(-)' : document.title,
               style: Theme.of(context).textTheme.titleMedium,

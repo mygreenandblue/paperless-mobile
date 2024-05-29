@@ -27,10 +27,7 @@ class R {
   static const restoringSession = "restoringSession";
   static const addAccount = 'addAccount';
   static const addNote = 'addNote';
-  static const warehouse = 'warehouse';
-  static const shelf = 'shelf';
-  static const briefcase = 'briefcase';
-  static const createWarehouse = 'createWarehouse';
-  static const createShelf = 'createShelf';
-  static const createBriefcase = 'createBriefcase';
+  static const physicalWarehouse = 'physicalWarehouse';
+  static const createPhysicalWarehouse = 'createPhysicalWarehouse';
+  static const editPhysicalWarehouse = 'editPhysicalWarehouse';
 }

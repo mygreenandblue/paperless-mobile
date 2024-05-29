@@ -24,6 +24,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     Iterable<int> tags = const [],
     int? asn,
     void Function(double progress)? onProgressChanged,
+    int? warehouse,
   }) async {
     final formData = FormData();
     formData.files.add(
@@ -51,6 +52,9 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
     for (final tag in tags) {
       formData.fields.add(MapEntry('tags', tag.toString()));
     }
+    if (warehouse != null) {
+      formData.fields.add(MapEntry('warehouses', jsonEncode(warehouse)));
+    }
     try {
       final response = await client.post(
         '/api/documents/post_document/',
@@ -75,7 +79,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
   @override
   Future<DocumentModel> update(DocumentModel doc) async {
     try {
-      final response = await client.put(
+      final response = await client.patch(
         "/api/documents/${doc.id}/",
         data: doc.toJson(),
         options: Options(validateStatus: (status) => status == 200),

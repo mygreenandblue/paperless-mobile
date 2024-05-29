@@ -29,3 +29,5 @@ export 'task/task_status.dart';
 export 'user_model.dart';
 export 'exception/exceptions.dart';
 export 'note_model.dart' show NoteModel;
+export 'physical_warehouse/physical_warehouse_model.dart';
+export 'physical_warehouse/warehouse_filter.dart';

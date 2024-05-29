@@ -12,6 +12,7 @@ class FieldSuggestions with EquatableMixin {
   final Iterable<int> correspondents;
   final Iterable<int> tags;
   final Iterable<int> documentTypes;
+  final Iterable<int> warehouses;
   final Iterable<DateTime> dates;
 
   const FieldSuggestions({
@@ -20,32 +21,36 @@ class FieldSuggestions with EquatableMixin {
     this.tags = const [],
     this.documentTypes = const [],
     this.dates = const [],
+    this.warehouses = const [],
   });
 
   bool get hasSuggestedCorrespondents => correspondents.isNotEmpty;
   bool get hasSuggestedTags => tags.isNotEmpty;
   bool get hasSuggestedDocumentTypes => documentTypes.isNotEmpty;
   bool get hasSuggestedDates => dates.isNotEmpty;
+  bool get hasSuggestedWarehouses => warehouses.isNotEmpty;
 
   bool get hasSuggestions =>
       hasSuggestedCorrespondents ||
       hasSuggestedDates ||
       hasSuggestedTags ||
-      hasSuggestedDocumentTypes;
+      hasSuggestedDocumentTypes ||
+      hasSuggestedWarehouses;
 
   int get suggestionsCount =>
       (correspondents.isNotEmpty ? 1 : 0) +
       (tags.isNotEmpty ? 1 : 0) +
       (documentTypes.isNotEmpty ? 1 : 0) +
-      (dates.isNotEmpty ? 1 : 0);
+      (dates.isNotEmpty ? 1 : 0) +
+      (warehouses.isNotEmpty ? 1 : 0);
 
   FieldSuggestions forDocumentId(int id) => FieldSuggestions(
-        documentId: id,
-        correspondents: correspondents,
-        dates: dates,
-        documentTypes: documentTypes,
-        tags: tags,
-      );
+      documentId: id,
+      correspondents: correspondents,
+      dates: dates,
+      documentTypes: documentTypes,
+      tags: tags,
+      warehouses: warehouses);
 
   ///
   /// Removes the suggestions given in the parameters.
@@ -55,6 +60,7 @@ class FieldSuggestions with EquatableMixin {
     Iterable<int> correspondents = const {},
     Iterable<int> documentTypes = const {},
     Iterable<DateTime> dates = const {},
+    Iterable<int> warehouses = const {},
   }) {
     return copyWith(
       tags: this.tags.toSet().difference(tags.toSet()),
@@ -63,6 +69,7 @@ class FieldSuggestions with EquatableMixin {
       documentTypes:
           this.documentTypes.toSet().difference(documentTypes.toSet()),
       dates: this.dates.toSet().difference(dates.toSet()),
+      warehouses: this.warehouses.toSet().difference(warehouses.toSet()),
     );
   }
 
@@ -74,6 +81,7 @@ class FieldSuggestions with EquatableMixin {
       documentTypes:
           [document.documentType].where((e) => e != null).map((e) => e!),
       dates: [document.created],
+      warehouses: [document.warehouses].where((e) => e != null).map((e) => e!),
     );
   }
 
@@ -83,12 +91,14 @@ class FieldSuggestions with EquatableMixin {
     Iterable<int>? documentTypes,
     Iterable<DateTime>? dates,
     int? documentId,
+    Iterable<int>? warehouses,
   }) {
     return FieldSuggestions(
       tags: tags ?? this.tags,
       correspondents: correspondents ?? this.correspondents,
       dates: dates ?? this.dates,
       documentId: documentId ?? this.documentId,
+      warehouses: warehouses ?? this.warehouses,
     );
   }
 
@@ -104,5 +114,6 @@ class FieldSuggestions with EquatableMixin {
         tags,
         documentTypes,
         dates,
+        warehouses,
       ];
 }

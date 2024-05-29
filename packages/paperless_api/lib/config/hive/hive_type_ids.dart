@@ -32,10 +32,12 @@ class PaperlessApiHiveTypeIds {
   static const int userModelv2 = 126;
   static const int usersAndGroupsPermissions = 127;
   static const int documentFilter = 128;
+  static const int physicalWarehouseFilter = 129;
 }
 
 void registerPaperlessApiHiveTypeAdapters() {
   Hive.registerAdapter(DocumentFilterAdapter());
+  Hive.registerAdapter(WarehouseFilterAdapter());
   // TagsQuery
   Hive.registerAdapter(AnyAssignedTagsQueryAdapter());
   Hive.registerAdapter(NotAssignedTagsQueryAdapter());

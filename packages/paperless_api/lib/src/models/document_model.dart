@@ -25,6 +25,7 @@ class DocumentModel extends Equatable {
   static const documentTypeKey = 'document_type';
   static const tagsKey = 'tags';
   static const storagePathKey = 'storage_path';
+  static const warehouseKey = 'warehouses_id';
 
   final int id;
   final String title;
@@ -33,6 +34,7 @@ class DocumentModel extends Equatable {
   final int? documentType;
   final int? correspondent;
   final int? storagePath;
+  final int? warehouses;
   final DateTime created;
   final DateTime modified;
   final DateTime added;
@@ -61,6 +63,7 @@ class DocumentModel extends Equatable {
     this.tags = const <int>[],
     required this.documentType,
     required this.correspondent,
+    required this.warehouses,
     required this.created,
     required this.modified,
     required this.added,
@@ -88,6 +91,7 @@ class DocumentModel extends Equatable {
     int? Function()? documentType,
     int? Function()? correspondent,
     int? Function()? storagePath,
+    int? Function()? warehouses,
     DateTime? created,
     DateTime? modified,
     DateTime? added,
@@ -109,6 +113,7 @@ class DocumentModel extends Equatable {
           correspondent != null ? correspondent() : this.correspondent,
       storagePath: storagePath != null ? storagePath() : this.storagePath,
       tags: tags ?? this.tags,
+      warehouses: warehouses != null ? warehouses() : this.warehouses,
       created: created ?? this.created,
       modified: modified ?? this.modified,
       added: added ?? this.added,
@@ -134,6 +139,7 @@ class DocumentModel extends Equatable {
         documentType,
         tags,
         storagePath,
+        warehouses,
         created,
         modified,
         added,

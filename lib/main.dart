@@ -33,6 +33,7 @@ import 'package:paperless_mobile/core/exception/server_message_exception.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
 import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:paperless_mobile/core/notifier/warehouse_changed_notifier.dart';
 import 'package:paperless_mobile/core/security/session_manager_impl.dart';
 import 'package:paperless_mobile/features/logging/data/formatted_printer.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
@@ -240,6 +241,7 @@ class AppEntrypoint extends StatelessWidget {
         Provider.value(value: connectivityStatusService),
         Provider.value(value: localNotificationService),
         Provider.value(value: localAuthService),
+        Provider.value(value: WarehouseChangedNotifier()),
       ],
       child: GoRouterShell(
         apiFactory: apiFactory,

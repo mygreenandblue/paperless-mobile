@@ -82,5 +82,9 @@ enum ErrorCode {
   customFieldLoadFailed,
   customFieldDeleteFailed,
   deleteNoteFailed,
-  addNoteFailed;
+  addNoteFailed,
+  warehouseDeleteFailed,
+  warehouseLoadFailed,
+  warehouseCreateFailed,
+  warehouseUpdateFailed;
 }

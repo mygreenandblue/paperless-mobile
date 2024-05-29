@@ -33,6 +33,7 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
     Iterable<int> tags = const [],
     DateTime? createdAt,
     int? asn,
+    int? warehouse,
   }) async {
     try {
       final taskId = await _documentApi.create(
@@ -44,12 +45,14 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         tags: tags,
         createdAt: createdAt,
         asn: asn,
+        warehouse: warehouse,
         onProgressChanged: (progress) {
           if (!isClosed) {
             emit(state.copyWith(uploadProgress: progress));
           }
         },
       );
+
       if (taskId != null) {
         _tasksNotifier.listenToTaskChanges(taskId);
       }
@@ -60,5 +63,6 @@ class DocumentUploadCubit extends Cubit<DocumentUploadState> {
         details: error.details,
       ));
     }
+    return null;
   }
 }
