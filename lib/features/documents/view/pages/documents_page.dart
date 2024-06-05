@@ -413,32 +413,51 @@ class _DocumentsPageState extends State<DocumentsPage> {
                   );
                 }
                 final allowToggleFilter = state.selection.isEmpty;
-                return SliverAdaptiveDocumentsView(
-                  viewType: state.viewType,
-                  onTap: (document) {
-                    DocumentDetailsRoute(
-                      title: document.title,
-                      id: document.id,
-                      thumbnailUrl: document.buildThumbnailUrl(context),
-                    ).push(context);
+                context.read<LabelCubit>().loadBoxcase();
+                return BlocBuilder<LabelCubit, LabelState>(
+                  builder: (context, lbState) {
+                    return lbState.isLoading
+                        ? const SliverToBoxAdapter(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : SliverAdaptiveDocumentsView(
+                            viewType: state.viewType,
+                            onTap: (document) {
+                              DocumentDetailsRoute(
+                                title: document.title,
+                                id: document.id,
+                                thumbnailUrl:
+                                    document.buildThumbnailUrl(context),
+                              ).push(context);
+                            },
+                            onSelected: context
+                                .read<DocumentsCubit>()
+                                .toggleDocumentSelection,
+                            hasInternetConnection:
+                                connectivityState.isConnected,
+                            onTagSelected:
+                                allowToggleFilter ? _addTagToFilter : null,
+                            onCorrespondentSelected: allowToggleFilter
+                                ? _addCorrespondentToFilter
+                                : null,
+                            onWarehouseSelected: allowToggleFilter
+                                ? _addWarehouseToFilter
+                                : null,
+                            onDocumentTypeSelected: allowToggleFilter
+                                ? _addDocumentTypeToFilter
+                                : null,
+                            onStoragePathSelected: allowToggleFilter
+                                ? _addStoragePathToFilter
+                                : null,
+                            documents: state.documents,
+                            hasLoaded: state.hasLoaded,
+                            isLabelClickable: true,
+                            isLoading: state.isLoading,
+                            selectedDocumentIds: state.selectedIds,
+                          );
                   },
-                  onSelected:
-                      context.read<DocumentsCubit>().toggleDocumentSelection,
-                  hasInternetConnection: connectivityState.isConnected,
-                  onTagSelected: allowToggleFilter ? _addTagToFilter : null,
-                  onCorrespondentSelected:
-                      allowToggleFilter ? _addCorrespondentToFilter : null,
-                  onWarehouseSelected:
-                      allowToggleFilter ? _addWarehouseToFilter : null,
-                  onDocumentTypeSelected:
-                      allowToggleFilter ? _addDocumentTypeToFilter : null,
-                  onStoragePathSelected:
-                      allowToggleFilter ? _addStoragePathToFilter : null,
-                  documents: state.documents,
-                  hasLoaded: state.hasLoaded,
-                  isLabelClickable: true,
-                  isLoading: state.isLoading,
-                  selectedDocumentIds: state.selectedIds,
                 );
               },
             ),

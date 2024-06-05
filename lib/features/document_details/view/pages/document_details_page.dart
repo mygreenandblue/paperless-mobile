@@ -21,6 +21,7 @@ import 'package:paperless_mobile/features/document_details/view/widgets/document
 import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
 import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
@@ -248,6 +249,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 ],
                 body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
                   builder: (context, state) {
+                    context.read<LabelCubit>().loadAll();
                     return BlocProvider(
                       create: (context) => SimilarDocumentsCubit(
                         context.read(),
@@ -264,11 +266,23 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     .sliverOverlapAbsorberHandleFor(context),
                               ),
                               switch (state.status) {
-                                LoadingStatus.loaded => DocumentOverviewWidget(
-                                    document: state.document!,
-                                    itemSpacing: _itemSpacing,
-                                    queryString:
-                                        widget.titleAndContentQueryString,
+                                LoadingStatus.loaded =>
+                                  BlocBuilder<LabelCubit, LabelState>(
+                                    builder: (context, lbState) {
+                                      return lbState.isLoading == false
+                                          ? DocumentOverviewWidget(
+                                              document: state.document!,
+                                              itemSpacing: _itemSpacing,
+                                              queryString: widget
+                                                  .titleAndContentQueryString,
+                                            )
+                                          : SliverList.list(children: const [
+                                              Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              )
+                                            ]);
+                                    },
                                   ).paddedSymmetrically(
                                     vertical: 16,
                                     sliver: true,

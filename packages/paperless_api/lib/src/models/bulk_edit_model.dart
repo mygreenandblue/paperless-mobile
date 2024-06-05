@@ -58,6 +58,11 @@ class BulkModifyLabelAction extends BulkAction {
     required this.labelId,
   }) : _labelName = 'correspondent';
 
+  BulkModifyLabelAction.boxcase(
+    super.documents, {
+    required this.labelId,
+  }) : _labelName = 'warehouse';
+
   BulkModifyLabelAction.documentType(
     super.documents, {
     required this.labelId,

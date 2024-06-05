@@ -72,6 +72,30 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
     }
   }
 
+  Future<void> bulkModifyBoxcase(int? boxcaseId) async {
+    try {
+      final modifiedDocumentIds = await _documentsApi.bulkAction(
+        BulkModifyLabelAction.boxcase(
+          state.selectedIds,
+          labelId: boxcaseId,
+        ),
+      );
+      final updatedDocuments = state.selection
+          .where((element) => modifiedDocumentIds.contains(element.id))
+          .map((doc) => doc.copyWith(correspondent: () => boxcaseId));
+      for (final doc in updatedDocuments) {
+        _notifier.notifyUpdated(doc);
+      }
+    } on PaperlessApiException catch (e) {
+      addError(
+        TransientPaperlessApiError(
+          code: e.code,
+          details: e.details,
+        ),
+      );
+    }
+  }
+
   Future<void> bulkModifyDocumentType(int? documentTypeId) async {
     try {
       final modifiedDocumentIds = await _documentsApi.bulkAction(

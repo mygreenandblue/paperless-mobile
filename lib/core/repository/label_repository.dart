@@ -11,6 +11,9 @@ class LabelRepository extends ChangeNotifier {
   Map<int, DocumentType> documentTypes = {};
   Map<int, StoragePath> storagePaths = {};
   Map<int, Tag> tags = {};
+  Map<int, Warehouse> warehouses = {};
+  Map<int, Warehouse> shelfs = {};
+  Map<int, Warehouse> boxcases = {};
 
   LabelRepository(this._api);
 
@@ -20,16 +23,23 @@ class LabelRepository extends ChangeNotifier {
     required bool loadDocumentTypes,
     required bool loadStoragePaths,
     required bool loadTags,
+    required bool loadWarehouses,
   }) async {
     correspondents = {};
     documentTypes = {};
     storagePaths = {};
     tags = {};
+    warehouses = {};
+    shelfs = {};
+    boxcases = {};
     await Future.wait([
       if (loadCorrespondents) findAllCorrespondents(),
       if (loadDocumentTypes) findAllDocumentTypes(),
       if (loadStoragePaths) findAllStoragePaths(),
       if (loadTags) findAllTags(),
+      if (loadWarehouses) findAllWarehouses(),
+      if (loadWarehouses) findAllShelfs(),
+      if (loadWarehouses) findAllBoxcases(),
     ]);
   }
 
@@ -128,6 +138,141 @@ class LabelRepository extends ChangeNotifier {
     correspondents = {...correspondents, updated.id!: updated};
     notifyListeners();
     return updated;
+  }
+
+  Future<Warehouse> createWarehouse(Warehouse warehouse) async {
+    final created = await _api.saveWarehouse(warehouse);
+    warehouses = {...warehouses, created.id!: created};
+    notifyListeners();
+    return created;
+  }
+
+  Future<int> deleteWarehouse(Warehouse warehouse) async {
+    await _api.deleteWarehouse(warehouse);
+    warehouses.remove(warehouse.id!);
+    notifyListeners();
+    return warehouse.id!;
+  }
+
+  Future<Warehouse?> findWarehouse(int id) async {
+    final warehouse = await _api.getWarehouse(id);
+    if (warehouse != null) {
+      warehouses = {...warehouses, id: warehouse};
+      notifyListeners();
+      return warehouse;
+    }
+    return null;
+  }
+
+  Future<Iterable<Warehouse>> findAllWarehouses() async {
+    final data = await _api.getWarehouses();
+    warehouses = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Warehouse> updateWarehouse(Warehouse warehouse) async {
+    final updated = await _api.updateWarehouse(warehouse);
+    warehouses = {...warehouses, updated.id!: updated};
+    notifyListeners();
+    return updated;
+  }
+
+  Future<int> deleteShelf(Warehouse warehouse) async {
+    await _api.deleteShelf(warehouse);
+    shelfs.remove(warehouse.id!);
+    notifyListeners();
+    return warehouse.id!;
+  }
+
+  Future<Warehouse?> findShelf(int id) async {
+    final warehouse = await _api.getShelf(id);
+    if (warehouse != null) {
+      shelfs = {...shelfs, id: warehouse};
+      notifyListeners();
+      return warehouse;
+    }
+    return null;
+  }
+
+  Future<Iterable<Warehouse>> findAllShelfs() async {
+    final data = await _api.getShelfs();
+    shelfs = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Warehouse> createShelf(Warehouse warehouse) async {
+    final created = await _api.saveWarehouse(warehouse);
+    shelfs = {...shelfs, created.id!: created};
+    notifyListeners();
+    return created;
+  }
+
+  Future<Warehouse> updateShelf(Warehouse warehouse) async {
+    final updated = await _api.updateWarehouse(warehouse);
+    shelfs = {...shelfs, updated.id!: updated};
+    notifyListeners();
+    return updated;
+  }
+
+  Future<int> deleteBoxcase(Warehouse warehouse) async {
+    await _api.deleteBoxcase(warehouse);
+    boxcases.remove(warehouse.id!);
+    notifyListeners();
+    return warehouse.id!;
+  }
+
+  Future<Warehouse?> findBoxcase(int id) async {
+    final warehouse = await _api.getBoxcase(id);
+    if (warehouse != null) {
+      boxcases = {...boxcases, id: warehouse};
+      notifyListeners();
+      return warehouse;
+    }
+    return null;
+  }
+
+  Future<Iterable<Warehouse>> findAllBoxcases() async {
+    final data = await _api.getBoxcases();
+    boxcases = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Warehouse> createBoxcase(Warehouse warehouse) async {
+    final created = await _api.saveWarehouse(warehouse);
+    boxcases = {...boxcases, created.id!: created};
+    notifyListeners();
+    return created;
+  }
+
+  Future<Warehouse> updateBoxcase(Warehouse warehouse) async {
+    final updated = await _api.updateWarehouse(warehouse);
+    boxcases = {...boxcases, updated.id!: updated};
+    notifyListeners();
+    return updated;
+  }
+
+  Future<Iterable<Warehouse>> findDetailsWarehouse(int id) async {
+    final data = await _api.getDetails(id);
+    shelfs = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Iterable<Warehouse>> findDetailsShelf(int id) async {
+    final data = await _api.getDetails(id);
+    boxcases = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Iterable<Warehouse>> findDetailsBoxcase(int id) async {
+    final data = await _api.getDetails(id);
+    boxcases = {for (var element in data) element.id!: element};
+    notifyListeners();
+    return data;
   }
 
   Future<DocumentType> createDocumentType(DocumentType documentType) async {

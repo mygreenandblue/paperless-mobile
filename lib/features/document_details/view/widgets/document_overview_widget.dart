@@ -4,14 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
 import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
-import 'package:paperless_mobile/features/physical_warehouse/view/widgets/warehouse_text.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentOverviewWidget extends StatelessWidget {
@@ -30,7 +28,6 @@ class DocumentOverviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.watch<LocalUserAccount>().paperlessUser;
     final labelRepository = context.watch<LabelRepository>();
-    final warehouseRepository = context.watch<WarehouseRepository>();
 
     return SliverList.list(
       children: [
@@ -84,13 +81,42 @@ class DocumentOverviewWidget extends StatelessWidget {
               ),
             ),
           ).paddedOnly(bottom: itemSpacing),
-        // if (document.warehouses != null && user.canViewBriefcase)
-        DetailsItem(
-          label: S.of(context)!.briefcase,
-          content: WarehouseText<WarehouseModel>(
-            label: warehouseRepository.briefcases[document.warehouses],
+        if (document.warehouse != null && user.canCreateWarehouse)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              DetailsItem(
+                label: S.of(context)!.briefcase,
+                content: LabelText(
+                  label: labelRepository.boxcases[document.warehouse],
+                ),
+              ).paddedOnly(
+                bottom: itemSpacing,
+                right: 4,
+              ),
+              DetailsItem(
+                label: S.of(context)!.shelf,
+                content: LabelText(
+                  label: labelRepository.shelfs[labelRepository
+                          .boxcases[document.warehouse]?.parentWarehouse ??
+                      ''],
+                ),
+              ).paddedOnly(
+                bottom: itemSpacing,
+                right: 4,
+              ),
+              DetailsItem(
+                label: S.of(context)!.warehouse,
+                content: LabelText(
+                  label: labelRepository.warehouses[labelRepository
+                          .shelfs[labelRepository
+                              .boxcases[document.warehouse]?.parentWarehouse]
+                          ?.parentWarehouse ??
+                      ''],
+                ),
+              ).paddedOnly(bottom: itemSpacing),
+            ],
           ),
-        ).paddedOnly(bottom: itemSpacing),
       ],
     );
   }

@@ -8,35 +8,36 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
+import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
 import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
 import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
 import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
+import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/features/physical_warehouse/view/form/physical_warehouse_form_field.dart';
+import 'package:paperless_mobile/features/labels/view/widgets/custom_searchbar.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
 import 'package:paperless_mobile/routing/routes/labels_route.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
 
 class DocumentEditPage extends StatefulWidget {
-  const DocumentEditPage({super.key});
+  final DocumentModel documentModel;
+  const DocumentEditPage({super.key, required this.documentModel});
 
   @override
   State<DocumentEditPage> createState() => _DocumentEditPageState();
 }
 
 class _DocumentEditPageState extends State<DocumentEditPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   static const fkTitle = "title";
   static const fkCorrespondent = "correspondent";
   static const fkTags = "tags";
@@ -44,14 +45,25 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   static const fkCreatedDate = "createdAtDate";
   static const fkStoragePath = 'storagePath';
   static const fkContent = 'content';
-  static const fkwarehouse = 'warehouses';
 
   final _formKey = GlobalKey<FormBuilderState>();
 
   bool _isShowingPdf = false;
+  bool _enableFiledBoxcase = true;
+  int _warehouseId = -1;
+  int _shelfId = -1;
+  int _boxcaseId = -1;
+  String _selectedWarehouse = '';
+  String _selectedShelf = '';
+  String _selectedBoxcase = '';
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -66,11 +78,20 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
         final filteredSuggestions = state.suggestions;
+        final warehouse = state.document.warehouse;
+
         return PopWithUnsavedChanges(
           hasChangesPredicate: () {
             final fkState = _formKey.currentState;
@@ -86,7 +107,6 @@ class _DocumentEditPageState extends State<DocumentEditPage>
               tags,
               createdAt,
               content,
-              warehouses,
             ) = _currentValues;
             final isContentTouched =
                 _formKey.currentState?.fields[fkContent]?.isDirty ?? false;
@@ -98,7 +118,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                 !const UnorderedIterableEquality().equals(doc.tags, tags) ||
                 doc.created != createdAt ||
                 (doc.content != content && isContentTouched) ||
-                doc.warehouses != warehouses;
+                doc.warehouse != warehouse;
           },
           child: FormBuilder(
             key: _formKey,
@@ -158,11 +178,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                       ),
                       extendBody: true,
                       body: _buildEditForm(
-                        context,
-                        state,
-                        filteredSuggestions,
-                        currentUser,
-                      ),
+                          context, state, filteredSuggestions, currentUser),
                     ),
                   ),
                   AnimatedBuilder(
@@ -198,7 +214,18 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     UserModel currentUser,
   ) {
     final labelRepository = context.watch<LabelRepository>();
-    final warehouseRepository = context.watch<WarehouseRepository>();
+    final selectedWarehouse = labelRepository.warehouses[labelRepository
+                .shelfs[labelRepository
+                    .boxcases[state.document.warehouse]?.parentWarehouse]
+                ?.parentWarehouse ??
+            '']
+        .toString();
+    String? selectedShelf = labelRepository.shelfs[labelRepository
+                .boxcases[state.document.warehouse]?.parentWarehouse ??
+            '']
+        .toString();
+    String? selectedBoxcase =
+        labelRepository.boxcases[state.document.warehouse].toString();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -303,29 +330,48 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                   ),
                 ).padded(),
 
-              // if (currentUser.canViewBriefcase)
-              Column(
-                children: [
-                  WarehouseFormField<WarehouseModel>(
-                    showAnyAssignedOption: false,
-                    showNotAssignedOption: false,
-                    onAddWarehouse: (currentInput) =>
-                        CreatePhysicalWarehouseRoute(type: 'briefcase')
-                            .push<WarehouseModel>(context),
-                    addWarehouseText: S.of(context)!.addBriefcase,
-                    labelText: S.of(context)!.briefcase,
-                    options: warehouseRepository.briefcases,
-                    initialValue: state.document.warehouses != null
-                        ? SetIdQueryParameter(id: state.document.warehouses!)
-                        : const UnsetIdQueryParameter(),
-                    name: fkwarehouse,
-                    prefixIcon: const Icon(Icons.warehouse_outlined),
-                    allowSelectUnassigned: true,
-                    canCreateNewWarehouse: currentUser.canViewBriefcase,
-                    suggestions: filteredSuggestions?.warehouses ?? [],
-                  ),
-                ],
-              ).padded(),
+              if (currentUser.canViewWarehouse)
+                Column(
+                  children: [
+                    _buildWarehouseFormField(
+                      context,
+                      labelRepository.warehouses,
+                      state.document.warehouse != null
+                          ? selectedWarehouse
+                          : S.of(context)?.selecteWarehouse,
+                      (value) => _findKeyForValue(labelRepository.warehouses,
+                          value!, labelRepository, 'warehouse', context),
+                    )
+                  ],
+                ).padded(),
+              if (currentUser.canViewWarehouse)
+                Column(
+                  children: [
+                    _buildShelfFormField(
+                      context,
+                      labelRepository.shelfs,
+                      state.document.warehouse != null
+                          ? selectedShelf
+                          : S.of(context)?.selectShelf,
+                      (value) => _findKeyForValue(labelRepository.shelfs,
+                          value!, labelRepository, 'shelf', context),
+                    )
+                  ],
+                ).padded(),
+              if (currentUser.canViewWarehouse)
+                Column(
+                  children: [
+                    _buildBoxcaseFormField(
+                      context,
+                      labelRepository.boxcases,
+                      state.document.warehouse != null
+                          ? selectedBoxcase
+                          : S.of(context)?.selectBriefcase,
+                      (value) => _findKeyForValue(labelRepository.boxcases,
+                          value!, labelRepository, 'boxcase', context),
+                    )
+                  ],
+                ).padded(),
 
               const SizedBox(height: 140),
             ],
@@ -351,7 +397,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     );
   }
 
-  (String?, int?, int?, int?, List<int>?, DateTime?, String?, int?)
+  (String?, int?, int?, int?, List<int>?, DateTime?, String?)
       get _currentValues {
     final fkState = _formKey.currentState!;
 
@@ -364,7 +410,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     final tagsParam = fkState.getRawValue<TagsQuery?>(fkTags);
     final title = fkState.getRawValue<String?>(fkTitle);
     final created = fkState.getRawValue<FormDateTime?>(fkCreatedDate);
-    final warehouseParam = fkState.getRawValue<IdQueryParameter?>(fkwarehouse);
+
     final correspondent = switch (correspondentParam) {
       SetIdQueryParameter(id: var id) => id,
       _ => null,
@@ -381,10 +427,6 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       IdsTagsQuery(include: var i) => i,
       _ => null,
     };
-    final warehouses = switch (warehouseParam) {
-      SetIdQueryParameter(id: var id) => id,
-      _ => null,
-    };
 
     final content = fkState.getRawValue<String?>(fkContent);
 
@@ -395,8 +437,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       storagePath,
       tags,
       created?.toDateTime(),
-      content,
-      warehouses,
+      content
     );
   }
 
@@ -410,10 +451,10 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         tags,
         createdAt,
         content,
-        warehouses,
       ) = _currentValues;
 
       var mergedDocument = document.copyWith(
+        warehouse: () => _boxcaseId == -1 ? document.warehouse : _boxcaseId,
         title: title,
         created: createdAt,
         correspondent: () => correspondent,
@@ -421,7 +462,6 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         storagePath: () => storagePath,
         tags: tags,
         content: content,
-        warehouses: () => warehouses,
       );
 
       try {
@@ -433,6 +473,101 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         context.pop();
       }
     }
+  }
+
+  _findKeyForValue(Map<int, Object> map, String? value,
+      LabelRepository labelRepository, String type, BuildContext context) {
+    map.forEach((key, mapValue) {
+      if (mapValue.toString() == value) {
+        switch (type) {
+          case 'warehouse':
+            setState(() {
+              _warehouseId = key;
+              _selectedWarehouse = value ?? '';
+              _enableFiledBoxcase = false;
+            });
+            break;
+          case 'shelf':
+            setState(() {
+              _shelfId = key;
+              _selectedShelf = value ?? '';
+              _enableFiledBoxcase = true;
+            });
+            break;
+          case 'boxcase':
+            setState(() {
+              _boxcaseId = key;
+              _selectedBoxcase = value ?? '';
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    if (type != 'boxcase') {
+      type == 'warehouse'
+          ? labelRepository.findDetailsWarehouse(_warehouseId)
+          : labelRepository.findDetailsShelf(_shelfId);
+    }
+  }
+
+  Widget _buildWarehouseFormField(
+    BuildContext context,
+    Map<int, Warehouse> warehouses,
+    String? selectedItem,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.warehouse_outlined),
+      items: warehouses.values.map((value) => value.toString()).toList(),
+      selectedItem:
+          _selectedWarehouse.isEmpty ? selectedItem : _selectedWarehouse,
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: 'Kho',
+      hintText: 'Chọn kho',
+    );
+  }
+
+  Widget _buildShelfFormField(
+    BuildContext context,
+    Map<int, Warehouse> shelfs,
+    String? selectedItem,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.shelves),
+      items: shelfs.values.map((value) => value.toString()).toList(),
+      selectedItem: _selectedShelf.isEmpty
+          ? selectedItem == 'null'
+              ? 'Chon gia/ke'
+              : selectedItem
+          : _selectedShelf,
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: 'Giá/kệ',
+      hintText: 'Chọn giá/kệ',
+    );
+  }
+
+  Widget _buildBoxcaseFormField(
+    BuildContext context,
+    Map<int, Warehouse> boxcases,
+    String? selectedItem,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.cases_outlined),
+      enable: _enableFiledBoxcase,
+      items: boxcases.values.map((value) => value.toString()).toList(),
+      selectedItem: _selectedBoxcase.isEmpty
+          ? selectedItem == 'null'
+              ? 'Chon hop/cap'
+              : selectedItem
+          : _selectedBoxcase,
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: 'Hộp/cặp',
+      hintText: 'Chon hộp/cặp',
+    );
   }
 
   Widget _buildTitleFormField(String? initialTitle) {
@@ -462,7 +597,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
           firstDate: DateTime(1970, 1, 1),
           lastDate: DateTime(2100, 1, 1),
           locale: Localizations.localeOf(context),
-          prefixIcon: Icon(Icons.calendar_today),
+          prefixIcon: const Icon(Icons.calendar_today),
         ),
         if (filteredSuggestions?.hasSuggestedDates ?? false)
           _buildSuggestionsSkeleton<DateTime>(

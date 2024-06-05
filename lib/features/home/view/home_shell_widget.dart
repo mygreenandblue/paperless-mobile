@@ -9,7 +9,6 @@ import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
 import 'package:paperless_mobile/core/repository/user_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/security/session_manager.dart';
 import 'package:paperless_mobile/core/service/dio_file_service.dart';
 import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
@@ -17,8 +16,6 @@ import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:paperless_mobile/features/home/view/model/api_version.dart';
 import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/physical_warehouse/cubit/warehouse_cubit/warehouse_cubit.dart';
-import 'package:paperless_mobile/features/physical_warehouse/cubit/warehouse_edit/warehouse_edit_cubit.dart';
 import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
 import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
@@ -108,13 +105,6 @@ class HomeShellWidget extends StatelessWidget {
                     apiVersion: paperlessApiVersion,
                   ),
                 ),
-                Provider(
-                  create: (context) =>
-                      paperlessProviderFactory.createWarehousesApi(
-                    context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
-                  ),
-                ),
                 if (currentLocalUser.hasMultiUserSupport)
                   Provider(
                     create: (context) => paperlessProviderFactory.createUserApi(
@@ -128,19 +118,6 @@ class HomeShellWidget extends StatelessWidget {
                   providers: [
                     ChangeNotifierProvider(
                       create: (context) {
-                        return WarehouseRepository(context.read())
-                          ..initialize(
-                            loadWarehouse:
-                                currentLocalUser.paperlessUser.canViewWarehouse,
-                            loadShelf:
-                                currentLocalUser.paperlessUser.canViewShelf,
-                            loadBriefcase:
-                                currentLocalUser.paperlessUser.canViewBriefcase,
-                          );
-                      },
-                    ),
-                    ChangeNotifierProvider(
-                      create: (context) {
                         return LabelRepository(context.read())
                           ..initialize(
                             loadCorrespondents: currentLocalUser
@@ -151,6 +128,8 @@ class HomeShellWidget extends StatelessWidget {
                                 .paperlessUser.canViewStoragePaths,
                             loadTags:
                                 currentLocalUser.paperlessUser.canViewTags,
+                            loadWarehouses:
+                                currentLocalUser.paperlessUser.canViewWarehouse,
                           );
                       },
                     ),
@@ -216,13 +195,6 @@ class HomeShellWidget extends StatelessWidget {
                         ),
                         ChangeNotifierProvider(
                           create: (context) => PendingTasksNotifier(
-                            context.read(),
-                          ),
-                        ),
-                        Provider(
-                          create: (context) => WarehouseCubit(
-                            context.read(),
-                            context.read(),
                             context.read(),
                           ),
                         ),

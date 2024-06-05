@@ -241,7 +241,7 @@ class AppEntrypoint extends StatelessWidget {
         Provider.value(value: connectivityStatusService),
         Provider.value(value: localNotificationService),
         Provider.value(value: localAuthService),
-        Provider.value(value: WarehouseChangedNotifier()),
+        Provider.value(value: LabelChangedNotifier()),
       ],
       child: GoRouterShell(
         apiFactory: apiFactory,

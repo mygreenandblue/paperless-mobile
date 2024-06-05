@@ -1068,5 +1068,11 @@
   "briefcaseName": "Briefcase name",
   "editWarehouse": "Edit warehouse",
   "editShelf": "Edit shelf",
-  "editBriefcase": "Edit briefcase"
+  "editBriefcase": "Edit briefcase","selecteWarehouse": "Chọn kho",
+  "selectShelf": "Chọn giá/kệ",
+  "selectBriefcase": "Chọn hộp/cặp",
+  "notiActionSuccess": "Thao tác cảu bạn trên hệ thống đã thành công",
+  "notiActionFail": "Thao tác của bạn trên hệ thống thất bại",
+  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}"
+
 }

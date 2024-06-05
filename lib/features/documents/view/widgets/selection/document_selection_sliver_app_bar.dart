@@ -93,6 +93,16 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                 },
               ).paddedOnly(left: 8, right: 4),
               _buildBulkEditTagsChip(context).paddedOnly(left: 4, right: 4),
+              ActionChip(
+                label: Text(S.of(context)!.briefcase),
+                avatar: const Icon(Icons.edit),
+                onPressed: () {
+                  BulkEditDocumentsRoute(BulkEditExtraWrapper(
+                    state.selection,
+                    LabelType.warehouse,
+                  )).push(context);
+                },
+              ).paddedOnly(left: 8, right: 4),
             ],
           ),
         ),

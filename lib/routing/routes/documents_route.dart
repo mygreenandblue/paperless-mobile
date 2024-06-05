@@ -90,10 +90,11 @@ class EditDocumentRoute extends GoRouteData {
           context.read(),
           context.read(),
           context.read(),
-          context.read(),
           document: $extra,
         )..loadFieldSuggestions(),
-        child: const DocumentEditPage(),
+        child: DocumentEditPage(
+          documentModel: $extra,
+        ),
       ),
     );
   }
@@ -153,6 +154,7 @@ class BulkEditDocumentsRoute extends GoRouteData {
                   LabelType.correspondent => labelRepository.correspondents,
                   LabelType.documentType => labelRepository.documentTypes,
                   LabelType.storagePath => labelRepository.storagePaths,
+                  LabelType.warehouse => labelRepository.boxcases,
                   _ => throw Exception("Parameter not allowed here."),
                 },
                 selection: state.selection,
@@ -161,6 +163,7 @@ class BulkEditDocumentsRoute extends GoRouteData {
                     LabelType.correspondent => document.correspondent,
                     LabelType.documentType => document.documentType,
                     LabelType.storagePath => document.storagePath,
+                    LabelType.warehouse => document.warehouse,
                     _ => throw Exception("Parameter not allowed here."),
                   };
                 },
@@ -169,6 +172,7 @@ class BulkEditDocumentsRoute extends GoRouteData {
                   LabelType.documentType =>
                     const Icon(Icons.description_outlined),
                   LabelType.storagePath => const Icon(Icons.folder_outlined),
+                  LabelType.warehouse => const Icon(Icons.cases_outlined),
                   _ => throw Exception("Parameter not allowed here."),
                 },
                 hintText: S.of(context)!.startTyping,
@@ -182,6 +186,8 @@ class BulkEditDocumentsRoute extends GoRouteData {
                   LabelType.storagePath => context
                       .read<DocumentBulkActionCubit>()
                       .bulkModifyStoragePath,
+                  LabelType.warehouse =>
+                    context.read<DocumentBulkActionCubit>().bulkModifyBoxcase,
                   _ => throw Exception("Parameter not allowed here."),
                 },
                 assignMessageBuilder: (int count, String name) {
@@ -195,6 +201,9 @@ class BulkEditDocumentsRoute extends GoRouteData {
                     LabelType.storagePath => S
                         .of(context)!
                         .bulkEditDocumentTypeAssignMessage(count, name),
+                    LabelType.warehouse => S
+                        .of(context)!
+                        .bulkEditWarwhouseAssignMessage(count, name),
                     _ => throw Exception("Parameter not allowed here."),
                   };
                 },
@@ -206,6 +215,8 @@ class BulkEditDocumentsRoute extends GoRouteData {
                       S.of(context)!.bulkEditDocumentTypeRemoveMessage(count),
                     LabelType.storagePath =>
                       S.of(context)!.bulkEditStoragePathRemoveMessage(count),
+                    LabelType.warehouse =>
+                      S.of(context)!.bulkEditWarwhouseAssignMessage(count, ''),
                     _ => throw Exception("Parameter not allowed here."),
                   };
                 },

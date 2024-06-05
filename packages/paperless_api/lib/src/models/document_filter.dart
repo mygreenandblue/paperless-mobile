@@ -103,7 +103,7 @@ class DocumentFilter extends Equatable {
       ...created.toQueryParameter(DateRangeQueryField.created).entries,
       ...modified.toQueryParameter(DateRangeQueryField.modified).entries,
       ...query.toQueryParameter().entries,
-      ...warehousesId.toQueryParameter('warehouses').entries,
+      ...warehousesId.toQueryParameter('warehouse').entries,
     ];
     if (sortField != null) {
       params.add(
@@ -196,7 +196,7 @@ class DocumentFilter extends Equatable {
           content: document.content,
           asn: document.archiveSerialNumber,
         ) &&
-        warehousesId.matches(document.warehouses);
+        warehousesId.matches(document.warehouse);
   }
 
   int get appliedFiltersCount => [

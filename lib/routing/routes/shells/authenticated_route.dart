@@ -34,18 +34,9 @@ part 'authenticated_route.g.dart';
 @TypedShellRoute<AuthenticatedRoute>(
   routes: [
     TypedGoRoute<PhysicalWarehouseRoute>(
-        path: "/physicalWarehouse",
-        name: R.physicalWarehouse,
-        routes: [
-          TypedGoRoute<CreatePhysicalWarehouseRoute>(
-            path: "createPhysicalWarehouse",
-            name: R.createPhysicalWarehouse,
-          ),
-          TypedGoRoute<EditPhysicalWarehouseRoute>(
-            path: "editPhysicalWarehouse",
-            name: R.editPhysicalWarehouse,
-          ),
-        ]),
+      path: "/physicalWarehouse",
+      name: R.physicalWarehouse,
+    ),
     TypedGoRoute<SettingsRoute>(
       path: "/settings",
       name: R.settings,

@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:paperless_api/paperless_api.dart';
+
 import 'package:paperless_mobile/core/repository/label_repository.dart';
 import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
 import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
@@ -12,15 +14,27 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
   final T Function(Map<String, dynamic> json) fromJsonT;
   final List<Widget> additionalFields;
   final Future<T> Function(BuildContext context, T label) onSubmit;
+  final String? initialType;
+  final String? initialShelf;
+  final String? initialWarehouse;
+  final Function(String?)? onChangedShelf;
+  final Function(String?)? onChangedWarehouse;
+  final int? parentId;
 
   const AddLabelPage({
-    super.key,
+    Key? key,
     this.initialName,
     required this.pageTitle,
     required this.fromJsonT,
     this.additionalFields = const [],
     required this.onSubmit,
-  });
+    this.initialType,
+    this.initialShelf,
+    this.initialWarehouse,
+    this.onChangedShelf,
+    this.onChangedWarehouse,
+    this.parentId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +48,12 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
         additionalFields: additionalFields,
         fromJsonT: fromJsonT,
         onSubmit: onSubmit,
+        initialType: initialType,
+        initialShelf: initialShelf,
+        initialWarehouse: initialWarehouse,
+        onChangedShelf: onChangedShelf,
+        onChangedWarehouse: onChangedWarehouse,
+        parentId: parentId,
       ),
     );
   }
@@ -44,16 +64,28 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
   final T Function(Map<String, dynamic> json) fromJsonT;
   final List<Widget> additionalFields;
   final Future<T> Function(BuildContext context, T label) onSubmit;
-
+  final String? initialType;
   final Widget pageTitle;
+
+  final String? initialShelf;
+  final String? initialWarehouse;
+  final Function(String?)? onChangedShelf;
+  final Function(String?)? onChangedWarehouse;
+  final int? parentId;
   const AddLabelFormWidget({
-    super.key,
+    Key? key,
     this.label,
     required this.fromJsonT,
     required this.additionalFields,
-    required this.pageTitle,
     required this.onSubmit,
-  });
+    this.initialType,
+    required this.pageTitle,
+    this.initialShelf,
+    this.initialWarehouse,
+    this.onChangedShelf,
+    this.onChangedWarehouse,
+    this.parentId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +103,10 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
           onSubmit: (label) => onSubmit(context, label),
         ),
         additionalFields: additionalFields,
+        type: initialType,
+        onChangedShelf: onChangedShelf,
+        onChangedWarehouse: onChangedWarehouse,
+        parentId: parentId,
       ),
     );
   }

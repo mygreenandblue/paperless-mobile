@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/document_type/view/widgets/document_type_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:paperless_mobile/features/physical_warehouse/view/widgets/briefcase_widget.dart';
+import 'package:paperless_mobile/features/labels/warehouse/view/widgets/warehouse_widget.dart';
 import 'package:provider/provider.dart';
 
 class DocumentGridItem extends DocumentItem {
@@ -34,7 +32,7 @@ class DocumentGridItem extends DocumentItem {
   Widget build(BuildContext context) {
     var currentUser = context.watch<LocalUserAccount>().paperlessUser;
     final labelRepository = context.watch<LabelRepository>();
-    final warehouwRepository = context.watch<WarehouseRepository>();
+
     return Stack(
       children: [
         Card(
@@ -117,10 +115,10 @@ class DocumentGridItem extends DocumentItem {
                                 width: 4,
                               ),
                               Flexible(
-                                child: BriefcaseWidget(
-                                  briefcase: warehouwRepository
-                                      .briefcases[document.warehouses],
-                                  onSelected: onCorrespondentSelected,
+                                child: WarehouseWidget(
+                                  warehouse: labelRepository
+                                      .boxcases[document.warehouse],
+                                  onSelected: onWarehouseSelected,
                                 ),
                               ),
                             ],

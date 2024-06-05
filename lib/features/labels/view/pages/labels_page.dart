@@ -16,6 +16,7 @@ import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dar
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
 import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
 
 class LabelsPage extends StatefulWidget {
@@ -33,7 +34,6 @@ class _LabelsPageState extends State<LabelsPage>
       SliverOverlapAbsorberHandle();
 
   late final TabController _tabController;
-
   int _currentIndex = 0;
 
   int _calculateTabCount(UserModel user) => [
@@ -41,6 +41,7 @@ class _LabelsPageState extends State<LabelsPage>
         user.canViewDocumentTypes,
         user.canViewTags,
         user.canViewStoragePaths,
+        user.canViewWarehouse
       ].fold(0, (value, element) => value + (element ? 1 : 0));
 
   @override
@@ -74,6 +75,7 @@ class _LabelsPageState extends State<LabelsPage>
             S.of(context)!.addDocumentType,
             S.of(context)!.addTag,
             S.of(context)!.addStoragePath,
+            S.of(context)!.addWarehouse,
           ][_currentIndex];
           return BlocBuilder<ConnectivityCubit, ConnectivityState>(
             builder: (context, connectedState) {
@@ -85,11 +87,12 @@ class _LabelsPageState extends State<LabelsPage>
                     child: FloatingActionButton.extended(
                       heroTag: "inbox_page_fab",
                       label: Text(fabLabel),
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add),
                       onPressed: [
                         if (user.canViewCorrespondents)
-                          () => CreateLabelRoute(LabelType.correspondent)
-                              .push(context),
+                          () => CreateLabelRoute(
+                                LabelType.correspondent,
+                              ).push(context),
                         if (user.canViewDocumentTypes)
                           () => CreateLabelRoute(LabelType.documentType)
                               .push(context),
@@ -97,6 +100,10 @@ class _LabelsPageState extends State<LabelsPage>
                           () => CreateLabelRoute(LabelType.tag).push(context),
                         if (user.canViewStoragePaths)
                           () => CreateLabelRoute(LabelType.storagePath)
+                              .push(context),
+                        if (user.canViewWarehouse)
+                          () => CreateLabelRoute(LabelType.warehouse,
+                                  type: 'Warehouse')
                               .push(context),
                       ][_currentIndex],
                     ),
@@ -167,6 +174,18 @@ class _LabelsPageState extends State<LabelsPage>
                                         ),
                                       ),
                                     ),
+                                  if (user.canViewStoragePaths)
+                                    Tab(
+                                      icon: Tooltip(
+                                        message: S.of(context)!.warehouse,
+                                        child: Icon(
+                                          Icons.warehouse_outlined,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -210,6 +229,7 @@ class _LabelsPageState extends State<LabelsPage>
                                       .reloadDocumentTypes,
                                   context.read<LabelCubit>().reloadTags,
                                   context.read<LabelCubit>().reloadStoragePaths,
+                                  context.read<LabelCubit>().reloadWarehouses,
                                 ][_currentIndex]
                                     .call();
                               } catch (error, stackTrace) {
@@ -219,7 +239,8 @@ class _LabelsPageState extends State<LabelsPage>
                                       "correspondents",
                                       "document types",
                                       "tags",
-                                      "storage paths"
+                                      "storage paths",
+                                      "warehouses"
                                     ][_currentIndex]}.",
                                     error: error,
                                     stackTrace: stackTrace,
@@ -238,6 +259,8 @@ class _LabelsPageState extends State<LabelsPage>
                                   _buildTagsView(state, user),
                                 if (user.canViewStoragePaths)
                                   _buildStoragePathView(state, user),
+                                if (user.canViewWarehouse)
+                                  _buildWarehousesView(state, user),
                               ],
                             ),
                           ),
@@ -271,8 +294,40 @@ class _LabelsPageState extends State<LabelsPage>
               },
               emptyStateActionButtonLabel: S.of(context)!.addNewCorrespondent,
               emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
+              onAddNew: () => CreateLabelRoute(
+                LabelType.correspondent,
+              ).push(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildWarehousesView(LabelState state, UserModel user) {
+    return Builder(
+      builder: (context) {
+        return CustomScrollView(
+          slivers: [
+            SliverOverlapInjector(handle: searchBarHandle),
+            SliverOverlapInjector(handle: tabBarHandle),
+            LabelTabView<Warehouse>(
+              labels: state.warehouses,
+              filterBuilder: (label) => DocumentFilter(
+                warehousesId: SetIdQueryParameter(id: label.id!),
+              ),
+              canEdit: user.canEditWarehouse,
+              canAddNew: user.canCreateWarehouse,
+              onEdit: (warehouse) async {
+                PhysicalWarehouseRoute(warehouse,
+                        type: 'Shelf', initialName: warehouse.name)
+                    .push(context);
+              },
+              emptyStateActionButtonLabel: S.of(context)!.addWarehouse,
+              emptyStateDescription: S.of(context)!.noCorrespondentsSetUp,
               onAddNew: () =>
-                  CreateLabelRoute(LabelType.correspondent).push(context),
+                  CreateLabelRoute(LabelType.warehouse, type: 'Warehouse')
+                      .push(context),
             ),
           ],
         );

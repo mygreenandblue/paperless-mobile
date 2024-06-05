@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final List<String>? items;
@@ -11,6 +12,8 @@ class CustomSearchBar extends StatelessWidget {
   final double? hozizontalPadding, verticalPadiing;
   final bool showSearchBox;
   final double? radius;
+  final bool? enable;
+  final Widget? prefixIcon;
 
   const CustomSearchBar({
     super.key,
@@ -23,6 +26,8 @@ class CustomSearchBar extends StatelessWidget {
     this.hintText,
     this.showSearchBox = true,
     this.radius,
+    this.enable,
+    this.prefixIcon,
   });
 
   @override
@@ -31,12 +36,14 @@ class CustomSearchBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownSearch<String>(
+          enabled: enable ?? true,
           popupProps: PopupProps.menu(
             showSelectedItems: true,
             disabledItemFn: (String s) => s.startsWith('I'),
             searchFieldProps: TextFieldProps(
               cursorColor: Theme.of(context).colorScheme.primary,
               decoration: InputDecoration(
+                hintText: S.of(context)!.search,
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(
                   vertical: verticalPadiing ?? 8,
@@ -60,9 +67,10 @@ class CustomSearchBar extends StatelessWidget {
             ),
             showSearchBox: showSearchBox,
           ),
-          items: items ?? ['Không tìm thấy dữ liệu'],
+          items: items ?? [(S.of(context)!.noItemsFound)],
           dropdownDecoratorProps: DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
+              prefixIcon: prefixIcon,
               hintText: hintText,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(

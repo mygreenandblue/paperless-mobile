@@ -13,14 +13,13 @@ import 'package:paperless_mobile/core/database/tables/global_settings.dart';
 import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
 import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
 import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
 import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/physical_warehouse/view/form/physical_warehouse_form_field.dart';
+import 'package:paperless_mobile/features/labels/view/widgets/custom_searchbar.dart';
 import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
 import 'package:paperless_mobile/helpers/message_helpers.dart';
@@ -64,6 +63,9 @@ class _DocumentUploadPreparationPageState
   late bool _syncTitleAndFilename;
   bool _showDatePickerDeleteIcon = false;
   final _now = DateTime.now();
+  int _warehouseId = -1;
+  int _shelfId = -1;
+  int _boxcaseId = -1;
 
   @override
   void initState() {
@@ -74,7 +76,7 @@ class _DocumentUploadPreparationPageState
   @override
   Widget build(BuildContext context) {
     final labelRepository = context.watch<LabelRepository>();
-    final warehouseRepository = context.watch<WarehouseRepository>();
+
     return BlocBuilder<DocumentUploadCubit, DocumentUploadState>(
       builder: (context, state) {
         return Scaffold(
@@ -228,7 +230,7 @@ class _DocumentUploadPreparationPageState
                               firstDate: DateTime(1970, 1, 1),
                               lastDate: DateTime(2100, 1, 1),
                               locale: Localizations.localeOf(context),
-                              labelText: S.of(context)!.createdAt + " *",
+                              labelText: "${S.of(context)!.createdAt} *",
                               allowUnset: true,
                             ),
                             // Correspondent
@@ -244,7 +246,7 @@ class _DocumentUploadPreparationPageState
                                   name: initialName,
                                 ).push<Correspondent>(context),
                                 addLabelText: S.of(context)!.addCorrespondent,
-                                labelText: S.of(context)!.correspondent + " *",
+                                labelText: "${S.of(context)!.correspondent} *",
                                 name: DocumentModel.correspondentKey,
                                 options: labelRepository.correspondents,
                                 prefixIcon: const Icon(Icons.person_outline),
@@ -267,7 +269,7 @@ class _DocumentUploadPreparationPageState
                                   name: initialName,
                                 ).push<DocumentType>(context),
                                 addLabelText: S.of(context)!.addDocumentType,
-                                labelText: S.of(context)!.documentType + " *",
+                                labelText: "${S.of(context)!.documentType} *",
                                 name: DocumentModel.documentTypeKey,
                                 options: labelRepository.documentTypes,
                                 prefixIcon:
@@ -290,29 +292,48 @@ class _DocumentUploadPreparationPageState
                                 options: labelRepository.tags,
                               ),
 
-                            //briefcase
-                            // if (context
-                            //     .watch<LocalUserAccount>()
-                            //     .paperlessUser
-                            //     .canViewBriefcase)
-                            WarehouseFormField<WarehouseModel>(
-                              showAnyAssignedOption: false,
-                              showNotAssignedOption: false,
-                              onAddWarehouse: (initialName) =>
-                                  CreatePhysicalWarehouseRoute(
-                                type: 'briefcase',
-                                name: initialName,
-                              ).push<WarehouseModel>(context),
-                              addWarehouseText: S.of(context)!.addBriefcase,
-                              labelText: "${S.of(context)!.briefcase} *",
-                              name: DocumentModel.warehouseKey,
-                              options: warehouseRepository.briefcases,
-                              prefixIcon: const Icon(Icons.warehouse_outlined),
-                              allowSelectUnassigned: true,
-                              canCreateNewWarehouse: true,
-                            ),
+                            // briefcase
+                            if (context
+                                .watch<LocalUserAccount>()
+                                .paperlessUser
+                                .canViewWarehouse)
+                              _buildWarehouseFormField(
+                                context,
+                                labelRepository.warehouses,
+                                (p0) => _findKeyForValue(
+                                    labelRepository.warehouses,
+                                    p0,
+                                    labelRepository,
+                                    'warehouse'),
+                              ),
+                            if (context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canViewWarehouse &&
+                                _warehouseId != -1 &&
+                                labelRepository.shelfs.isNotEmpty)
+                              _buildShelfFormField(
+                                context,
+                                labelRepository.shelfs,
+                                (p0) => _findKeyForValue(labelRepository.shelfs,
+                                    p0, labelRepository, 'shelf'),
+                              ),
+                            if (context
+                                    .watch<LocalUserAccount>()
+                                    .paperlessUser
+                                    .canViewWarehouse &&
+                                _shelfId != -1 &&
+                                labelRepository.boxcases.isNotEmpty)
+                              _buildBoxcaseFormField(
+                                  context,
+                                  labelRepository.boxcases,
+                                  (p0) => _findKeyForValue(
+                                      labelRepository.boxcases,
+                                      p0,
+                                      labelRepository,
+                                      'boxcase')),
                             Text(
-                              "* " + S.of(context)!.uploadInferValuesHint,
+                              "* ${S.of(context)!.uploadInferValuesHint}",
                               style: Theme.of(context).textTheme.bodySmall,
                               textAlign: TextAlign.justify,
                             ).padded(),
@@ -331,6 +352,81 @@ class _DocumentUploadPreparationPageState
     );
   }
 
+  _findKeyForValue(Map<int, Object> map, String? value,
+      LabelRepository labelRepository, String type) {
+    map.forEach((key, mapValue) {
+      if (mapValue.toString() == value) {
+        switch (type) {
+          case 'warehouse':
+            setState(() {
+              _warehouseId = key;
+            });
+            break;
+          case 'shelf':
+            setState(() {
+              _shelfId = key;
+            });
+            break;
+          case 'boxcase':
+            setState(() {
+              _boxcaseId = key;
+              print(_boxcaseId);
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    if (type != 'boxcase') {
+      type == 'warehouse'
+          ? labelRepository.findDetailsWarehouse(_warehouseId)
+          : labelRepository.findDetailsShelf(_shelfId);
+    }
+  }
+
+  Widget _buildWarehouseFormField(
+    BuildContext context,
+    Map<int, Warehouse> warehouses,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.warehouse_outlined),
+      items: warehouses.values.map((value) => value.toString()).toList(),
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: S.of(context)?.warehouse,
+      hintText: S.of(context)?.selecteWarehouse,
+    );
+  }
+
+  Widget _buildShelfFormField(
+    BuildContext context,
+    Map<int, Warehouse> shelfs,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.shelves),
+      items: shelfs.values.map((value) => value.toString()).toList(),
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: S.of(context)?.shelf,
+      hintText: S.of(context)?.selectShelf,
+    );
+  }
+
+  Widget _buildBoxcaseFormField(
+    BuildContext context,
+    Map<int, Warehouse> boxcases,
+    Function(String?)? onChanged,
+  ) {
+    return CustomSearchBar(
+      prefixIcon: const Icon(Icons.cases_outlined),
+      items: boxcases.values.map((value) => value.toString()).toList(),
+      onChanged: (value) => {onChanged!(value!)},
+      fieldName: S.of(context)?.briefcase,
+      hintText: S.of(context)?.selectBriefcase,
+    );
+  }
+
   void _onSubmit() async {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final cubit = context.read<DocumentUploadCubit>();
@@ -344,8 +440,7 @@ class _DocumentUploadPreparationPageState
         final tagsParam = formValues[DocumentModel.tagsKey] as TagsQuery?;
         final createdAt = formValues[DocumentModel.createdKey] as FormDateTime?;
         final title = formValues[DocumentModel.titleKey] as String;
-        final warehouseParam =
-            formValues[DocumentModel.warehouseKey] as IdQueryParameter?;
+
         final correspondent = switch (correspondentParam) {
           SetIdQueryParameter(id: var id) => id,
           _ => null,
@@ -358,10 +453,6 @@ class _DocumentUploadPreparationPageState
           IdsTagsQuery(include: var ids) => ids,
           _ => const <int>[],
         };
-        final warehouses = switch (warehouseParam) {
-          SetIdQueryParameter(id: var id) => id,
-          _ => null,
-        };
 
         final asn = formValues[DocumentModel.asnKey] as int?;
         final taskId = await cubit.upload(
@@ -373,13 +464,13 @@ class _DocumentUploadPreparationPageState
           userId: Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
               .getValue()!
               .loggedInUserId!,
+          warehouse: _boxcaseId != -1 ? _boxcaseId : null,
           title: title,
           documentType: docType,
           correspondent: correspondent,
           tags: tags,
           createdAt: createdAt?.toDateTime(),
           asn: asn,
-          warehouse: warehouses,
         );
         showSnackBar(
           context,

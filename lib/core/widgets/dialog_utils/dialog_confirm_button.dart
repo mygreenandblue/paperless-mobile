@@ -9,6 +9,8 @@ enum DialogConfirmButtonStyle {
 class DialogConfirmButton<T> extends StatelessWidget {
   final DialogConfirmButtonStyle style;
   final String? label;
+  final double? opacity;
+  final bool enable;
 
   /// The value [Navigator.pop] will be called with. If [onPressed] is
   /// specified, this value will be ignored.
@@ -22,6 +24,8 @@ class DialogConfirmButton<T> extends StatelessWidget {
     this.label,
     this.returnValue,
     this.onPressed,
+    this.opacity,
+    this.enable = true,
   });
 
   @override
@@ -36,10 +40,16 @@ class DialogConfirmButton<T> extends StatelessWidget {
     );
     final _dangerStyle = ButtonStyle(
       backgroundColor: MaterialStatePropertyAll(
-        Theme.of(context).colorScheme.errorContainer,
+        Theme.of(context)
+            .colorScheme
+            .errorContainer
+            .withOpacity(opacity ?? 1.0),
       ),
       foregroundColor: MaterialStatePropertyAll(
-        Theme.of(context).colorScheme.onErrorContainer,
+        Theme.of(context)
+            .colorScheme
+            .onErrorContainer
+            .withOpacity(opacity ?? 1.0),
       ),
     );
 
@@ -56,9 +66,9 @@ class DialogConfirmButton<T> extends StatelessWidget {
     final effectiveOnPressed =
         onPressed ?? () => Navigator.of(context).pop(returnValue ?? true);
     return ElevatedButton(
-      child: Text(label ?? S.of(context)!.confirm),
       style: _style,
-      onPressed: effectiveOnPressed,
+      onPressed: enable ? effectiveOnPressed : null,
+      child: Text(label ?? S.of(context)!.confirm),
     );
   }
 }

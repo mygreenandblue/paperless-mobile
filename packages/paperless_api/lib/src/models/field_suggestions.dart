@@ -81,7 +81,7 @@ class FieldSuggestions with EquatableMixin {
       documentTypes:
           [document.documentType].where((e) => e != null).map((e) => e!),
       dates: [document.created],
-      warehouses: [document.warehouses].where((e) => e != null).map((e) => e!),
+      warehouses: [document.warehouse].where((e) => e != null).map((e) => e!),
     );
   }
 

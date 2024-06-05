@@ -94,51 +94,7 @@ class _AppDrawerState extends State<AppDrawer> {
                 leading: const Icon(Icons.info_outline),
                 onTap: () => _showAboutDialog(context),
               ),
-              ExpansionTile(
-                leading: const Icon(Icons.warehouse_outlined),
-                title: Text(
-                  S.of(context)!.physicalWarehouse,
-                  style: const TextStyle(fontSize: 13),
-                ),
-                children: [
-                  ListTile(
-                    title: Text(
-                      S.of(context)!.warehouse,
-                      style: TextStyle(color: _getTitleColor(1), fontSize: 13),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedTileIndex = 1;
-                      });
-                      PhysicalWarehouseRoute(type: 'Warehouse').push(context);
-                    },
-                  ),
-                  ListTile(
-                    title: Text(
-                      S.of(context)!.shelf,
-                      style: TextStyle(color: _getTitleColor(2), fontSize: 13),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedTileIndex = 2;
-                      });
-                      PhysicalWarehouseRoute(type: 'Shelf').push(context);
-                    },
-                  ),
-                  ListTile(
-                    title: Text(
-                      S.of(context)!.briefcase,
-                      style: TextStyle(color: _getTitleColor(3), fontSize: 13),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedTileIndex = 3;
-                      });
-                      PhysicalWarehouseRoute(type: 'Boxcase').push(context);
-                    },
-                  ),
-                ],
-              ),
+
               // ListTile(
               //   dense: true,
               //   leading: const Icon(Icons.bug_report_outlined),

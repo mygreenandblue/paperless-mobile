@@ -37,7 +37,6 @@ class PaperlessApiHiveTypeIds {
 
 void registerPaperlessApiHiveTypeAdapters() {
   Hive.registerAdapter(DocumentFilterAdapter());
-  Hive.registerAdapter(WarehouseFilterAdapter());
   // TagsQuery
   Hive.registerAdapter(AnyAssignedTagsQueryAdapter());
   Hive.registerAdapter(NotAssignedTagsQueryAdapter());

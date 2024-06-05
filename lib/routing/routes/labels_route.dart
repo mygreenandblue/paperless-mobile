@@ -13,6 +13,8 @@ import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dar
 import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
 import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
 import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
+import 'package:paperless_mobile/features/edit_label/view/impl/edit_warehouse_page.dart';
+import 'package:paperless_mobile/features/edit_label/view/impl/add_warehouse_page.dart';
 import 'package:paperless_mobile/routing/navigation_keys.dart';
 
 class LabelsBranch extends StatefulShellBranchData {
@@ -42,6 +44,7 @@ class EditLabelRoute extends GoRouteData {
       DocumentType d => EditDocumentTypePage(documentType: d),
       Tag t => EditTagPage(tag: t),
       StoragePath s => EditStoragePathPage(storagePath: s),
+      Warehouse w => EditWarehousePage(warehouse: w),
     };
   }
 }
@@ -49,21 +52,29 @@ class EditLabelRoute extends GoRouteData {
 class CreateLabelRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey =
       outerShellNavigatorKey;
-  final LabelType $extra;
+  final LabelType extra;
   final String? name;
+  final String? type;
+  final Label? $extra;
 
   CreateLabelRoute(
-    this.$extra, {
+    this.extra, {
+    this.$extra,
     this.name,
+    this.type,
   });
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return switch ($extra) {
+    return switch (extra) {
       LabelType.correspondent => AddCorrespondentPage(initialName: name),
       LabelType.documentType => AddDocumentTypePage(initialName: name),
       LabelType.tag => AddTagPage(initialName: name),
       LabelType.storagePath => AddStoragePathPage(initialName: name),
+      LabelType.warehouse => AddWarehousePage(
+          type: type,
+          label: $extra,
+        ),
     };
   }
 }

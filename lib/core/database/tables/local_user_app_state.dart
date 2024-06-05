@@ -30,9 +30,6 @@ class LocalUserAppState extends HiveObject {
   @HiveField(5)
   ViewType documentSearchViewType;
 
-  @HiveField(6)
-  WarehouseFilter currentWarehouseFilter;
-
   LocalUserAppState({
     required this.userId,
     this.currentDocumentFilter = const DocumentFilter(),
@@ -40,7 +37,6 @@ class LocalUserAppState extends HiveObject {
     this.documentsPageViewType = ViewType.list,
     this.documentSearchViewType = ViewType.list,
     this.savedViewsViewType = ViewType.list,
-    this.currentWarehouseFilter = const WarehouseFilter(),
   });
 
   static LocalUserAppState get current {

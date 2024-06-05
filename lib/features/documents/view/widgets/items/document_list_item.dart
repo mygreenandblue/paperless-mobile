@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/date_and_document_type_widget.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
 import 'package:paperless_mobile/features/documents/view/widgets/items/document_item.dart';
 import 'package:paperless_mobile/features/labels/correspondent/view/widgets/correspondent_widget.dart';
 import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:paperless_mobile/features/physical_warehouse/view/widgets/briefcase_widget.dart';
+import 'package:paperless_mobile/features/labels/warehouse/view/widgets/warehouse_widget.dart';
 import 'package:provider/provider.dart';
 
 class DocumentListItem extends DocumentItem {
@@ -33,7 +32,6 @@ class DocumentListItem extends DocumentItem {
   @override
   Widget build(BuildContext context) {
     final labelRepository = context.watch<LabelRepository>();
-    final warehouseRepository = context.watch<WarehouseRepository>();
 
     return ListTile(
       titleAlignment: ListTileTitleAlignment.center,
@@ -67,10 +65,9 @@ class DocumentListItem extends DocumentItem {
               Flexible(
                 child: AbsorbPointer(
                   absorbing: isSelectionActive,
-                  child: BriefcaseWidget(
+                  child: WarehouseWidget(
                     isClickable: isLabelClickable,
-                    briefcase:
-                        warehouseRepository.briefcases[document.warehouses],
+                    warehouse: labelRepository.boxcases[document.warehouse],
                     onSelected: onWarehouseSelected,
                   ),
                 ),

@@ -33,4 +33,21 @@ abstract class PaperlessLabelsApi {
   Future<StoragePath> saveStoragePath(StoragePath path);
   Future<StoragePath> updateStoragePath(StoragePath path);
   Future<int> deleteStoragePath(StoragePath path);
+
+  Future<Warehouse?> getWarehouse(int id);
+  Future<List<Warehouse>> getWarehouses([Iterable<int>? ids]);
+  Future<int> deleteWarehouse(Warehouse warehouse);
+
+  Future<Warehouse?> getShelf(int id);
+  Future<List<Warehouse>> getShelfs([Iterable<int>? ids]);
+  Future<int> deleteShelf(Warehouse warehouse);
+
+  Future<Warehouse?> getBoxcase(int id);
+  Future<List<Warehouse>> getBoxcases([Iterable<int>? ids]);
+  Future<int> deleteBoxcase(Warehouse warehouse);
+
+  Future<Warehouse> saveWarehouse(Warehouse warehouse);
+  Future<Warehouse> updateWarehouse(Warehouse warehouse);
+
+  Future<List<Warehouse>> getDetails(int id, [Iterable<int>? ids]);
 }

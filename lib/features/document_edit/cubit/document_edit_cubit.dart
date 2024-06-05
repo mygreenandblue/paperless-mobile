@@ -5,7 +5,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
 import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/warehouse_repository.dart';
 import 'package:paperless_mobile/features/logging/data/logger.dart';
 
 part 'document_edit_state.dart';
@@ -15,11 +14,9 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
   final DocumentModel _initialDocument;
   final PaperlessDocumentsApi _docsApi;
   final LabelRepository _labelRepository;
-  final WarehouseRepository _warehouseRepository;
   final DocumentChangedNotifier _notifier;
 
   DocumentEditCubit(
-    this._warehouseRepository,
     this._labelRepository,
     this._docsApi,
     this._notifier, {
@@ -51,7 +48,16 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
       className: runtimeType.toString(),
       methodName: "updateDocument",
     );
-    _notifier.notifyUpdated(updated);
+
+    if (!isClosed) {
+      emit(state.copyWith(document: updated));
+      _notifier.notifyUpdated(updated);
+    } else {
+      logger.e(
+        "Cannot emit new states as the Cubit is closed.",
+      );
+      return;
+    }
 
     // Reload changed labels (documentCount property changes with removal/add)
     if (document.documentType != _initialDocument.documentType) {
@@ -77,16 +83,16 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
       _labelRepository.findCorrespondent(
           (document.correspondent ?? _initialDocument.correspondent)!);
     }
-    if (document.warehouses != _initialDocument.warehouses) {
+    if (document.warehouse != _initialDocument.warehouse) {
       logger.fd(
         "Briefcase assigned to document ${document.id} has changed "
-        "(${_initialDocument.warehouses} -> ${document.warehouses}). "
-        "Reloading briefcase ${document.warehouses}...",
+        "(${_initialDocument.warehouse} -> ${document.warehouse}). "
+        "Reloading briefcase ${document.warehouse}...",
         className: runtimeType.toString(),
         methodName: "updateDocument",
       );
-      _warehouseRepository
-          .findBriefcase((document.warehouses ?? _initialDocument.warehouses)!);
+      _labelRepository
+          .findBoxcase((document.warehouse ?? _initialDocument.warehouse)!);
     }
     if (document.storagePath != _initialDocument.storagePath) {
       logger.fd(
@@ -128,9 +134,9 @@ class DocumentEditCubit extends Cubit<DocumentEditState> {
     emit(state.copyWith(suggestions: suggestions));
   }
 
-  @override
-  Future<void> close() {
-    _notifier.removeListener(this);
-    return super.close();
-  }
+  // @override
+  // Future<void> close() {
+  //   _notifier.removeListener(this);
+  //   return super.close();
+  // }
 }

@@ -49,9 +49,4 @@ class PaperlessApiFactoryImpl implements PaperlessApiFactory {
     }
     throw Exception("API $apiVersion not supported.");
   }
-
-  @override
-  PhysicalWarehouseApi createWarehousesApi(Dio dio, {required int apiVersion}) {
-    return PhysicalWarehouseApiImpl(dio);
-  }
 }

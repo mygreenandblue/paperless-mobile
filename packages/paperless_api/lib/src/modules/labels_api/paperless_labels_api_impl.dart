@@ -24,6 +24,16 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   }
 
   @override
+  Future<Warehouse?> getWarehouse(int id) async {
+    return getSingleResult(
+      "/api/warehouses/$id/",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+  }
+
+  @override
   Future<Tag?> getTag(int id) async {
     return getSingleResult(
       "/api/tags/$id/",
@@ -72,6 +82,20 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   }
 
   @override
+  Future<List<Warehouse>> getWarehouses([Iterable<int>? ids]) async {
+    final results = await getCollection(
+      "/api/warehouses/?page=1&page_size=100000&type__iexact=Warehouse",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+
+    return results
+        .where((element) => ids?.contains(element.id) ?? true)
+        .toList();
+  }
+
+  @override
   Future<List<DocumentType>> getDocumentTypes([Iterable<int>? ids]) async {
     final results = await getCollection(
       "/api/document_types/?page=1&page_size=100000",
@@ -94,6 +118,24 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         options: Options(validateStatus: (status) => status == 201),
       );
       return Correspondent.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentCreateFailed,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Warehouse> saveWarehouse(Warehouse warehouse) async {
+    try {
+      final response = await _client.post(
+        '/api/warehouses/',
+        data: warehouse.toJson(),
+        options: Options(validateStatus: (status) => status == 201),
+      );
+      return Warehouse.fromJson(response.data);
     } on DioException catch (exception) {
       throw exception.unravel(
         orElse: const PaperlessApiException(
@@ -163,6 +205,24 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
   }
 
   @override
+  Future<int> deleteWarehouse(Warehouse warehouse) async {
+    assert(warehouse.id != null);
+    try {
+      await _client.delete(
+        '/api/warehouses/${warehouse.id}/',
+        options: Options(validateStatus: (status) => status == 204),
+      );
+      return warehouse.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentDeleteFailed,
+        ),
+      );
+    }
+  }
+
+  @override
   Future<int> deleteDocumentType(DocumentType documentType) async {
     assert(documentType.id != null);
     try {
@@ -208,6 +268,25 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         options: Options(validateStatus: (status) => status == 200),
       );
       return Correspondent.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentUpdateFailed,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Warehouse> updateWarehouse(Warehouse warehouse) async {
+    assert(warehouse.id != null);
+    try {
+      final response = await _client.put(
+        '/api/warehouses/${warehouse.id}/',
+        data: json.encode(warehouse.toJson()),
+        options: Options(validateStatus: (status) => status == 200),
+      );
+      return Warehouse.fromJson(response.data);
     } on DioException catch (exception) {
       throw exception.unravel(
         orElse: const PaperlessApiException(
@@ -335,5 +414,103 @@ class PaperlessLabelApiImpl implements PaperlessLabelsApi {
         ),
       );
     }
+  }
+
+  @override
+  Future<int> deleteBoxcase(Warehouse warehouse) async {
+    assert(warehouse.id != null);
+    try {
+      await _client.delete(
+        '/api/warehouses/${warehouse.id}/',
+        options: Options(validateStatus: (status) => status == 204),
+      );
+      return warehouse.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentDeleteFailed,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<int> deleteShelf(Warehouse warehouse) async {
+    assert(warehouse.id != null);
+    try {
+      await _client.delete(
+        '/api/warehouses/${warehouse.id}/',
+        options: Options(validateStatus: (status) => status == 204),
+      );
+      return warehouse.id!;
+    } on DioException catch (exception) {
+      throw exception.unravel(
+        orElse: const PaperlessApiException(
+          ErrorCode.correspondentDeleteFailed,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Warehouse?> getBoxcase(int id) async {
+    return getSingleResult(
+      "/api/warehouses/$id/",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+  }
+
+  @override
+  Future<List<Warehouse>> getBoxcases([Iterable<int>? ids]) async {
+    final results = await getCollection(
+      "/api/warehouses/?page=1&page_size=100000&type__iexact=Boxcase",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+
+    return results
+        .where((element) => ids?.contains(element.id) ?? true)
+        .toList();
+  }
+
+  @override
+  Future<Warehouse?> getShelf(int id) async {
+    return getSingleResult(
+      "/api/warehouses/$id/",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+  }
+
+  @override
+  Future<List<Warehouse>> getShelfs([Iterable<int>? ids]) async {
+    final results = await getCollection(
+      "/api/warehouses/?page=1&page_size=100000&type__iexact=Shelf",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+
+    return results
+        .where((element) => ids?.contains(element.id) ?? true)
+        .toList();
+  }
+
+  @override
+  Future<List<Warehouse>> getDetails(int id, [Iterable<int>? ids]) async {
+    final results = await getCollection(
+      "/api/warehouses/?page=1&page_size=100000&parent_warehouse=$id",
+      Warehouse.fromJson,
+      ErrorCode.correspondentLoadFailed,
+      client: _client,
+    );
+
+    return results
+        .where((element) => ids?.contains(element.id) ?? true)
+        .toList();
   }
 }

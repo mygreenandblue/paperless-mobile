@@ -3,30 +3,30 @@ import 'dart:async';
 import 'package:paperless_api/paperless_api.dart';
 import 'package:rxdart/subjects.dart';
 
-typedef WarehouseChangedCallback = void Function(WarehouseModel document);
+typedef LabelChangedCallback = void Function(Label label);
 
-class WarehouseChangedNotifier {
-  final Subject<WarehouseModel> _updated = PublishSubject();
-  final Subject<WarehouseModel> _deleted = PublishSubject();
+class LabelChangedNotifier {
+  final Subject<Label> _updated = PublishSubject();
+  final Subject<Label> _deleted = PublishSubject();
 
   final Map<dynamic, List<StreamSubscription>> _subscribers = {};
 
-  Stream<WarehouseModel> get $updated => _updated.asBroadcastStream();
+  Stream<Label> get $updated => _updated.asBroadcastStream();
 
-  Stream<WarehouseModel> get $deleted => _deleted.asBroadcastStream();
+  Stream<Label> get $deleted => _deleted.asBroadcastStream();
 
-  void notifyUpdated(WarehouseModel updated) {
+  void notifyUpdated(Label updated) {
     _updated.add(updated);
   }
 
-  void notifyDeleted(WarehouseModel deleted) {
+  void notifyDeleted(Label deleted) {
     _deleted.add(deleted);
   }
 
   void addListener(
     Object subscriber, {
-    WarehouseChangedCallback? onUpdated,
-    WarehouseChangedCallback? onDeleted,
+    LabelChangedCallback? onUpdated,
+    LabelChangedCallback? onDeleted,
     Iterable<int>? ids,
   }) {
     _subscribers.putIfAbsent(

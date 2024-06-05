@@ -24,10 +24,7 @@ enum PermissionTarget {
   user("user"),
   logentry("logentry"),
   permission("permission"),
-
-  warehouse("warehouse"),
-  shelf("shelf"),
-  briefcase("briefcase");
+  warehouse("warehouse");
 
   final String value;
   const PermissionTarget(this.value);

@@ -13,6 +13,7 @@ enum LabelType {
   documentType,
   tag,
   storagePath,
+  warehouse,
 }
 
 sealed class Label extends Equatable implements Comparable {
@@ -23,6 +24,8 @@ sealed class Label extends Equatable implements Comparable {
   static const matchingAlgorithmKey = "matching_algorithm";
   static const isInsensitiveKey = "is_insensitive";
   static const documentCountKey = "document_count";
+  static const parentWarehouseKey = "parent_warehouse";
+  static const typeKey = "type";
 
   String get queryEndpoint;
 
@@ -35,6 +38,8 @@ sealed class Label extends Equatable implements Comparable {
   final int? documentCount;
   final int? owner;
   final bool? userCanChange;
+  final int? parentWarehouse;
+  final String? type;
 
   const Label({
     this.id,
@@ -46,6 +51,8 @@ sealed class Label extends Equatable implements Comparable {
     this.slug,
     this.owner,
     this.userCanChange,
+    this.type,
+    this.parentWarehouse,
   });
 
   Label copyWith({
@@ -344,4 +351,73 @@ class Tag extends Label {
 
   @override
   Map<String, dynamic> toJson() => _$TagToJson(this);
+}
+
+@LocalDateTimeJsonConverter()
+@JsonSerializable(includeIfNull: false, fieldRename: FieldRename.snake)
+class Warehouse extends Label {
+  const Warehouse({
+    required super.name,
+    super.parentWarehouse,
+    super.id,
+    super.slug,
+    super.match,
+    super.matchingAlgorithm,
+    super.isInsensitive,
+    super.documentCount,
+    super.owner,
+    super.userCanChange,
+    required super.type,
+  });
+
+  factory Warehouse.fromJson(Map<String, dynamic> json) =>
+      _$WarehouseFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$WarehouseToJson(this);
+
+  @override
+  String toString() {
+    return name;
+  }
+
+  @override
+  Warehouse copyWith({
+    int? id,
+    String? name,
+    String? slug,
+    String? match,
+    MatchingAlgorithm? matchingAlgorithm,
+    bool? isInsensitive,
+    int? documentCount,
+    int? parenWarehouse,
+    String? type,
+  }) {
+    return Warehouse(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        documentCount: documentCount ?? documentCount,
+        isInsensitive: isInsensitive ?? isInsensitive,
+        match: match ?? this.match,
+        matchingAlgorithm: matchingAlgorithm ?? this.matchingAlgorithm,
+        slug: slug ?? this.slug,
+        parentWarehouse: parentWarehouse ?? parentWarehouse,
+        type: type ?? this.type);
+  }
+
+  @override
+  String get queryEndpoint => 'warehouses';
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        slug,
+        isInsensitive,
+        documentCount,
+        parentWarehouse,
+        matchingAlgorithm,
+        match,
+        type
+      ];
 }

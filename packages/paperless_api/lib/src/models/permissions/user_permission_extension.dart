@@ -46,13 +46,8 @@ extension UserPermissionExtension on UserModel {
       hasPermission(PermissionAction.view, PermissionTarget.storagePath);
   bool get canViewSavedViews =>
       hasPermission(PermissionAction.view, PermissionTarget.savedView);
-
   bool get canViewWarehouse =>
       hasPermission(PermissionAction.view, PermissionTarget.warehouse);
-  bool get canViewShelf =>
-      hasPermission(PermissionAction.view, PermissionTarget.shelf);
-  bool get canViewBriefcase =>
-      hasPermission(PermissionAction.view, PermissionTarget.briefcase);
 
   bool get canEditDocuments =>
       hasPermission(PermissionAction.change, PermissionTarget.document);
@@ -66,6 +61,8 @@ extension UserPermissionExtension on UserModel {
       hasPermission(PermissionAction.change, PermissionTarget.storagePath);
   bool get canEditavedViews =>
       hasPermission(PermissionAction.change, PermissionTarget.savedView);
+  bool get canEditWarehouse =>
+      hasPermission(PermissionAction.change, PermissionTarget.warehouse);
 
   bool get canDeleteDocuments =>
       hasPermission(PermissionAction.delete, PermissionTarget.document);
@@ -79,6 +76,8 @@ extension UserPermissionExtension on UserModel {
       hasPermission(PermissionAction.delete, PermissionTarget.storagePath);
   bool get canDeleteSavedViews =>
       hasPermission(PermissionAction.delete, PermissionTarget.savedView);
+  bool get canDeleteWarehouse =>
+      hasPermission(PermissionAction.delete, PermissionTarget.warehouse);
 
   bool get canCreateDocuments =>
       hasPermission(PermissionAction.add, PermissionTarget.document);
@@ -92,12 +91,15 @@ extension UserPermissionExtension on UserModel {
       hasPermission(PermissionAction.add, PermissionTarget.storagePath);
   bool get canCreateSavedViews =>
       hasPermission(PermissionAction.add, PermissionTarget.savedView);
+  bool get canCreateWarehouse =>
+      hasPermission(PermissionAction.add, PermissionTarget.warehouse);
 
   bool get canViewAnyLabel =>
       canViewCorrespondents ||
       canViewDocumentTypes ||
       canViewTags ||
-      canViewStoragePaths;
+      canViewStoragePaths ||
+      canViewWarehouse;
 
   bool get canViewInbox => canViewTags && canViewDocuments;
 }

@@ -53,7 +53,7 @@ class PaperlessDocumentsApiImpl implements PaperlessDocumentsApi {
       formData.fields.add(MapEntry('tags', tag.toString()));
     }
     if (warehouse != null) {
-      formData.fields.add(MapEntry('warehouses', jsonEncode(warehouse)));
+      formData.fields.add(MapEntry('warehouse', jsonEncode(warehouse)));
     }
     try {
       final response = await client.post(
