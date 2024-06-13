@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
 
 part 'saved_view_preview_state.dart';
 
 class SavedViewPreviewCubit extends Cubit<SavedViewPreviewState> {
-  final PaperlessDocumentsApi _api;
+  final EdocsDocumentsApi _api;
   final SavedView view;
   final ConnectivityStatusService _connectivityStatusService;
   final DocumentChangedNotifier _changedNotifier;

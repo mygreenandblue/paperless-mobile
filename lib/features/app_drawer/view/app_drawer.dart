@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
-import 'package:paperless_mobile/generated/assets.gen.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
-import 'package:paperless_mobile/routing/routes/settings_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:edocs_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:edocs_mobile/generated/assets.gen.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
+import 'package:edocs_mobile/routing/routes/settings_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_mobile/routing/routes/upload_queue_route.dart';
+import 'package:edocs_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:provider/provider.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -35,7 +35,7 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     final currentAccount = context.watch<LocalUserAccount>();
-    final username = currentAccount.paperlessUser.username;
+    final username = currentAccount.edocsUser.username;
     final serverUrl =
         currentAccount.serverUrl.replaceAll(RegExp(r'https?://'), '');
 
@@ -52,7 +52,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       .image(width: 32, height: 32),
                   const SizedBox(width: 8),
                   Text(
-                    "EDMS Mobile",
+                    "EDOCS Mobile",
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ],
@@ -110,7 +110,7 @@ class _AppDrawerState extends State<AppDrawer> {
               //   ),
               //   onTap: () {
               //     launchUrlString(
-              //       'https://github.com/astubenbord/paperless-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
+              //       'https://github.com/astubenbord/edocs-mobile/issues/new?assignees=astubenbord&labels=bug%2Ctriage&projects=&template=bug-report.yml&title=%5BBug%5D%3A+',
               //       mode: LaunchMode.externalApplication,
               //     );
               //   },
@@ -132,7 +132,7 @@ class _AppDrawerState extends State<AppDrawer> {
               //   ),
               //   onTap: () {
               //     launchUrlString(
-              //       "https://github.com/astubenbord/paperless-mobile",
+              //       "https://github.com/astubenbord/edocs-mobile",
               //       mode: LaunchMode.externalApplication,
               //     );
               //   },
@@ -249,7 +249,7 @@ class _AppDrawerState extends State<AppDrawer> {
       context: context,
       applicationIcon:
           const $AssetsLogosGen().onlyLogoPng.image(width: 32, height: 32),
-      applicationName: 'EDMS Mobile',
+      applicationName: 'EDOCS Mobile',
       applicationVersion: '${packageInfo.version}+${packageInfo.buildNumber}',
       children: [
         Text(S.of(context)!.developedBy('TC Group')),

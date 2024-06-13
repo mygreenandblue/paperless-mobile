@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/document_search/view/document_search_bar.dart';
-import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/document_search/view/document_search_bar.dart';
+import 'package:edocs_mobile/features/settings/view/manage_accounts_page.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/user_avatar.dart';
 import 'package:provider/provider.dart';
 
 class SliverSearchBar extends StatelessWidget {
@@ -20,7 +20,7 @@ class SliverSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (context.watch<LocalUserAccount>().paperlessUser.canViewDocuments) {
+    if (context.watch<LocalUserAccount>().edocsUser.canViewDocuments) {
       return const SliverAppBar(
         titleSpacing: 8,
         automaticallyImplyLeading: false,

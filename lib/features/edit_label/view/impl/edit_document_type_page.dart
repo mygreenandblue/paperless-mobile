@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/edit_label/view/edit_label_page.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 
 class EditDocumentTypePage extends StatelessWidget {
   final DocumentType documentType;
@@ -22,10 +22,8 @@ class EditDocumentTypePage extends StatelessWidget {
             context.read<LabelCubit>().replaceDocumentType(label),
         onDelete: (context, label) =>
             context.read<LabelCubit>().removeDocumentType(label),
-        canDelete: context
-            .watch<LocalUserAccount>()
-            .paperlessUser
-            .canDeleteDocumentTypes,
+        canDelete:
+            context.watch<LocalUserAccount>().edocsUser.canDeleteDocumentTypes,
       ),
     );
   }

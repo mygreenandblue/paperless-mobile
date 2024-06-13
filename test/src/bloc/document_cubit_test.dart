@@ -1,13 +1,13 @@
 // import 'package:bloc_test/bloc_test.dart';
-// import 'package:paperless_api/paperless_api.dart';
-// import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
+// import 'package:edocs_api/edocs_api.dart';
+// import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
 // import 'package:flutter_test/flutter_test.dart';
 // import 'package:mockito/annotations.dart';
 // import 'package:mockito/mockito.dart';
-// import 'package:paperless_mobile/features/documents/cubit/documents_state.dart';
+// import 'package:edocs_mobile/features/documents/cubit/documents_state.dart';
 
 // import '../../utils.dart';
-// @GenerateNiceMocks([MockSpec<PaperlessDocumentsApi>()])
+// @GenerateNiceMocks([MockSpec<EdocsDocumentsApi>()])
 // import 'document_cubit_test.mocks.dart';
 
 // void main() async {
@@ -30,8 +30,8 @@
 //         DocumentType.fromJson),
 //   );
 
-//   final MockPaperlessDocumentsApi documentRepository =
-//       MockPaperlessDocumentsApi();
+//   final MockEdocsDocumentsApi documentRepository =
+//       MockEdocsDocumentsApi();
 
 //   group("Test DocumentsCubit reloadDocuments", () {
 //     test("Assert correct initial state", () {

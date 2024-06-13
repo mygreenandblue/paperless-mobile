@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 ///
 /// Base state for all blocs/cubits using a paged view of documents.

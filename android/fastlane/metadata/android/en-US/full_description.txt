@@ -1,4 +1,4 @@
-Using this app requires access to running a Paperless-ng*x instance.
+Using this app requires access to running a edocs-ng*x instance.
 
 * View and search documents
 * Add, delete or edit documents

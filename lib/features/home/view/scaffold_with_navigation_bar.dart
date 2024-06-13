@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/theme.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/theme.dart';
 
 class ScaffoldWithNavigationBar extends StatefulWidget {
   final UserModel authenticatedUser;

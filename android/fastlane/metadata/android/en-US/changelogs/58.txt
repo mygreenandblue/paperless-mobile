@@ -1,5 +1,5 @@
 * Add setting to disable animations
 * Improved server-address validation
-* Fixed a bug which caused issues with newer versions of Paperless-ngx (2.x.x)
+* Fixed a bug which caused issues with newer versions of edocs-ngx (2.x.x)
 * Minor bugfixes
 * Updated translations

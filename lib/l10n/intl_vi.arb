@@ -308,8 +308,8 @@
   "@requestTimedOut": {},
   "anErrorOccurredRemovingTheScans": "Đã xảy ra lỗi khi xóa các quét.",
   "@anErrorOccurredRemovingTheScans": {},
-  "couldNotReachYourPaperlessServer": "Không thể kết nối tới máy chủ Paperless của bạn, liệu nó có hoạt động không?",
-  "@couldNotReachYourPaperlessServer": {},
+  "couldNotReachYouredocsServer": "Không thể kết nối tới máy chủ edocs của bạn, liệu nó có hoạt động không?",
+  "@couldNotReachYouredocsServer": {},
   "couldNotLoadSimilarDocuments": "Không thể tải tài liệu tương tự.",
   "@couldNotLoadSimilarDocuments": {},
   "couldNotCreateStoragePath": "Không thể tạo đường dẫn lưu trữ, vui lòng thử lại.",
@@ -546,8 +546,8 @@
           "serverAddress": {}
       }
   },
-  "connectToEdms": "Kết nối với EDMS",
-  "@connectToEdms": {},
+  "connectToEDOCS": "Kết nối với EDOCS",
+  "@connectToEDOCS": {},
   "username": "Tên người dùng",
   "@username": {},
   "usernameMustNotBeEmpty": "Tên người dùng không được để trống.",
@@ -610,8 +610,8 @@
   "@previewScan": {},
   "scrollToTop": "Cuộn lên đầu",
   "@scrollToTop": {},
-  "paperlessServerVersion": "Phiên bản máy chủ Paperless",
-  "@paperlessServerVersion": {},
+  "edocsServerVersion": "Phiên bản máy chủ edocs",
+  "@edocsServerVersion": {},
   "darkTheme": "Chủ đề Tối",
   "@darkTheme": {},
   "lightTheme": "Chủ đề Sáng",
@@ -624,7 +624,7 @@
   "@languageAndVisualAppearance": {},
   "applicationSettings": "Cài đặt ứng dụng",
   "@applicationSettings": {},
-  "colorSchemeHint": "Chọn giữa một bảng màu cổ điển lấy cảm hứng từ màu xanh truyền thống của Paperless hoặc sử dụng bảng màu động dựa trên chủ đề hệ thống của bạn.",
+  "colorSchemeHint": "Chọn giữa một bảng màu cổ điển lấy cảm hứng từ màu xanh truyền thống của edocs hoặc sử dụng bảng màu động dựa trên chủ đề hệ thống của bạn.",
   "@colorSchemeHint": {},
   "colorSchemeNotSupportedWarning": "Chủ đề động chỉ được hỗ trợ cho các thiết bị chạy Android 12 trở lên. Việc chọn tùy chọn 'Động' có thể không có hiệu lực tùy thuộc vào việc triển khai của hệ điều hành của bạn.",
   "@colorSchemeNotSupportedWarning": {},
@@ -660,7 +660,7 @@
   "@filterTags": {},
   "inboxTag": "Thẻ Hộp thư đến",
   "@inboxTag": {},
-  "uploadInferValuesHint": "Nếu bạn chỉ định giá trị cho các trường này, máy chủ Paperless của bạn sẽ không tự động rút ra một giá trị. Nếu bạn muốn các giá trị này được tự động điền vào bởi máy chủ của bạn, hãy để trống các trường.",
+  "uploadInferValuesHint": "Nếu bạn chỉ định giá trị cho các trường này, máy chủ edocs của bạn sẽ không tự động rút ra một giá trị. Nếu bạn muốn các giá trị này được tự động điền vào bởi máy chủ của bạn, hãy để trống các trường.",
   "@uploadInferValuesHint": {},
   "useTheConfiguredBiometricFactorToAuthenticate": "Sử dụng yếu tố sinh trắc học được cấu hình để xác thực và mở khóa tài liệu của bạn.",
   "@useTheConfiguredBiometricFactorToAuthenticate": {},
@@ -767,7 +767,7 @@
   "sourceCode": "Mã nguồn",
   "findTheSourceCodeOn": "Tìm mã nguồn trên",
   "@findTheSourceCodeOn": {
-      "description": "Văn bản trước liên kết đến GitHub của EDMS Mobile"
+      "description": "Văn bản trước liên kết đến GitHub của EDOCS Mobile"
   },
   "rememberDecision": "Ghi nhớ quyết định của tôi",
   "defaultDownloadFileType": "Loại tệp tải xuống mặc định",
@@ -859,7 +859,7 @@
   "@convertSinglePageScanToPdf": {
       "description": "mô tả của cài đặt tải hình ảnh quét dưới dạng PDF"
   },
-  "loginRequiredPermissionsHint": "Sử dụng EDMS Mobile yêu cầu một tập hợp tối thiểu các quyền người dùng kể từ phiên bản paperless-ngx 1.14.0 trở lên. Do đó, hãy đảm bảo rằng người dùng cần đăng nhập có quyền xem người dùng khác (Người dùng → Xem) và cài đặt (UISettings → Xem). Nếu bạn không có các quyền này, vui lòng liên hệ với quản trị viên của máy chủ paperless-ngx của bạn.",
+  "loginRequiredPermissionsHint": "Sử dụng EDOCS Mobile yêu cầu một tập hợp tối thiểu các quyền người dùng kể từ phiên bản edocs-ngx 1.14.0 trở lên. Do đó, hãy đảm bảo rằng người dùng cần đăng nhập có quyền xem người dùng khác (Người dùng → Xem) và cài đặt (UISettings → Xem). Nếu bạn không có các quyền này, vui lòng liên hệ với quản trị viên của máy chủ edocs-ngx của bạn.",
   "@loginRequiredPermissionsHint": {
       "description": "Gợi ý được hiển thị trên trang đăng nhập thông báo cho người dùng về các quyền cần thiết để sử dụng ứng dụng."
   },
@@ -972,7 +972,7 @@
   "@userAlreadyExists": {
       "description": "Thông báo lỗi được hiển thị khi người dùng cố gắng thêm một tài khoản đã tồn tại."
   },
-  "youDidNotSaveAnyViewsYet": "Bạn chưa lưu bất kỳ xem nào, hãy tạo một xem và nó sẽ được hiển thị ở đây.",
+  "youDidNotSaveAnyViewsYet": "Bạn chưa lưu bất kỳ chế đệ xem nào, hãy tạo một xem và nó sẽ được hiển thị ở đây.",
   "@youDidNotSaveAnyViewsYet": {
       "description": "Thông báo được hiển thị khi chưa có xem đã lưu nào."
   },
@@ -1046,7 +1046,7 @@
   },
   "permissions": "Quyền",
   "newNote": "Ghi chú mới",
-  "notesMarkdownSyntaxSupportHint": "EDMS Mobile có thể hiển thị ghi chú bằng cú pháp markdown cơ bản. Hãy thử nó ngay bây giờ!",
+  "notesMarkdownSyntaxSupportHint": "EDOCS Mobile có thể hiển thị ghi chú bằng cú pháp markdown cơ bản. Hãy thử nó ngay bây giờ!",
   "pendingFiles": "Tài liệu đang chờ",
   "@pendingFiles": {},
   "pendingFilesEmpty": "Không có tài liệu chờ",
@@ -1073,8 +1073,16 @@
   "selecteWarehouse": "Chọn kho",
   "selectShelf": "Chọn giá/kệ",
   "selectBriefcase": "Chọn hộp/cặp",
-  "notiActionSuccess": "Thao tác cảu bạn trên hệ thống đã thành công",
+  "notiActionSuccess": "Thao tác của bạn trên hệ thống đã thành công",
   "notiActionFail": "Thao tác của bạn trên hệ thống thất bại",
-  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}"
+  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}",
+  "add":"Tạo mới",
+  "addFolder":"Thêm thư mục",
+  "personalMaterial":"Tài liệu cá nhân",
+  "allFileAndFolder":"Tất cả thư mục và tài liệu của bạn",
+  "allFolder":"Tất cả thư mục",
+  "chooseFolder":"Chọn thư mục",
+  "rootFolder":"Thư mục gốc",
+  "youDidNotAnyFolderYet": "Bạn chưa lưu bất kỳ thư mục nào, hãy tạo một thư mục và nó sẽ được hiển thị ở đây."
 
 }

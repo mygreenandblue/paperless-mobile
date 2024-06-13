@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
 
 mixin DocumentPagingViewMixin<T extends StatefulWidget,
     Bloc extends DocumentPagingBlocMixin> on State<T> {
@@ -26,7 +26,7 @@ mixin DocumentPagingViewMixin<T extends StatefulWidget,
     if (shouldLoadMoreDocuments) {
       try {
         await _bloc.loadMore();
-      } on PaperlessApiException catch (error, stackTrace) {
+      } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       }
     }

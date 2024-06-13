@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 import 'package:rxdart/subjects.dart';
 
 typedef LabelChangedCallback = void Function(Label label);

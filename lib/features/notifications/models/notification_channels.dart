@@ -1,5 +1,5 @@
 enum NotificationChannel {
-  task("task_channel", "Paperless tasks"),
+  task("task_channel", "edocs tasks"),
   documentDownload("document_download_channel", "Document downloads"),
   fileDownload("file_download_channel", "File downloads");
 

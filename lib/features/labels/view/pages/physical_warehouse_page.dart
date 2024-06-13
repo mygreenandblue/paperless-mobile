@@ -6,27 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/countdown.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/countdown.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_tab_view.dart';
 
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/sort_documents_button.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/routing/routes/physical_warehouse_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class PhysicalWarehouseView extends StatefulWidget {
   final String type;
@@ -92,12 +92,18 @@ class _PhysicalWarehouseViewState extends State<PhysicalWarehouseView> {
         final currentUserId = Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
             .getValue()!
             .loggedInUserId;
-        final user = box.get(currentUserId)!.paperlessUser;
+        final user = box.get(currentUserId)!.edocsUser;
 
         return BlocBuilder<ConnectivityCubit, ConnectivityState>(
           builder: (context, connectivityState) {
             final cubit = context.read<LabelCubit>();
-            cubit.reloadDetailsWarehouse(widget.warehouse.id!);
+            if (widget.warehouse.id != null && widget.type == 'Shelf') {
+              cubit.reloadDetailsWarehouse(widget.warehouse.id);
+            }
+            if (widget.warehouse.id != null && widget.type == 'Boxcase') {
+              cubit.reloadDetailsShelf(widget.warehouse.id);
+            }
+
             return BlocBuilder<LabelCubit, LabelState>(
               builder: (context, state) {
                 return SafeArea(
@@ -336,7 +342,7 @@ class _PhysicalWarehouseViewState extends State<PhysicalWarehouseView> {
           widget.type == 'Shelf'
               ? context.read<LabelCubit>().removeShelf(widget.warehouse)
               : context.read<LabelCubit>().removeBoxcase(widget.warehouse);
-        } on PaperlessApiException catch (error) {
+        } on EdocsApiException catch (error) {
           showErrorMessage(context, error);
         } catch (error, stackTrace) {
           log("An error occurred!", error: error, stackTrace: stackTrace);

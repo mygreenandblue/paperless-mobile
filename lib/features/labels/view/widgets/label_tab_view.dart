@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/offline_widget.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_item.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/translation/matching_algorithm_localization_mapper.dart';
+import 'package:edocs_mobile/core/widgets/offline_widget.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_item.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 
 class LabelTabView<T extends Label> extends StatelessWidget {
   final Map<int, T> labels;

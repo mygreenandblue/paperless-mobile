@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_actions.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_tap/notification_tap_response_payload.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_tap/open_directory_notification_response_payload.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_actions.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_payloads/notification_tap/notification_tap_response_payload.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_payloads/notification_tap/open_directory_notification_response_payload.dart';
 
 class NotificationTapResponsePayloadConverter
     implements

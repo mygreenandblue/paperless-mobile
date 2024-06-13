@@ -308,8 +308,8 @@
   "@requestTimedOut": {},
   "anErrorOccurredRemovingTheScans": "Произошла ошибка при удалении сканирования.",
   "@anErrorOccurredRemovingTheScans": {},
-  "couldNotReachYourPaperlessServer": "Не удалось получить доступ к вашему серверу Paperless, он работает?",
-  "@couldNotReachYourPaperlessServer": {},
+  "couldNotReachYouredocsServer": "Не удалось получить доступ к вашему серверу edocs, он работает?",
+  "@couldNotReachYouredocsServer": {},
   "couldNotLoadSimilarDocuments": "Не удалось загрузить похожие документы.",
   "@couldNotLoadSimilarDocuments": {},
   "couldNotCreateStoragePath": "Не удалось создать путь к хранилищу, пожалуйста, попробуйте еще раз.",
@@ -544,8 +544,8 @@
       "serverAddress": {}
     }
   },
-  "connectToEdms": "Подключение к Paperless",
-  "@connectToEdms": {},
+  "connectToEDOCS": "Подключение к edocs",
+  "@connectToEDOCS": {},
   "username": "Имя пользователя",
   "@username": {},
   "usernameMustNotBeEmpty": "Имя пользователя не должно быть пустым.",
@@ -608,8 +608,8 @@
   "@previewScan": {},
   "scrollToTop": "Прокрутить к началу",
   "@scrollToTop": {},
-  "paperlessServerVersion": "Версия сервера Paperless",
-  "@paperlessServerVersion": {},
+  "edocsServerVersion": "Версия сервера edocs",
+  "@edocsServerVersion": {},
   "darkTheme": "Темная тема",
   "@darkTheme": {},
   "lightTheme": "Светлая тема",
@@ -622,7 +622,7 @@
   "@languageAndVisualAppearance": {},
   "applicationSettings": "Применение",
   "@applicationSettings": {},
-  "colorSchemeHint": "Выберите между классической цветовой схемой, вдохновленной традиционным зеленым Paperless или используйте динамическую цветовую схему на основе вашей системной темы.",
+  "colorSchemeHint": "Выберите между классической цветовой схемой, вдохновленной традиционным зеленым edocs или используйте динамическую цветовую схему на основе вашей системной темы.",
   "@colorSchemeHint": {},
   "colorSchemeNotSupportedWarning": "Динамическая тема поддерживается только для устройств с Android 12 и выше. Выбор параметра \"Динамическая\" может не повлиять на реализацию вашей ОС.",
   "@colorSchemeNotSupportedWarning": {},
@@ -658,7 +658,7 @@
   "@filterTags": {},
   "inboxTag": "Тег \"Входящие\"",
   "@inboxTag": {},
-  "uploadInferValuesHint": "Если вы укажете значения для этих полей, ваш paperless экземпляр не будет автоматически получать значение. Если вы хотите, чтобы эти значения были автоматически заполнены сервером, оставьте поля пустыми.",
+  "uploadInferValuesHint": "Если вы укажете значения для этих полей, ваш edocs экземпляр не будет автоматически получать значение. Если вы хотите, чтобы эти значения были автоматически заполнены сервером, оставьте поля пустыми.",
   "@uploadInferValuesHint": {},
   "useTheConfiguredBiometricFactorToAuthenticate": "Используйте настроенный биометрический фактор для аутентификации и разблокировки документов.",
   "@useTheConfiguredBiometricFactorToAuthenticate": {},
@@ -765,7 +765,7 @@
   "sourceCode": "Исходный код",
   "findTheSourceCodeOn": "Найти исходный код на",
   "@findTheSourceCodeOn": {
-    "description": "Text before link to EDMS Mobile GitHub"
+    "description": "Text before link to EDOCS Mobile GitHub"
   },
   "rememberDecision": "Запомните мой выбор",
   "defaultDownloadFileType": "Тип загружаемого файла по умолчанию",
@@ -857,7 +857,7 @@
   "@convertSinglePageScanToPdf": {
     "description": "description of the upload scans as pdf setting"
   },
-  "loginRequiredPermissionsHint": "Использование EDMS Mobile требует минимального набора разрешений пользователя, начиная с версии paperless-ngx 1.14.0 и выше. Поэтому убедитесь, что у пользователя, который будет входить в систему, есть права на просмотр других пользователей (Пользователь → Вид) и настроек (Настройки пользовательского интерфейса → Вид). Если эти права отсутствуют, обратитесь к администратору сервера paperless-ngx.",
+  "loginRequiredPermissionsHint": "Использование EDOCS Mobile требует минимального набора разрешений пользователя, начиная с версии edocs-ngx 1.14.0 и выше. Поэтому убедитесь, что у пользователя, который будет входить в систему, есть права на просмотр других пользователей (Пользователь → Вид) и настроек (Настройки пользовательского интерфейса → Вид). Если эти права отсутствуют, обратитесь к администратору сервера edocs-ngx.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
   },
@@ -1044,7 +1044,7 @@
   },
   "permissions": "Permissions",
   "newNote": "New note",
-  "notesMarkdownSyntaxSupportHint": "EDMS Mobile can render notes using basic markdown syntax. Try it out!",
+  "notesMarkdownSyntaxSupportHint": "EDOCS Mobile can render notes using basic markdown syntax. Try it out!",
   "pendingFiles": "Tài liệu bị từ chối",
   "@pendingFiles": {},
   "pendingFilesEmpty": "Không có tài liệu bị từ chối",
@@ -1071,8 +1071,15 @@
   "editBriefcase": "Chỉnh sửa hộp/cặp","selecteWarehouse": "Chọn kho",
   "selectShelf": "Chọn giá/kệ",
   "selectBriefcase": "Chọn hộp/cặp",
-  "notiActionSuccess": "Thao tác cảu bạn trên hệ thống đã thành công",
+  "notiActionSuccess": "Thao tác của bạn trên hệ thống đã thành công",
   "notiActionFail": "Thao tác của bạn trên hệ thống thất bại",
-  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}"
+  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}",  "add":"Tạo mới",
+ "addFolder":"Thêm thư mục",
+  "personalMaterial":"Tài liệu cá nhân",
+  "allFileAndFolder":"Tất cả thư mục và tài liệu của bạn",
+  "allFolder":"Tất cả thư mục",
+  "chooseFolder":"Chọn thư mục",
+  "rootFolder":"Thư mục gốc",
+  "youDidNotAnyFolderYet": "Bạn chưa lưu bất kỳ thư mục nào, hãy tạo một thư mục và nó sẽ được hiển thị ở đây."
 
 }

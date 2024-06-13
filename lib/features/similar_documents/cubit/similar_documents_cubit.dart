@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 
 part 'similar_documents_state.dart';
 
@@ -16,7 +16,7 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
   final ConnectivityStatusService connectivityStatusService;
 
   @override
-  final PaperlessDocumentsApi api;
+  final EdocsDocumentsApi api;
 
   @override
   final DocumentChangedNotifier notifier;
@@ -45,7 +45,7 @@ class SimilarDocumentsCubit extends Cubit<SimilarDocumentsState>
           ),
         );
         emit(state.copyWith(error: null));
-      } on PaperlessApiException catch (e, stackTrace) {
+      } on EdocsApiException catch (e, stackTrace) {
         logger.fe(
           "An error occurred while loading similar documents for document $documentId",
           className: "SimilarDocumentsCubit",

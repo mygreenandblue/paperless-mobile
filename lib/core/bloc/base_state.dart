@@ -1,4 +1,4 @@
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
 
 class BaseState<T> {
   final Object? error;

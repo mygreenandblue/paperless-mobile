@@ -10,11 +10,13 @@ class LabelState with _$LabelState {
     @Default({}) Map<int, Warehouse> warehouses,
     @Default({}) Map<int, Warehouse> shelfs,
     @Default({}) Map<int, Warehouse> boxcases,
+    @Default({}) Map<String, Folder> folders,
     @Default('') String selectedShelf,
     @Default('') String selectedWarehouse,
     @Default(-1) int idShelf,
     @Default(-1) int idWarehouse,
     @Default(false) bool isLoading,
     Warehouse? warehouse,
+    TreeNode? folderTree,
   }) = _LabelState;
 }

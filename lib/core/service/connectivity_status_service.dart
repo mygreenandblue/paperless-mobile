@@ -2,19 +2,19 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:paperless_mobile/core/global/os_error_codes.dart';
-import 'package:paperless_mobile/core/interceptor/server_reachability_error_interceptor.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/core/security/session_manager_impl.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/reachability_status.dart';
+import 'package:edocs_mobile/core/global/os_error_codes.dart';
+import 'package:edocs_mobile/core/interceptor/server_reachability_error_interceptor.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/core/security/session_manager_impl.dart';
+import 'package:edocs_mobile/features/login/model/client_certificate.dart';
+import 'package:edocs_mobile/features/login/model/reachability_status.dart';
 import 'package:rxdart/subjects.dart';
 
 abstract class ConnectivityStatusService {
   Future<bool> isConnectedToInternet();
   Future<bool> isServerReachable(String serverAddress);
   Stream<bool> connectivityChanges();
-  Future<ReachabilityStatus> isPaperlessServerReachable(
+  Future<ReachabilityStatus> isedocsServerReachable(
     String serverAddress, [
     ClientCertificate? clientCertificate,
   ]);
@@ -71,7 +71,7 @@ class ConnectivityStatusServiceImpl implements ConnectivityStatusService {
   }
 
   @override
-  Future<ReachabilityStatus> isPaperlessServerReachable(
+  Future<ReachabilityStatus> isedocsServerReachable(
     String serverAddress, [
     ClientCertificate? clientCertificate,
   ]) async {
@@ -121,7 +121,7 @@ class ConnectivityStatusServiceMock implements ConnectivityStatusService {
   }
 
   @override
-  Future<ReachabilityStatus> isPaperlessServerReachable(String serverAddress,
+  Future<ReachabilityStatus> isedocsServerReachable(String serverAddress,
       [ClientCertificate? clientCertificate]) async {
     return isConnected
         ? ReachabilityStatus.reachable

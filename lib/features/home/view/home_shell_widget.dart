@@ -1,42 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
-import 'package:paperless_mobile/core/repository/user_repository.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/core/service/dio_file_service.dart';
-import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/features/home/view/model/api_version.dart';
-import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/repository/saved_view_repository.dart';
+import 'package:edocs_mobile/core/repository/user_repository.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/core/service/dio_file_service.dart';
+import 'package:edocs_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/home/view/model/api_version.dart';
+import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/features/tasks/model/pending_tasks_notifier.dart';
 import 'package:provider/provider.dart';
 
 class HomeShellWidget extends StatelessWidget {
-  /// The id of the currently authenticated user (e.g. demo@paperless.example.com)
+  /// The id of the currently authenticated user (e.g. demo@edocs.example.com)
   final String localUserId;
 
-  /// The Paperless API version of the currently connected instance
-  final int paperlessApiVersion;
+  /// The edocs API version of the currently connected instance
+  final int edocsApiVersion;
 
   // A factory providing the API implementations given an API version
-  final PaperlessApiFactory paperlessProviderFactory;
+  final EdocsApiFactory edocsProviderFactory;
 
   final Widget child;
 
   const HomeShellWidget({
     super.key,
-    required this.paperlessApiVersion,
-    required this.paperlessProviderFactory,
+    required this.edocsApiVersion,
+    required this.edocsProviderFactory,
     required this.localUserId,
     required this.child,
   });
@@ -46,7 +46,7 @@ class HomeShellWidget extends StatelessWidget {
     return GlobalSettingsBuilder(
       builder: (context, settings) {
         final currentUserId = settings.loggedInUserId;
-        final apiVersion = ApiVersion(paperlessApiVersion);
+        final apiVersion = ApiVersion(edocsApiVersion);
         return ValueListenableBuilder(
           valueListenable:
               Hive.localUserAccountBox.listenable(keys: [currentUserId]),
@@ -73,43 +73,41 @@ class HomeShellWidget extends StatelessWidget {
                   ),
                 ),
                 Provider(
-                  create: (context) =>
-                      paperlessProviderFactory.createDocumentsApi(
+                  create: (context) => edocsProviderFactory.createDocumentsApi(
                     context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
+                    apiVersion: edocsApiVersion,
                   ),
                 ),
                 Provider(
-                  create: (context) => paperlessProviderFactory.createLabelsApi(
+                  create: (context) => edocsProviderFactory.createLabelsApi(
                     context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
+                    apiVersion: edocsApiVersion,
                   ),
                 ),
                 Provider(
-                  create: (context) =>
-                      paperlessProviderFactory.createSavedViewsApi(
+                  create: (context) => edocsProviderFactory.createSavedViewsApi(
                     context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
+                    apiVersion: edocsApiVersion,
                   ),
                 ),
                 Provider(
                   create: (context) =>
-                      paperlessProviderFactory.createServerStatsApi(
+                      edocsProviderFactory.createServerStatsApi(
                     context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
+                    apiVersion: edocsApiVersion,
                   ),
                 ),
                 Provider(
-                  create: (context) => paperlessProviderFactory.createTasksApi(
+                  create: (context) => edocsProviderFactory.createTasksApi(
                     context.read<SessionManager>().client,
-                    apiVersion: paperlessApiVersion,
+                    apiVersion: edocsApiVersion,
                   ),
                 ),
                 if (currentLocalUser.hasMultiUserSupport)
                   Provider(
-                    create: (context) => paperlessProviderFactory.createUserApi(
+                    create: (context) => edocsProviderFactory.createUserApi(
                       context.read<SessionManager>().client,
-                      apiVersion: paperlessApiVersion,
+                      apiVersion: edocsApiVersion,
                     ),
                   ),
               ],
@@ -121,22 +119,23 @@ class HomeShellWidget extends StatelessWidget {
                         return LabelRepository(context.read())
                           ..initialize(
                             loadCorrespondents: currentLocalUser
-                                .paperlessUser.canViewCorrespondents,
-                            loadDocumentTypes: currentLocalUser
-                                .paperlessUser.canViewDocumentTypes,
-                            loadStoragePaths: currentLocalUser
-                                .paperlessUser.canViewStoragePaths,
-                            loadTags:
-                                currentLocalUser.paperlessUser.canViewTags,
+                                .edocsUser.canViewCorrespondents,
+                            loadDocumentTypes:
+                                currentLocalUser.edocsUser.canViewDocumentTypes,
+                            loadStoragePaths:
+                                currentLocalUser.edocsUser.canViewStoragePaths,
+                            loadTags: currentLocalUser.edocsUser.canViewTags,
                             loadWarehouses:
-                                currentLocalUser.paperlessUser.canViewWarehouse,
+                                currentLocalUser.edocsUser.canViewWarehouse,
+                            loadFolders:
+                                currentLocalUser.edocsUser.canViewFolder,
                           );
                       },
                     ),
                     ChangeNotifierProvider(
                       create: (context) {
                         final repo = SavedViewRepository(context.read());
-                        if (currentLocalUser.paperlessUser.canViewSavedViews) {
+                        if (currentLocalUser.edocsUser.canViewSavedViews) {
                           repo.initialize();
                         }
                         return repo;
@@ -177,7 +176,7 @@ class HomeShellWidget extends StatelessWidget {
                               context.read(),
                               context.read(),
                             );
-                            if (currentLocalUser.paperlessUser.canViewInbox) {
+                            if (currentLocalUser.edocsUser.canViewInbox) {
                               inboxCubit.initialize();
                             }
                             return inboxCubit;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/edit_label/view/edit_label_page.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 
 class EditCorrespondentPage extends StatelessWidget {
   final Correspondent correspondent;
@@ -26,7 +26,7 @@ class EditCorrespondentPage extends StatelessWidget {
               context.read<LabelCubit>().removeCorrespondent(label),
           canDelete: context
               .watch<LocalUserAccount>()
-              .paperlessUser
+              .edocsUser
               .canDeleteCorrespondents,
         );
       }),

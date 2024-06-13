@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:paperless_mobile/features/logging/cubit/app_logs_cubit.dart';
-import 'package:paperless_mobile/features/logging/models/parsed_log_message.dart';
-import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/features/logging/cubit/app_logs_cubit.dart';
+import 'package:edocs_mobile/features/logging/models/parsed_log_message.dart';
+import 'package:edocs_mobile/core/extensions/dart_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class AppLogsPage extends StatefulWidget {
   const AppLogsPage({super.key});

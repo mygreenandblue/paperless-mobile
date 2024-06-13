@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/user_repository.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/user_repository.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/details_item.dart';
 
 class DocumentPermissionsWidget extends StatefulWidget {
   final DocumentModel document;

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/translation/color_scheme_option_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
-import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/translation/color_scheme_option_localization_mapper.dart';
+import 'package:edocs_mobile/core/widgets/hint_card.dart';
+import 'package:edocs_mobile/features/settings/model/color_scheme_option.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class ColorSchemeOptionSetting extends StatelessWidget {
   const ColorSchemeOptionSetting({super.key});

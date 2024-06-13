@@ -18,60 +18,60 @@ import 'package:intl/intl_standalone.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart' as l;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/accessibility/accessible_page.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/my_bloc_observer.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/core/database/hive/hive_initialization.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/exception/server_message_exception.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory_impl.dart';
-import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/notifier/warehouse_changed_notifier.dart';
-import 'package:paperless_mobile/core/security/session_manager_impl.dart';
-import 'package:paperless_mobile/features/logging/data/formatted_printer.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/logging/data/mirrored_file_output.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/routes/landing_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routing/routes/add_account_route.dart';
-import 'package:paperless_mobile/routing/routes/app_logs_route.dart';
-import 'package:paperless_mobile/routing/routes/changelog_route.dart';
-import 'package:paperless_mobile/routing/routes/logging_out_route.dart';
-import 'package:paperless_mobile/routing/routes/login_route.dart';
-import 'package:paperless_mobile/theme.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/accessibility/accessible_page.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/bloc/my_bloc_observer.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/hive/hive_initialization.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:edocs_mobile/core/exception/server_message_exception.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory_impl.dart';
+import 'package:edocs_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:edocs_mobile/core/notifier/warehouse_changed_notifier.dart';
+import 'package:edocs_mobile/core/security/session_manager_impl.dart';
+import 'package:edocs_mobile/features/logging/data/formatted_printer.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/logging/data/mirrored_file_output.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:edocs_mobile/features/login/services/authentication_service.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/routes/landing_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_mobile/routing/routes/add_account_route.dart';
+import 'package:edocs_mobile/routing/routes/app_logs_route.dart';
+import 'package:edocs_mobile/routing/routes/changelog_route.dart';
+import 'package:edocs_mobile/routing/routes/logging_out_route.dart';
+import 'package:edocs_mobile/routing/routes/login_route.dart';
+import 'package:edocs_mobile/theme.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Locale get defaultPreferredLocale {
-  final deviceLocale = _stringToLocale(Platform.localeName);
-  if (S.supportedLocales.contains(deviceLocale)) {
-    return deviceLocale;
-  } else if (S.supportedLocales
-      .map((e) => e.languageCode)
-      .contains(deviceLocale.languageCode)) {
-    return Locale(deviceLocale.languageCode);
-  } else {
-    return const Locale('en');
-  }
+  // final deviceLocale = _stringToLocale(Platform.localeName);
+  // if (S.supportedLocales.contains(deviceLocale)) {
+  //   return deviceLocale;
+  // } else if (S.supportedLocales
+  //     .map((e) => e.languageCode)
+  //     .contains(deviceLocale.languageCode)) {
+  //   return Locale(deviceLocale.languageCode);
+  // } else {
+  return const Locale('vi');
+  // }
 }
 
 Map<String, Future<void> Function()> _migrations = {
@@ -136,7 +136,7 @@ void main() async {
     final hiveDirectory = await getApplicationDocumentsDirectory();
     final defaultLocale = defaultPreferredLocale.languageCode;
     await initializeDefaultParameters();
-    await initHive(hiveDirectory, defaultLocale);
+    await initHive(hiveDirectory, "vi");
     await performMigrations();
 
     final connectivityStatusService = ConnectivityStatusServiceImpl(
@@ -172,7 +172,7 @@ void main() async {
     final localNotificationService = LocalNotificationService();
     await localNotificationService.initialize();
 
-    final apiFactory = PaperlessApiFactoryImpl(sessionManager);
+    final apiFactory = EdocsApiFactoryImpl(sessionManager);
     final authenticationCubit = AuthenticationCubit(
       localAuthService,
       apiFactory,
@@ -197,7 +197,7 @@ void main() async {
     }
     // Catches all unexpected/uncaught errors and prints them to the console.
     final message = switch (error) {
-      PaperlessApiException e => e.details ?? error.toString(),
+      EdocsApiException e => e.details ?? error.toString(),
       ServerMessageException e => e.message,
       _ => null
     };
@@ -211,7 +211,7 @@ void main() async {
 }
 
 class AppEntrypoint extends StatelessWidget {
-  final PaperlessApiFactory apiFactory;
+  final EdocsApiFactory apiFactory;
   final AuthenticationCubit authenticationCubit;
   final ConnectivityStatusService connectivityStatusService;
   final LocalNotificationService localNotificationService;
@@ -251,7 +251,7 @@ class AppEntrypoint extends StatelessWidget {
 }
 
 class GoRouterShell extends StatefulWidget {
-  final PaperlessApiFactory apiFactory;
+  final EdocsApiFactory apiFactory;
 
   const GoRouterShell({
     super.key,
@@ -337,6 +337,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                       if (context.canPop()) {
                         context.pop();
                       }
+
                       break;
                   }
                 },
@@ -378,7 +379,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
               },
               routerConfig: _router,
               debugShowCheckedModeBanner: false,
-              title: "EDMS Mobile",
+              title: "EDOCS Mobile",
               theme: buildTheme(
                 brightness: Brightness.light,
                 dynamicScheme: lightDynamic,
@@ -391,6 +392,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
               ),
               themeMode: settings.preferredThemeMode,
               supportedLocales: const [
+                Locale('vi'),
                 Locale('en'),
                 Locale('de'),
                 Locale('en', 'GB'),
@@ -402,7 +404,6 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 Locale('ru'),
                 Locale('tr'),
                 Locale('it'),
-                Locale('vi'),
               ],
               localeResolutionCallback: (locale, supportedLocales) {
                 if (locale == null) {
@@ -426,7 +427,7 @@ class _GoRouterShellState extends State<GoRouterShell> {
                 }
                 return supportedLocales.first;
               },
-              locale: const Locale('vi'),
+              locale: locale,
               localizationsDelegates: S.localizationsDelegates,
             );
           },

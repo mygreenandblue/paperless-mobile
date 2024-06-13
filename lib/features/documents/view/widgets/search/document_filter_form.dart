@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/widgets/form_builder_fields/extended_date_range_form_field/form_builder_extended_date_range_picker.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 import 'text_query_form_field.dart';
 
@@ -176,10 +176,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.documentType,
       prefixIcon: const Icon(Icons.description_outlined),
       allowSelectUnassigned: false,
-      canCreateNewLabel: context
-          .watch<LocalUserAccount>()
-          .paperlessUser
-          .canCreateDocumentTypes,
+      canCreateNewLabel:
+          context.watch<LocalUserAccount>().edocsUser.canCreateDocumentTypes,
     );
   }
 
@@ -191,10 +189,8 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       initialValue: widget.initialFilter.correspondent,
       prefixIcon: const Icon(Icons.person_outline),
       allowSelectUnassigned: false,
-      canCreateNewLabel: context
-          .watch<LocalUserAccount>()
-          .paperlessUser
-          .canCreateCorrespondents,
+      canCreateNewLabel:
+          context.watch<LocalUserAccount>().edocsUser.canCreateCorrespondents,
     );
   }
 
@@ -207,7 +203,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       prefixIcon: const Icon(Icons.folder_outlined),
       allowSelectUnassigned: false,
       canCreateNewLabel:
-          context.watch<LocalUserAccount>().paperlessUser.canCreateStoragePaths,
+          context.watch<LocalUserAccount>().edocsUser.canCreateStoragePaths,
     );
   }
 
@@ -239,7 +235,7 @@ class _DocumentFilterFormState extends State<DocumentFilterForm> {
       prefixIcon: const Icon(Icons.cases_outlined),
       allowSelectUnassigned: false,
       canCreateNewLabel:
-          context.watch<LocalUserAccount>().paperlessUser.canCreateWarehouse,
+          context.watch<LocalUserAccount>().edocsUser.canCreateWarehouse,
     );
   }
 }

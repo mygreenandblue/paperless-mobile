@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/translation/sort_field_localization_mapper.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/translation/sort_field_localization_mapper.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class SortFieldSelectionBottomSheet extends StatefulWidget {
   final SortOrder initialSortOrder;

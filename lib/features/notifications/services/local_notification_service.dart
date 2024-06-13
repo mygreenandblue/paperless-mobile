@@ -4,13 +4,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/notifications/converters/notification_tap_response_payload.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_actions.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_channels.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_action/create_document_success_payload.dart';
-import 'package:paperless_mobile/features/notifications/models/notification_payloads/notification_tap/open_directory_notification_response_payload.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/notifications/converters/notification_tap_response_payload.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_actions.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_channels.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_payloads/notification_action/create_document_success_payload.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_payloads/notification_tap/open_directory_notification_response_payload.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class LocalNotificationService {
   final FlutterLocalNotificationsPlugin _plugin =
@@ -22,7 +22,7 @@ class LocalNotificationService {
 
   Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('paperless_logo_green');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
       requestSoundPermission: false,

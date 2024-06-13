@@ -4,13 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
-import 'package:paperless_mobile/core/bloc/transient_error.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/bloc/transient_error.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'document_scanner_cubit.freezed.dart';
@@ -64,7 +64,8 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
         stackTrace: stackTrace,
       );
     }
-    final scans = state.scans..remove(file);
+    // Create a modifiable copy of the scans list
+    final scans = List<File>.from(state.scans)..remove(file);
     emit(
       scans.isEmpty
           ? const DocumentScannerState()
@@ -80,7 +81,7 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
       Future.wait([for (final file in state.scans) file.delete()]);
       imageCache.clear();
     } catch (_) {
-      addError(TransientPaperlessApiError(code: ErrorCode.scanRemoveFailed));
+      addError(TransientedocsApiError(code: ErrorCode.scanRemoveFailed));
     } finally {
       emit(const DocumentScannerState());
     }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_color_picker.dart';
-import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/widgets/form_builder_fields/form_builder_color_picker.dart';
+import 'package:edocs_mobile/features/edit_label/view/edit_label_page.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class EditTagPage extends StatelessWidget {
   final Tag tag;
@@ -26,8 +26,7 @@ class EditTagPage extends StatelessWidget {
             context.read<LabelCubit>().replaceTag(label),
         onDelete: (context, label) =>
             context.read<LabelCubit>().removeTag(label),
-        canDelete:
-            context.watch<LocalUserAccount>().paperlessUser.canDeleteTags,
+        canDelete: context.watch<LocalUserAccount>().edocsUser.canDeleteTags,
         additionalFields: [
           FormBuilderColorPickerField(
             initialValue: tag.color,

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/core/widgets/future_or_builder.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/features/sharing/view/widgets/file_thumbnail.dart';
 
 class DiscardSharedFileDialog extends StatelessWidget {
   final FutureOr<Uint8List> bytes;

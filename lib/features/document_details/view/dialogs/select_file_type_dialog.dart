@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/features/settings/model/file_download_type.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class SelectFileTypeDialog extends StatefulWidget {
   final void Function(FileDownloadType downloadType) onRememberSelection;

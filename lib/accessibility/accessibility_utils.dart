@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive/hive.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
 
 extension AccessibilityAwareAnimationDurationExtension on Duration {
   Duration accessible() {

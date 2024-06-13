@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 String translateError(BuildContext context, ErrorCode code) {
   return switch (code) {
@@ -36,8 +36,7 @@ String translateError(BuildContext context, ErrorCode code) {
     ErrorCode.biometricAuthenticationFailed =>
       S.of(context)!.biometricAuthenticationFailed,
     ErrorCode.deviceOffline => S.of(context)!.youAreCurrentlyOffline,
-    ErrorCode.serverUnreachable =>
-      S.of(context)!.couldNotReachYourPaperlessServer,
+    ErrorCode.serverUnreachable => S.of(context)!.couldNotReachYouredocsServer,
     ErrorCode.similarQueryError => S.of(context)!.couldNotLoadSimilarDocuments,
     ErrorCode.autocompleteQueryError =>
       S.of(context)!.anErrorOccurredWhileTryingToAutocompleteYourQuery,
@@ -84,9 +83,13 @@ String translateError(BuildContext context, ErrorCode code) {
       'Could not delete custom field, please try again.', //TODO: INTL
     ErrorCode.deleteNoteFailed => 'Could not delete note, please try again.',
     ErrorCode.addNoteFailed => 'Could not create note, please try again.',
-    ErrorCode.warehouseCreateFailed => '',
-    ErrorCode.warehouseDeleteFailed => '',
-    ErrorCode.warehouseLoadFailed => '',
-    ErrorCode.warehouseUpdateFailed => '',
+    ErrorCode.warehouseCreateFailed => 'warehouseCreateFailed',
+    ErrorCode.warehouseDeleteFailed => 'warehouseDeleteFailed',
+    ErrorCode.warehouseLoadFailed => 'warehouseLoadFailed',
+    ErrorCode.warehouseUpdateFailed => 'warehouseUpdateFailed',
+    ErrorCode.folderCreateFailed => 'folderCreateFailed',
+    ErrorCode.folderDeleteFailed => 'folderDeleteFailed',
+    ErrorCode.folderLoadFailed => 'folderLoadFailed',
+    ErrorCode.folderUpdateFailed => 'folderUpdateFailed',
   };
 }

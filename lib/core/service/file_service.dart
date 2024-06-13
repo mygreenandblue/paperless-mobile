@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/logging/utils/redaction_utils.dart';
-import 'package:paperless_mobile/helpers/format_helpers.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/logging/utils/redaction_utils.dart';
+import 'package:edocs_mobile/helpers/format_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -62,14 +62,14 @@ class FileService {
     return file..writeAsBytes(bytes);
   }
 
-  Directory getDirectory(PaperlessDirectoryType type) {
+  Directory getDirectory(edocsDirectoryType type) {
     return switch (type) {
-      PaperlessDirectoryType.documents => _documentsDirectory,
-      PaperlessDirectoryType.temporary => _temporaryDirectory,
-      PaperlessDirectoryType.scans => _temporaryScansDirectory,
-      PaperlessDirectoryType.download => _downloadsDirectory,
-      PaperlessDirectoryType.upload => _uploadDirectory,
-      PaperlessDirectoryType.logs => _logDirectory,
+      edocsDirectoryType.documents => _documentsDirectory,
+      edocsDirectoryType.temporary => _temporaryDirectory,
+      edocsDirectoryType.scans => _temporaryScansDirectory,
+      edocsDirectoryType.download => _downloadsDirectory,
+      edocsDirectoryType.upload => _uploadDirectory,
+      edocsDirectoryType.logs => _logDirectory,
     };
   }
 
@@ -79,7 +79,7 @@ class FileService {
   /// If [fileName] is left blank, a random UUID will be generated.
   ///
   Future<File> allocateTemporaryFile(
-    PaperlessDirectoryType type, {
+    edocsDirectoryType type, {
     required String extension,
     String? fileName,
     bool create = false,
@@ -152,7 +152,7 @@ class FileService {
   }
 
   Future<int> clearDirectoryContent(
-    PaperlessDirectoryType type, {
+    edocsDirectoryType type, {
     bool filesOnly = false,
   }) async {
     final dir = getDirectory(type);
@@ -258,7 +258,7 @@ class FileService {
   }
 }
 
-enum PaperlessDirectoryType {
+enum edocsDirectoryType {
   documents,
   temporary,
   scans,

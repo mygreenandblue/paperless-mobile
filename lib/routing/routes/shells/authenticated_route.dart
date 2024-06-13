@@ -4,27 +4,27 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/accessibility/accessible_page.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
-import 'package:paperless_mobile/features/home/view/home_shell_widget.dart';
-import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
-import 'package:paperless_mobile/features/sharing/view/widgets/event_listener_shell.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/routes.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/inbox_route.dart';
-import 'package:paperless_mobile/routing/routes/labels_route.dart';
-import 'package:paperless_mobile/routing/routes/landing_route.dart';
-import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
-import 'package:paperless_mobile/routing/routes/scanner_route.dart';
-import 'package:paperless_mobile/routing/routes/upload_queue_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/scaffold_shell_route.dart';
-import 'package:paperless_mobile/routing/routes/settings_route.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/accessibility/accessible_page.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
+import 'package:edocs_mobile/features/home/view/home_shell_widget.dart';
+import 'package:edocs_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:edocs_mobile/features/sharing/view/widgets/event_listener_shell.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/routes.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/inbox_route.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/routing/routes/landing_route.dart';
+import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
+import 'package:edocs_mobile/routing/routes/scanner_route.dart';
+import 'package:edocs_mobile/routing/routes/upload_queue_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/scaffold_shell_route.dart';
+import 'package:edocs_mobile/routing/routes/settings_route.dart';
+import 'package:edocs_mobile/routing/routes/physical_warehouse_route.dart';
 import 'package:provider/provider.dart';
 
 /// Key used to access
@@ -167,11 +167,11 @@ class AuthenticatedRoute extends ShellRouteData {
               Hive.box<LocalUserAccount>(HiveBoxes.localUserAccount).get(
             currentUserId,
           )!;
-          final apiFactory = context.read<PaperlessApiFactory>();
+          final apiFactory = context.read<EdocsApiFactory>();
           return HomeShellWidget(
             localUserId: authenticatedUser.id,
-            paperlessApiVersion: authenticatedUser.apiVersion,
-            paperlessProviderFactory: apiFactory,
+            edocsApiVersion: authenticatedUser.apiVersion,
+            edocsProviderFactory: apiFactory,
             child: ChangeNotifierProvider(
               create: (context) => ConsumptionChangeNotifier()
                 ..loadFromConsumptionDirectory(userId: currentUserId),

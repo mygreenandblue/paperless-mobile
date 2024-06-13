@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class ExportScansDialog extends StatefulWidget {
   const ExportScansDialog({super.key});
@@ -21,7 +21,7 @@ class _ExportScansDialogState extends State<ExportScansDialog> {
   void initState() {
     super.initState();
     final date = DateFormat("yyyy_MM_ddThhmmss").format(DateTime.now());
-    _placeholder = "paperless_mobile_scan_$date";
+    _placeholder = "edocs_mobile_scan_$date";
   }
 
   @override

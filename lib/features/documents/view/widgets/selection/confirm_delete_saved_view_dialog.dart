@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class ConfirmDeleteSavedViewDialog extends StatelessWidget {
   const ConfirmDeleteSavedViewDialog({

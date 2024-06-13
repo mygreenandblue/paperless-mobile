@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/core/translation/error_code_localization_mapper.dart';
 
 class SnackBarActionConfig {
   final String label;
@@ -94,7 +94,7 @@ void showLocalizedError(
 
 void showErrorMessage(
   BuildContext context,
-  PaperlessApiException error, [
+  EdocsApiException error, [
   StackTrace? stackTrace,
 ]) {
   showSnackBar(

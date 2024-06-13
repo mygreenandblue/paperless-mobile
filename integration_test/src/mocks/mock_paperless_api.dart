@@ -1,46 +1,45 @@
 import 'package:dio/src/dio.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
 import 'package:mockito/annotations.dart';
 
 @GenerateNiceMocks([
-  MockSpec<PaperlessAuthenticationApi>(),
-  MockSpec<PaperlessDocumentsApi>(),
-  MockSpec<PaperlessLabelsApi>(),
-  MockSpec<PaperlessUserApi>(),
-  MockSpec<PaperlessServerStatsApi>(),
-  MockSpec<PaperlessSavedViewsApi>(),
-  MockSpec<PaperlessTasksApi>(),
+  MockSpec<edocsAuthenticationApi>(),
+  MockSpec<EdocsDocumentsApi>(),
+  MockSpec<edocsLabelsApi>(),
+  MockSpec<edocsUserApi>(),
+  MockSpec<edocsServerStatsApi>(),
+  MockSpec<edocsSavedViewsApi>(),
+  MockSpec<EdocsTasksApi>(),
 ])
-import 'mock_paperless_api.mocks.dart';
+import 'mock_edocs_api.mocks.dart';
 
-class MockPaperlessApiFactory implements PaperlessApiFactory {
-  final PaperlessAuthenticationApi authenticationApi =
-      MockPaperlessAuthenticationApi();
-  final PaperlessDocumentsApi documentApi = MockPaperlessDocumentsApi();
-  final PaperlessLabelsApi labelsApi = MockPaperlessLabelsApi();
-  final PaperlessUserApi userApi = MockPaperlessUserApi();
-  final PaperlessSavedViewsApi savedViewsApi = MockPaperlessSavedViewsApi();
-  final PaperlessServerStatsApi serverStatsApi = MockPaperlessServerStatsApi();
-  final PaperlessTasksApi tasksApi = MockPaperlessTasksApi();
+class MockEdocsApiFactory implements EdocsApiFactory {
+  final edocsAuthenticationApi authenticationApi = MockedocsAuthenticationApi();
+  final EdocsDocumentsApi documentApi = MockEdocsDocumentsApi();
+  final edocsLabelsApi labelsApi = MockedocsLabelsApi();
+  final edocsUserApi userApi = MockedocsUserApi();
+  final edocsSavedViewsApi savedViewsApi = MockedocsSavedViewsApi();
+  final edocsServerStatsApi serverStatsApi = MockedocsServerStatsApi();
+  final EdocsTasksApi tasksApi = MockEdocsTasksApi();
 
   @override
-  PaperlessAuthenticationApi createAuthenticationApi(Dio dio) {
+  edocsAuthenticationApi createAuthenticationApi(Dio dio) {
     return authenticationApi;
   }
 
   @override
-  PaperlessDocumentsApi createDocumentsApi(Dio dio, {required int apiVersion}) {
+  EdocsDocumentsApi createDocumentsApi(Dio dio, {required int apiVersion}) {
     return documentApi;
   }
 
   @override
-  PaperlessLabelsApi createLabelsApi(Dio dio, {required int apiVersion}) {
+  edocsLabelsApi createLabelsApi(Dio dio, {required int apiVersion}) {
     return labelsApi;
   }
 
   @override
-  PaperlessSavedViewsApi createSavedViewsApi(
+  edocsSavedViewsApi createSavedViewsApi(
     Dio dio, {
     required int apiVersion,
   }) {
@@ -48,18 +47,17 @@ class MockPaperlessApiFactory implements PaperlessApiFactory {
   }
 
   @override
-  PaperlessServerStatsApi createServerStatsApi(Dio dio,
-      {required int apiVersion}) {
+  edocsServerStatsApi createServerStatsApi(Dio dio, {required int apiVersion}) {
     return serverStatsApi;
   }
 
   @override
-  PaperlessTasksApi createTasksApi(Dio dio, {required int apiVersion}) {
+  EdocsTasksApi createTasksApi(Dio dio, {required int apiVersion}) {
     return tasksApi;
   }
 
   @override
-  PaperlessUserApi createUserApi(Dio dio, {required int apiVersion}) {
+  edocsUserApi createUserApi(Dio dio, {required int apiVersion}) {
     return userApi;
   }
 }

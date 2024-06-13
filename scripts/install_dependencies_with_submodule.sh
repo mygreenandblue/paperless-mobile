@@ -7,7 +7,7 @@ readonly __script_dir
 
 pushd "$__script_dir/../"
 
-pushd packages/paperless_api
+pushd packages/edocs_api
 $FLUTTER_ROOT/flutter packages pub get
 $FLUTTER_ROOT/dart run build_runner build --delete-conflicting-outputs
 popd

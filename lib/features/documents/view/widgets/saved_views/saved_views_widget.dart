@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_view_chip.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/accessibility/accessibility_utils.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/widgets/shimmer_placeholder.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/saved_views/saved_view_chip.dart';
+import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class SavedViewsWidget extends StatefulWidget {
   final void Function(SavedView view) onViewSelected;

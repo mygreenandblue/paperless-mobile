@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 class CorrespondentWidget extends StatelessWidget {
   final Correspondent? correspondent;

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
 import 'package:path/path.dart' as p;
 
 part 'receive_share_state.dart';

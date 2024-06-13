@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/storage_path/view/widgets/storage_path_autofill_form_builder_field.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/edit_label/view/edit_label_page.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/storage_path/view/widgets/storage_path_autofill_form_builder_field.dart';
 
 class EditStoragePathPage extends StatelessWidget {
   final StoragePath storagePath;
@@ -23,10 +23,8 @@ class EditStoragePathPage extends StatelessWidget {
             context.read<LabelCubit>().replaceStoragePath(label),
         onDelete: (context, label) =>
             context.read<LabelCubit>().removeStoragePath(label),
-        canDelete: context
-            .watch<LocalUserAccount>()
-            .paperlessUser
-            .canDeleteStoragePaths,
+        canDelete:
+            context.watch<LocalUserAccount>().edocsUser.canDeleteStoragePaths,
         additionalFields: [
           StoragePathAutofillFormBuilderField(
             name: StoragePath.pathKey,

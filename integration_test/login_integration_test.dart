@@ -5,21 +5,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/core/database/hive/hive_initialization.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/keys.dart';
-import 'package:paperless_mobile/main.dart'
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/hive/hive_initialization.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:edocs_mobile/features/login/services/authentication_service.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_mobile/keys.dart';
+import 'package:edocs_mobile/main.dart'
     show initializeDefaultParameters, AppEntrypoint;
 import 'package:path_provider/path_provider.dart';
 
-import 'src/mocks/mock_paperless_api.dart';
+import 'src/mocks/mock_edocs_api.dart';
 
 class MockConnectivityStatusService extends Mock
     implements ConnectivityStatusService {}
@@ -41,7 +41,7 @@ void main() async {
   final hiveDirectory = await getTemporaryDirectory();
 
   late ConnectivityStatusService connectivityStatusService;
-  late MockPaperlessApiFactory paperlessApiFactory;
+  late MockEdocsApiFactory EdocsApiFactory;
   late AuthenticationCubit authenticationCubit;
   late LocalNotificationService localNotificationService;
   late SessionManager sessionManager;
@@ -49,13 +49,13 @@ void main() async {
 
   setUp(() async {
     connectivityStatusService = MockConnectivityStatusService();
-    paperlessApiFactory = MockPaperlessApiFactory();
+    EdocsApiFactory = MockEdocsApiFactory();
     sessionManager = MockSessionManager();
     localNotificationService = MockLocalNotificationService();
 
     authenticationCubit = AuthenticationCubit(
       localAuthService,
-      paperlessApiFactory,
+      EdocsApiFactory,
       sessionManager,
       connectivityStatusService,
       localNotificationService,
@@ -75,7 +75,7 @@ void main() async {
         loggedInUserId: null,
       ),
     );
-    when(paperlessApiFactory.authenticationApi.login(
+    when(EdocsApiFactory.authenticationApi.login(
       username: testUsername,
       password: testPassword,
     )).thenAnswer((_) async => "token");
@@ -84,7 +84,7 @@ void main() async {
 
     await tester.pumpWidget(
       AppEntrypoint(
-        apiFactory: paperlessApiFactory,
+        apiFactory: EdocsApiFactory,
         authenticationCubit: authenticationCubit,
         connectivityStatusService: connectivityStatusService,
         localNotificationService: localNotificationService,

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/selection/bulk_delete_confirmation_dialog.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentSelectionSliverAppBar extends StatelessWidget {
   final DocumentsState state;
@@ -48,7 +48,7 @@ class DocumentSelectionSliverAppBar extends StatelessWidget {
                   S.of(context)!.documentsSuccessfullyDeleted,
                 );
                 context.read<DocumentsCubit>().resetSelection();
-              } on PaperlessApiException catch (error, stackTrace) {
+              } on EdocsApiException catch (error, stackTrace) {
                 showErrorMessage(context, error, stackTrace);
               }
             }

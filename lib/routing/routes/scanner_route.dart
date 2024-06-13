@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_mobile/features/document_scan/view/scanner_page.dart';
-import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/routes.dart';
+import 'package:edocs_mobile/features/document_scan/view/scanner_page.dart';
+import 'package:edocs_mobile/features/document_upload/cubit/document_upload_cubit.dart';
+import 'package:edocs_mobile/features/document_upload/view/document_upload_preparation_page.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/routes.dart';
 
 class ScannerBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = scannerNavigatorKey;

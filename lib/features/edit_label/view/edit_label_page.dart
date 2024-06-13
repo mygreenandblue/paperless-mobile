@@ -1,21 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
-import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/countdown.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
+import 'package:edocs_mobile/features/edit_label/view/label_form.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/countdown.dart';
+import 'package:edocs_mobile/features/logging/data/mirrored_file_output.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
 
 class EditLabelPage<T extends Label> extends StatelessWidget {
   final T label;
@@ -31,6 +33,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
   final Function(String?)? onChangedShelf;
   final Function(String?)? onChangedWarehouse;
   final int? parentId;
+  final int? parentFolder;
 
   const EditLabelPage({
     Key? key,
@@ -47,6 +50,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
     this.onChangedShelf,
     this.onChangedWarehouse,
     this.parentId,
+    this.parentFolder,
   }) : super(key: key);
 
   @override
@@ -68,6 +72,7 @@ class EditLabelPage<T extends Label> extends StatelessWidget {
         onChangedShelf: onChangedShelf,
         onChangedWarehouse: onChangedWarehouse,
         parentId: parentId,
+        parentFolder: parentFolder,
       ),
     );
   }
@@ -88,6 +93,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
   final Function(String?)? onChangedShelf;
   final Function(String?)? onChangedWarehouse;
   final int? parentId;
+  final int? parentFolder;
 
   EditLabelForm({
     Key? key,
@@ -104,6 +110,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
     this.onChangedShelf,
     this.onChangedWarehouse,
     this.parentId,
+    this.parentFolder,
   }) : super(key: key);
 
   @override
@@ -124,7 +131,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         ),
         body: LabelForm<T>(
           formKey: _formKey,
-          autofocusNameField: false,
+          autofocusNameField: true,
           initialValue: label,
           fromJsonT: fromJsonT,
           submitButtonConfig: SubmitButtonConfig<T>(
@@ -139,6 +146,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
           onChangedShelf: onChangedShelf,
           onChangedWarehouse: onChangedWarehouse,
           parentId: parentId,
+          parentFolder: parentFolder,
         ),
       ),
     );
@@ -180,17 +188,17 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
       if (shouldDelete) {
         try {
           onDelete(context, label);
-        } on PaperlessApiException catch (error) {
+        } on EdocsApiException catch (error) {
           showErrorMessage(context, error);
         } catch (error, stackTrace) {
           log("An error occurred!", error: error, stackTrace: stackTrace);
         }
         showSnackBar(
           context,
-          S.of(context)!.documentSuccessfullyUploadedProcessing,
+          S.of(context)!.notiActionSuccess,
         );
 
-        context.pop();
+        context.pop(true);
       }
     } else {
       onDelete(context, label);
@@ -199,7 +207,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         S.of(context)!.documentSuccessfullyUploadedProcessing,
       );
 
-      context.pop();
+      context.pop(true);
     }
   }
 }

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/saved_view_repository.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/saved_view_repository.dart';
 
 part 'saved_view_cubit.freezed.dart';
 part 'saved_view_state.dart';

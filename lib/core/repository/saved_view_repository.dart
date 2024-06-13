@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 class SavedViewRepository extends ChangeNotifier {
-  final PaperlessSavedViewsApi _api;
+  final EdocsSavedViewsApi _api;
   Map<int, SavedView> savedViews = {};
 
   SavedViewRepository(this._api);

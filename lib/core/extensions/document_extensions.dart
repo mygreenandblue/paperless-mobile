@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 extension DocumentModelIterableExtension on Iterable<DocumentModel> {
   Iterable<int> get ids => map((e) => e.id);
@@ -21,5 +21,5 @@ extension DocumentModelIterableExtension on Iterable<DocumentModel> {
 
 extension SessionAwareDownloadIdExtension on DocumentModel {
   String buildThumbnailUrl(BuildContext context) =>
-      context.read<PaperlessDocumentsApi>().getThumbnailUrl(id);
+      context.read<EdocsDocumentsApi>().getThumbnailUrl(id);
 }

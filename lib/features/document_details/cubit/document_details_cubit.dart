@@ -6,14 +6,14 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
-import 'package:paperless_mobile/core/bloc/transient_error.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/bloc/transient_error.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
@@ -23,7 +23,7 @@ part 'document_details_state.dart';
 
 class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
   final int id;
-  final PaperlessDocumentsApi _api;
+  final EdocsDocumentsApi _api;
   final DocumentChangedNotifier _notifier;
   final LocalNotificationService _notificationService;
 
@@ -61,7 +61,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         document: document,
         metaData: metaData,
       ));
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       logger.fe(
         "An error occurred while loading data for document $id.",
         className: runtimeType.toString(),
@@ -71,7 +71,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
       );
       emit(const DocumentDetailsState(status: LoadingStatus.error));
       addError(
-        TransientPaperlessApiError(code: error.code, details: error.details),
+        TransientedocsApiError(code: error.code, details: error.details),
       );
     }
   }
@@ -80,9 +80,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     try {
       await _api.delete(document);
       _notifier.notifyDeleted(document);
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(code: e.code, details: e.details),
+        TransientedocsApiError(code: e.code, details: e.details),
       );
     }
   }
@@ -98,9 +98,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         ),
       );
       _notifier.notifyUpdated(updatedDocument);
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -118,9 +118,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         note.id!,
       );
       _notifier.notifyUpdated(updatedDocument);
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -145,9 +145,9 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
             .update(document.copyWith(archiveSerialNumber: () => autoAsn));
         _notifier.notifyUpdated(updatedDocument);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(code: e.code, details: e.details),
+        TransientedocsApiError(code: e.code, details: e.details),
       );
     }
   }
@@ -320,8 +320,8 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         text: text,
       );
       _notifier.notifyUpdated(updatedDocument);
-    } on PaperlessApiException catch (err) {
-      addError(TransientPaperlessApiError(code: err.code));
+    } on EdocsApiException catch (err) {
+      addError(TransientedocsApiError(code: err.code));
     }
   }
 }

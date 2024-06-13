@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/user_settings_builder.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/features/login/services/authentication_service.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/user_settings_builder.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class BiometricAuthenticationSetting extends StatelessWidget {

@@ -1,11 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/form_fields/fullscreen_selection_form.dart';
-import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/confirm_bulk_modify_label_dialog.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/widgets/form_fields/fullscreen_selection_form.dart';
+import 'package:edocs_mobile/core/extensions/dart_extensions.dart';
+import 'package:edocs_mobile/features/document_bulk_action/view/widgets/confirm_bulk_modify_label_dialog.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class FullscreenBulkEditLabelPage extends StatefulWidget {
   final String hintText;

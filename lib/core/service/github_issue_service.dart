@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/model/github_error_report.model.dart';
-import 'package:paperless_mobile/core/widgets/error_report_page.dart';
+import 'package:edocs_mobile/core/model/github_error_report.model.dart';
+import 'package:edocs_mobile/core/widgets/error_report_page.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
+import 'package:edocs_mobile/core/extensions/dart_extensions.dart';
 
 class GithubIssueService {
   static void openCreateGithubIssue({
@@ -16,7 +16,7 @@ class GithubIssueService {
     final Uri uri = Uri(
       scheme: "https",
       host: "github.com",
-      path: "astubenbord/paperless-mobile/issues/new",
+      path: "astubenbord/edocs-mobile/issues/new",
       queryParameters: {}
         ..tryPutIfAbsent('title', () => title)
         //..tryPutIfAbsent('body', () => body) //TODO: Figure out how to pass long body via url

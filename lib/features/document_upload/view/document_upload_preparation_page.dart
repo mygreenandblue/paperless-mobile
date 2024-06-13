@@ -1,31 +1,37 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:animated_tree_view/tree_view/tree_view.dart';
+import 'package:animated_tree_view/tree_view/widgets/expansion_indicator.dart';
+import 'package:animated_tree_view/tree_view/widgets/indent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
-import 'package:paperless_mobile/core/widgets/future_or_builder.dart';
-import 'package:paperless_mobile/features/document_upload/cubit/document_upload_cubit.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/custom_searchbar.dart';
-import 'package:paperless_mobile/features/sharing/view/widgets/file_thumbnail.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/labels_route.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
+import 'package:edocs_mobile/core/widgets/future_or_builder.dart';
+import 'package:edocs_mobile/features/document_upload/cubit/document_upload_cubit.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/folder/folder_tree.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/custom_searchbar.dart';
+import 'package:edocs_mobile/features/sharing/view/widgets/file_thumbnail.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/routing/routes/physical_warehouse_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentUploadResult {
   final bool success;
@@ -66,6 +72,12 @@ class _DocumentUploadPreparationPageState
   int _warehouseId = -1;
   int _shelfId = -1;
   int _boxcaseId = -1;
+  TreeViewController? _controller;
+  var _parentFolder;
+  int? _selectedItemId;
+  bool _selectedRoot = false;
+  final Map<String, bool> loadedNodes = {};
+  final expandChildrenOnReady = false;
 
   @override
   void initState() {
@@ -236,7 +248,7 @@ class _DocumentUploadPreparationPageState
                             // Correspondent
                             if (context
                                 .watch<LocalUserAccount>()
-                                .paperlessUser
+                                .edocsUser
                                 .canViewCorrespondents)
                               LabelFormField<Correspondent>(
                                 showAnyAssignedOption: false,
@@ -253,13 +265,13 @@ class _DocumentUploadPreparationPageState
                                 allowSelectUnassigned: true,
                                 canCreateNewLabel: context
                                     .watch<LocalUserAccount>()
-                                    .paperlessUser
+                                    .edocsUser
                                     .canCreateCorrespondents,
                               ),
                             // Document type
                             if (context
                                 .watch<LocalUserAccount>()
-                                .paperlessUser
+                                .edocsUser
                                 .canViewDocumentTypes)
                               LabelFormField<DocumentType>(
                                 showAnyAssignedOption: false,
@@ -277,12 +289,12 @@ class _DocumentUploadPreparationPageState
                                 allowSelectUnassigned: true,
                                 canCreateNewLabel: context
                                     .watch<LocalUserAccount>()
-                                    .paperlessUser
+                                    .edocsUser
                                     .canCreateDocumentTypes,
                               ),
                             if (context
                                 .watch<LocalUserAccount>()
-                                .paperlessUser
+                                .edocsUser
                                 .canViewTags)
                               TagsFormField(
                                 name: DocumentModel.tagsKey,
@@ -295,7 +307,7 @@ class _DocumentUploadPreparationPageState
                             // briefcase
                             if (context
                                 .watch<LocalUserAccount>()
-                                .paperlessUser
+                                .edocsUser
                                 .canViewWarehouse)
                               _buildWarehouseFormField(
                                 context,
@@ -308,7 +320,7 @@ class _DocumentUploadPreparationPageState
                               ),
                             if (context
                                     .watch<LocalUserAccount>()
-                                    .paperlessUser
+                                    .edocsUser
                                     .canViewWarehouse &&
                                 _warehouseId != -1 &&
                                 labelRepository.shelfs.isNotEmpty)
@@ -320,7 +332,7 @@ class _DocumentUploadPreparationPageState
                               ),
                             if (context
                                     .watch<LocalUserAccount>()
-                                    .paperlessUser
+                                    .edocsUser
                                     .canViewWarehouse &&
                                 _shelfId != -1 &&
                                 labelRepository.boxcases.isNotEmpty)
@@ -332,13 +344,20 @@ class _DocumentUploadPreparationPageState
                                       p0,
                                       labelRepository,
                                       'boxcase')),
-                            Text(
-                              "* ${S.of(context)!.uploadInferValuesHint}",
-                              style: Theme.of(context).textTheme.bodySmall,
-                              textAlign: TextAlign.justify,
-                            ).padded(),
-                            const SizedBox(height: 300),
                           ].padded(),
+                        ),
+                        if (context
+                            .watch<LocalUserAccount>()
+                            .edocsUser
+                            .canViewFolder)
+                          _buildFolderTree(context),
+                        const SliverPadding(
+                          padding: EdgeInsets.all(16),
+                          sliver: SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 300,
+                            ),
+                          ),
                         ),
                       ],
                     );
@@ -349,6 +368,128 @@ class _DocumentUploadPreparationPageState
           ),
         );
       },
+    );
+  }
+
+  _buildFolderTree(BuildContext context) {
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        context.read<LabelCubit>().buildTreeHasOnlyFolder();
+        return BlocBuilder<LabelCubit, LabelState>(
+          builder: (context, lbState) {
+            return lbState.isLoading
+                ? const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : lbState.folderTree!.length == 0
+                    ? _buildEmptyTree(context)
+                    : _buildTree(context, lbState);
+          },
+        );
+      },
+    );
+  }
+
+  _buildTree(BuildContext context, LabelState lbState) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(8),
+      sliver: SliverTreeView.simple(
+        tree: lbState.folderTree!,
+        showRootNode: true,
+        expansionIndicatorBuilder: (context, node) =>
+            ChevronIndicator.rightDown(
+          alignment: Alignment.centerRight,
+          tree: node,
+          padding: const EdgeInsets.all(16),
+        ),
+        indentation: const Indentation(style: IndentStyle.squareJoint),
+        onTreeReady: (controller) {
+          _controller = controller;
+          if (expandChildrenOnReady)
+            controller.expandAllChildren(lbState.folderTree!);
+        },
+        builder: (context, node) {
+          return node.level == 0
+              ? Card(
+                  color: _selectedRoot
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  child: GestureDetector(
+                    onLongPress: () {
+                      setState(() {
+                        _controller?.toggleExpansion(node);
+                        _selectedRoot = !_selectedRoot;
+                        _parentFolder = null;
+                        _parentFolder = -1;
+                      });
+                    },
+                    child: ListTile(
+                      title: Text(S.of(context)!.chooseFolder),
+                      subtitle: Text(S.of(context)!.rootFolder),
+                    ),
+                  ),
+                )
+              : node.data is Folder
+                  ? Card(
+                      color: node.data.getValue('id') == _parentFolder
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      child: GestureDetector(
+                        onLongPress: () {
+                          setState(() {
+                            _parentFolder = node.data.getValue('id');
+                            _parentFolder = node.data.getValue('id');
+                            _selectedRoot = false;
+                          });
+                        },
+                        child: ListTile(
+                          title: Text(node.data.getValue('name')),
+                          subtitle: Text('Level ${node.level}'),
+                          onTap: () {
+                            _controller?.toggleExpansion(node);
+                            if (loadedNodes[node.data.getValue('checksum')] !=
+                                true) {
+                              context.read<LabelCubit>().loadChildNodes(
+                                    node.data.getValue('id'),
+                                    node,
+                                  );
+                              setState(() {
+                                loadedNodes[node.data.getValue('checksum')] =
+                                    true;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  : const SizedBox();
+        },
+      ),
+    );
+  }
+
+  _buildEmptyTree(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            S.of(context)!.youDidNotAnyFolderYet,
+            style: Theme.of(context).textTheme.bodySmall,
+          ).padded(),
+          TextButton.icon(
+            onPressed: () {
+              CreateLabelRoute(
+                LabelType.folders,
+              ).push(context);
+            },
+            icon: const Icon(Icons.add),
+            label: Text(S.of(context)!.newView),
+          )
+        ],
+      ).paddedOnly(left: 16),
     );
   }
 
@@ -455,29 +596,28 @@ class _DocumentUploadPreparationPageState
         };
 
         final asn = formValues[DocumentModel.asnKey] as int?;
-        final taskId = await cubit.upload(
-          await widget.fileBytes,
-          filename: _padWithExtension(
-            _formKey.currentState?.value[fkFileName],
-            widget.fileExtension,
-          ),
-          userId: Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
-              .getValue()!
-              .loggedInUserId!,
-          warehouse: _boxcaseId != -1 ? _boxcaseId : null,
-          title: title,
-          documentType: docType,
-          correspondent: correspondent,
-          tags: tags,
-          createdAt: createdAt?.toDateTime(),
-          asn: asn,
-        );
+        final taskId = await cubit.upload(await widget.fileBytes,
+            filename: _padWithExtension(
+              _formKey.currentState?.value[fkFileName],
+              widget.fileExtension,
+            ),
+            userId: Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
+                .getValue()!
+                .loggedInUserId!,
+            warehouse: _boxcaseId != -1 ? _boxcaseId : null,
+            title: title,
+            documentType: docType,
+            correspondent: correspondent,
+            tags: tags,
+            createdAt: createdAt?.toDateTime(),
+            asn: asn,
+            folder: _parentFolder);
         showSnackBar(
           context,
           S.of(context)!.documentSuccessfullyUploadedProcessing,
         );
         context.pop(DocumentUploadResult(true, taskId));
-      } on PaperlessFormValidationException catch (exception) {
+      } on edocsFormValidationException catch (exception) {
         setState(() => _errors = exception.validationMessages);
       } catch (error, stackTrace) {
         logger.fe(
@@ -489,7 +629,7 @@ class _DocumentUploadPreparationPageState
         );
         showErrorMessage(
           context,
-          const PaperlessApiException.unknown(),
+          const EdocsApiException.unknown(),
           stackTrace,
         );
       }

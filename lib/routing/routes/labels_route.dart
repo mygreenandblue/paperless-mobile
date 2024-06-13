@@ -1,21 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_document_type_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_tag_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/edit_correspondent_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/edit_tag_page.dart';
-import 'package:paperless_mobile/features/labels/view/pages/labels_page.dart';
-import 'package:paperless_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
-import 'package:paperless_mobile/features/linked_documents/view/linked_documents_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/edit_warehouse_page.dart';
-import 'package:paperless_mobile/features/edit_label/view/impl/add_warehouse_page.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_correspondent_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_document_type_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_folder_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_storage_path_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_tag_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_correspondent_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_document_type_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_folder_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_storage_path_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_tag_page.dart';
+import 'package:edocs_mobile/features/labels/view/pages/labels_page.dart';
+import 'package:edocs_mobile/features/linked_documents/cubit/linked_documents_cubit.dart';
+import 'package:edocs_mobile/features/linked_documents/view/linked_documents_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/edit_warehouse_page.dart';
+import 'package:edocs_mobile/features/edit_label/view/impl/add_warehouse_page.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
 
 class LabelsBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = labelsNavigatorKey;
@@ -45,6 +47,9 @@ class EditLabelRoute extends GoRouteData {
       Tag t => EditTagPage(tag: t),
       StoragePath s => EditStoragePathPage(storagePath: s),
       Warehouse w => EditWarehousePage(warehouse: w),
+      Folder f => EditFolderPage(
+          folder: f,
+        ),
     };
   }
 }
@@ -74,6 +79,10 @@ class CreateLabelRoute extends GoRouteData {
       LabelType.warehouse => AddWarehousePage(
           type: type,
           label: $extra,
+        ),
+      LabelType.folders => AddFolderPage(
+          initialName: name,
+          folder: $extra,
         ),
     };
   }

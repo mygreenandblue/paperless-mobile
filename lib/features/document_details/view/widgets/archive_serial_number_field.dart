@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
 
 class ArchiveSerialNumberField extends StatefulWidget {
   final DocumentModel document;
@@ -48,7 +48,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
   @override
   Widget build(BuildContext context) {
     final userCanEditDocument =
-        context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
+        context.watch<LocalUserAccount>().edocsUser.canEditDocuments;
     return BlocListener<DocumentDetailsCubit, DocumentDetailsState>(
       listenWhen: (previous, current) =>
           previous.status == LoadingStatus.loaded &&
@@ -123,10 +123,10 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
         .read<DocumentDetailsCubit>()
         .assignAsn(widget.document, asn: asn)
         .then((value) => _onAsnUpdated())
-        .onError<PaperlessApiException>(
+        .onError<EdocsApiException>(
           (error, stackTrace) => showErrorMessage(context, error, stackTrace),
         )
-        .onError<PaperlessFormValidationException>(
+        .onError<edocsFormValidationException>(
       (error, stackTrace) {
         setState(() => _errors = error.validationMessages);
       },
@@ -142,7 +142,7 @@ class _ArchiveSerialNumberFieldState extends State<ArchiveSerialNumberField> {
           autoAssign: true,
         )
         .then((value) => _onAsnUpdated())
-        .onError<PaperlessApiException>(
+        .onError<EdocsApiException>(
           (error, stackTrace) => showErrorMessage(context, error, stackTrace),
         )
         .catchError((error) => showGenericError(context, error));

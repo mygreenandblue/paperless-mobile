@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
 import 'package:provider/provider.dart';
 
 class DateAndDocumentTypeLabelWidget extends StatelessWidget {

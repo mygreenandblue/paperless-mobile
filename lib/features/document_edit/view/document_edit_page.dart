@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:animated_tree_view/tree_view/tree_view.dart';
+import 'package:animated_tree_view/tree_view/widgets/expansion_indicator.dart';
+import 'package:animated_tree_view/tree_view/widgets/indent.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,24 +10,26 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
-import 'package:paperless_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
-import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_form_field.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/custom_searchbar.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/labels_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.dart';
+import 'package:edocs_mobile/core/widgets/form_builder_fields/form_builder_localized_date_picker.dart';
+import 'package:edocs_mobile/core/workarounds/colored_chip.dart';
+import 'package:edocs_mobile/features/document_edit/cubit/document_edit_cubit.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/documents/view/pages/document_view.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_form_field.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/custom_searchbar.dart';
+import 'package:edocs_mobile/features/logging/data/mirrored_file_output.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
 
@@ -56,6 +61,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   String _selectedWarehouse = '';
   String _selectedShelf = '';
   String _selectedBoxcase = '';
+  TreeViewController? _controller;
+  var _parentFolder;
+  int? _selectedItemId;
+  bool _selectedRoot = false;
+  final Map<String, bool> loadedNodes = {};
+  final expandChildrenOnReady = false;
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -85,7 +96,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final currentUser = context.watch<LocalUserAccount>().edocsUser;
 
     return BlocBuilder<DocumentEditCubit, DocumentEditState>(
       builder: (context, state) {
@@ -107,6 +118,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
               tags,
               createdAt,
               content,
+              folder,
             ) = _currentValues;
             final isContentTouched =
                 _formKey.currentState?.fields[fkContent]?.isDirty ?? false;
@@ -118,7 +130,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                 !const UnorderedIterableEquality().equals(doc.tags, tags) ||
                 doc.created != createdAt ||
                 (doc.content != content && isContentTouched) ||
-                doc.warehouse != warehouse;
+                doc.warehouse != warehouse ||
+                doc.folder != folder;
           },
           child: FormBuilder(
             key: _formKey,
@@ -192,7 +205,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                           showControls: false,
                           title: state.document.title,
                           bytes: context
-                              .read<PaperlessDocumentsApi>()
+                              .read<EdocsDocumentsApi>()
                               .downloadDocument(state.document.id),
                         ),
                       );
@@ -218,11 +231,11 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                 .shelfs[labelRepository
                     .boxcases[state.document.warehouse]?.parentWarehouse]
                 ?.parentWarehouse ??
-            '']
+            S.of(context)!.selecteWarehouse]
         .toString();
     String? selectedShelf = labelRepository.shelfs[labelRepository
                 .boxcases[state.document.warehouse]?.parentWarehouse ??
-            '']
+            S.of(context)!.selectShelf]
         .toString();
     String? selectedBoxcase =
         labelRepository.boxcases[state.document.warehouse].toString();
@@ -232,148 +245,154 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       child: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          ListView(
-            children: [
-              const SizedBox(height: 16),
-              _buildTitleFormField(state.document.title).padded(),
-              _buildCreatedAtFormField(
-                state.document.created,
-                filteredSuggestions,
-              ).padded(),
-              // Correspondent form field
-              if (currentUser.canViewCorrespondents)
-                Column(
-                  children: [
-                    LabelFormField<Correspondent>(
-                      showAnyAssignedOption: false,
-                      showNotAssignedOption: false,
-                      onAddLabel: (currentInput) => CreateLabelRoute(
-                        LabelType.correspondent,
-                        name: currentInput,
-                      ).push<Correspondent>(context),
-                      addLabelText: S.of(context)!.addCorrespondent,
-                      labelText: S.of(context)!.correspondent,
-                      options: labelRepository.correspondents,
-                      initialValue: state.document.correspondent != null
-                          ? SetIdQueryParameter(
-                              id: state.document.correspondent!)
-                          : const UnsetIdQueryParameter(),
-                      name: fkCorrespondent,
-                      prefixIcon: const Icon(Icons.person_outlined),
-                      allowSelectUnassigned: true,
-                      canCreateNewLabel: currentUser.canCreateCorrespondents,
-                      suggestions: filteredSuggestions?.correspondents ?? [],
-                    ),
-                  ],
-                ).padded(),
-              // DocumentType form field
-              if (currentUser.canViewDocumentTypes)
-                Column(
-                  children: [
-                    LabelFormField<DocumentType>(
-                      showAnyAssignedOption: false,
-                      showNotAssignedOption: false,
-                      onAddLabel: (currentInput) => CreateLabelRoute(
-                        LabelType.documentType,
-                        name: currentInput,
-                      ).push<DocumentType>(context),
-                      canCreateNewLabel: currentUser.canCreateDocumentTypes,
-                      addLabelText: S.of(context)!.addDocumentType,
-                      labelText: S.of(context)!.documentType,
-                      initialValue: state.document.documentType != null
-                          ? SetIdQueryParameter(
-                              id: state.document.documentType!)
-                          : const UnsetIdQueryParameter(),
-                      options: labelRepository.documentTypes,
-                      name: _DocumentEditPageState.fkDocumentType,
-                      prefixIcon: const Icon(Icons.description_outlined),
-                      allowSelectUnassigned: true,
-                      suggestions: filteredSuggestions?.documentTypes ?? [],
-                    ),
-                  ],
-                ).padded(),
-              // StoragePath form field
-              if (currentUser.canViewStoragePaths)
-                Column(
-                  children: [
-                    LabelFormField<StoragePath>(
-                      showAnyAssignedOption: false,
-                      showNotAssignedOption: false,
-                      onAddLabel: (currentInput) => CreateLabelRoute(
-                        LabelType.storagePath,
-                        name: currentInput,
-                      ).push<StoragePath>(context),
-                      canCreateNewLabel: currentUser.canCreateStoragePaths,
-                      addLabelText: S.of(context)!.addStoragePath,
-                      labelText: S.of(context)!.storagePath,
-                      options: labelRepository.storagePaths,
-                      initialValue: state.document.storagePath != null
-                          ? SetIdQueryParameter(id: state.document.storagePath!)
-                          : const UnsetIdQueryParameter(),
-                      name: fkStoragePath,
-                      prefixIcon: const Icon(Icons.folder_outlined),
-                      allowSelectUnassigned: true,
-                    ),
-                  ],
-                ).padded(),
-              // Tag form field
-              if (currentUser.canViewTags)
-                TagsFormField(
-                  options: labelRepository.tags,
-                  name: fkTags,
-                  allowOnlySelection: true,
-                  allowCreation: true,
-                  allowExclude: false,
-                  suggestions: filteredSuggestions?.tags ?? [],
-                  initialValue: IdsTagsQuery(
-                    include: state.document.tags.toList(),
-                  ),
-                ).padded(),
-
-              if (currentUser.canViewWarehouse)
-                Column(
-                  children: [
-                    _buildWarehouseFormField(
-                      context,
-                      labelRepository.warehouses,
-                      state.document.warehouse != null
-                          ? selectedWarehouse
-                          : S.of(context)?.selecteWarehouse,
-                      (value) => _findKeyForValue(labelRepository.warehouses,
-                          value!, labelRepository, 'warehouse', context),
-                    )
-                  ],
-                ).padded(),
-              if (currentUser.canViewWarehouse)
-                Column(
-                  children: [
-                    _buildShelfFormField(
-                      context,
-                      labelRepository.shelfs,
-                      state.document.warehouse != null
-                          ? selectedShelf
-                          : S.of(context)?.selectShelf,
-                      (value) => _findKeyForValue(labelRepository.shelfs,
-                          value!, labelRepository, 'shelf', context),
-                    )
-                  ],
-                ).padded(),
-              if (currentUser.canViewWarehouse)
-                Column(
-                  children: [
-                    _buildBoxcaseFormField(
-                      context,
-                      labelRepository.boxcases,
-                      state.document.warehouse != null
-                          ? selectedBoxcase
-                          : S.of(context)?.selectBriefcase,
-                      (value) => _findKeyForValue(labelRepository.boxcases,
-                          value!, labelRepository, 'boxcase', context),
-                    )
-                  ],
-                ).padded(),
-
-              const SizedBox(height: 140),
+          CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 16),
+                  _buildTitleFormField(state.document.title).padded(),
+                  _buildCreatedAtFormField(
+                    state.document.created,
+                    filteredSuggestions,
+                  ).padded(),
+                  if (currentUser.canViewCorrespondents)
+                    Column(
+                      children: [
+                        LabelFormField<Correspondent>(
+                          showAnyAssignedOption: false,
+                          showNotAssignedOption: false,
+                          onAddLabel: (currentInput) => CreateLabelRoute(
+                            LabelType.correspondent,
+                            name: currentInput,
+                          ).push<Correspondent>(context),
+                          addLabelText: S.of(context)!.addCorrespondent,
+                          labelText: S.of(context)!.correspondent,
+                          options: labelRepository.correspondents,
+                          initialValue: state.document.correspondent != null
+                              ? SetIdQueryParameter(
+                                  id: state.document.correspondent!)
+                              : const UnsetIdQueryParameter(),
+                          name: fkCorrespondent,
+                          prefixIcon: const Icon(Icons.person_outlined),
+                          allowSelectUnassigned: true,
+                          canCreateNewLabel:
+                              currentUser.canCreateCorrespondents,
+                          suggestions:
+                              filteredSuggestions?.correspondents ?? [],
+                        ),
+                      ],
+                    ).padded(),
+                  if (currentUser.canViewDocumentTypes)
+                    Column(
+                      children: [
+                        LabelFormField<DocumentType>(
+                          showAnyAssignedOption: false,
+                          showNotAssignedOption: false,
+                          onAddLabel: (currentInput) => CreateLabelRoute(
+                            LabelType.documentType,
+                            name: currentInput,
+                          ).push<DocumentType>(context),
+                          canCreateNewLabel: currentUser.canCreateDocumentTypes,
+                          addLabelText: S.of(context)!.addDocumentType,
+                          labelText: S.of(context)!.documentType,
+                          initialValue: state.document.documentType != null
+                              ? SetIdQueryParameter(
+                                  id: state.document.documentType!)
+                              : const UnsetIdQueryParameter(),
+                          options: labelRepository.documentTypes,
+                          name: _DocumentEditPageState.fkDocumentType,
+                          prefixIcon: const Icon(Icons.description_outlined),
+                          allowSelectUnassigned: true,
+                          suggestions: filteredSuggestions?.documentTypes ?? [],
+                        ),
+                      ],
+                    ).padded(),
+                  if (currentUser.canViewStoragePaths)
+                    Column(
+                      children: [
+                        LabelFormField<StoragePath>(
+                          showAnyAssignedOption: false,
+                          showNotAssignedOption: false,
+                          onAddLabel: (currentInput) => CreateLabelRoute(
+                            LabelType.storagePath,
+                            name: currentInput,
+                          ).push<StoragePath>(context),
+                          canCreateNewLabel: currentUser.canCreateStoragePaths,
+                          addLabelText: S.of(context)!.addStoragePath,
+                          labelText: S.of(context)!.storagePath,
+                          options: labelRepository.storagePaths,
+                          initialValue: state.document.storagePath != null
+                              ? SetIdQueryParameter(
+                                  id: state.document.storagePath!)
+                              : const UnsetIdQueryParameter(),
+                          name: fkStoragePath,
+                          prefixIcon: const Icon(Icons.folder_outlined),
+                          allowSelectUnassigned: true,
+                        ),
+                      ],
+                    ).padded(),
+                  if (currentUser.canViewTags)
+                    TagsFormField(
+                      options: labelRepository.tags,
+                      name: fkTags,
+                      allowOnlySelection: true,
+                      allowCreation: true,
+                      allowExclude: false,
+                      suggestions: filteredSuggestions?.tags ?? [],
+                      initialValue: IdsTagsQuery(
+                        include: state.document.tags.toList(),
+                      ),
+                    ).padded(),
+                  if (currentUser.canViewWarehouse)
+                    Column(
+                      children: [
+                        _buildWarehouseFormField(
+                          context,
+                          labelRepository.warehouses,
+                          state.document.warehouse != null
+                              ? selectedWarehouse
+                              : S.of(context)?.selecteWarehouse,
+                          (value) => _findKeyForValue(
+                              labelRepository.warehouses,
+                              value!,
+                              labelRepository,
+                              'warehouse',
+                              context),
+                        )
+                      ],
+                    ).padded(),
+                  if (currentUser.canViewWarehouse)
+                    Column(
+                      children: [
+                        _buildShelfFormField(
+                          context,
+                          labelRepository.shelfs,
+                          state.document.warehouse != null
+                              ? selectedShelf
+                              : S.of(context)?.selectShelf,
+                          (value) => _findKeyForValue(labelRepository.shelfs,
+                              value!, labelRepository, 'shelf', context),
+                        )
+                      ],
+                    ).padded(),
+                  if (currentUser.canViewWarehouse)
+                    Column(
+                      children: [
+                        _buildBoxcaseFormField(
+                          context,
+                          labelRepository.boxcases,
+                          state.document.warehouse != null
+                              ? selectedBoxcase
+                              : S.of(context)?.selectBriefcase,
+                          (value) => _findKeyForValue(labelRepository.boxcases,
+                              value!, labelRepository, 'boxcase', context),
+                        )
+                      ],
+                    ).padded(),
+                ]),
+              ),
+              if (currentUser.canViewWarehouse) _buildFolderTree(context),
+              const SliverToBoxAdapter(child: SizedBox(height: 140)),
             ],
           ),
           SingleChildScrollView(
@@ -397,7 +416,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     );
   }
 
-  (String?, int?, int?, int?, List<int>?, DateTime?, String?)
+  (String?, int?, int?, int?, List<int>?, DateTime?, String?, int?)
       get _currentValues {
     final fkState = _formKey.currentState!;
 
@@ -437,7 +456,8 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       storagePath,
       tags,
       created?.toDateTime(),
-      content
+      content,
+      _parentFolder,
     );
   }
 
@@ -451,28 +471,151 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         tags,
         createdAt,
         content,
+        folder,
       ) = _currentValues;
 
       var mergedDocument = document.copyWith(
-        warehouse: () => _boxcaseId == -1 ? document.warehouse : _boxcaseId,
-        title: title,
-        created: createdAt,
-        correspondent: () => correspondent,
-        documentType: () => documentType,
-        storagePath: () => storagePath,
-        tags: tags,
-        content: content,
-      );
+          warehouse: () => _boxcaseId == -1 ? document.warehouse : _boxcaseId,
+          title: title,
+          created: createdAt,
+          correspondent: () => correspondent,
+          documentType: () => documentType,
+          storagePath: () => storagePath,
+          tags: tags,
+          content: content,
+          folder: folder);
 
       try {
         await context.read<DocumentEditCubit>().updateDocument(mergedDocument);
         showSnackBar(context, S.of(context)!.documentSuccessfullyUpdated);
-      } on PaperlessApiException catch (error, stackTrace) {
+      } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
         context.pop();
       }
     }
+  }
+
+  _buildFolderTree(BuildContext context) {
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        context.read<LabelCubit>().buildTreeHasOnlyFolder();
+        return BlocBuilder<LabelCubit, LabelState>(
+          builder: (context, lbState) {
+            return lbState.isLoading
+                ? const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : lbState.folderTree!.length == 0
+                    ? _buildEmptyTree(context)
+                    : _buildTree(context, lbState);
+          },
+        );
+      },
+    );
+  }
+
+  _buildTree(BuildContext context, LabelState lbState) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(8),
+      sliver: SliverTreeView.simple(
+        tree: lbState.folderTree!,
+        showRootNode: true,
+        expansionIndicatorBuilder: (context, node) =>
+            ChevronIndicator.rightDown(
+          alignment: Alignment.centerRight,
+          tree: node,
+          padding: const EdgeInsets.all(16),
+        ),
+        indentation: const Indentation(style: IndentStyle.squareJoint),
+        onTreeReady: (controller) {
+          _controller = controller;
+          if (expandChildrenOnReady)
+            controller.expandAllChildren(lbState.folderTree!);
+        },
+        builder: (context, node) {
+          return node.level == 0
+              ? Card(
+                  color: _selectedRoot
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  child: GestureDetector(
+                    onLongPress: () {
+                      setState(() {
+                        _controller?.toggleExpansion(node);
+                        _selectedRoot = !_selectedRoot;
+                        _parentFolder = null;
+                        _parentFolder = -1;
+                      });
+                    },
+                    child: ListTile(
+                      title: Text(S.of(context)!.chooseFolder),
+                      subtitle: Text(S.of(context)!.rootFolder),
+                    ),
+                  ),
+                )
+              : node.data is Folder
+                  ? Card(
+                      color: node.data.getValue('id') == _parentFolder
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      child: GestureDetector(
+                        onLongPress: () {
+                          setState(() {
+                            _parentFolder = node.data.getValue('id');
+                            _parentFolder = node.data.getValue('id');
+                            _selectedRoot = false;
+                          });
+                        },
+                        child: ListTile(
+                          title: Text(node.data.getValue('name')),
+                          subtitle: Text('Level ${node.level}'),
+                          onTap: () {
+                            _controller?.toggleExpansion(node);
+                            if (loadedNodes[node.data.getValue('checksum')] !=
+                                true) {
+                              context.read<LabelCubit>().loadChildNodes(
+                                    node.data.getValue('id'),
+                                    node,
+                                  );
+                              setState(() {
+                                loadedNodes[node.data.getValue('checksum')] =
+                                    true;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  : const SizedBox();
+        },
+      ),
+    );
+  }
+
+  _buildEmptyTree(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            S.of(context)!.youDidNotAnyFolderYet,
+            style: Theme.of(context).textTheme.bodySmall,
+          ).padded(),
+          TextButton.icon(
+            onPressed: () {
+              CreateLabelRoute(
+                LabelType.folders,
+              ).push(context);
+            },
+            icon: const Icon(Icons.add),
+            label: Text(S.of(context)!.newView),
+          )
+        ],
+      ).paddedOnly(left: 16),
+    );
   }
 
   _findKeyForValue(Map<int, Object> map, String? value,
@@ -521,11 +664,14 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     return CustomSearchBar(
       prefixIcon: const Icon(Icons.warehouse_outlined),
       items: warehouses.values.map((value) => value.toString()).toList(),
-      selectedItem:
-          _selectedWarehouse.isEmpty ? selectedItem : _selectedWarehouse,
+      selectedItem: _selectedWarehouse.isEmpty
+          ? selectedItem == 'null'
+              ? S.of(context)!.selecteWarehouse
+              : selectedItem
+          : _selectedWarehouse,
       onChanged: (value) => {onChanged!(value!)},
-      fieldName: 'Kho',
-      hintText: 'Chọn kho',
+      fieldName: S.of(context)!.warehouse,
+      hintText: S.of(context)!.selecteWarehouse,
     );
   }
 
@@ -540,12 +686,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       items: shelfs.values.map((value) => value.toString()).toList(),
       selectedItem: _selectedShelf.isEmpty
           ? selectedItem == 'null'
-              ? 'Chon gia/ke'
+              ? S.of(context)!.selectShelf
               : selectedItem
           : _selectedShelf,
       onChanged: (value) => {onChanged!(value!)},
-      fieldName: 'Giá/kệ',
-      hintText: 'Chọn giá/kệ',
+      fieldName: S.of(context)!.shelf,
+      hintText: S.of(context)!.selectShelf,
     );
   }
 
@@ -561,12 +707,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       items: boxcases.values.map((value) => value.toString()).toList(),
       selectedItem: _selectedBoxcase.isEmpty
           ? selectedItem == 'null'
-              ? 'Chon hop/cap'
+              ? S.of(context)!.selectBriefcase
               : selectedItem
           : _selectedBoxcase,
       onChanged: (value) => {onChanged!(value!)},
-      fieldName: 'Hộp/cặp',
-      hintText: 'Chon hộp/cặp',
+      fieldName: S.of(context)!.briefcase,
+      hintText: S.of(context)!.selectBriefcase,
     );
   }
 

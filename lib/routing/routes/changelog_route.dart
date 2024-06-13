@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_mobile/features/changelogs/view/changelog_dialog.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/utils/dialog_page.dart';
+import 'package:edocs_mobile/features/changelogs/view/changelog_dialog.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/utils/dialog_page.dart';
 
 part 'changelog_route.g.dart';
 

@@ -7,24 +7,24 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
-import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
-import 'package:paperless_mobile/features/sharing/view/dialog/discard_shared_file_dialog.dart';
-import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/scanner_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/document_upload/view/document_upload_preparation_page.dart';
+import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:edocs_mobile/features/sharing/view/dialog/discard_shared_file_dialog.dart';
+import 'package:edocs_mobile/features/tasks/model/pending_tasks_notifier.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/scanner_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:path/path.dart' as p;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
@@ -83,7 +83,7 @@ class _EventListenerShellState extends State<EventListenerShell>
   void _listenToInboxChanges() {
     final cubit = context.read<InboxCubit>();
     final currentUser = context.read<LocalUserAccount>();
-    if (!currentUser.paperlessUser.canViewInbox || _inboxTimer != null) {
+    if (!currentUser.edocsUser.canViewInbox || _inboxTimer != null) {
       return;
     }
     _inboxTimer = Timer.periodic(30.seconds, (_) {
@@ -185,7 +185,7 @@ Future<void> consumeLocalFile(
       Hive.globalSettingsBox.getValue()!.skipDocumentPreprarationOnUpload;
   if (shouldDirectlyUpload) {
     try {
-      final taskId = await context.read<PaperlessDocumentsApi>().create(
+      final taskId = await context.read<EdocsDocumentsApi>().create(
             await bytes,
             filename: filename,
             title: p.basenameWithoutExtension(file.path),

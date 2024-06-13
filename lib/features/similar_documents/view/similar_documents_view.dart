@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/offline_widget.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
-import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/translation/error_code_localization_mapper.dart';
+import 'package:edocs_mobile/core/widgets/offline_widget.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:edocs_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
+import 'package:edocs_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class SimilarDocumentsView extends StatefulWidget {
   final ScrollController pagingScrollController;
@@ -31,7 +31,7 @@ class _SimilarDocumentsViewState extends State<SimilarDocumentsView>
     super.initState();
     try {
       context.read<SimilarDocumentsCubit>().initialize();
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

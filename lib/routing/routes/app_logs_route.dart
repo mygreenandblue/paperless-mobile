@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_mobile/features/logging/cubit/app_logs_cubit.dart';
-import 'package:paperless_mobile/features/logging/view/app_logs_page.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/theme.dart';
+import 'package:edocs_mobile/features/logging/cubit/app_logs_cubit.dart';
+import 'package:edocs_mobile/features/logging/view/app_logs_page.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/theme.dart';
 
 part 'app_logs_route.g.dart';
 

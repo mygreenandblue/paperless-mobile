@@ -23,19 +23,19 @@ To get a local copy up and running follow these simple steps.
 ## Install dependencies and generate files
 1. First, clone the repository:
 ```sh
-git clone https://github.com/astubenbord/paperless-mobile.git
+git clone https://github.com/astubenbord/edocs-mobile.git
 ```
 
 You can now run the `scripts/install_dependencies.sh` script at the root of the project, which will automatically install dependencies and generate files for both the app and local packages.
 
 If you want to manually install dependencies and build generated files, you can also run the following commands:
 
-### Inside the `packages/paperless_api/` folder:
-2. Install the dependencies for `paperless_api`
+### Inside the `packages/edocs_api/` folder:
+2. Install the dependencies for `edocs_api`
    ```sh
    flutter pub get
    ```
-3. Build generated files for `paperless_api`
+3. Build generated files for `edocs_api`
    ```sh
     flutter pub run build_runner build --delete-conflicting-outputs
    ```

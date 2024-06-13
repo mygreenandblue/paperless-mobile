@@ -308,8 +308,8 @@
   "@requestTimedOut": {},
   "anErrorOccurredRemovingTheScans": "Une erreur est survenue en retirant les scans de votre appareil.",
   "@anErrorOccurredRemovingTheScans": {},
-  "couldNotReachYourPaperlessServer": "Impossible d'atteindre votre serveur paperless, êtes-vous sûr qu'il est opérationnel ?",
-  "@couldNotReachYourPaperlessServer": {},
+  "couldNotReachYouredocsServer": "Impossible d'atteindre votre serveur edocs, êtes-vous sûr qu'il est opérationnel ?",
+  "@couldNotReachYouredocsServer": {},
   "couldNotLoadSimilarDocuments": "Impossible de charger la liste des documents similaires.",
   "@couldNotLoadSimilarDocuments": {},
   "couldNotCreateStoragePath": "Impossible de créer le chemin de stockage, veuillez réessayer.",
@@ -544,8 +544,8 @@
       "serverAddress": {}
     }
   },
-  "connectToEdms": "Connecté à Paperless",
-  "@connectToEdms": {},
+  "connectToEDOCS": "Connecté à edocs",
+  "@connectToEDOCS": {},
   "username": "Identifiant",
   "@username": {},
   "usernameMustNotBeEmpty": "L'identifiant ne doit pas être vide.",
@@ -608,8 +608,8 @@
   "@previewScan": {},
   "scrollToTop": "Remonter au début",
   "@scrollToTop": {},
-  "paperlessServerVersion": "Version du serveur Paperless",
-  "@paperlessServerVersion": {},
+  "edocsServerVersion": "Version du serveur edocs",
+  "@edocsServerVersion": {},
   "darkTheme": "Thème Sombre",
   "@darkTheme": {},
   "lightTheme": "Thème Clair",
@@ -622,7 +622,7 @@
   "@languageAndVisualAppearance": {},
   "applicationSettings": "Application",
   "@applicationSettings": {},
-  "colorSchemeHint": "Choisissez entre une palette de couleurs inspirée par le vert Paperless traditionnel, ou utilisez la palette de couleur dynamique basée sur le thème système.",
+  "colorSchemeHint": "Choisissez entre une palette de couleurs inspirée par le vert edocs traditionnel, ou utilisez la palette de couleur dynamique basée sur le thème système.",
   "@colorSchemeHint": {},
   "colorSchemeNotSupportedWarning": "Le thème dynamique n'est supporté que sur les appareils sous Android 12 ou plus. Sélectionner l'option 'Dynamique' pourrait ne pas avoir d'effet en fonction de l'implémentation de votre système d'exploitation.",
   "@colorSchemeNotSupportedWarning": {},
@@ -658,7 +658,7 @@
   "@filterTags": {},
   "inboxTag": "Étiquette de boîte de réception",
   "@inboxTag": {},
-  "uploadInferValuesHint": "Si vous spécifiez des valeurs pour ces champs, votre instance Paperless ne dérivera pas automatiquement une valeur. Si vous voulez que ces valeurs soient automatiquement remplies par votre serveur, laissez les champs vides.",
+  "uploadInferValuesHint": "Si vous spécifiez des valeurs pour ces champs, votre instance edocs ne dérivera pas automatiquement une valeur. Si vous voulez que ces valeurs soient automatiquement remplies par votre serveur, laissez les champs vides.",
   "@uploadInferValuesHint": {},
   "useTheConfiguredBiometricFactorToAuthenticate": "Utiliser le facteur biométrique pour vous authentifier et déverrouiller vos documents.",
   "@useTheConfiguredBiometricFactorToAuthenticate": {},
@@ -765,7 +765,7 @@
   "sourceCode": "Code source",
   "findTheSourceCodeOn": "Trouvez le code source sur",
   "@findTheSourceCodeOn": {
-    "description": "Text before link to EDMS Mobile GitHub"
+    "description": "Text before link to EDOCS Mobile GitHub"
   },
   "rememberDecision": "Se souvenir de mon choix",
   "defaultDownloadFileType": "Type de fichier par défaut",
@@ -857,7 +857,7 @@
   "@convertSinglePageScanToPdf": {
     "description": "description of the upload scans as pdf setting"
   },
-  "loginRequiredPermissionsHint": "L'utilisation de EDMS Mobile nécessite un ensemble minimal d'autorisations utilisateur depuis la version 1.14.0 et supérieure. Par conséquent, assurez-vous que l'utilisateur connecté a la permission de voir les autres utilisateurs (Utilisateur → Affichage) et les paramètres (UISettings → Affichage). Si vous ne disposez pas de ces autorisations, veuillez contacter un administrateur de votre serveur paperless-ngx.",
+  "loginRequiredPermissionsHint": "L'utilisation de EDOCS Mobile nécessite un ensemble minimal d'autorisations utilisateur depuis la version 1.14.0 et supérieure. Par conséquent, assurez-vous que l'utilisateur connecté a la permission de voir les autres utilisateurs (Utilisateur → Affichage) et les paramètres (UISettings → Affichage). Si vous ne disposez pas de ces autorisations, veuillez contacter un administrateur de votre serveur edocs-ngx.",
   "@loginRequiredPermissionsHint": {
     "description": "Hint shown on the login page informing the user of the required permissions to use the app."
   },
@@ -1044,7 +1044,7 @@
   },
   "permissions": "Permissions",
   "newNote": "New note",
-  "notesMarkdownSyntaxSupportHint": "EDMS Mobile can render notes using basic markdown syntax. Try it out!",
+  "notesMarkdownSyntaxSupportHint": "EDOCS Mobile can render notes using basic markdown syntax. Try it out!",
   "pendingFiles": "Tài liệu bị từ chối",
   "@pendingFiles": {},
   "pendingFilesEmpty": "Không có tài liệu bị từ chối",
@@ -1071,8 +1071,15 @@
   "editBriefcase": "Chỉnh sửa hộp/cặp","selecteWarehouse": "Chọn kho",
   "selectShelf": "Chọn giá/kệ",
   "selectBriefcase": "Chọn hộp/cặp",
-  "notiActionSuccess": "Thao tác cảu bạn trên hệ thống đã thành công",
+  "notiActionSuccess": "Thao tác của bạn trên hệ thống đã thành công",
   "notiActionFail": "Thao tác của bạn trên hệ thống thất bại",
-  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}"
+  "bulkEditWarwhouseAssignMessage": "{count, plural, one{Thao tác này sẽ gán hộp/cặp {warehouse} cho tài liệu đã chọn.} other{Thao tác này sẽ gán hộp/cặp {warehouse} cho {count} tài liệu đã chọn.}}",  "add":"Tạo mới",
+ "addFolder":"Thêm thư mục",
+  "personalMaterial":"Tài liệu cá nhân",
+  "allFileAndFolder":"Tất cả thư mục và tài liệu của bạn",
+  "allFolder":"Tất cả thư mục",
+  "chooseFolder":"Chọn thư mục",
+  "rootFolder":"Thư mục gốc",
+  "youDidNotAnyFolderYet": "Bạn chưa lưu bất kỳ thư mục nào, hãy tạo một thư mục và nó sẽ được hiển thị ở đây."
 
 }

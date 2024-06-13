@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_tab_view.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routing/routes/labels_route.dart';
-import 'package:paperless_mobile/routing/routes/physical_warehouse_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/delegate/customizable_sliver_persistent_header_delegate.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/core/widgets/material/colored_tab_bar.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_tab_view.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/routing/routes/physical_warehouse_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class LabelsPage extends StatefulWidget {
   const LabelsPage({Key? key}) : super(key: key);
@@ -47,7 +47,7 @@ class _LabelsPageState extends State<LabelsPage>
   @override
   void initState() {
     super.initState();
-    final user = context.read<LocalUserAccount>().paperlessUser;
+    final user = context.read<LocalUserAccount>().edocsUser;
     _tabController = TabController(
         length: _calculateTabCount(user), vsync: this)
       ..addListener(() => setState(() => _currentIndex = _tabController.index));
@@ -69,7 +69,7 @@ class _LabelsPageState extends State<LabelsPage>
               Hive.box<GlobalSettings>(HiveBoxes.globalSettings)
                   .getValue()!
                   .loggedInUserId;
-          final user = box.get(currentUserId)!.paperlessUser;
+          final user = box.get(currentUserId)!.edocsUser;
           final fabLabel = [
             S.of(context)!.addCorrespondent,
             S.of(context)!.addDocumentType,

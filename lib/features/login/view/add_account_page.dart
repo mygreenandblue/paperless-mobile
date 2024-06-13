@@ -5,22 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/exception/server_message_exception.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/model/reachability_status.dart';
-import 'package:paperless_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
-import 'package:paperless_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
-import 'package:paperless_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
-import 'package:paperless_mobile/generated/assets.gen.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/app_logs_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/exception/server_message_exception.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/login/model/client_certificate.dart';
+import 'package:edocs_mobile/features/login/model/login_form_credentials.dart';
+import 'package:edocs_mobile/features/login/model/reachability_status.dart';
+import 'package:edocs_mobile/features/login/view/widgets/form_fields/client_certificate_form_field.dart';
+import 'package:edocs_mobile/features/login/view/widgets/form_fields/server_address_form_field.dart';
+import 'package:edocs_mobile/features/login/view/widgets/form_fields/user_credentials_form_field.dart';
+import 'package:edocs_mobile/generated/assets.gen.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/app_logs_route.dart';
 
 class AddAccountPage extends StatefulWidget {
   final FutureOr<void> Function(
@@ -237,14 +237,13 @@ class _AddAccountPageState extends State<AddAccountPage> {
         _formKey.currentState?.getRawValue<ClientCertificate>(
       ClientCertificateFormField.fkClientCertificate,
     );
-    final status = await context
-        .read<ConnectivityStatusService>()
-        .isPaperlessServerReachable(
-          address ??
-              _formKey.currentState!
-                  .getRawValue(ServerAddressFormField.fkServerAddress),
-          selectedCertificate,
-        );
+    final status =
+        await context.read<ConnectivityStatusService>().isedocsServerReachable(
+              address ??
+                  _formKey.currentState!
+                      .getRawValue(ServerAddressFormField.fkServerAddress),
+              selectedCertificate,
+            );
     setState(() {
       _isCheckingConnection = false;
       _reachabilityStatus = status;
@@ -328,7 +327,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           form[ServerAddressFormField.fkServerAddress],
           clientCertFormModel,
         );
-      } on PaperlessApiException catch (error) {
+      } on EdocsApiException catch (error) {
         showErrorMessage(context, error);
       } on ServerMessageException catch (error) {
         showLocalizedError(context, error.message);
@@ -339,6 +338,9 @@ class _AddAccountPageState extends State<AddAccountPage> {
       } finally {
         setState(() {
           _isFormSubmitted = false;
+        });
+        Future.delayed(const Duration(seconds: 9)).then((_) {
+          showSnackBar(context, S.of(context)!.notiActionFail);
         });
       }
     }

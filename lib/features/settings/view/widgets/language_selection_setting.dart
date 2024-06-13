@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/global_settings_builder.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/radio_settings_dialog.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class LanguageSelectionSetting extends StatefulWidget {
   const LanguageSelectionSetting({super.key});
@@ -13,6 +13,7 @@ class LanguageSelectionSetting extends StatefulWidget {
 
 class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
   static const _languageOptions = {
+    'vi': LanguageOption('Vietnamese', true),
     'en': LanguageOption('English (US)', true),
     'en_GB': LanguageOption('English (GB)', true),
     'de': LanguageOption('Deutsch', true),
@@ -24,7 +25,6 @@ class _LanguageSelectionSettingState extends State<LanguageSelectionSetting> {
     'ca': LanguageOption('Català', true),
     'ru': LanguageOption('Русский', true),
     'it': LanguageOption('Italiano', true),
-    'vi': LanguageOption('Vietnamese', true),
   };
 
   @override

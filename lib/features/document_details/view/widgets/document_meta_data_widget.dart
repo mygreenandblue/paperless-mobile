@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/repository/user_repository.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/archive_serial_number_field.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/format_helpers.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/repository/user_repository.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/archive_serial_number_field.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/details_item.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/format_helpers.dart';
 
 class DocumentMetaDataWidget extends StatelessWidget {
   final DocumentModel document;
@@ -23,7 +23,7 @@ class DocumentMetaDataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final currentUser = context.watch<LocalUserAccount>().edocsUser;
 
     return SliverList.list(
       children: [

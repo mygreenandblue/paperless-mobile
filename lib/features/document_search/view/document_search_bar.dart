@@ -1,16 +1,16 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
-import 'package:paperless_mobile/features/document_search/view/document_search_page.dart';
-import 'package:paperless_mobile/features/settings/view/manage_accounts_page.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/user_avatar.dart';
-import 'package:paperless_mobile/features/sharing/cubit/receive_share_cubit.dart';
-import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:edocs_mobile/features/document_search/cubit/document_search_cubit.dart';
+import 'package:edocs_mobile/features/document_search/view/document_search_page.dart';
+import 'package:edocs_mobile/features/settings/view/manage_accounts_page.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/user_avatar.dart';
+import 'package:edocs_mobile/features/sharing/cubit/receive_share_cubit.dart';
+import 'package:edocs_mobile/features/tasks/model/pending_tasks_notifier.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class DocumentSearchBar extends StatefulWidget {

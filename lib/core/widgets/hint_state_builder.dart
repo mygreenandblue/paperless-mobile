@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
 
 class HintStateBuilder extends StatelessWidget {
   final String? listenKey;

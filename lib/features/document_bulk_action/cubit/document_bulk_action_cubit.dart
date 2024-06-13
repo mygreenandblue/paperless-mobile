@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/transient_error.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/transient_error.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
 
 part 'document_bulk_action_state.dart';
 
 class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
-  final PaperlessDocumentsApi _documentsApi;
+  final EdocsDocumentsApi _documentsApi;
   final DocumentChangedNotifier _notifier;
 
   DocumentBulkActionCubit(
@@ -62,9 +62,9 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
       for (final doc in updatedDocuments) {
         _notifier.notifyUpdated(doc);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -86,9 +86,9 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
       for (final doc in updatedDocuments) {
         _notifier.notifyUpdated(doc);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -110,9 +110,9 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
       for (final doc in updatedDocuments) {
         _notifier.notifyUpdated(doc);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -134,9 +134,9 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
       for (final doc in updatedDocuments) {
         _notifier.notifyUpdated(doc);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),
@@ -165,9 +165,9 @@ class DocumentBulkActionCubit extends Cubit<DocumentBulkActionState> {
       for (final doc in updatedDocuments) {
         _notifier.notifyUpdated(doc);
       }
-    } on PaperlessApiException catch (e) {
+    } on EdocsApiException catch (e) {
       addError(
-        TransientPaperlessApiError(
+        TransientedocsApiError(
           code: e.code,
           details: e.details,
         ),

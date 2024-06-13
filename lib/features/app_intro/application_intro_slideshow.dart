@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:paperless_mobile/core/global/asset_images.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/biometric_authentication_setting.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/language_selection_setting.dart';
-import 'package:paperless_mobile/features/settings/view/widgets/theme_mode_setting.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/global/asset_images.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/biometric_authentication_setting.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/language_selection_setting.dart';
+import 'package:edocs_mobile/features/settings/view/widgets/theme_mode_setting.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class ApplicationIntroSlideshow extends StatefulWidget {
   const ApplicationIntroSlideshow({super.key});

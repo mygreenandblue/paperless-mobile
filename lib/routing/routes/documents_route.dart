@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
-import 'package:paperless_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
-import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/pages/document_details_page.dart';
-import 'package:paperless_mobile/features/document_edit/cubit/document_edit_cubit.dart';
-import 'package:paperless_mobile/features/document_edit/view/document_edit_page.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/features/documents/view/pages/documents_page.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/theme.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/document_bulk_action/cubit/document_bulk_action_cubit.dart';
+import 'package:edocs_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_label_page.dart';
+import 'package:edocs_mobile/features/document_bulk_action/view/widgets/fullscreen_bulk_edit_tags_widget.dart';
+import 'package:edocs_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:edocs_mobile/features/document_details/view/pages/document_details_page.dart';
+import 'package:edocs_mobile/features/document_edit/cubit/document_edit_cubit.dart';
+import 'package:edocs_mobile/features/document_edit/view/document_edit_page.dart';
+import 'package:edocs_mobile/features/documents/view/pages/document_view.dart';
+import 'package:edocs_mobile/features/documents/view/pages/documents_page.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/theme.dart';
 
 class DocumentsBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = documentsNavigatorKey;
@@ -114,11 +114,11 @@ class DocumentPreviewRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return DocumentView(
-      bytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
+      bytes: context.read<EdocsDocumentsApi>().downloadDocument(id),
       title: title,
     );
     // return DocumentView(
-    //   documentBytes: context.read<PaperlessDocumentsApi>().downloadDocument(id),
+    //   documentBytes: context.read<EdocsDocumentsApi>().downloadDocument(id),
     //   title: title,
     // );
   }

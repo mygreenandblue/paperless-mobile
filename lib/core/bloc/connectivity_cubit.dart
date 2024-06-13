@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
 
 class ConnectivityCubit extends Cubit<ConnectivityState> {
   final ConnectivityStatusService connectivityStatusService;

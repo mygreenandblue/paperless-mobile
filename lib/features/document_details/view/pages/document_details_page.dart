@@ -3,33 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/translation/error_code_localization_mapper.dart';
-import 'package:paperless_mobile/core/widgets/material/colored_tab_bar.dart';
-import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_content_widget.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_download_button.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_notes_widget.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_overview_widget.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/document_share_button.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
-import 'package:paperless_mobile/features/similar_documents/view/similar_documents_view.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
-import 'package:paperless_mobile/theme.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/accessibility/accessibility_utils.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/translation/error_code_localization_mapper.dart';
+import 'package:edocs_mobile/core/widgets/material/colored_tab_bar.dart';
+import 'package:edocs_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_content_widget.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_download_button.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_meta_data_widget.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_notes_widget.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_overview_widget.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_permissions_widget.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/document_share_button.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/similar_documents/cubit/similar_documents_cubit.dart';
+import 'package:edocs_mobile/features/similar_documents/view/similar_documents_view.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_mobile/theme.dart';
 
 class DocumentDetailsPage extends StatefulWidget {
   final int id;
@@ -249,7 +249,9 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                 ],
                 body: BlocBuilder<DocumentDetailsCubit, DocumentDetailsState>(
                   builder: (context, state) {
-                    context.read<LabelCubit>().loadAll();
+                    if (state.document?.warehouse != null) {
+                      context.read<LabelCubit>().loadAll();
+                    }
                     return BlocProvider(
                       create: (context) => SimilarDocumentsCubit(
                         context.read(),
@@ -410,7 +412,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
     final currentUser = context.watch<LocalUserAccount>();
 
     bool canEdit = context.watchInternetConnection &&
-        currentUser.paperlessUser.canEditDocuments;
+        currentUser.edocsUser.canEditDocuments;
     if (!canEdit) {
       return const SizedBox.shrink();
     }
@@ -454,7 +456,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ConnectivityAwareActionWrapper(
-                        disabled: !currentUser.paperlessUser.canDeleteDocuments,
+                        disabled: !currentUser.edocsUser.canDeleteDocuments,
                         offlineBuilder: (context, child) {
                           return const IconButton(
                             icon: Icon(Icons.delete),
@@ -534,7 +536,7 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
       try {
         await context.read<DocumentDetailsCubit>().delete(document);
         // showSnackBar(context, S.of(context)!.documentSuccessfullyDeleted);
-      } on PaperlessApiException catch (error, stackTrace) {
+      } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } finally {
         do {

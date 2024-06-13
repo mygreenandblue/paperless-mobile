@@ -2,24 +2,24 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/exception/server_message_exception.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
-import 'package:paperless_mobile/core/widgets/hint_card.dart';
-import 'package:paperless_mobile/core/extensions/dart_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
-import 'package:paperless_mobile/features/inbox/view/widgets/inbox_item.dart';
-import 'package:paperless_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/exception/server_message_exception.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_cancel_button.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/dialog_confirm_button.dart';
+import 'package:edocs_mobile/core/widgets/hint_card.dart';
+import 'package:edocs_mobile/core/extensions/dart_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/inbox/view/widgets/inbox_empty_widget.dart';
+import 'package:edocs_mobile/features/inbox/view/widgets/inbox_item.dart';
+import 'package:edocs_mobile/features/paged_document_view/view/document_paging_view_mixin.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
 
 class InboxPage extends StatefulWidget {
   const InboxPage({super.key});
@@ -74,7 +74,7 @@ class _InboxPageState extends State<InboxPage>
   @override
   Widget build(BuildContext context) {
     final canEditDocument =
-        context.watch<LocalUserAccount>().paperlessUser.canEditDocuments;
+        context.watch<LocalUserAccount>().edocsUser.canEditDocuments;
     return Scaffold(
       drawer: const AppDrawer(),
       floatingActionButton: ConnectivityAwareActionWrapper(
@@ -272,7 +272,7 @@ class _InboxPageState extends State<InboxPage>
   }
 
   Future<bool> _onItemDismissed(DocumentModel doc) async {
-    if (!context.read<LocalUserAccount>().paperlessUser.canEditDocuments) {
+    if (!context.read<LocalUserAccount>().edocsUser.canEditDocuments) {
       showSnackBar(context, S.of(context)!.missingPermissions);
       return false;
     }
@@ -293,14 +293,14 @@ class _InboxPageState extends State<InboxPage>
         ),
       );
       return true;
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } on ServerMessageException catch (error) {
       showGenericError(context, error.message);
     } catch (error) {
       showErrorMessage(
         context,
-        const PaperlessApiException.unknown(),
+        const EdocsApiException.unknown(),
       );
     }
     return false;
@@ -314,7 +314,7 @@ class _InboxPageState extends State<InboxPage>
       await context
           .read<InboxCubit>()
           .undoRemoveFromInbox(document, removedTags);
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

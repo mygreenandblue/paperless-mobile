@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/persistent_repository.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/persistent_repository.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
 
 part 'user_repository_state.dart';
 
 class UserRepository extends PersistentRepository<UserRepositoryState> {
-  final PaperlessUserApi _userApi;
+  final EdocsUserApi _userApi;
 
   UserRepository(this._userApi) : super(const UserRepositoryState());
 
@@ -15,8 +15,8 @@ class UserRepository extends PersistentRepository<UserRepositoryState> {
   }
 
   Future<Iterable<UserModel>> findAll() async {
-    if (_userApi is PaperlessUserApiV3Impl) {
-      final users = await (_userApi as PaperlessUserApiV3Impl).findAll();
+    if (_userApi is EdocsUserApiV3Impl) {
+      final users = await (_userApi as EdocsUserApiV3Impl).findAll();
       emit(state.copyWith(users: {for (var e in users) e.id: e}));
       return users;
     }
@@ -29,8 +29,8 @@ class UserRepository extends PersistentRepository<UserRepositoryState> {
   }
 
   Future<UserModel?> find(int id) async {
-    if (_userApi is PaperlessUserApiV3Impl) {
-      final user = await (_userApi as PaperlessUserApiV3Impl).find(id);
+    if (_userApi is EdocsUserApiV3Impl) {
+      final user = await (_userApi as EdocsUserApiV3Impl).find(id);
       emit(state.copyWith(users: state.users..[id] = user));
       return user;
     }

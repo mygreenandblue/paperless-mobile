@@ -1,4 +1,4 @@
-import 'package:paperless_mobile/features/notifications/models/notification_actions.dart';
+import 'package:edocs_mobile/features/notifications/models/notification_actions.dart';
 
 abstract class NotificationTapResponsePayload {
   final NotificationResponseOpenAction type;

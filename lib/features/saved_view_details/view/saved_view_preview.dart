@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
-import 'package:paperless_mobile/features/landing/view/widgets/expansion_card.dart';
-import 'package:paperless_mobile/features/saved_view_details/cubit/saved_view_preview_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/items/document_list_item.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/expansion_card.dart';
+import 'package:edocs_mobile/features/saved_view_details/cubit/saved_view_preview_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:provider/provider.dart';
 
 class SavedViewPreview extends StatelessWidget {

@@ -1,12 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/edit_label/view/label_form.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/features/edit_label/view/label_form.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class AddLabelPage<T extends Label> extends StatelessWidget {
   final String? initialName;
@@ -20,6 +21,7 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
   final Function(String?)? onChangedShelf;
   final Function(String?)? onChangedWarehouse;
   final int? parentId;
+  final int? parentFolder;
 
   const AddLabelPage({
     Key? key,
@@ -34,6 +36,7 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
     this.onChangedShelf,
     this.onChangedWarehouse,
     this.parentId,
+    this.parentFolder,
   }) : super(key: key);
 
   @override
@@ -54,6 +57,7 @@ class AddLabelPage<T extends Label> extends StatelessWidget {
         onChangedShelf: onChangedShelf,
         onChangedWarehouse: onChangedWarehouse,
         parentId: parentId,
+        parentFolder: parentFolder,
       ),
     );
   }
@@ -66,12 +70,13 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
   final Future<T> Function(BuildContext context, T label) onSubmit;
   final String? initialType;
   final Widget pageTitle;
-
+  final int? parentFolder;
   final String? initialShelf;
   final String? initialWarehouse;
   final Function(String?)? onChangedShelf;
   final Function(String?)? onChangedWarehouse;
   final int? parentId;
+
   const AddLabelFormWidget({
     Key? key,
     this.label,
@@ -85,6 +90,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
     this.onChangedShelf,
     this.onChangedWarehouse,
     this.parentId,
+    this.parentFolder,
   }) : super(key: key);
 
   @override
@@ -107,6 +113,7 @@ class AddLabelFormWidget<T extends Label> extends StatelessWidget {
         onChangedShelf: onChangedShelf,
         onChangedWarehouse: onChangedWarehouse,
         parentId: parentId,
+        parentFolder: parentFolder,
       ),
     );
   }

@@ -3,31 +3,31 @@ import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/documents/cubit/documents_cubit.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/documents_empty_state.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_view_changed_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/saved_views/saved_views_widget.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/confirm_delete_saved_view_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/document_selection_sliver_app_bar.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/sort_documents_button.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/tasks/model/pending_tasks_notifier.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/documents_empty_state.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/saved_views/saved_view_changed_dialog.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/saved_views/saved_views_widget.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/search/document_filter_panel.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/selection/confirm_delete_saved_view_dialog.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/selection/document_selection_sliver_app_bar.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/sort_documents_button.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:edocs_mobile/features/tasks/model/pending_tasks_notifier.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class DocumentFilterIntent {
@@ -92,7 +92,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
   }
 
   Future<void> _reloadData() async {
-    final user = context.read<LocalUserAccount>().paperlessUser;
+    final user = context.read<LocalUserAccount>().edocsUser;
     try {
       await Future.wait([
         context.read<DocumentsCubit>().reload(),
@@ -313,7 +313,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           if (offset > 128 && _savedViewsExpansionController.isExpanded) {
             _savedViewsExpansionController.collapse();
           }
-          // Workaround for https://github.com/astubenbord/paperless-mobile/issues/341 probably caused by https://github.com/flutter/flutter/issues/138153
+          // Workaround for https://github.com/astubenbord/edocs-mobile/issues/341 probably caused by https://github.com/flutter/flutter/issues/138153
         } on TypeError catch (error) {
           logger.fw(
             "An exception was thrown, but this message can probably be ignored. See issue #341 for more details.",
@@ -332,10 +332,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
         }
 
         if (offset >= max * 0.7) {
-          context
-              .read<DocumentsCubit>()
-              .loadMore()
-              .onError<PaperlessApiException>(
+          context.read<DocumentsCubit>().loadMore().onError<EdocsApiException>(
                 (error, stackTrace) => showErrorMessage(
                   context,
                   error,
@@ -361,7 +358,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     previous.filter != current.filter,
                 builder: (context, state) {
                   final currentUser = context.watch<LocalUserAccount>();
-                  if (!currentUser.paperlessUser.canViewSavedViews) {
+                  if (!currentUser.edocsUser.canViewSavedViews) {
                     return const SizedBox.shrink();
                   }
                   return SavedViewsWidget(
@@ -412,51 +409,40 @@ class _DocumentsPageState extends State<DocumentsPage> {
                     ),
                   );
                 }
+
                 final allowToggleFilter = state.selection.isEmpty;
                 context.read<LabelCubit>().loadBoxcase();
+
                 return BlocBuilder<LabelCubit, LabelState>(
                   builder: (context, lbState) {
-                    return lbState.isLoading
-                        ? const SliverToBoxAdapter(
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : SliverAdaptiveDocumentsView(
-                            viewType: state.viewType,
-                            onTap: (document) {
-                              DocumentDetailsRoute(
-                                title: document.title,
-                                id: document.id,
-                                thumbnailUrl:
-                                    document.buildThumbnailUrl(context),
-                              ).push(context);
-                            },
-                            onSelected: context
-                                .read<DocumentsCubit>()
-                                .toggleDocumentSelection,
-                            hasInternetConnection:
-                                connectivityState.isConnected,
-                            onTagSelected:
-                                allowToggleFilter ? _addTagToFilter : null,
-                            onCorrespondentSelected: allowToggleFilter
-                                ? _addCorrespondentToFilter
-                                : null,
-                            onWarehouseSelected: allowToggleFilter
-                                ? _addWarehouseToFilter
-                                : null,
-                            onDocumentTypeSelected: allowToggleFilter
-                                ? _addDocumentTypeToFilter
-                                : null,
-                            onStoragePathSelected: allowToggleFilter
-                                ? _addStoragePathToFilter
-                                : null,
-                            documents: state.documents,
-                            hasLoaded: state.hasLoaded,
-                            isLabelClickable: true,
-                            isLoading: state.isLoading,
-                            selectedDocumentIds: state.selectedIds,
-                          );
+                    return SliverAdaptiveDocumentsView(
+                      viewType: state.viewType,
+                      onTap: (document) {
+                        DocumentDetailsRoute(
+                          title: document.title,
+                          id: document.id,
+                          thumbnailUrl: document.buildThumbnailUrl(context),
+                        ).push(context);
+                      },
+                      onSelected: context
+                          .read<DocumentsCubit>()
+                          .toggleDocumentSelection,
+                      hasInternetConnection: connectivityState.isConnected,
+                      onTagSelected: allowToggleFilter ? _addTagToFilter : null,
+                      onCorrespondentSelected:
+                          allowToggleFilter ? _addCorrespondentToFilter : null,
+                      onWarehouseSelected:
+                          allowToggleFilter ? _addWarehouseToFilter : null,
+                      onDocumentTypeSelected:
+                          allowToggleFilter ? _addDocumentTypeToFilter : null,
+                      onStoragePathSelected:
+                          allowToggleFilter ? _addStoragePathToFilter : null,
+                      documents: state.documents,
+                      hasLoaded: state.hasLoaded,
+                      isLabelClickable: true,
+                      isLoading: state.isLoading,
+                      selectedDocumentIds: state.selectedIds,
+                    );
                   },
                 );
               },
@@ -536,7 +522,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               .read<DocumentsCubit>()
               .updateFilter(filter: filterIntent.filter!);
         }
-      } on PaperlessApiException catch (error, stackTrace) {
+      } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       }
     }
@@ -581,7 +567,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           );
           break;
       }
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -611,7 +597,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ));
           break;
       }
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -641,7 +627,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
               ));
           break;
       }
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -672,7 +658,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           );
           break;
       }
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -703,7 +689,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
           );
           break;
       }
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }

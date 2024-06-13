@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="de.astubenbord.paperless_mobile">
-    <application android:label="EDMS Mobile"
+    package="de.astubenbord.edocs_mobile">
+    <application android:label="EDOCS Mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- START Snippet from https://github.com/qcasey/paperless_share -->
+            <!-- START Snippet from https://github.com/qcasey/edocs_share -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -162,7 +162,7 @@
                 <data
                     android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
             </intent-filter>
-            <!-- END Snippet from https://github.com/qcasey/paperless_share -->
+            <!-- END Snippet from https://github.com/qcasey/edocs_share -->
 
 
         </activity>

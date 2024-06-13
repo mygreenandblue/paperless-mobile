@@ -1,6 +1,6 @@
-Ein (fast) vollwertiger mobiler Paperless client kompatibel mit Paperless.
+Ein (fast) vollwertiger mobiler edocs client kompatibel mit edocs.
 
-Das Benutzen der App setzt den Zugang zu einer laufenden Paperless-ng*x Instanz voraus.
+Das Benutzen der App setzt den Zugang zu einer laufenden edocs-ng*x Instanz voraus.
 
 * Betrachte und suche Dokumente
 * Bearbeite, lösche, oder füge neue Dokumente hinzu

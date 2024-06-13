@@ -1,25 +1,25 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/util/lambda_utils.dart';
-import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
-import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/document_preview.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
-import 'package:paperless_mobile/features/inbox/cubit/inbox_cubit.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/util/lambda_utils.dart';
+import 'package:edocs_mobile/core/widgets/shimmer_placeholder.dart';
+import 'package:edocs_mobile/core/workarounds/colored_chip.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/delete_document_confirmation_dialog.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/document_preview.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
+import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_text.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class InboxItemPlaceholder extends StatelessWidget {
   const InboxItemPlaceholder({super.key});
@@ -248,7 +248,7 @@ class _InboxItemState extends State<InboxItem> {
   }
 
   Widget _buildActions(BuildContext context) {
-    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final currentUser = context.watch<LocalUserAccount>().edocsUser;
     final canEdit = currentUser.canEditDocuments;
     final canDelete = currentUser.canDeleteDocuments;
     final chipShape = RoundedRectangleBorder(

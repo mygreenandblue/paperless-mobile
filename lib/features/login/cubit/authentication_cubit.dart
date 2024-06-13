@@ -3,31 +3,31 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/bloc/transient_error.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_app_state.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_settings.dart';
-import 'package:paperless_mobile/core/database/tables/user_credentials.dart';
-import 'package:paperless_mobile/core/factory/paperless_api_factory.dart';
-import 'package:paperless_mobile/core/interceptor/language_header.interceptor.dart';
-import 'package:paperless_mobile/core/security/session_manager_impl.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/features/logging/utils/redaction_utils.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/model/reachability_status.dart';
-import 'package:paperless_mobile/features/login/services/authentication_service.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/bloc/transient_error.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_app_state.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_settings.dart';
+import 'package:edocs_mobile/core/database/tables/user_credentials.dart';
+import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
+import 'package:edocs_mobile/core/interceptor/language_header.interceptor.dart';
+import 'package:edocs_mobile/core/security/session_manager_impl.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/features/logging/utils/redaction_utils.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/login/model/client_certificate.dart';
+import 'package:edocs_mobile/features/login/model/login_form_credentials.dart';
+import 'package:edocs_mobile/features/login/model/reachability_status.dart';
+import 'package:edocs_mobile/features/login/services/authentication_service.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 part 'authentication_state.dart';
 
@@ -35,7 +35,7 @@ typedef _FutureVoidCallback = Future<void> Function();
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   final LocalAuthenticationService _localAuthService;
-  final PaperlessApiFactory _apiFactory;
+  final EdocsApiFactory _apiFactory;
   final SessionManager _sessionManager;
   final ConnectivityStatusService _connectivityService;
   final LocalNotificationService _notificationService;
@@ -58,6 +58,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       // Cancel duplicate login requests
       return;
     }
+
     emit(const AuthenticatingState(AuthenticatingStage.authenticating));
     final localUserId = "${credentials.username}@$serverUrl";
     final redactedId = redactUserId(localUserId);
@@ -67,6 +68,24 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       className: runtimeType.toString(),
       methodName: 'login',
     );
+    // Define the timeout duration
+    const authTimeoutDuration = Duration(seconds: 10);
+
+    // Start a timer to handle the timeout
+    bool isAuthCompleted = false;
+    Future.delayed(authTimeoutDuration).then((_) {
+      if (!isAuthCompleted) {
+        emit(
+          AuthenticationErrorState(
+            serverUrl: serverUrl,
+            username: credentials.username!,
+            password: credentials.password!,
+            clientCertificate: clientCertificate,
+          ),
+        );
+      }
+    });
+
     try {
       await _addUser(
         localUserId,
@@ -86,7 +105,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
               AuthenticatingStage.persistingLocalUserData));
         },
       );
-    } on PaperlessApiException catch (exception, stackTrace) {
+      isAuthCompleted = true;
+    } on EdocsApiException catch (exception, stackTrace) {
       emit(
         AuthenticationErrorState(
           serverUrl: serverUrl,
@@ -342,18 +362,18 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       className: runtimeType.toString(),
       methodName: 'restoreSession',
     );
-    final isPaperlessServerReachable =
-        await _connectivityService.isPaperlessServerReachable(
+    final isedocsServerReachable =
+        await _connectivityService.isedocsServerReachable(
               localUserAccount.serverUrl,
               authentication.clientCertificate,
             ) ==
             ReachabilityStatus.reachable;
     logger.fd(
-      "Trying to update remote paperless user...",
+      "Trying to update remote edocs user...",
       className: runtimeType.toString(),
       methodName: 'restoreSession',
     );
-    if (isPaperlessServerReachable) {
+    if (isedocsServerReachable) {
       final apiVersion = await _getApiVersion(_sessionManager.client);
       await _updateRemoteUser(
         _sessionManager,
@@ -361,13 +381,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         apiVersion,
       );
       logger.fd(
-        "Successfully updated remote paperless user.",
+        "Successfully updated remote edocs user.",
         className: runtimeType.toString(),
         methodName: 'restoreSession',
       );
     } else {
       logger.fw(
-        "Could not update remote paperless user - "
+        "Could not update remote edocs user - "
         "Server could not be reached. The app might behave unexpected!",
         className: runtimeType.toString(),
         methodName: 'restoreSession',
@@ -503,7 +523,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     await onFetchUserInformation?.call();
     final apiVersion = await _getApiVersion(sessionManager.client);
     logger.fd(
-      "Trying to fetch remote paperless user for $redactedId.",
+      "Trying to fetch remote edocs user for $redactedId.",
       className: runtimeType.toString(),
       methodName: '_addUser',
     );
@@ -518,7 +538,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
           .findCurrentUser();
     } on DioException catch (error, stackTrace) {
       logger.fe(
-        "An error occurred while fetching the remote paperless user.",
+        "An error occurred while fetching the remote edocs user.",
         className: runtimeType.toString(),
         methodName: '_addUser',
         error: error,
@@ -528,7 +548,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       rethrow;
     }
     logger.fd(
-      "Remote paperless user successfully fetched.",
+      "Remote edocs user successfully fetched.",
       className: runtimeType.toString(),
       methodName: '_addUser',
     );
@@ -547,7 +567,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         id: localUserId,
         settings: LocalUserSettings(),
         serverUrl: serverUrl,
-        paperlessUser: serverUser,
+        edocsUser: serverUser,
         apiVersion: apiVersion,
       ),
     );
@@ -661,11 +681,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       className: runtimeType.toString(),
       methodName: '_updateRemoteUser',
     );
-    final updatedPaperlessUser = await _apiFactory
+    final updatededocsUser = await _apiFactory
         .createUserApi(sessionManager.client, apiVersion: apiVersion)
         .findCurrentUser();
 
-    localUserAccount.paperlessUser = updatedPaperlessUser;
+    localUserAccount.edocsUser = updatededocsUser;
     await localUserAccount.save();
     logger.fd(
       "Successfully updated remote user object.",

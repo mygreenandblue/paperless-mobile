@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/database/hive/hive_extensions.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
-import 'package:paperless_mobile/features/login/view/login_page.dart';
-import 'package:paperless_mobile/features/login/view/login_to_existing_account_page.dart';
-import 'package:paperless_mobile/features/login/view/verify_identity_page.dart';
-import 'package:paperless_mobile/features/login/view/widgets/login_transition_page.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/keys.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/routes.dart';
+import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
+import 'package:edocs_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:edocs_mobile/features/login/model/client_certificate.dart';
+import 'package:edocs_mobile/features/login/view/login_page.dart';
+import 'package:edocs_mobile/features/login/view/login_to_existing_account_page.dart';
+import 'package:edocs_mobile/features/login/view/verify_identity_page.dart';
+import 'package:edocs_mobile/features/login/view/widgets/login_transition_page.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/keys.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/routes.dart';
 part 'login_route.g.dart';
 
 @TypedGoRoute<LoginRoute>(

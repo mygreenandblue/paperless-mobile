@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/interceptor/dio_offline_interceptor.dart';
-import 'package:paperless_mobile/core/interceptor/dio_unauthorized_interceptor.dart';
-import 'package:paperless_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
-import 'package:paperless_mobile/core/security/session_manager.dart';
-import 'package:paperless_mobile/features/login/model/client_certificate.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/interceptor/dio_offline_interceptor.dart';
+import 'package:edocs_mobile/core/interceptor/dio_unauthorized_interceptor.dart';
+import 'package:edocs_mobile/core/interceptor/retry_on_connection_change_interceptor.dart';
+import 'package:edocs_mobile/core/security/session_manager.dart';
+import 'package:edocs_mobile/features/login/model/client_certificate.dart';
 
 /// Manages the security context, authentication and base request URL for
 /// an underlying [Dio] client which is injected into all services
-/// requiring authenticated access to the Paperless REST API.
+/// requiring authenticated access to the edocs REST API.
 class SessionManagerImpl extends ValueNotifier<Dio> implements SessionManager {
   @override
   Dio get client => value;

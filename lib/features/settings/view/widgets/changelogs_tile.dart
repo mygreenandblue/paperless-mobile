@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/changelog_route.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/routes/changelog_route.dart';
 
 class ChangelogsTile extends StatelessWidget {
   const ChangelogsTile({super.key});

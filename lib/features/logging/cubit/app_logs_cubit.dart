@@ -6,9 +6,9 @@ import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_mobile/features/logging/models/parsed_log_message.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/notifications/services/local_notification_service.dart';
+import 'package:edocs_mobile/features/logging/models/parsed_log_message.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/notifications/services/local_notification_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
@@ -90,7 +90,7 @@ class AppLogsCubit extends Cubit<AppLogsState> {
 
   Future<void> saveLogs(DateTime date, String locale) async {
     var formattedDate = _fileNameFormat.format(date);
-    final filename = 'paperless_mobile_logs_$formattedDate.log';
+    final filename = 'edocs_mobile_logs_$formattedDate.log';
     // final parentDir = await FilePicker.platform.getDirectoryPath(
     //   dialogTitle: "Save log from ${DateFormat.yMd(locale).format(date)}",
     //   initialDirectory: Platform.isAndroid

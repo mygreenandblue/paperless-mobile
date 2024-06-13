@@ -2,18 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_details/cubit/document_details_cubit.dart';
-import 'package:paperless_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
-import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/helpers/permission_helpers.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/document_details/cubit/document_details_cubit.dart';
+import 'package:edocs_mobile/features/document_details/view/dialogs/select_file_type_dialog.dart';
+import 'package:edocs_mobile/features/settings/model/file_download_type.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/helpers/permission_helpers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -97,7 +97,7 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
       await context.read<DocumentDetailsCubit>().shareDocument(
             shareOriginal: original,
           );
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     } catch (error) {
       showGenericError(context, error);

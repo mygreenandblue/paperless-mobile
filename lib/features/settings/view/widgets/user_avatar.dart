@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
 
 class UserAvatar extends StatelessWidget {
   final LocalUserAccount account;
@@ -25,7 +25,7 @@ class UserAvatar extends StatelessWidget {
       ),
       child: CircleAvatar(
         child: Text(
-          (account.paperlessUser.fullName ?? account.paperlessUser.username)
+          (account.edocsUser.fullName ?? account.edocsUser.username)
               .split(" ")
               .take(2)
               .map((e) => e.substring(0, 1))

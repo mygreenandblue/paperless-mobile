@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/format_helpers.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/format_helpers.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
 
 class ClearCacheSetting extends StatefulWidget {
   const ClearCacheSetting({super.key});
@@ -31,7 +31,7 @@ class _ClearCacheSettingState extends State<ClearCacheSetting> {
       ),
       onTap: () async {
         final freedBytes = await FileService.instance
-            .clearDirectoryContent(PaperlessDirectoryType.temporary);
+            .clearDirectoryContent(edocsDirectoryType.temporary);
         showSnackBar(
           context,
           S.of(context)!.freedDiskSpace(formatBytes(freedBytes)),

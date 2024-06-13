@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/bloc/connectivity_cubit.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/features/edit_label/view/edit_label_page.dart';
-import 'package:paperless_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/features/edit_label/view/edit_label_page.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class EditWarehousePage extends StatelessWidget {
   final Warehouse warehouse;
@@ -22,9 +22,11 @@ class EditWarehousePage extends StatelessWidget {
       },
       child: BlocBuilder<ConnectivityCubit, ConnectivityState>(
         builder: (context, cennected) {
-          context
-              .read<LabelCubit>()
-              .loadAllWarehouseContains(warehouse.parentWarehouse ?? -1);
+          if (warehouse.parentWarehouse != null) {
+            context
+                .read<LabelCubit>()
+                .loadAllWarehouseContains(warehouse.parentWarehouse!);
+          }
 
           return BlocBuilder<LabelCubit, LabelState>(
             builder: (context, state) {
@@ -57,7 +59,7 @@ class EditWarehousePage extends StatelessWidget {
                               : context.read<LabelCubit>().removeBoxcase(label),
                       canDelete: context
                           .watch<LocalUserAccount>()
-                          .paperlessUser
+                          .edocsUser
                           .canDeleteWarehouse,
                       onChangedWarehouse: (w) {
                         context.read<LabelCubit>().onChangeWarehouse(w!);

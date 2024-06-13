@@ -4,16 +4,16 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_mobile/accessibility/accessibility_utils.dart';
-import 'package:paperless_mobile/core/extensions/document_extensions.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/document_search/cubit/document_search_cubit.dart';
-import 'package:paperless_mobile/features/document_search/view/remove_history_entry_dialog.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_mobile/accessibility/accessibility_utils.dart';
+import 'package:edocs_mobile/core/extensions/document_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/document_search/cubit/document_search_cubit.dart';
+import 'package:edocs_mobile/features/document_search/view/remove_history_entry_dialog.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/adaptive_documents_view.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/selection/view_type_selection_widget.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class DocumentSearchPage extends StatefulWidget {
   const DocumentSearchPage({super.key});

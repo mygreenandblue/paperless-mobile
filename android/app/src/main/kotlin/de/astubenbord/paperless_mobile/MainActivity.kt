@@ -1,4 +1,4 @@
-package de.astubenbord.paperless_mobile
+package de.astubenbord.edocs_mobile
 
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams

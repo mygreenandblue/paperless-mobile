@@ -35,8 +35,8 @@ class _FileThumbnailState extends State<FileThumbnail> {
     mimeType = widget.file != null
         ? mime.lookupMimeType(widget.file!.path)
         : mime.lookupMimeType('', headerBytes: widget.bytes);
-    _fileBytes = widget.file?.readAsBytes().then(_convertPdfToPng) ??
-        _convertPdfToPng(widget.bytes!);
+
+    _fileBytes = _loadFileBytes();
   }
 
   @override
@@ -92,6 +92,21 @@ class _FileThumbnailState extends State<FileThumbnail> {
   }
 
   // send pdfFile as params
+  Future<Uint8List?> _loadFileBytes() async {
+    Uint8List bytes;
+    if (widget.file != null) {
+      bytes = await widget.file!.readAsBytes();
+    } else {
+      bytes = widget.bytes!;
+    }
+
+    if (mimeType == 'application/pdf') {
+      return _convertPdfToPng(bytes);
+    } else {
+      return bytes;
+    }
+  }
+
   Future<Uint8List?> _convertPdfToPng(Uint8List bytes) async {
     final info = await Printing.info();
     if (!info.canRaster) {

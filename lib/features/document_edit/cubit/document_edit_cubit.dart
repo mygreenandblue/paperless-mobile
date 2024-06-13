@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
 
 part 'document_edit_state.dart';
 part 'document_edit_cubit.freezed.dart';
 
 class DocumentEditCubit extends Cubit<DocumentEditState> {
   final DocumentModel _initialDocument;
-  final PaperlessDocumentsApi _docsApi;
+  final EdocsDocumentsApi _docsApi;
   final LabelRepository _labelRepository;
   final DocumentChangedNotifier _notifier;
 

@@ -1,22 +1,31 @@
+import 'dart:convert';
+
+import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/landing/view/widgets/expansion_card.dart';
-import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
-import 'package:paperless_mobile/features/saved_view/cubit/saved_view_cubit.dart';
-import 'package:paperless_mobile/features/saved_view_details/view/saved_view_preview.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/routing/routes/documents_route.dart';
-import 'package:paperless_mobile/routing/routes/inbox_route.dart';
-import 'package:paperless_mobile/routing/routes/saved_views_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
-import 'package:paperless_mobile/routing/routes/changelog_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/saved_view_details/view/saved_view_non_Expandsion_preview.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/expansion_card.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
+import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
+import 'package:edocs_mobile/features/saved_view_details/view/saved_view_preview.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/routing/routes/changelog_route.dart';
+import 'package:edocs_mobile/routing/routes/documents_route.dart';
+import 'package:edocs_mobile/routing/routes/inbox_route.dart';
+import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -27,6 +36,8 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
+  TreeViewController? _controller;
+  final Map<String, bool> loadedNodes = {};
 
   Future<bool> get _shouldShowChangelog async {
     try {
@@ -58,7 +69,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final currentUser = context.watch<LocalUserAccount>().edocsUser;
     return SafeArea(
       child: Scaffold(
         drawer: const AppDrawer(),
@@ -86,6 +97,26 @@ class _LandingPageState extends State<LandingPage> {
                 ).padded(24),
               ),
               SliverToBoxAdapter(child: _buildStatisticsCard(context)),
+              if (currentUser.canViewSavedViews) ...[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
+                  sliver: SliverToBoxAdapter(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.folder_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ).paddedOnly(right: 8),
+                        Text(
+                          S.of(context)!.personalMaterial,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildFolderTree(context),
+              ],
               if (currentUser.canViewSavedViews) ...[
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 0, 8),
@@ -160,15 +191,15 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _buildStatisticsCard(BuildContext context) {
-    final currentUser = context.read<LocalUserAccount>().paperlessUser;
+    final currentUser = context.read<LocalUserAccount>().edocsUser;
     return ExpansionCard(
       initiallyExpanded: false,
       title: Text(
         S.of(context)!.statistics,
         style: Theme.of(context).textTheme.titleLarge,
       ),
-      content: FutureBuilder<PaperlessServerStatisticsModel>(
-        future: context.read<PaperlessServerStatsApi>().getServerStatistics(),
+      content: FutureBuilder<EdocsServerStatisticsModel>(
+        future: context.read<EdocsServerStatsApi>().getServerStatistics(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(
@@ -235,6 +266,189 @@ class _LandingPageState extends State<LandingPage> {
           ).padded(16);
         },
       ),
+    );
+  }
+
+  final showSnackBar = false;
+  final expandChildrenOnReady = false;
+  Future<void> _showPopupMenu(BuildContext context, Offset offset,
+      Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        MediaQuery.of(context).size.width - offset.dx,
+        MediaQuery.of(context).size.height - offset.dy,
+      ),
+      items: [
+        PopupMenuItem(
+          enabled: enable,
+          child: ListTile(
+            leading: const Icon(Icons.edit),
+            title: Text(S.of(context)!.edit),
+            onTap: () async {
+              Navigator.of(context).pop(); // Close the popup menu
+              final updated = await EditLabelRoute(folder!).push(context);
+              if (updated != null) {
+                updated is bool && updated == true
+                    ? context.read<LabelCubit>().removeNodeInTree(node)
+                    : context
+                        .read<LabelCubit>()
+                        .replaceNodeInTree(key, updated, node);
+              }
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: Text(S.of(context)!.addFolder),
+            onTap: () async {
+              Navigator.of(context).pop();
+              final createdLabel =
+                  await CreateLabelRoute(LabelType.folders, $extra: folder)
+                      .push(context);
+              if (createdLabel != null) {
+                context
+                    .read<LabelCubit>()
+                    .addFolderToNode(key, createdLabel, node);
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildFolderTree(BuildContext context) {
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        context.read<LabelCubit>().buildTree();
+        return BlocBuilder<LabelCubit, LabelState>(
+          builder: (context, lbState) {
+            return lbState.isLoading
+                ? const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : lbState.folderTree!.length == 0
+                    ? _buildEmptyTree(context)
+                    : _buildTree(context, lbState);
+          },
+        );
+      },
+    );
+  }
+
+  _buildTree(BuildContext context, LabelState lbState) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverTreeView.simple(
+        tree: lbState.folderTree!,
+        showRootNode: true,
+        expansionIndicatorBuilder: (context, node) =>
+            ChevronIndicator.rightDown(
+          alignment: Alignment.centerRight,
+          tree: node,
+          padding: const EdgeInsets.all(16),
+        ),
+        indentation: const Indentation(style: IndentStyle.squareJoint),
+        onTreeReady: (controller) {
+          _controller = controller;
+          if (expandChildrenOnReady)
+            controller.expandAllChildren(lbState.folderTree!);
+        },
+        builder: (context, node) {
+          return node.level == 0
+              ? GestureDetector(
+                  onLongPressStart: (details) {
+                    _showPopupMenu(context, details.globalPosition, node.data,
+                        false, node.key, node);
+                  },
+                  child: Card(
+                    child: ListTile(
+                      title: Text(S.of(context)!.personalMaterial),
+                      subtitle: Text(S.of(context)!.allFileAndFolder),
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onLongPressStart: (details) {
+                    node.data is Folder
+                        ? _showPopupMenu(context, details.globalPosition,
+                            node.data, true, node.key, node)
+                        : null;
+                  },
+                  child: node.data.hasField(node.data.toJson(), 'mime_type')
+                      ? const ListTile(
+                          title: Text('aa'),
+                          subtitle: Text('Level'),
+                        )
+                      : node.data is DocumentModel
+                          ? SavedViewNonExpandsionPreview(
+                              documentModel: node.data,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 1.5,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .shadow
+                                          .withOpacity(0.1)),
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(node.data.getValue('name')),
+                                subtitle: Text('Level ${node.level}'),
+                                leading: const Icon(Icons.folder_outlined),
+                                onTap: () {
+                                  _controller?.toggleExpansion(node);
+                                  if (loadedNodes[
+                                              node.data.getValue('checksum')] !=
+                                          true &&
+                                      node.children.isEmpty) {
+                                    context.read<LabelCubit>().loadChildNodes(
+                                          node.data.getValue('id'),
+                                          node,
+                                        );
+                                    setState(() {
+                                      loadedNodes[node.data
+                                          .getValue('checksum')] = true;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                );
+        },
+      ),
+    );
+  }
+
+  _buildEmptyTree(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            S.of(context)!.youDidNotAnyFolderYet,
+            style: Theme.of(context).textTheme.bodySmall,
+          ).padded(),
+          TextButton.icon(
+            onPressed: () {
+              CreateLabelRoute(
+                LabelType.folders,
+              ).push(context);
+            },
+            icon: const Icon(Icons.add),
+            label: Text(S.of(context)!.newView),
+          )
+        ],
+      ).paddedOnly(left: 16),
     );
   }
 }

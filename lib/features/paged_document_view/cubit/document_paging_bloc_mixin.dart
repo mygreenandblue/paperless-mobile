@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
 
 import 'paged_documents_state.dart';
 
@@ -14,7 +14,7 @@ import 'paged_documents_state.dart';
 mixin DocumentPagingBlocMixin<State extends DocumentPagingState>
     on BlocBase<State> {
   ConnectivityStatusService get connectivityStatusService;
-  PaperlessDocumentsApi get api;
+  EdocsDocumentsApi get api;
   DocumentChangedNotifier get notifier;
 
   Future<void> onFilterUpdated(DocumentFilter filter);

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/features/login/cubit/authentication_cubit.dart';
-import 'package:paperless_mobile/features/login/model/login_form_credentials.dart';
-import 'package:paperless_mobile/features/login/view/add_account_page.dart';
-import 'package:paperless_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/routing/navigation_keys.dart';
-import 'package:paperless_mobile/routing/routes.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/features/login/cubit/authentication_cubit.dart';
+import 'package:edocs_mobile/features/login/model/login_form_credentials.dart';
+import 'package:edocs_mobile/features/login/view/add_account_page.dart';
+import 'package:edocs_mobile/features/settings/view/dialogs/switch_account_dialog.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/navigation_keys.dart';
+import 'package:edocs_mobile/routing/routes.dart';
 
 part 'add_account_route.g.dart';
 
@@ -54,10 +54,10 @@ class AddAccountRoute extends GoRouteData {
                 context.pop();
               }
             }
-          } on PaperlessApiException catch (error, stackTrace) {
+          } on EdocsApiException catch (error, stackTrace) {
             showErrorMessage(context, error, stackTrace);
             // context.pop();
-          } on PaperlessFormValidationException catch (exception, stackTrace) {
+          } on edocsFormValidationException catch (exception, stackTrace) {
             if (exception.hasUnspecificErrorMessage()) {
               showLocalizedError(context, exception.unspecificErrorMessage()!);
               // context.pop();

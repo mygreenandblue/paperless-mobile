@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
-import 'package:paperless_mobile/core/notifier/document_changed_notifier.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/service/connectivity_status_service.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
+import 'package:edocs_mobile/core/notifier/document_changed_notifier.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/service/connectivity_status_service.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/document_paging_bloc_mixin.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
 
 part 'inbox_cubit.g.dart';
 part 'inbox_state.dart';
@@ -17,7 +17,7 @@ class InboxCubit extends HydratedCubit<InboxState>
     with DocumentPagingBlocMixin {
   final LabelRepository _labelRepository;
 
-  final PaperlessDocumentsApi _documentsApi;
+  final EdocsDocumentsApi _documentsApi;
 
   @override
   final ConnectivityStatusService connectivityStatusService;
@@ -25,10 +25,10 @@ class InboxCubit extends HydratedCubit<InboxState>
   @override
   final DocumentChangedNotifier notifier;
 
-  final PaperlessServerStatsApi _statsApi;
+  final EdocsServerStatsApi _statsApi;
 
   @override
-  PaperlessDocumentsApi get api => _documentsApi;
+  EdocsDocumentsApi get api => _documentsApi;
 
   InboxCubit(
     this._documentsApi,
@@ -105,7 +105,7 @@ class InboxCubit extends HydratedCubit<InboxState>
 
       if (inboxTags.isEmpty) {
         // no inbox tags = no inbox items.
-        return emit( 
+        return emit(
           state.copyWith(
             hasLoaded: true,
             value: [],

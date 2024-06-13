@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
-import 'package:paperless_mobile/features/document_details/view/widgets/details_item.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tags_widget.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/label_text.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/core/widgets/highlighted_text.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/widgets/shimmer_placeholder.dart';
+import 'package:edocs_mobile/features/document_details/view/widgets/details_item.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_widget.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/label_text.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class DocumentOverviewWidget extends StatelessWidget {
   final DocumentModel document;
@@ -26,7 +26,7 @@ class DocumentOverviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<LocalUserAccount>().paperlessUser;
+    final user = context.watch<LocalUserAccount>().edocsUser;
     final labelRepository = context.watch<LabelRepository>();
 
     return SliverList.list(

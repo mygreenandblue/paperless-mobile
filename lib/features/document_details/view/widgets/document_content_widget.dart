@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/widgets/highlighted_text.dart';
-import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/widgets/highlighted_text.dart';
+import 'package:edocs_mobile/core/widgets/shimmer_placeholder.dart';
 
 class DocumentContentWidget extends StatelessWidget {
   final DocumentModel document;

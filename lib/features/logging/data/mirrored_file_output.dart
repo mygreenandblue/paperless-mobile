@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:synchronized/synchronized.dart';
 

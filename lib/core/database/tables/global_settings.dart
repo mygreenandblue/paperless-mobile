@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/features/settings/model/color_scheme_option.dart';
-import 'package:paperless_mobile/features/settings/model/file_download_type.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/features/settings/model/color_scheme_option.dart';
+import 'package:edocs_mobile/features/settings/model/file_download_type.dart';
 
 part 'global_settings.g.dart';
 

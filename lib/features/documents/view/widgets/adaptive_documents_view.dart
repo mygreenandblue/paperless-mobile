@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/document_grid_loading_widget.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/items/document_grid_item.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/items/document_list_item.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/documents_list_loading_widget.dart';
-import 'package:paperless_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
-import 'package:paperless_mobile/features/settings/model/view_type.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/document_grid_loading_widget.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/items/document_detailed_item.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/items/document_grid_item.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/items/document_list_item.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/documents_list_loading_widget.dart';
+import 'package:edocs_mobile/features/paged_document_view/cubit/paged_documents_state.dart';
+import 'package:edocs_mobile/features/settings/model/view_type.dart';
 
 abstract class AdaptiveDocumentsView extends StatelessWidget {
   final List<DocumentModel> documents;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/widgets/dialog_utils/unsaved_changes_warning_dialog.dart';
+import 'package:edocs_mobile/core/widgets/dialog_utils/unsaved_changes_warning_dialog.dart';
 
 class PopWithUnsavedChanges extends StatelessWidget {
   final bool Function() hasChangesPredicate;

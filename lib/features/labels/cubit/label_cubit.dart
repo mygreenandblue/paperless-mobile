@@ -1,7 +1,8 @@
+import 'package:animated_tree_view/tree_view/tree_node.dart';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
 
 part 'label_cubit.freezed.dart';
 part 'label_state.dart';
@@ -11,18 +12,19 @@ class LabelCubit extends Cubit<LabelState> {
 
   LabelCubit(this.labelRepository) : super(const LabelState()) {
     labelRepository.addListener(_updateStateListener);
+    emit(state.copyWith(folderTree: TreeNode.root()));
   }
 
   void _updateStateListener() {
     emit(state.copyWith(
-      correspondents: labelRepository.correspondents,
-      documentTypes: labelRepository.documentTypes,
-      storagePaths: labelRepository.storagePaths,
-      tags: labelRepository.tags,
-      warehouses: labelRepository.warehouses,
-      shelfs: labelRepository.shelfs,
-      boxcases: labelRepository.boxcases,
-    ));
+        correspondents: labelRepository.correspondents,
+        documentTypes: labelRepository.documentTypes,
+        storagePaths: labelRepository.storagePaths,
+        tags: labelRepository.tags,
+        warehouses: labelRepository.warehouses,
+        shelfs: labelRepository.shelfs,
+        boxcases: labelRepository.boxcases,
+        folders: labelRepository.folders));
   }
 
   Future<void> reload({
@@ -31,14 +33,15 @@ class LabelCubit extends Cubit<LabelState> {
     required bool loadStoragePaths,
     required bool loadTags,
     required bool loadWarehouses,
+    required bool loadFolders,
   }) {
     return labelRepository.initialize(
-      loadCorrespondents: loadCorrespondents,
-      loadDocumentTypes: loadDocumentTypes,
-      loadStoragePaths: loadStoragePaths,
-      loadTags: loadTags,
-      loadWarehouses: loadWarehouses,
-    );
+        loadCorrespondents: loadCorrespondents,
+        loadDocumentTypes: loadDocumentTypes,
+        loadStoragePaths: loadStoragePaths,
+        loadTags: loadTags,
+        loadWarehouses: loadWarehouses,
+        loadFolders: loadFolders);
   }
 
   Future<Correspondent> addCorrespondent(Correspondent item) async {
@@ -212,7 +215,7 @@ class LabelCubit extends Cubit<LabelState> {
     } catch (e) {
       e.toString();
     } finally {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(shelfs: labelRepository.shelfs, isLoading: false));
     }
   }
 
@@ -227,7 +230,8 @@ class LabelCubit extends Cubit<LabelState> {
     } catch (e) {
       e.toString();
     } finally {
-      emit(state.copyWith(isLoading: false));
+      emit(
+          state.copyWith(boxcases: labelRepository.boxcases, isLoading: false));
     }
   }
 
@@ -374,6 +378,245 @@ class LabelCubit extends Cubit<LabelState> {
           boxcases: labelRepository.boxcases,
           isLoading: false));
     }
+  }
+
+  Set<String> uniqueKeys = {};
+
+  Future<void> buildTree() async {
+    emit(state.copyWith(isLoading: true));
+
+    Map<String, Folder> folderMap = labelRepository.folders;
+    Map<String, DocumentModel> documentMap = labelRepository.documents;
+    Map<String, TreeNode> nodeMap = {};
+
+    // Initialize folder nodes and check for duplicates
+    for (var folder in folderMap.values) {
+      String key = folder.id.toString();
+      if (uniqueKeys.add(key)) {
+        nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
+      } else {
+        emit(state.copyWith(isLoading: false));
+
+        return;
+      }
+    }
+
+    // Initialize document nodes and check for duplicates
+    for (var doc in documentMap.values) {
+      String key = doc.id.toString();
+      if (uniqueKeys.add(key)) {
+        nodeMap[doc.checksum!] = TreeNode(key: key, data: doc);
+      } else {
+        emit(state.copyWith(isLoading: false));
+
+        return;
+      }
+    }
+
+    // Clear the existing tree
+    state.folderTree!.clear();
+
+    // Build the tree structure
+    for (var checksum in folderMap.keys) {
+      if (nodeMap[checksum] != null) {
+        state.folderTree!.add(nodeMap[checksum]!);
+      }
+    }
+    for (var checksum in documentMap.keys) {
+      if (nodeMap[checksum] != null) {
+        state.folderTree!.add(nodeMap[checksum]!);
+      }
+    }
+    if (folderMap.isNotEmpty && documentMap.isNotEmpty) {
+      emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    }
+  }
+
+  Future<void> addFolderToNode(
+      String parentNodeKey, Folder newFolder, TreeNode node) async {
+    emit(state.copyWith(isLoading: true));
+    // Create the new folder node
+    String newFolderKey = newFolder.checksum.toString();
+    if (uniqueKeys.contains(newFolderKey)) {
+      print(
+          "Key: $newFolderKey already exists. Please use unique strings as keys");
+    }
+    uniqueKeys.add(newFolderKey);
+    TreeNode<dynamic> newFolderNode =
+        TreeNode(key: newFolderKey, data: newFolder);
+    // Find the parent node
+    TreeNode<dynamic>? parentNode = node;
+
+    emit(state.copyWith(isLoading: false));
+
+    parentNode.add(newFolderNode);
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+  }
+
+  Future<void> replaceNodeInTree(
+      String nodeKey, Folder newFolder, TreeNode<dynamic> olderNode) async {
+    emit(state.copyWith(isLoading: true));
+    // Check if the node to be replaced exists
+    TreeNode<dynamic>? targetNode = olderNode;
+    emit(state.copyWith(isLoading: false));
+    // Replace the node's data
+    targetNode.data = newFolder;
+    state.folderTree!.remove(olderNode);
+    // Emit the new state
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+  }
+
+  Future<void> removeNodeInTree(TreeNode node) async {
+    emit(state.copyWith(isLoading: true));
+    // Check if the node to be replaced exists
+
+    state.folderTree!.remove(node);
+    // Emit the new state
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+  }
+
+  Future<void> loadChildNodes(int id, TreeNode node) async {
+    // Assuming labelRepository has a method to fetch folders by parent id
+    FolderDetails? folder = await labelRepository.findFolder(id);
+    if (folder!.folders == null) {
+      return;
+    }
+    emit(state.copyWith(isLoading: true));
+    final folderList = folder.folders as List<Folder>;
+
+    Map<String, Folder> childFolders = {
+      for (var f in folderList) f.checksum!: f
+    };
+    final documentList = folder.documents as List<DocumentModel>;
+
+    Map<String, DocumentModel> childDocs = {
+      for (var doc in documentList) doc.checksum!: doc
+    };
+
+    Map<String, TreeNode> nodeMap = {};
+
+    // Initialize the nodes
+    childFolders.forEach((id, folder) {
+      String key = folder.id.toString();
+      // Check for duplicate keys
+      if (uniqueKeys.contains(key)) {
+        print("Key: $key already exists. Please use unique strings as keys");
+      }
+      uniqueKeys.add(key);
+
+      TreeNode node = TreeNode(key: key, data: folder);
+      nodeMap[folder.checksum!] = node;
+    });
+
+    childDocs.forEach((id, doc) {
+      String key = doc.id.toString();
+      // Check for duplicate keys
+      if (uniqueKeys.contains(key)) {
+        print("Key: $key already exists. Please use unique strings as keys");
+      }
+      uniqueKeys.add(key);
+
+      TreeNode node = TreeNode(key: key, data: doc);
+      nodeMap[doc.checksum!] = node;
+    });
+    node.clear();
+    // Build the tree structure
+    childFolders.forEach((checksum, folder) {
+      node.add(nodeMap[checksum]!);
+    });
+    childDocs.forEach((checksum, doc) {
+      node.add(nodeMap[checksum]!);
+    });
+
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+  }
+
+  Future<Folder> addFolder(Folder item) async {
+    assert(item.id == null);
+    final addedItem = await labelRepository.createFolder(item);
+    return addedItem;
+  }
+
+  Future<Folder> replaceFolder(Folder item) async {
+    final updatedItem = await labelRepository.updateFolder(item);
+    return updatedItem;
+  }
+
+  Future<void> removeFolder(Folder item) async {
+    assert(item.id != null);
+    if (labelRepository.folders.containsKey(item.checksum)) {
+      await labelRepository.deleteFolder(item);
+    }
+  }
+
+  Future<void> buildTreeHasOnlyFolder() async {
+    emit(state.copyWith(isLoading: true));
+
+    Map<String, Folder> folderMap = labelRepository.folders;
+    Map<String, TreeNode> nodeMap = {};
+
+    // Initialize folder nodes and check for duplicates
+    for (var folder in folderMap.values) {
+      String key = folder.id.toString();
+      if (uniqueKeys.add(key)) {
+        nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
+      } else {
+        emit(state.copyWith(isLoading: false));
+
+        return;
+      }
+    }
+
+    // Clear the existing tree
+    state.folderTree!.clear();
+
+    // Build the tree structure
+    for (var checksum in folderMap.keys) {
+      if (nodeMap[checksum] != null) {
+        state.folderTree!.add(nodeMap[checksum]!);
+      }
+    }
+
+    if (folderMap.isNotEmpty) {
+      emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    }
+  }
+
+  Future<void> loadChildNodesHasOnlyFolder(int id, TreeNode node) async {
+    // Assuming labelRepository has a method to fetch folders by parent id
+    FolderDetails? folder = await labelRepository.findFolder(id);
+    if (folder!.folders == null) {
+      return;
+    }
+    emit(state.copyWith(isLoading: true));
+    final folderList = folder.folders as List<Folder>;
+
+    Map<String, Folder> childFolders = {
+      for (var f in folderList) f.checksum!: f
+    };
+
+    Map<String, TreeNode> nodeMap = {};
+
+    // Initialize the nodes
+    childFolders.forEach((id, folder) {
+      String key = folder.id.toString();
+      // Check for duplicate keys
+      if (uniqueKeys.contains(key)) {
+        print("Key: $key already exists. Please use unique strings as keys");
+      }
+      uniqueKeys.add(key);
+
+      TreeNode node = TreeNode(key: key, data: folder);
+      nodeMap[folder.checksum!] = node;
+    });
+
+    node.clear();
+
+    childFolders.forEach((checksum, folder) {
+      node.add(nodeMap[checksum]!);
+    });
+
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
 
   @override

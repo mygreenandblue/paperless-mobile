@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_mobile/core/widgets/shimmer_placeholder.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
-import 'package:paperless_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
+import 'package:edocs_mobile/core/widgets/shimmer_placeholder.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/tags_placeholder.dart';
+import 'package:edocs_mobile/features/documents/view/widgets/placeholder/text_placeholder.dart';
 
 class DocumentsListLoadingWidget extends StatelessWidget {
   final bool _isSliver;

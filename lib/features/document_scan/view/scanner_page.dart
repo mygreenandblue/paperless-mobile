@@ -9,27 +9,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/constants.dart';
-import 'package:paperless_mobile/core/bloc/loading_status.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
-import 'package:paperless_mobile/core/database/tables/global_settings.dart';
-import 'package:paperless_mobile/core/global/constants.dart';
-import 'package:paperless_mobile/core/model/info_message_exception.dart';
-import 'package:paperless_mobile/core/service/file_service.dart';
-import 'package:paperless_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:paperless_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
-import 'package:paperless_mobile/features/document_scan/view/widgets/export_scans_dialog.dart';
-import 'package:paperless_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
-import 'package:paperless_mobile/features/document_search/view/sliver_search_bar.dart';
-import 'package:paperless_mobile/features/document_upload/view/document_upload_preparation_page.dart';
-import 'package:paperless_mobile/features/documents/view/pages/document_view.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/connectivity_aware_action_wrapper.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
-import 'package:paperless_mobile/helpers/permission_helpers.dart';
-import 'package:paperless_mobile/routing/routes/scanner_route.dart';
-import 'package:paperless_mobile/routing/routes/shells/authenticated_route.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/constants.dart';
+import 'package:edocs_mobile/core/bloc/loading_status.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/tables/global_settings.dart';
+import 'package:edocs_mobile/core/global/constants.dart';
+import 'package:edocs_mobile/core/model/info_message_exception.dart';
+import 'package:edocs_mobile/core/service/file_service.dart';
+import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
+import 'package:edocs_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
+import 'package:edocs_mobile/features/document_scan/view/widgets/export_scans_dialog.dart';
+import 'package:edocs_mobile/features/document_scan/view/widgets/scanned_image_item.dart';
+import 'package:edocs_mobile/features/document_search/view/sliver_search_bar.dart';
+import 'package:edocs_mobile/features/document_upload/view/document_upload_preparation_page.dart';
+import 'package:edocs_mobile/features/documents/view/pages/document_view.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/connectivity_aware_action_wrapper.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/helpers/permission_helpers.dart';
+import 'package:edocs_mobile/routing/routes/scanner_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 import 'package:path/path.dart' as p;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -203,7 +203,7 @@ class _ScannerPageState extends State<ScannerPage>
           if (!isGranted) {
             showSnackBar(
               context,
-              "Please grant EDMS Mobile permissions to access your filesystem.",
+              "Please grant EDOCS Mobile permissions to access your filesystem.",
               action: SnackBarActionConfig(
                 label: "OK",
                 onPressed: openAppSettings,
@@ -229,7 +229,7 @@ class _ScannerPageState extends State<ScannerPage>
       return;
     }
     final file = await FileService.instance.allocateTemporaryFile(
-      PaperlessDirectoryType.scans,
+      edocsDirectoryType.scans,
       extension: 'jpeg',
       create: true,
     );
@@ -265,7 +265,7 @@ class _ScannerPageState extends State<ScannerPage>
       fileExtension: file.extension,
     ).push<DocumentUploadResult>(context);
     if (uploadResult?.success ?? false) {
-      // For paperless version older than 1.11.3, task id will always be null!
+      // For edocs version older than 1.11.3, task id will always be null!
       context.read<DocumentScannerCubit>().reset();
       // context
       //     .read<PendingTasksNotifier>()
@@ -328,7 +328,7 @@ class _ScannerPageState extends State<ScannerPage>
                     context
                         .read<DocumentScannerCubit>()
                         .removeScan(scans[index]);
-                  } on PaperlessApiException catch (error, stackTrace) {
+                  } on EdocsApiException catch (error, stackTrace) {
                     showErrorMessage(context, error, stackTrace);
                   } on InfoMessageException catch (error, stackTrace) {
                     showInfoMessage(context, error, stackTrace);
@@ -347,7 +347,7 @@ class _ScannerPageState extends State<ScannerPage>
   void _reset(BuildContext context) {
     try {
       context.read<DocumentScannerCubit>().reset();
-    } on PaperlessApiException catch (error, stackTrace) {
+    } on EdocsApiException catch (error, stackTrace) {
       showErrorMessage(context, error, stackTrace);
     }
   }
@@ -368,7 +368,7 @@ class _ScannerPageState extends State<ScannerPage>
       if (!supportedFileExtensions.contains(extension.toLowerCase())) {
         showErrorMessage(
           context,
-          const PaperlessApiException(ErrorCode.unsupportedFileFormat),
+          const EdocsApiException(ErrorCode.unsupportedFileFormat),
         );
         return;
       }

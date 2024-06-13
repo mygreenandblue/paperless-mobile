@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 class PendingTasksNotifier extends ValueNotifier<Map<String, Task>> {
-  final PaperlessTasksApi _api;
+  final EdocsTasksApi _api;
 
   final Map<String, StreamSubscription> _subscriptions = {};
 

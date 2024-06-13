@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 import 'package:pdfx/pdfx.dart';
 
 class DocumentView extends StatefulWidget {
@@ -127,7 +127,7 @@ class _DocumentViewState extends State<DocumentView> {
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_animate/flutter_animate.dart';
-// import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+// import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 // import 'package:pdfx/pdfx.dart';
 
 // class DocumentView extends StatefulWidget {
@@ -281,7 +281,7 @@ class _DocumentViewState extends State<DocumentView> {
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_animate/flutter_animate.dart';
-// import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
+// import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 // import 'package:pdfrx/pdfrx.dart';
 
 // class DocumentView extends StatefulWidget {

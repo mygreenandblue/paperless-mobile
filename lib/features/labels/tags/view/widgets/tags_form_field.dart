@@ -3,12 +3,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/workarounds/colored_chip.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/fullscreen_tags_form.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/workarounds/colored_chip.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/fullscreen_tags_form.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class TagsFormField extends StatelessWidget {
   final String name;
@@ -91,10 +91,7 @@ class TagsFormField extends StatelessWidget {
                 initialValue: field.value,
                 allowOnlySelection: allowOnlySelection,
                 allowCreation: allowCreation &&
-                    context
-                        .watch<LocalUserAccount>()
-                        .paperlessUser
-                        .canCreateTags,
+                    context.watch<LocalUserAccount>().edocsUser.canCreateTags,
                 allowExclude: allowExclude,
               ),
               onClosed: (data) {

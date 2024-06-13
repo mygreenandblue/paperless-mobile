@@ -1,17 +1,21 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
-import 'package:paperless_mobile/core/database/tables/local_user_account.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/core/repository/label_repository.dart';
-import 'package:paperless_mobile/core/translation/matching_algorithm_localization_mapper.dart';
-import 'package:paperless_mobile/features/labels/view/widgets/custom_searchbar.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/core/repository/label_repository.dart';
+import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
+import 'package:edocs_mobile/features/labels/view/widgets/custom_searchbar.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/helpers/message_helpers.dart';
+import 'package:edocs_mobile/routing/routes/labels_route.dart';
+import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class SubmitButtonConfig<T extends Label> {
   final Widget icon;
@@ -32,6 +36,7 @@ class LabelForm<T extends Label> extends StatefulWidget {
   final Function(String?)? onChangedWarehouse;
   final SubmitButtonConfig<T> submitButtonConfig;
   final int? parentId;
+  final int? parentFolder;
 
   /// FromJson method to parse the form field values into a label instance.
   final T Function(Map<String, dynamic> json) fromJsonT;
@@ -57,6 +62,7 @@ class LabelForm<T extends Label> extends StatefulWidget {
     this.formKey,
     this.parentId,
     this.action,
+    this.parentFolder,
   }) : super(key: key);
 
   @override
@@ -66,30 +72,26 @@ class LabelForm<T extends Label> extends StatefulWidget {
 class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   late final GlobalKey<FormBuilderState> _formKey;
 
-  late bool _enableMatchFormField;
   int _parentId = -1;
   String? _selectedWarehouse = '';
   String? _selectedShelf = '';
   Map<String, String> _errors = {};
+  TreeViewController? _controller;
+  var _parentFolder;
+  int? _selectedItemId;
+  bool _selectedRoot = false;
+  final Map<String, bool> loadedNodes = {};
 
   @override
   void initState() {
     super.initState();
     _formKey = widget.formKey ?? GlobalKey<FormBuilderState>();
-    var matchingAlgorithm = (widget.initialValue?.matchingAlgorithm ??
-        MatchingAlgorithm.defaultValue);
-    _enableMatchFormField = matchingAlgorithm != MatchingAlgorithm.auto &&
-        matchingAlgorithm != MatchingAlgorithm.none;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<MatchingAlgorithm> selectableMatchingAlgorithmValues =
-        getSelectableMatchingAlgorithmValues(
-      context.watch<LocalUserAccount>().hasMultiUserSupport,
-    );
     final labelRepository = context.watch<LabelRepository>();
-    final currentUser = context.watch<LocalUserAccount>().paperlessUser;
+    final currentUser = context.watch<LocalUserAccount>().edocsUser;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton.extended(
@@ -100,87 +102,60 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
       ),
       body: FormBuilder(
         key: _formKey,
-        child: ListView(
-          children: [
-            FormBuilderTextField(
-              autofocus: widget.autofocusNameField,
-              name: Label.nameKey,
-              decoration: InputDecoration(
-                labelText: S.of(context)!.name,
-                errorText: _errors[Label.nameKey],
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(8),
+              sliver: SliverToBoxAdapter(
+                child: FormBuilderTextField(
+                  autofocus: widget.autofocusNameField,
+                  name: Label.nameKey,
+                  decoration: InputDecoration(
+                    labelText: S.of(context)!.name,
+                    errorText: _errors[Label.nameKey],
+                  ),
+                  validator: (value) {
+                    if (value?.trim().isEmpty ?? true) {
+                      return S.of(context)!.thisFieldIsRequired;
+                    }
+                    return null;
+                  },
+                  initialValue: widget.initialValue?.name,
+                  onChanged: (val) => setState(() => _errors = {}),
+                ),
               ),
-              validator: (value) {
-                if (value?.trim().isEmpty ?? true) {
-                  return S.of(context)!.thisFieldIsRequired;
-                }
-                return null;
-              },
-              initialValue: widget.initialValue?.name,
-              onChanged: (val) => setState(() => _errors = {}),
             ),
             if (widget.type == 'Shelf' && widget.action == 'edit')
-              _buildWarehouseFormField(context, labelRepository, currentUser,
-                  (p0) => widget.onChangedWarehouse!(p0)),
-            if (widget.type == 'Boxcase' && widget.action == 'edit')
-              _buildWarehouseFormFiel1(context, labelRepository, currentUser,
-                  (p0) => widget.onChangedWarehouse!(p0)),
-            if (widget.type == 'Boxcase' && widget.action == 'edit')
-              _buildShelfFormField(
-                context,
-                currentUser,
-                (p0) => widget.onChangedShelf!(p0),
-                labelRepository,
-              ),
-            FormBuilderDropdown<int?>(
-              name: Label.matchingAlgorithmKey,
-              initialValue: (widget.initialValue?.matchingAlgorithm ??
-                      MatchingAlgorithm.defaultValue)
-                  .value,
-              decoration: InputDecoration(
-                labelText: S.of(context)!.matchingAlgorithm,
-                errorText: _errors[Label.matchingAlgorithmKey],
-              ),
-              onChanged: (val) {
-                setState(() {
-                  _errors = {};
-                  _enableMatchFormField = val != MatchingAlgorithm.auto.value &&
-                      val != MatchingAlgorithm.none.value;
-                });
-              },
-              items: selectableMatchingAlgorithmValues
-                  .map(
-                    (algo) => DropdownMenuItem<int?>(
-                      value: algo.value,
-                      child: Text(
-                        translateMatchingAlgorithmDescription(context, algo),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            if (_enableMatchFormField)
-              FormBuilderTextField(
-                name: Label.matchKey,
-                decoration: InputDecoration(
-                  labelText: S.of(context)!.match,
-                  errorText: _errors[Label.matchKey],
+              SliverPadding(
+                padding: const EdgeInsets.all(8),
+                sliver: SliverToBoxAdapter(
+                  child: _buildWarehouseFormField(context, labelRepository,
+                      currentUser, (p0) => widget.onChangedWarehouse!(p0)),
                 ),
-                initialValue: widget.initialValue?.match,
-                onChanged: (val) => setState(() => _errors = {}),
               ),
-            FormBuilderField<bool>(
-              name: Label.isInsensitiveKey,
-              initialValue: widget.initialValue?.isInsensitive ?? true,
-              builder: (field) {
-                return CheckboxListTile(
-                  value: field.value,
-                  title: Text(S.of(context)!.caseIrrelevant),
-                  onChanged: (value) => field.didChange(value),
-                );
-              },
-            ),
+            if (widget.type == 'Boxcase' && widget.action == 'edit')
+              SliverPadding(
+                padding: const EdgeInsets.all(8),
+                sliver: SliverToBoxAdapter(
+                  child: _buildWarehouseFormFiel1(context, labelRepository,
+                      currentUser, (p0) => widget.onChangedWarehouse!(p0)),
+                ),
+              ),
+            if (widget.type == 'Boxcase' && widget.action == 'edit')
+              SliverPadding(
+                padding: const EdgeInsets.all(8),
+                sliver: SliverToBoxAdapter(
+                  child: _buildShelfFormField(
+                    context,
+                    currentUser,
+                    (p0) => widget.onChangedShelf!(p0),
+                    labelRepository,
+                  ),
+                ),
+              ),
+            if (widget.type == 'Folder') _buildFolderTree(context, currentUser),
             ...widget.additionalFields,
-          ].padded(),
+          ],
         ),
       ),
     );
@@ -264,16 +239,138 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
     );
   }
 
-  List<MatchingAlgorithm> getSelectableMatchingAlgorithmValues(
-      bool hasMultiUserSupport) {
-    var selectableMatchingAlgorithmValues = MatchingAlgorithm.values;
-    if (!hasMultiUserSupport) {
-      selectableMatchingAlgorithmValues = selectableMatchingAlgorithmValues
-          .where((matchingAlgorithm) =>
-              matchingAlgorithm != MatchingAlgorithm.none)
-          .toList();
-    }
-    return selectableMatchingAlgorithmValues;
+  _buildFolderTree(BuildContext context, UserModel currentUSer) {
+    return BlocBuilder<DocumentsCubit, DocumentsState>(
+      builder: (context, state) {
+        context.read<LabelCubit>().buildTreeHasOnlyFolder();
+        return BlocBuilder<LabelCubit, LabelState>(
+          builder: (context, lbState) {
+            return lbState.isLoading
+                ? const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : lbState.folderTree!.length == 0
+                    ? _buildEmptyTree(context)
+                    : _buildTree(context, lbState);
+          },
+        );
+      },
+    );
+  }
+
+  _buildTree(BuildContext context, LabelState lbState) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverTreeView.simple(
+        tree: lbState.folderTree!,
+        showRootNode: true,
+        expansionIndicatorBuilder: (context, node) =>
+            ChevronIndicator.rightDown(
+          alignment: Alignment.centerRight,
+          tree: node,
+          padding: const EdgeInsets.all(16),
+        ),
+        indentation: const Indentation(style: IndentStyle.squareJoint),
+        onTreeReady: (controller) {
+          _controller = controller;
+          if (expandChildrenOnReady)
+            controller.expandAllChildren(lbState.folderTree!);
+        },
+        builder: (context, node) {
+          return node.level == 0
+              ? Card(
+                  color: _selectedRoot
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  child: GestureDetector(
+                    onLongPress: () {
+                      setState(() {
+                        _controller?.toggleExpansion(node);
+                        _selectedRoot = !_selectedRoot;
+                        _parentFolder = null;
+                        _selectedItemId = -1;
+                      });
+                    },
+                    child: ListTile(
+                      title: Text(S.of(context)!.chooseFolder),
+                      subtitle: Text(S.of(context)!.allFolder),
+                    ),
+                  ),
+                )
+              : node.data is Folder
+                  ? Card(
+                      color: widget.initialValue!.id == node.data.getValue('id')
+                          ? Theme.of(context).colorScheme.shadow
+                          : node.data.getValue('id') == _selectedItemId
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                      child: GestureDetector(
+                        onLongPress: () {
+                          if (widget.initialValue!.id ==
+                              node.data.getValue('id')) {
+                            null;
+                          } else {
+                            setState(() {
+                              _parentFolder = node.data.getValue('id');
+                              _selectedItemId = node.data.getValue('id');
+                              _selectedRoot = false;
+                            });
+                          }
+                        },
+                        child: ListTile(
+                          title: Text(node.data.getValue('name')),
+                          subtitle: Text('Level ${node.level}'),
+                          onTap: () {
+                            if (widget.initialValue!.id ==
+                                node.data.getValue('id')) {
+                              null;
+                            } else {
+                              _controller?.toggleExpansion(node);
+                              if (loadedNodes[node.data.getValue('checksum')] !=
+                                  true) {
+                                context.read<LabelCubit>().loadChildNodes(
+                                      node.data.getValue('id'),
+                                      node,
+                                    );
+                                setState(() {
+                                  loadedNodes[node.data.getValue('checksum')] =
+                                      true;
+                                });
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  : const SizedBox();
+        },
+      ),
+    );
+  }
+
+  _buildEmptyTree(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            S.of(context)!.youDidNotAnyFolderYet,
+            style: Theme.of(context).textTheme.bodySmall,
+          ).padded(),
+          TextButton.icon(
+            onPressed: () {
+              CreateLabelRoute(
+                LabelType.folders,
+              ).push(context);
+            },
+            icon: const Icon(Icons.add),
+            label: Text(S.of(context)!.newView),
+          )
+        ],
+      ).paddedOnly(left: 16),
+    );
   }
 
   void _onSubmit() async {
@@ -292,6 +389,17 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           mergedJson['parent_warehouse'] = widget.parentId;
         }
 
+        if (_parentFolder != -1) {
+          mergedJson['parent_folder'] = _parentFolder;
+        }
+
+        if (_parentFolder == null) {
+          mergedJson['parent_folder'] = null;
+        }
+        if (widget.parentFolder != -1 && widget.parentFolder != null) {
+          mergedJson['parent_folder'] = widget.parentFolder;
+        }
+
         final parsed = widget.fromJsonT(mergedJson);
         final createdLabel = await widget.submitButtonConfig.onSubmit(parsed);
         showSnackBar(
@@ -300,9 +408,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
         );
 
         context.pop(createdLabel);
-      } on PaperlessApiException catch (error, stackTrace) {
+      } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
-      } on PaperlessFormValidationException catch (exception) {
+      } on edocsFormValidationException catch (exception) {
         setState(() => _errors = exception.validationMessages);
       }
     }
@@ -338,3 +446,5 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
     });
   }
 }
+
+final expandChildrenOnReady = false;

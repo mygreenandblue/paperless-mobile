@@ -1,2 +1,2 @@
-* Beheben der Fehler, welche durch Update von paperless-ngx auf 1.14 zurückzuführen sind
+* Beheben der Fehler, welche durch Update von edocs-ngx auf 1.14 zurückzuführen sind
 * Kleines Update der Suche

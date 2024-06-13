@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:paperless_mobile/core/extensions/flutter_extensions.dart';
-import 'package:paperless_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/mime_types_pie_chart.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 
 class FormDateTime {
   final int? day;

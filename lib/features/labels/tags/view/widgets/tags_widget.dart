@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/labels/tags/view/widgets/tag_widget.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/labels/tags/view/widgets/tag_widget.dart';
 
 class TagsWidget extends StatelessWidget {
   final List<Tag> tags;

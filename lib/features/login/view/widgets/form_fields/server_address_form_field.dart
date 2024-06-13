@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:paperless_mobile/core/database/hive/hive_config.dart';
+import 'package:edocs_mobile/core/database/hive/hive_config.dart';
 
-import 'package:paperless_mobile/generated/l10n/app_localizations.dart';
-import 'package:paperless_mobile/keys.dart';
+import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
+import 'package:edocs_mobile/keys.dart';
 
 class ServerAddressFormField extends StatefulWidget {
   static const String fkServerAddress = "serverAddress";
@@ -30,6 +30,9 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField>
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _textEditingController.text = 'https://edocs.tcgroup.vn/';
+    });
     _textEditingController.addListener(() {
       setState(() {
         _canClear = _textEditingController.text.isNotEmpty;

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:paperless_api/paperless_api.dart';
-import 'package:paperless_mobile/features/logging/data/logger.dart';
+import 'package:edocs_api/edocs_api.dart';
+import 'package:edocs_mobile/features/logging/data/logger.dart';
 
 class LabelRepository extends ChangeNotifier {
-  final PaperlessLabelsApi _api;
+  final EdocsLabelsApi _api;
 
   Map<int, Correspondent> correspondents = {};
   Map<int, DocumentType> documentTypes = {};
@@ -14,6 +14,9 @@ class LabelRepository extends ChangeNotifier {
   Map<int, Warehouse> warehouses = {};
   Map<int, Warehouse> shelfs = {};
   Map<int, Warehouse> boxcases = {};
+  Map<String, Folder> folders = {};
+  Map<String, DocumentModel> documents = {};
+  Map<int, FolderDetails> folderDetails = {};
 
   LabelRepository(this._api);
 
@@ -24,6 +27,7 @@ class LabelRepository extends ChangeNotifier {
     required bool loadStoragePaths,
     required bool loadTags,
     required bool loadWarehouses,
+    required bool loadFolders,
   }) async {
     correspondents = {};
     documentTypes = {};
@@ -32,6 +36,8 @@ class LabelRepository extends ChangeNotifier {
     warehouses = {};
     shelfs = {};
     boxcases = {};
+    folders = {};
+
     await Future.wait([
       if (loadCorrespondents) findAllCorrespondents(),
       if (loadDocumentTypes) findAllDocumentTypes(),
@@ -40,6 +46,8 @@ class LabelRepository extends ChangeNotifier {
       if (loadWarehouses) findAllWarehouses(),
       if (loadWarehouses) findAllShelfs(),
       if (loadWarehouses) findAllBoxcases(),
+      if (loadFolders) findAllFolders(),
+      if (loadFolders) findAllDocuments(),
     ]);
   }
 
@@ -136,6 +144,53 @@ class LabelRepository extends ChangeNotifier {
   Future<Correspondent> updateCorrespondent(Correspondent correspondent) async {
     final updated = await _api.updateCorrespondent(correspondent);
     correspondents = {...correspondents, updated.id!: updated};
+    notifyListeners();
+    return updated;
+  }
+
+  Future<Folder> createFolder(Folder folder) async {
+    final created = await _api.saveFolder(folder);
+    folders = {...folders, created.id!.toString(): created};
+    notifyListeners();
+    return created;
+  }
+
+  Future<int> deleteFolder(Folder folder) async {
+    await _api.deleteFolder(folder);
+    folders.remove(folder.checksum!);
+    notifyListeners();
+    return folder.id!;
+  }
+
+  Future<FolderDetails?> findFolder(int id) async {
+    final folder = await _api.getFolder(id);
+    if (folder != null) {
+      notifyListeners();
+      return folder;
+    }
+    return null;
+  }
+
+  Future<FolderDetails?> findAllFolders() async {
+    final data = await _api.getFolders();
+    final folderList = data!.folders as List<Folder>;
+    folders = {for (var folder in folderList) folder.checksum!: folder};
+
+    notifyListeners();
+    return data;
+  }
+
+  Future<FolderDetails?> findAllDocuments() async {
+    final data = await _api.getFolders();
+    final documentList = data!.documents as List<DocumentModel>;
+    documents = {for (var doc in documentList) doc.checksum!: doc};
+    notifyListeners();
+    return data;
+  }
+
+  Future<Folder> updateFolder(Folder folder) async {
+    final updated = await _api.updateFolder(folder);
+    folders = {...folders, updated.id!.toString(): updated};
     notifyListeners();
     return updated;
   }

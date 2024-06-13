@@ -1,5 +1,5 @@
-name: paperless_mobile
-description: An (almost) fully fledged mobile paperless-ng*x client.
+name: edocs_mobile
+description: An (almost) fully fledged mobile edocs-ng*x client.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -62,8 +62,8 @@ dependencies:
   uuid: ^4.1.0
   flutter_typeahead: ^5.0.1
   fluttertoast: ^8.1.1
-  paperless_api:
-    path: packages/paperless_api
+  edocs_api:
+    path: packages/edocs_api
   hive: ^2.2.3
   rxdart: ^0.27.7
   badges: ^3.1.2
@@ -104,6 +104,7 @@ dependencies:
   pdfx: ^2.6.0
   markdown: ^7.1.1
   dropdown_search: ^5.0.6
+  animated_tree_view: ^2.2.0
   # pdfrx: 
   #   git:
   #     url: https://github.com/astubenbord/pdfrx

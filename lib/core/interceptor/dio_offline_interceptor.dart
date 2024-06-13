@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:paperless_api/paperless_api.dart';
+import 'package:edocs_api/edocs_api.dart';
 
 class DioOfflineInterceptor extends Interceptor {
   @override
@@ -12,7 +12,7 @@ class DioOfflineInterceptor extends Interceptor {
         handler.reject(
           DioException(
             message: "The host could not be reached. Is your device offline?",
-            error: const PaperlessApiException(ErrorCode.deviceOffline),
+            error: const EdocsApiException(ErrorCode.deviceOffline),
             requestOptions: err.requestOptions,
             type: DioExceptionType.connectionTimeout,
           ),
