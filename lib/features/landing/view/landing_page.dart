@@ -271,6 +271,7 @@ class _LandingPageState extends State<LandingPage> {
 
   final showSnackBar = false;
   final expandChildrenOnReady = false;
+  final Map<String, bool> _isLoading = {};
   Future<void> _showPopupMenu(BuildContext context, Offset offset,
       Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
     await showMenu(
@@ -404,14 +405,23 @@ class _LandingPageState extends State<LandingPage> {
                               child: ListTile(
                                 title: Text(node.data.getValue('name')),
                                 subtitle: Text('Level ${node.level}'),
-                                leading: const Icon(Icons.folder_outlined),
-                                onTap: () {
-                                  _controller?.toggleExpansion(node);
+                                leading: _isLoading[
+                                            node.data.getValue('checksum')] ==
+                                        true
+                                    ? const CircularProgressIndicator()
+                                    : const Icon(Icons.folder_outlined),
+                                onTap: () async {
+                                  setState(() {
+                                    _isLoading[node.data.getValue('checksum')] =
+                                        true;
+                                  });
                                   if (loadedNodes[
                                               node.data.getValue('checksum')] !=
                                           true &&
                                       node.children.isEmpty) {
-                                    context.read<LabelCubit>().loadChildNodes(
+                                    await context
+                                        .read<LabelCubit>()
+                                        .loadChildNodes(
                                           node.data.getValue('id'),
                                           node,
                                         );
@@ -420,6 +430,15 @@ class _LandingPageState extends State<LandingPage> {
                                           .getValue('checksum')] = true;
                                     });
                                   }
+                                  setState(() {
+                                    _isLoading[node.data.getValue('checksum')] =
+                                        false;
+                                  });
+
+                                  _isLoading[node.data.getValue('checksum')] !=
+                                          true
+                                      ? _controller?.toggleExpansion(node)
+                                      : null;
                                 },
                               ),
                             ),

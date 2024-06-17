@@ -461,7 +461,8 @@ class LabelCubit extends Cubit<LabelState> {
     emit(state.copyWith(isLoading: false));
     // Replace the node's data
     targetNode.data = newFolder;
-    state.folderTree!.remove(olderNode);
+    addFolderToNode(nodeKey, newFolder, olderNode);
+    removeNodeInTree(olderNode);
     // Emit the new state
     emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
@@ -481,7 +482,6 @@ class LabelCubit extends Cubit<LabelState> {
     if (folder!.folders == null) {
       return;
     }
-    emit(state.copyWith(isLoading: true));
     final folderList = folder.folders as List<Folder>;
 
     Map<String, Folder> childFolders = {
