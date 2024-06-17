@@ -587,11 +587,16 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                               : null,
                       child: GestureDetector(
                         onLongPress: () {
-                          setState(() {
-                            _parentFolder = node.data.getValue('id');
-                            _parentFolder = node.data.getValue('id');
-                            _selectedRoot = false;
-                          });
+                          if (widget.documentModel.id ==
+                              node.data.getValue('id')) {
+                            null;
+                          } else {
+                            setState(() {
+                              _parentFolder = node.data.getValue('id');
+                              _selectedItemId = node.data.getValue('id');
+                              _selectedRoot = false;
+                            });
+                          }
                         },
                         child: ListTile(
                           title: Text(node.data.getValue('name')),

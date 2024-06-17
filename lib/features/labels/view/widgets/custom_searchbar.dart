@@ -14,6 +14,7 @@ class CustomSearchBar extends StatelessWidget {
   final double? radius;
   final bool? enable;
   final Widget? prefixIcon;
+  final String? errorText;
 
   const CustomSearchBar({
     super.key,
@@ -28,6 +29,7 @@ class CustomSearchBar extends StatelessWidget {
     this.radius,
     this.enable,
     this.prefixIcon,
+    this.errorText,
   });
 
   @override
@@ -70,6 +72,7 @@ class CustomSearchBar extends StatelessWidget {
           items: items ?? [(S.of(context)!.noItemsFound)],
           dropdownDecoratorProps: DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
+              errorText: errorText,
               prefixIcon: prefixIcon,
               hintText: hintText,
               isDense: true,

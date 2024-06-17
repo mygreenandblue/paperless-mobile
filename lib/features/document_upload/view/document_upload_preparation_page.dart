@@ -315,51 +315,58 @@ class _DocumentUploadPreparationPageState
                                 .edocsUser
                                 .canViewWarehouse)
                               _buildWarehouseFormField(
-                                context,
-                                labelRepository.warehouses,
-                                (p0) => _findKeyForValue(
-                                    labelRepository.warehouses,
-                                    p0,
-                                    labelRepository,
-                                    'warehouse'),
-                              ),
+                                  context,
+                                  labelRepository.warehouses,
+                                  (p0) => _findKeyForValue(
+                                        labelRepository.warehouses,
+                                        p0,
+                                        labelRepository,
+                                        'warehouse',
+                                      ),
+                                  labelRepository.shelfs.isEmpty
+                                      ? 'Khong tim thay gia/ke, vui long thu lai'
+                                      : null),
                             if (context
                                     .watch<LocalUserAccount>()
                                     .edocsUser
                                     .canViewWarehouse &&
-                                _warehouseId != -1 &&
-                                labelRepository.shelfs.isNotEmpty)
+                                _warehouseId != -1)
                               loading['shelf'] == true
                                   ? const Center(
                                       child: CircularProgressIndicator(),
                                     )
-                                  : _buildShelfFormField(
-                                      context,
-                                      labelRepository.shelfs,
-                                      (p0) => _findKeyForValue(
+                                  : labelRepository.shelfs.isNotEmpty
+                                      ? _buildShelfFormField(
+                                          context,
                                           labelRepository.shelfs,
-                                          p0,
-                                          labelRepository,
-                                          'shelf'),
-                                    ),
+                                          (p0) => _findKeyForValue(
+                                              labelRepository.shelfs,
+                                              p0,
+                                              labelRepository,
+                                              'shelf'),
+                                          labelRepository.shelfs.isEmpty
+                                              ? 'Khong tim thay gia/ke, vui long thu lai'
+                                              : null)
+                                      : const SizedBox(),
                             if (context
                                     .watch<LocalUserAccount>()
                                     .edocsUser
                                     .canViewWarehouse &&
-                                _shelfId != -1 &&
-                                labelRepository.boxcases.isNotEmpty)
+                                _shelfId != -1)
                               loading['case'] == true
                                   ? const Center(
                                       child: CircularProgressIndicator(),
                                     )
-                                  : _buildBoxcaseFormField(
-                                      context,
-                                      labelRepository.boxcases,
-                                      (p0) => _findKeyForValue(
+                                  : labelRepository.boxcases.isNotEmpty
+                                      ? _buildBoxcaseFormField(
+                                          context,
                                           labelRepository.boxcases,
-                                          p0,
-                                          labelRepository,
-                                          'boxcase')),
+                                          (p0) => _findKeyForValue(
+                                              labelRepository.boxcases,
+                                              p0,
+                                              labelRepository,
+                                              'boxcase'))
+                                      : const SizedBox(),
                           ].padded(),
                         ),
                         if (context
@@ -455,7 +462,6 @@ class _DocumentUploadPreparationPageState
                       child: GestureDetector(
                         onLongPress: () {
                           setState(() {
-                            _parentFolder = node.data.getValue('id');
                             _parentFolder = node.data.getValue('id');
                             _selectedRoot = false;
                           });
@@ -564,6 +570,7 @@ class _DocumentUploadPreparationPageState
     BuildContext context,
     Map<int, Warehouse> warehouses,
     Function(String?)? onChanged,
+    String? errorText,
   ) {
     return CustomSearchBar(
       prefixIcon: const Icon(Icons.warehouse_outlined),
@@ -571,6 +578,7 @@ class _DocumentUploadPreparationPageState
       onChanged: (value) => {onChanged!(value!)},
       fieldName: S.of(context)?.warehouse,
       hintText: S.of(context)?.selecteWarehouse,
+      errorText: errorText,
     );
   }
 
@@ -578,6 +586,7 @@ class _DocumentUploadPreparationPageState
     BuildContext context,
     Map<int, Warehouse> shelfs,
     Function(String?)? onChanged,
+    String? errorText,
   ) {
     return CustomSearchBar(
       prefixIcon: const Icon(Icons.shelves),
@@ -585,6 +594,7 @@ class _DocumentUploadPreparationPageState
       onChanged: (value) => {onChanged!(value!)},
       fieldName: S.of(context)?.shelf,
       hintText: S.of(context)?.selectShelf,
+      errorText: errorText,
     );
   }
 

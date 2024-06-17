@@ -68,12 +68,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       className: runtimeType.toString(),
       methodName: 'login',
     );
+
     // Define the timeout duration
-    const authTimeoutDuration = Duration(seconds: 10);
+    const authTimeoutDuration = Duration(seconds: 6);
 
     // Start a timer to handle the timeout
     bool isAuthCompleted = false;
-    Future.delayed(authTimeoutDuration).then((_) {
+    final timeoutTimer = Future.delayed(authTimeoutDuration).then((_) {
       if (!isAuthCompleted) {
         emit(
           AuthenticationErrorState(
@@ -116,6 +117,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         ),
       );
       rethrow;
+    } finally {
+      timeoutTimer.ignore();
     }
 
     // Mark logged in user as currently active user.

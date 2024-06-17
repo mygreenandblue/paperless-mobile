@@ -492,7 +492,6 @@ class LabelCubit extends Cubit<LabelState> {
     };
 
     Map<String, TreeNode> nodeMap = {};
-
     // Initialize the nodes
     childFolders.forEach((id, folder) {
       String key = folder.id.toString();
