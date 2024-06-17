@@ -78,11 +78,16 @@ class _DocumentUploadPreparationPageState
   bool _selectedRoot = false;
   final Map<String, bool> loadedNodes = {};
   final expandChildrenOnReady = false;
+  Map<String, bool> loading = {};
 
   @override
   void initState() {
     super.initState();
     _syncTitleAndFilename = widget.filename == null && widget.title == null;
+    setState(() {
+      loading['shelf'] = false;
+      loading['case'] = false;
+    });
   }
 
   @override
@@ -324,26 +329,37 @@ class _DocumentUploadPreparationPageState
                                     .canViewWarehouse &&
                                 _warehouseId != -1 &&
                                 labelRepository.shelfs.isNotEmpty)
-                              _buildShelfFormField(
-                                context,
-                                labelRepository.shelfs,
-                                (p0) => _findKeyForValue(labelRepository.shelfs,
-                                    p0, labelRepository, 'shelf'),
-                              ),
+                              loading['shelf'] == true
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : _buildShelfFormField(
+                                      context,
+                                      labelRepository.shelfs,
+                                      (p0) => _findKeyForValue(
+                                          labelRepository.shelfs,
+                                          p0,
+                                          labelRepository,
+                                          'shelf'),
+                                    ),
                             if (context
                                     .watch<LocalUserAccount>()
                                     .edocsUser
                                     .canViewWarehouse &&
                                 _shelfId != -1 &&
                                 labelRepository.boxcases.isNotEmpty)
-                              _buildBoxcaseFormField(
-                                  context,
-                                  labelRepository.boxcases,
-                                  (p0) => _findKeyForValue(
+                              loading['case'] == true
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : _buildBoxcaseFormField(
+                                      context,
                                       labelRepository.boxcases,
-                                      p0,
-                                      labelRepository,
-                                      'boxcase')),
+                                      (p0) => _findKeyForValue(
+                                          labelRepository.boxcases,
+                                          p0,
+                                          labelRepository,
+                                          'boxcase')),
                           ].padded(),
                         ),
                         if (context
@@ -494,8 +510,17 @@ class _DocumentUploadPreparationPageState
   }
 
   _findKeyForValue(Map<int, Object> map, String? value,
-      LabelRepository labelRepository, String type) {
+      LabelRepository labelRepository, String type) async {
     map.forEach((key, mapValue) {
+      if (type == 'warehouse') {
+        setState(() {
+          loading['shelf'] = true;
+        });
+      } else {
+        setState(() {
+          loading['case'] = true;
+        });
+      }
       if (mapValue.toString() == value) {
         switch (type) {
           case 'warehouse':
@@ -521,8 +546,17 @@ class _DocumentUploadPreparationPageState
     });
     if (type != 'boxcase') {
       type == 'warehouse'
-          ? labelRepository.findDetailsWarehouse(_warehouseId)
-          : labelRepository.findDetailsShelf(_shelfId);
+          ? await labelRepository.findDetailsWarehouse(_warehouseId)
+          : await labelRepository.findDetailsShelf(_shelfId);
+    }
+    if (type == 'warehouse') {
+      setState(() {
+        loading['shelf'] = false;
+      });
+    } else {
+      setState(() {
+        loading['case'] = false;
+      });
     }
   }
 

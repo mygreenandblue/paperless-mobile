@@ -1,3 +1,4 @@
+import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -82,40 +83,50 @@ class DocumentOverviewWidget extends StatelessWidget {
             ),
           ).paddedOnly(bottom: itemSpacing),
         if (document.warehouse != null && user.canCreateWarehouse)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              DetailsItem(
-                label: S.of(context)!.briefcase,
-                content: LabelText(
-                  label: labelRepository.boxcases[document.warehouse],
-                ),
-              ).paddedOnly(
-                bottom: itemSpacing,
-                right: 4,
-              ),
-              DetailsItem(
-                label: S.of(context)!.shelf,
-                content: LabelText(
-                  label: labelRepository.shelfs[labelRepository
-                          .boxcases[document.warehouse]?.parentWarehouse ??
-                      ''],
-                ),
-              ).paddedOnly(
-                bottom: itemSpacing,
-                right: 4,
-              ),
-              DetailsItem(
-                label: S.of(context)!.warehouse,
-                content: LabelText(
-                  label: labelRepository.warehouses[labelRepository
-                          .shelfs[labelRepository
-                              .boxcases[document.warehouse]?.parentWarehouse]
-                          ?.parentWarehouse ??
-                      ''],
-                ),
-              ).paddedOnly(bottom: itemSpacing),
-            ],
+          BlocBuilder<LabelCubit, LabelState>(
+            builder: (context, lbState) {
+              return lbState.isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DetailsItem(
+                          label: S.of(context)!.briefcase,
+                          content: LabelText(
+                            label: labelRepository.boxcases[document.warehouse],
+                          ),
+                        ).paddedOnly(
+                          bottom: itemSpacing,
+                          right: 4,
+                        ),
+                        DetailsItem(
+                          label: S.of(context)!.shelf,
+                          content: LabelText(
+                            label: labelRepository.shelfs[labelRepository
+                                    .boxcases[document.warehouse]
+                                    ?.parentWarehouse ??
+                                ''],
+                          ),
+                        ).paddedOnly(
+                          bottom: itemSpacing,
+                          right: 4,
+                        ),
+                        DetailsItem(
+                          label: S.of(context)!.warehouse,
+                          content: LabelText(
+                            label: labelRepository.warehouses[labelRepository
+                                    .shelfs[labelRepository
+                                        .boxcases[document.warehouse]
+                                        ?.parentWarehouse]
+                                    ?.parentWarehouse ??
+                                ''],
+                          ),
+                        ).paddedOnly(bottom: itemSpacing),
+                      ],
+                    );
+            },
           ),
       ],
     );

@@ -268,23 +268,11 @@ class _DocumentDetailsPageState extends State<DocumentDetailsPage> {
                                     .sliverOverlapAbsorberHandleFor(context),
                               ),
                               switch (state.status) {
-                                LoadingStatus.loaded =>
-                                  BlocBuilder<LabelCubit, LabelState>(
-                                    builder: (context, lbState) {
-                                      return lbState.isLoading == false
-                                          ? DocumentOverviewWidget(
-                                              document: state.document!,
-                                              itemSpacing: _itemSpacing,
-                                              queryString: widget
-                                                  .titleAndContentQueryString,
-                                            )
-                                          : SliverList.list(children: const [
-                                              Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              )
-                                            ]);
-                                    },
+                                LoadingStatus.loaded => DocumentOverviewWidget(
+                                    document: state.document!,
+                                    itemSpacing: _itemSpacing,
+                                    queryString:
+                                        widget.titleAndContentQueryString,
                                   ).paddedSymmetrically(
                                     vertical: 16,
                                     sliver: true,

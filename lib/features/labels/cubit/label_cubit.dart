@@ -385,12 +385,10 @@ class LabelCubit extends Cubit<LabelState> {
   Future<void> buildTree() async {
     emit(state.copyWith(isLoading: true));
 
-    Map<String, Folder> folderMap = labelRepository.folders;
-    Map<String, DocumentModel> documentMap = labelRepository.documents;
     Map<String, TreeNode> nodeMap = {};
 
     // Initialize folder nodes and check for duplicates
-    for (var folder in folderMap.values) {
+    for (var folder in labelRepository.folders.values) {
       String key = folder.id.toString();
       if (uniqueKeys.add(key)) {
         nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
@@ -402,7 +400,7 @@ class LabelCubit extends Cubit<LabelState> {
     }
 
     // Initialize document nodes and check for duplicates
-    for (var doc in documentMap.values) {
+    for (var doc in labelRepository.documents.values) {
       String key = doc.id.toString();
       if (uniqueKeys.add(key)) {
         nodeMap[doc.checksum!] = TreeNode(key: key, data: doc);
@@ -417,17 +415,17 @@ class LabelCubit extends Cubit<LabelState> {
     state.folderTree!.clear();
 
     // Build the tree structure
-    for (var checksum in folderMap.keys) {
+    for (var checksum in labelRepository.folders.keys) {
       if (nodeMap[checksum] != null) {
         state.folderTree!.add(nodeMap[checksum]!);
       }
     }
-    for (var checksum in documentMap.keys) {
+    for (var checksum in labelRepository.documents.keys) {
       if (nodeMap[checksum] != null) {
         state.folderTree!.add(nodeMap[checksum]!);
       }
     }
-    if (folderMap.isNotEmpty && documentMap.isNotEmpty) {
+    if (state.folderTree!.length != 0) {
       emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
     }
   }
@@ -552,11 +550,10 @@ class LabelCubit extends Cubit<LabelState> {
   Future<void> buildTreeHasOnlyFolder() async {
     emit(state.copyWith(isLoading: true));
 
-    Map<String, Folder> folderMap = labelRepository.folders;
     Map<String, TreeNode> nodeMap = {};
 
     // Initialize folder nodes and check for duplicates
-    for (var folder in folderMap.values) {
+    for (var folder in labelRepository.folders.values) {
       String key = folder.id.toString();
       if (uniqueKeys.add(key)) {
         nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
@@ -571,13 +568,13 @@ class LabelCubit extends Cubit<LabelState> {
     state.folderTree!.clear();
 
     // Build the tree structure
-    for (var checksum in folderMap.keys) {
+    for (var checksum in labelRepository.folders.keys) {
       if (nodeMap[checksum] != null) {
         state.folderTree!.add(nodeMap[checksum]!);
       }
     }
 
-    if (folderMap.isNotEmpty) {
+    if (labelRepository.folders.isNotEmpty) {
       emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
     }
   }

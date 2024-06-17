@@ -67,6 +67,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   bool _selectedRoot = false;
   final Map<String, bool> loadedNodes = {};
   final expandChildrenOnReady = false;
+  Map<String, bool> loading = {};
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -74,6 +75,10 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   @override
   void initState() {
     super.initState();
+    setState(() {
+      loading['shelf'] = false;
+      loading['case'] = false;
+    });
   }
 
   @override
@@ -364,29 +369,45 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                   if (currentUser.canViewWarehouse)
                     Column(
                       children: [
-                        _buildShelfFormField(
-                          context,
-                          labelRepository.shelfs,
-                          state.document.warehouse != null
-                              ? selectedShelf
-                              : S.of(context)?.selectShelf,
-                          (value) => _findKeyForValue(labelRepository.shelfs,
-                              value!, labelRepository, 'shelf', context),
-                        )
+                        loading['shelf'] == true
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : _buildShelfFormField(
+                                context,
+                                labelRepository.shelfs,
+                                state.document.warehouse != null
+                                    ? selectedShelf
+                                    : S.of(context)?.selectShelf,
+                                (value) => _findKeyForValue(
+                                    labelRepository.shelfs,
+                                    value!,
+                                    labelRepository,
+                                    'shelf',
+                                    context),
+                              )
                       ],
                     ).padded(),
                   if (currentUser.canViewWarehouse)
                     Column(
                       children: [
-                        _buildBoxcaseFormField(
-                          context,
-                          labelRepository.boxcases,
-                          state.document.warehouse != null
-                              ? selectedBoxcase
-                              : S.of(context)?.selectBriefcase,
-                          (value) => _findKeyForValue(labelRepository.boxcases,
-                              value!, labelRepository, 'boxcase', context),
-                        )
+                        loading['case'] == true
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : _buildBoxcaseFormField(
+                                context,
+                                labelRepository.boxcases,
+                                state.document.warehouse != null
+                                    ? selectedBoxcase
+                                    : S.of(context)?.selectBriefcase,
+                                (value) => _findKeyForValue(
+                                    labelRepository.boxcases,
+                                    value!,
+                                    labelRepository,
+                                    'boxcase',
+                                    context),
+                              )
                       ],
                     ).padded(),
                 ]),
@@ -558,9 +579,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                 )
               : node.data is Folder
                   ? Card(
-                      color: node.data.getValue('id') == _parentFolder
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
+                      color: widget.documentModel.folder ==
+                              node.data.getValue('id')
+                          ? Theme.of(context).colorScheme.shadow
+                          : node.data.getValue('id') == _selectedItemId
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
                       child: GestureDetector(
                         onLongPress: () {
                           setState(() {
@@ -618,8 +642,22 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     );
   }
 
-  _findKeyForValue(Map<int, Object> map, String? value,
-      LabelRepository labelRepository, String type, BuildContext context) {
+  _findKeyForValue(
+      Map<int, Object> map,
+      String? value,
+      LabelRepository labelRepository,
+      String type,
+      BuildContext context) async {
+    if (type == 'warehouse') {
+      setState(() {
+        loading['shelf'] = true;
+      });
+    } else {
+      setState(() {
+        loading['case'] = true;
+      });
+    }
+
     map.forEach((key, mapValue) {
       if (mapValue.toString() == value) {
         switch (type) {
@@ -648,10 +686,20 @@ class _DocumentEditPageState extends State<DocumentEditPage>
         }
       }
     });
+
     if (type != 'boxcase') {
       type == 'warehouse'
-          ? labelRepository.findDetailsWarehouse(_warehouseId)
-          : labelRepository.findDetailsShelf(_shelfId);
+          ? await labelRepository.findDetailsWarehouse(_warehouseId)
+          : await labelRepository.findDetailsShelf(_shelfId);
+    }
+    if (type == 'warehouse') {
+      setState(() {
+        loading['shelf'] = false;
+      });
+    } else {
+      setState(() {
+        loading['case'] = false;
+      });
     }
   }
 

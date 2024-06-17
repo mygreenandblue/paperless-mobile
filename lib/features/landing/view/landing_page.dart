@@ -269,59 +269,6 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  final showSnackBar = false;
-  final expandChildrenOnReady = false;
-  final Map<String, bool> _isLoading = {};
-  Future<void> _showPopupMenu(BuildContext context, Offset offset,
-      Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
-    await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx,
-        offset.dy,
-        MediaQuery.of(context).size.width - offset.dx,
-        MediaQuery.of(context).size.height - offset.dy,
-      ),
-      items: [
-        PopupMenuItem(
-          enabled: enable,
-          child: ListTile(
-            leading: const Icon(Icons.edit),
-            title: Text(S.of(context)!.edit),
-            onTap: () async {
-              Navigator.of(context).pop(); // Close the popup menu
-              final updated = await EditLabelRoute(folder!).push(context);
-              if (updated != null) {
-                updated is bool && updated == true
-                    ? context.read<LabelCubit>().removeNodeInTree(node)
-                    : context
-                        .read<LabelCubit>()
-                        .replaceNodeInTree(key, updated, node);
-              }
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.add_circle_outline),
-            title: Text(S.of(context)!.addFolder),
-            onTap: () async {
-              Navigator.of(context).pop();
-              final createdLabel =
-                  await CreateLabelRoute(LabelType.folders, $extra: folder)
-                      .push(context);
-              if (createdLabel != null) {
-                context
-                    .read<LabelCubit>()
-                    .addFolderToNode(key, createdLabel, node);
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   _buildFolderTree(BuildContext context) {
     return BlocBuilder<DocumentsCubit, DocumentsState>(
       builder: (context, state) {
@@ -415,26 +362,18 @@ class _LandingPageState extends State<LandingPage> {
                                     _isLoading[node.data.getValue('checksum')] =
                                         true;
                                   });
-                                  if (loadedNodes[
-                                              node.data.getValue('checksum')] !=
-                                          true &&
-                                      node.children.isEmpty) {
-                                    await context
-                                        .read<LabelCubit>()
-                                        .loadChildNodes(
-                                          node.data.getValue('id'),
-                                          node,
-                                        );
-                                    setState(() {
-                                      loadedNodes[node.data
-                                          .getValue('checksum')] = true;
-                                    });
-                                  }
+
+                                  await context
+                                      .read<LabelCubit>()
+                                      .loadChildNodes(
+                                        node.data.getValue('id'),
+                                        node,
+                                      );
+
                                   setState(() {
                                     _isLoading[node.data.getValue('checksum')] =
                                         false;
                                   });
-
                                   _isLoading[node.data.getValue('checksum')] !=
                                           true
                                       ? _controller?.toggleExpansion(node)
@@ -468,6 +407,59 @@ class _LandingPageState extends State<LandingPage> {
           )
         ],
       ).paddedOnly(left: 16),
+    );
+  }
+
+  final showSnackBar = false;
+  final expandChildrenOnReady = false;
+  final Map<String, bool> _isLoading = {};
+  Future<void> _showPopupMenu(BuildContext context, Offset offset,
+      Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        MediaQuery.of(context).size.width - offset.dx,
+        MediaQuery.of(context).size.height - offset.dy,
+      ),
+      items: [
+        PopupMenuItem(
+          enabled: enable,
+          child: ListTile(
+            leading: const Icon(Icons.edit),
+            title: Text(S.of(context)!.edit),
+            onTap: () async {
+              Navigator.of(context).pop(); // Close the popup menu
+              final updated = await EditLabelRoute(folder!).push(context);
+              if (updated != null) {
+                updated is bool && updated == true
+                    ? context.read<LabelCubit>().removeNodeInTree(node)
+                    : context
+                        .read<LabelCubit>()
+                        .replaceNodeInTree(key, updated, node);
+              }
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: Text(S.of(context)!.addFolder),
+            onTap: () async {
+              Navigator.of(context).pop();
+              final createdLabel =
+                  await CreateLabelRoute(LabelType.folders, $extra: folder)
+                      .push(context);
+              if (createdLabel != null) {
+                context
+                    .read<LabelCubit>()
+                    .addFolderToNode(key, createdLabel, node);
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }
