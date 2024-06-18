@@ -79,6 +79,7 @@ class _DocumentUploadPreparationPageState
   final Map<String, bool> loadedNodes = {};
   final expandChildrenOnReady = false;
   Map<String, bool> loading = {};
+  final Map<String, bool> _isLoading = {};
 
   @override
   void initState() {
@@ -324,7 +325,9 @@ class _DocumentUploadPreparationPageState
                                         'warehouse',
                                       ),
                                   labelRepository.shelfs.isEmpty
-                                      ? 'Khong tim thay gia/ke, vui long thu lai'
+                                      ? S
+                                          .of(context)!
+                                          .couldNotFoundShelfPleaseTryAgain
                                       : null),
                             if (context
                                     .watch<LocalUserAccount>()
@@ -345,7 +348,9 @@ class _DocumentUploadPreparationPageState
                                               labelRepository,
                                               'shelf'),
                                           labelRepository.shelfs.isEmpty
-                                              ? 'Khong tim thay gia/ke, vui long thu lai'
+                                              ? S
+                                                  .of(context)!
+                                                  .couldNotFoundBoxcasePleaseTryAgain
                                               : null)
                                       : const SizedBox(),
                             if (context
@@ -467,20 +472,40 @@ class _DocumentUploadPreparationPageState
                           });
                         },
                         child: ListTile(
+                          key: UniqueKey(),
                           title: Text(node.data.getValue('name')),
                           subtitle: Text('Level ${node.level}'),
-                          onTap: () {
-                            _controller?.toggleExpansion(node);
-                            if (loadedNodes[node.data.getValue('checksum')] !=
-                                true) {
-                              context.read<LabelCubit>().loadChildNodes(
-                                    node.data.getValue('id'),
-                                    node,
-                                  );
-                              setState(() {
-                                loadedNodes[node.data.getValue('checksum')] =
-                                    true;
-                              });
+                          leading:
+                              _isLoading[node.data.getValue('checksum')] == true
+                                  ? const CircularProgressIndicator()
+                                  : const Icon(Icons.folder_outlined),
+                          onTap: () async {
+                            if (node.length != 0 &&
+                                _controller!
+                                    .elementAt(node.path)
+                                    .expansionNotifier
+                                    .value &&
+                                _isLoading[node.data.getValue('checksum')] !=
+                                    null) {
+                              _controller!.collapseNode(node);
+                              return;
+                            }
+                            setState(() {
+                              _isLoading[node.data.getValue('checksum')] = true;
+                            });
+                            await context.read<LabelCubit>().loadChildNodes(
+                                  node,
+                                );
+
+                            setState(() {
+                              _isLoading[node.data.getValue('checksum')] =
+                                  false;
+                            });
+                            if (_controller!
+                                .elementAt(node.path)
+                                .expansionNotifier
+                                .value) {
+                              _controller!.toggleExpansion(node);
                             }
                           },
                         ),

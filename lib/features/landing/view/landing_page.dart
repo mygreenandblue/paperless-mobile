@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/folder_tree.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,6 +39,7 @@ class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
   TreeViewController? _controller;
   final Map<String, bool> loadedNodes = {};
+  final Map<String, bool> _isLoading = {};
 
   Future<bool> get _shouldShowChangelog async {
     try {
@@ -283,10 +285,20 @@ class _LandingPageState extends State<LandingPage> {
                   )
                 : lbState.folderTree!.length == 0
                     ? _buildEmptyTree(context)
-                    : _buildTree(context, lbState);
+                    : FolderTree(
+                        labelState: lbState,
+                        controller: _controller!,
+                        isLoading: _isLoading);
           },
         );
       },
+    );
+  }
+
+  TreeNode<dynamic> convertNodeToTreeNode(Node node) {
+    return TreeNode<dynamic>(
+      key: node.key,
+      data: node.children,
     );
   }
 
@@ -305,9 +317,10 @@ class _LandingPageState extends State<LandingPage> {
         indentation: const Indentation(style: IndentStyle.squareJoint),
         onTreeReady: (controller) {
           _controller = controller;
-          if (expandChildrenOnReady)
-            controller.expandAllChildren(lbState.folderTree!);
+          // controller.expandAllChildren(lbState.folderTree!);
         },
+        focusToNewNode: true,
+        onItemTap: (value) {},
         builder: (context, node) {
           return node.level == 0
               ? GestureDetector(
@@ -324,10 +337,10 @@ class _LandingPageState extends State<LandingPage> {
                 )
               : GestureDetector(
                   onLongPressStart: (details) {
-                    node.data is Folder
-                        ? _showPopupMenu(context, details.globalPosition,
-                            node.data, true, node.key, node)
-                        : null;
+                    if (node.data is Folder) {
+                      _showPopupMenu(context, details.globalPosition, node.data,
+                          true, node.key, node);
+                    }
                   },
                   child: node.data.hasField(node.data.toJson(), 'mime_type')
                       ? const ListTile(
@@ -342,14 +355,16 @@ class _LandingPageState extends State<LandingPage> {
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                      width: 1.5,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .shadow
-                                          .withOpacity(0.1)),
+                                    width: 1.5,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .shadow
+                                        .withOpacity(0.1),
+                                  ),
                                 ),
                               ),
                               child: ListTile(
+                                key: UniqueKey(),
                                 title: Text(node.data.getValue('name')),
                                 subtitle: Text('Level ${node.level}'),
                                 leading: _isLoading[
@@ -358,15 +373,24 @@ class _LandingPageState extends State<LandingPage> {
                                     ? const CircularProgressIndicator()
                                     : const Icon(Icons.folder_outlined),
                                 onTap: () async {
+                                  if (node.length != 0 &&
+                                      _controller!
+                                          .elementAt(node.path)
+                                          .expansionNotifier
+                                          .value &&
+                                      _isLoading[
+                                              node.data.getValue('checksum')] !=
+                                          null) {
+                                    _controller!.collapseNode(node);
+                                    return;
+                                  }
                                   setState(() {
                                     _isLoading[node.data.getValue('checksum')] =
                                         true;
                                   });
-
                                   await context
                                       .read<LabelCubit>()
                                       .loadChildNodes(
-                                        node.data.getValue('id'),
                                         node,
                                       );
 
@@ -374,10 +398,12 @@ class _LandingPageState extends State<LandingPage> {
                                     _isLoading[node.data.getValue('checksum')] =
                                         false;
                                   });
-                                  _isLoading[node.data.getValue('checksum')] !=
-                                          true
-                                      ? _controller?.toggleExpansion(node)
-                                      : null;
+                                  if (_controller!
+                                      .elementAt(node.path)
+                                      .expansionNotifier
+                                      .value) {
+                                    _controller!.toggleExpansion(node);
+                                  }
                                 },
                               ),
                             ),
@@ -410,9 +436,6 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  final showSnackBar = false;
-  final expandChildrenOnReady = false;
-  final Map<String, bool> _isLoading = {};
   Future<void> _showPopupMenu(BuildContext context, Offset offset,
       Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
     await showMenu(

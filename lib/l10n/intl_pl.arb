@@ -1079,6 +1079,8 @@
   "allFolder":"Tất cả thư mục",
   "chooseFolder":"Chọn thư mục",
   "rootFolder":"Thư mục gốc",
-  "youDidNotAnyFolderYet": "Bạn chưa lưu bất kỳ thư mục nào, hãy tạo một thư mục và nó sẽ được hiển thị ở đây."
+  "youDidNotAnyFolderYet": "Bạn chưa lưu bất kỳ thư mục nào, hãy tạo một thư mục và nó sẽ được hiển thị ở đây.",
+    "couldNotFoundShelfPleaseTryAgain":"Không tìm thấy bất kỳ giá/kệ nào, vui lòng chọn kho khác",
+  "couldNotFoundBoxcasePleaseTryAgain":"Không tìm thấy bất kỳ hộp/cặp nào, vui lòng chọn giá/kệ khác"
 
 }

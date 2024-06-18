@@ -81,6 +81,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   int? _selectedItemId;
   bool _selectedRoot = false;
   final Map<String, bool> loadedNodes = {};
+  final Map<String, bool> _isLoading = {};
 
   @override
   void initState() {
@@ -320,24 +321,45 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                           }
                         },
                         child: ListTile(
+                          key: UniqueKey(),
                           title: Text(node.data.getValue('name')),
                           subtitle: Text('Level ${node.level}'),
-                          onTap: () {
+                          leading:
+                              _isLoading[node.data.getValue('checksum')] == true
+                                  ? const CircularProgressIndicator()
+                                  : const Icon(Icons.folder_outlined),
+                          onTap: () async {
                             if (widget.initialValue!.id ==
                                 node.data.getValue('id')) {
                               null;
                             } else {
-                              _controller?.toggleExpansion(node);
-                              if (loadedNodes[node.data.getValue('checksum')] !=
-                                  true) {
-                                context.read<LabelCubit>().loadChildNodes(
-                                      node.data.getValue('id'),
-                                      node,
-                                    );
-                                setState(() {
-                                  loadedNodes[node.data.getValue('checksum')] =
-                                      true;
-                                });
+                              if (node.length != 0 &&
+                                  _controller!
+                                      .elementAt(node.path)
+                                      .expansionNotifier
+                                      .value &&
+                                  _isLoading[node.data.getValue('checksum')] !=
+                                      null) {
+                                _controller!.collapseNode(node);
+                                return;
+                              }
+                              setState(() {
+                                _isLoading[node.data.getValue('checksum')] =
+                                    true;
+                              });
+                              await context.read<LabelCubit>().loadChildNodes(
+                                    node,
+                                  );
+
+                              setState(() {
+                                _isLoading[node.data.getValue('checksum')] =
+                                    false;
+                              });
+                              if (_controller!
+                                  .elementAt(node.path)
+                                  .expansionNotifier
+                                  .value) {
+                                _controller!.toggleExpansion(node);
                               }
                             }
                           },

@@ -474,58 +474,49 @@ class LabelCubit extends Cubit<LabelState> {
     emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
 
-  Future<void> loadChildNodes(int id, TreeNode node) async {
+  Future<void> loadChildNodes(TreeNode node) async {
     // Assuming labelRepository has a method to fetch folders by parent id
-    FolderDetails? folder = await labelRepository.findFolder(id);
-    if (folder!.folders == null) {
+    FolderDetails? folder =
+        await labelRepository.findFolder(node.data.getValue('id'));
+    if (folder == null || folder.folders == null) {
       return;
     }
+
     final folderList = folder.folders as List<Folder>;
-
-    Map<String, Folder> childFolders = {
-      for (var f in folderList) f.checksum!: f
-    };
     final documentList = folder.documents as List<DocumentModel>;
-
-    Map<String, DocumentModel> childDocs = {
-      for (var doc in documentList) doc.checksum!: doc
-    };
-
+    Set<String> uniqueKeys = {};
     Map<String, TreeNode> nodeMap = {};
-    // Initialize the nodes
-    childFolders.forEach((id, folder) {
+
+    for (var folder in folderList) {
       String key = folder.id.toString();
-      // Check for duplicate keys
-      if (uniqueKeys.contains(key)) {
+      if (!uniqueKeys.add(key)) {
         print("Key: $key already exists. Please use unique strings as keys");
+        continue;
       }
-      uniqueKeys.add(key);
+      TreeNode folderNode = TreeNode(key: key, data: folder);
+      nodeMap[folder.checksum!] = folderNode;
+    }
 
-      TreeNode node = TreeNode(key: key, data: folder);
-      nodeMap[folder.checksum!] = node;
-    });
-
-    childDocs.forEach((id, doc) {
+    // Add document nodes
+    for (var doc in documentList) {
       String key = doc.id.toString();
-      // Check for duplicate keys
-      if (uniqueKeys.contains(key)) {
+      if (!uniqueKeys.add(key)) {
         print("Key: $key already exists. Please use unique strings as keys");
+        continue;
       }
-      uniqueKeys.add(key);
+      TreeNode docNode = TreeNode(key: key, data: doc);
+      nodeMap[doc.checksum!] = docNode;
+    }
 
-      TreeNode node = TreeNode(key: key, data: doc);
-      nodeMap[doc.checksum!] = node;
-    });
     node.clear();
-    // Build the tree structure
-    childFolders.forEach((checksum, folder) {
-      node.add(nodeMap[checksum]!);
-    });
-    childDocs.forEach((checksum, doc) {
-      node.add(nodeMap[checksum]!);
-    });
 
-    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    for (var checksum in nodeMap.keys) {
+      node.add(nodeMap[checksum]!);
+    }
+
+    emit(state.copyWith(
+      isLoading: false,
+    ));
   }
 
   Future<Folder> addFolder(Folder item) async {
