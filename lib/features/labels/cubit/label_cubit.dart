@@ -1,3 +1,4 @@
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:animated_tree_view/tree_view/tree_node.dart';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -514,9 +515,7 @@ class LabelCubit extends Cubit<LabelState> {
       node.add(nodeMap[checksum]!);
     }
 
-    emit(state.copyWith(
-      isLoading: false,
-    ));
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
 
   Future<Folder> addFolder(Folder item) async {

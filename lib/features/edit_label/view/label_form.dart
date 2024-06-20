@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/folder_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -7,15 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:edocs_api/edocs_api.dart';
 
 import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
-import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 import 'package:edocs_mobile/core/repository/label_repository.dart';
 import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:edocs_mobile/features/labels/view/widgets/custom_searchbar.dart';
 import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:edocs_mobile/helpers/message_helpers.dart';
-import 'package:edocs_mobile/routing/routes/labels_route.dart';
-import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
 class SubmitButtonConfig<T extends Label> {
   final Widget icon;
@@ -76,12 +73,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
   String? _selectedWarehouse = '';
   String? _selectedShelf = '';
   Map<String, String> _errors = {};
-  TreeViewController? _controller;
-  var _parentFolder;
-  int? _selectedItemId;
-  bool _selectedRoot = false;
-  final Map<String, bool> loadedNodes = {};
-  final Map<String, bool> _isLoading = {};
+  int? _parentFolder;
 
   @override
   void initState() {
@@ -240,6 +232,12 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
     );
   }
 
+  void updateParentValue(int? newValue) {
+    setState(() {
+      _parentFolder = newValue;
+    });
+  }
+
   _buildFolderTree(BuildContext context, UserModel currentUSer) {
     return BlocBuilder<DocumentsCubit, DocumentsState>(
       builder: (context, state) {
@@ -253,145 +251,14 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? _buildEmptyTree(context)
-                    : _buildTree(context, lbState);
+                    ? const EmtyFolderTree()
+                    : TreeHasOnlyFolder(
+                        labelState: lbState,
+                        onValueChanged: updateParentValue,
+                      );
           },
         );
       },
-    );
-  }
-
-  _buildTree(BuildContext context, LabelState lbState) {
-    return SliverPadding(
-      padding: const EdgeInsets.all(16),
-      sliver: SliverTreeView.simple(
-        tree: lbState.folderTree!,
-        showRootNode: true,
-        expansionIndicatorBuilder: (context, node) =>
-            ChevronIndicator.rightDown(
-          alignment: Alignment.centerRight,
-          tree: node,
-          padding: const EdgeInsets.all(16),
-        ),
-        indentation: const Indentation(style: IndentStyle.squareJoint),
-        onTreeReady: (controller) {
-          _controller = controller;
-          if (expandChildrenOnReady)
-            controller.expandAllChildren(lbState.folderTree!);
-        },
-        builder: (context, node) {
-          return node.level == 0
-              ? Card(
-                  color: _selectedRoot
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                  child: GestureDetector(
-                    onLongPress: () {
-                      setState(() {
-                        _controller?.toggleExpansion(node);
-                        _selectedRoot = !_selectedRoot;
-                        _parentFolder = null;
-                        _selectedItemId = -1;
-                      });
-                    },
-                    child: ListTile(
-                      title: Text(S.of(context)!.chooseFolder),
-                      subtitle: Text(S.of(context)!.allFolder),
-                    ),
-                  ),
-                )
-              : node.data is Folder
-                  ? Card(
-                      color: widget.initialValue!.id == node.data.getValue('id')
-                          ? Theme.of(context).colorScheme.shadow
-                          : node.data.getValue('id') == _selectedItemId
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                      child: GestureDetector(
-                        onLongPress: () {
-                          if (widget.initialValue!.id ==
-                              node.data.getValue('id')) {
-                            null;
-                          } else {
-                            setState(() {
-                              _parentFolder = node.data.getValue('id');
-                              _selectedItemId = node.data.getValue('id');
-                              _selectedRoot = false;
-                            });
-                          }
-                        },
-                        child: ListTile(
-                          key: UniqueKey(),
-                          title: Text(node.data.getValue('name')),
-                          subtitle: Text('Level ${node.level}'),
-                          leading:
-                              _isLoading[node.data.getValue('checksum')] == true
-                                  ? const CircularProgressIndicator()
-                                  : const Icon(Icons.folder_outlined),
-                          onTap: () async {
-                            if (widget.initialValue!.id ==
-                                node.data.getValue('id')) {
-                              null;
-                            } else {
-                              if (node.length != 0 &&
-                                  _controller!
-                                      .elementAt(node.path)
-                                      .expansionNotifier
-                                      .value &&
-                                  _isLoading[node.data.getValue('checksum')] !=
-                                      null) {
-                                _controller!.collapseNode(node);
-                                return;
-                              }
-                              setState(() {
-                                _isLoading[node.data.getValue('checksum')] =
-                                    true;
-                              });
-                              await context.read<LabelCubit>().loadChildNodes(
-                                    node,
-                                  );
-
-                              setState(() {
-                                _isLoading[node.data.getValue('checksum')] =
-                                    false;
-                              });
-                              if (_controller!
-                                  .elementAt(node.path)
-                                  .expansionNotifier
-                                  .value) {
-                                _controller!.toggleExpansion(node);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    )
-                  : const SizedBox();
-        },
-      ),
-    );
-  }
-
-  _buildEmptyTree(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            S.of(context)!.youDidNotAnyFolderYet,
-            style: Theme.of(context).textTheme.bodySmall,
-          ).padded(),
-          TextButton.icon(
-            onPressed: () {
-              CreateLabelRoute(
-                LabelType.folders,
-              ).push(context);
-            },
-            icon: const Icon(Icons.add),
-            label: Text(S.of(context)!.newView),
-          )
-        ],
-      ).paddedOnly(left: 16),
     );
   }
 
@@ -468,5 +335,3 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
     });
   }
 }
-
-final expandChildrenOnReady = false;

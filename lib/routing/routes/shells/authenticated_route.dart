@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:animated_tree_view/tree_view/tree_node.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -16,7 +17,7 @@ import 'package:edocs_mobile/features/sharing/view/widgets/event_listener_shell.
 import 'package:edocs_mobile/routing/navigation_keys.dart';
 import 'package:edocs_mobile/routing/routes.dart';
 import 'package:edocs_mobile/routing/routes/documents_route.dart';
-import 'package:edocs_mobile/routing/routes/inbox_route.dart';
+import 'package:edocs_mobile/routing/routes/folder_route.dart';
 import 'package:edocs_mobile/routing/routes/labels_route.dart';
 import 'package:edocs_mobile/routing/routes/landing_route.dart';
 import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
@@ -36,6 +37,10 @@ part 'authenticated_route.g.dart';
     TypedGoRoute<PhysicalWarehouseRoute>(
       path: "/physicalWarehouse",
       name: R.physicalWarehouse,
+    ),
+    TypedGoRoute<FolderRoute>(
+      path: "/folderInside",
+      name: R.folderInside,
     ),
     TypedGoRoute<SettingsRoute>(
       path: "/settings",
@@ -65,6 +70,14 @@ part 'authenticated_route.g.dart';
             TypedGoRoute<LandingRoute>(
               path: "/landing",
               name: R.landing,
+            )
+          ],
+        ),
+        TypedStatefulShellBranch<FolderBranch>(
+          routes: [
+            TypedGoRoute<FolderViewRoute>(
+              path: "/folder",
+              name: R.folder,
             )
           ],
         ),
@@ -128,14 +141,6 @@ part 'authenticated_route.g.dart';
                 ),
               ],
             ),
-          ],
-        ),
-        TypedStatefulShellBranch<InboxBranch>(
-          routes: [
-            TypedGoRoute<InboxRoute>(
-              path: "/inbox",
-              name: R.inbox,
-            )
           ],
         ),
       ],

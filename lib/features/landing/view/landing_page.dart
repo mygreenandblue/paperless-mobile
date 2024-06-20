@@ -1,15 +1,9 @@
-import 'dart:convert';
-
-import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:edocs_mobile/features/landing/view/widgets/folder_tree.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:edocs_api/edocs_api.dart';
 import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
-import 'package:edocs_mobile/features/saved_view_details/view/saved_view_non_Expandsion_preview.dart';
-import 'package:edocs_mobile/routing/routes/labels_route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edocs_mobile/constants.dart';
@@ -24,7 +18,7 @@ import 'package:edocs_mobile/features/saved_view_details/view/saved_view_preview
 import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:edocs_mobile/routing/routes/changelog_route.dart';
 import 'package:edocs_mobile/routing/routes/documents_route.dart';
-import 'package:edocs_mobile/routing/routes/inbox_route.dart';
+
 import 'package:edocs_mobile/routing/routes/saved_views_route.dart';
 import 'package:edocs_mobile/routing/routes/shells/authenticated_route.dart';
 
@@ -37,9 +31,6 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
-  TreeViewController? _controller;
-  final Map<String, bool> loadedNodes = {};
-  final Map<String, bool> _isLoading = {};
 
   Future<bool> get _shouldShowChangelog async {
     try {
@@ -62,6 +53,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (await _shouldShowChangelog) {
         ChangelogRoute().push(context);
@@ -217,21 +209,6 @@ class _LandingPageState extends State<LandingPage> {
                 child: ListTile(
                   shape: Theme.of(context).cardTheme.shape,
                   titleTextStyle: Theme.of(context).textTheme.labelLarge,
-                  title: Text(S.of(context)!.documentsInInbox),
-                  onTap: currentUser.canViewInbox
-                      ? () => InboxRoute().go(context)
-                      : null,
-                  trailing: Text(
-                    stats.documentsInInbox.toString(),
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                ),
-              ),
-              Card(
-                color: Theme.of(context).colorScheme.surfaceVariant,
-                child: ListTile(
-                  shape: Theme.of(context).cardTheme.shape,
-                  titleTextStyle: Theme.of(context).textTheme.labelLarge,
                   title: Text(S.of(context)!.totalDocuments),
                   onTap: currentUser.canViewDocuments
                       ? () {
@@ -284,205 +261,13 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? _buildEmptyTree(context)
+                    ? const EmtyFolderTree()
                     : FolderTree(
-                        labelState: lbState,
-                        controller: _controller!,
-                        isLoading: _isLoading);
+                        tree: lbState.folderTree!,
+                      );
           },
         );
       },
-    );
-  }
-
-  TreeNode<dynamic> convertNodeToTreeNode(Node node) {
-    return TreeNode<dynamic>(
-      key: node.key,
-      data: node.children,
-    );
-  }
-
-  _buildTree(BuildContext context, LabelState lbState) {
-    return SliverPadding(
-      padding: const EdgeInsets.all(16),
-      sliver: SliverTreeView.simple(
-        tree: lbState.folderTree!,
-        showRootNode: true,
-        expansionIndicatorBuilder: (context, node) =>
-            ChevronIndicator.rightDown(
-          alignment: Alignment.centerRight,
-          tree: node,
-          padding: const EdgeInsets.all(16),
-        ),
-        indentation: const Indentation(style: IndentStyle.squareJoint),
-        onTreeReady: (controller) {
-          _controller = controller;
-          // controller.expandAllChildren(lbState.folderTree!);
-        },
-        focusToNewNode: true,
-        onItemTap: (value) {},
-        builder: (context, node) {
-          return node.level == 0
-              ? GestureDetector(
-                  onLongPressStart: (details) {
-                    _showPopupMenu(context, details.globalPosition, node.data,
-                        false, node.key, node);
-                  },
-                  child: Card(
-                    child: ListTile(
-                      title: Text(S.of(context)!.personalMaterial),
-                      subtitle: Text(S.of(context)!.allFileAndFolder),
-                    ),
-                  ),
-                )
-              : GestureDetector(
-                  onLongPressStart: (details) {
-                    if (node.data is Folder) {
-                      _showPopupMenu(context, details.globalPosition, node.data,
-                          true, node.key, node);
-                    }
-                  },
-                  child: node.data.hasField(node.data.toJson(), 'mime_type')
-                      ? const ListTile(
-                          title: Text('aa'),
-                          subtitle: Text('Level'),
-                        )
-                      : node.data is DocumentModel
-                          ? SavedViewNonExpandsionPreview(
-                              documentModel: node.data,
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    width: 1.5,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .shadow
-                                        .withOpacity(0.1),
-                                  ),
-                                ),
-                              ),
-                              child: ListTile(
-                                key: UniqueKey(),
-                                title: Text(node.data.getValue('name')),
-                                subtitle: Text('Level ${node.level}'),
-                                leading: _isLoading[
-                                            node.data.getValue('checksum')] ==
-                                        true
-                                    ? const CircularProgressIndicator()
-                                    : const Icon(Icons.folder_outlined),
-                                onTap: () async {
-                                  if (node.length != 0 &&
-                                      _controller!
-                                          .elementAt(node.path)
-                                          .expansionNotifier
-                                          .value &&
-                                      _isLoading[
-                                              node.data.getValue('checksum')] !=
-                                          null) {
-                                    _controller!.collapseNode(node);
-                                    return;
-                                  }
-                                  setState(() {
-                                    _isLoading[node.data.getValue('checksum')] =
-                                        true;
-                                  });
-                                  await context
-                                      .read<LabelCubit>()
-                                      .loadChildNodes(
-                                        node,
-                                      );
-
-                                  setState(() {
-                                    _isLoading[node.data.getValue('checksum')] =
-                                        false;
-                                  });
-                                  if (_controller!
-                                      .elementAt(node.path)
-                                      .expansionNotifier
-                                      .value) {
-                                    _controller!.toggleExpansion(node);
-                                  }
-                                },
-                              ),
-                            ),
-                );
-        },
-      ),
-    );
-  }
-
-  _buildEmptyTree(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            S.of(context)!.youDidNotAnyFolderYet,
-            style: Theme.of(context).textTheme.bodySmall,
-          ).padded(),
-          TextButton.icon(
-            onPressed: () {
-              CreateLabelRoute(
-                LabelType.folders,
-              ).push(context);
-            },
-            icon: const Icon(Icons.add),
-            label: Text(S.of(context)!.newView),
-          )
-        ],
-      ).paddedOnly(left: 16),
-    );
-  }
-
-  Future<void> _showPopupMenu(BuildContext context, Offset offset,
-      Folder? folder, bool enable, String key, TreeNode<dynamic> node) async {
-    await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        offset.dx,
-        offset.dy,
-        MediaQuery.of(context).size.width - offset.dx,
-        MediaQuery.of(context).size.height - offset.dy,
-      ),
-      items: [
-        PopupMenuItem(
-          enabled: enable,
-          child: ListTile(
-            leading: const Icon(Icons.edit),
-            title: Text(S.of(context)!.edit),
-            onTap: () async {
-              Navigator.of(context).pop(); // Close the popup menu
-              final updated = await EditLabelRoute(folder!).push(context);
-              if (updated != null) {
-                updated is bool && updated == true
-                    ? context.read<LabelCubit>().removeNodeInTree(node)
-                    : context
-                        .read<LabelCubit>()
-                        .replaceNodeInTree(key, updated, node);
-              }
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.add_circle_outline),
-            title: Text(S.of(context)!.addFolder),
-            onTap: () async {
-              Navigator.of(context).pop();
-              final createdLabel =
-                  await CreateLabelRoute(LabelType.folders, $extra: folder)
-                      .push(context);
-              if (createdLabel != null) {
-                context
-                    .read<LabelCubit>()
-                    .addFolderToNode(key, createdLabel, node);
-              }
-            },
-          ),
-        ),
-      ],
     );
   }
 }

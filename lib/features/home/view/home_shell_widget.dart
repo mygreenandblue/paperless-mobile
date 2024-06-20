@@ -14,7 +14,7 @@ import 'package:edocs_mobile/core/service/dio_file_service.dart';
 import 'package:edocs_mobile/features/document_scan/cubit/document_scanner_cubit.dart';
 import 'package:edocs_mobile/features/documents/cubit/documents_cubit.dart';
 import 'package:edocs_mobile/features/home/view/model/api_version.dart';
-import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/folder_management/cubit/inbox_cubit.dart';
 import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:edocs_mobile/features/saved_view/cubit/saved_view_cubit.dart';
 import 'package:edocs_mobile/features/settings/view/widgets/global_settings_builder.dart';

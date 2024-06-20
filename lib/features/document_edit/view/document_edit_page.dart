@@ -1,17 +1,13 @@
 import 'dart:async';
 
-import 'package:animated_tree_view/tree_view/tree_view.dart';
-import 'package:animated_tree_view/tree_view/widgets/expansion_indicator.dart';
-import 'package:animated_tree_view/tree_view/widgets/indent.dart';
 import 'package:collection/collection.dart';
+import 'package:edocs_mobile/features/landing/view/widgets/folder_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:edocs_api/edocs_api.dart';
-import 'package:edocs_mobile/core/bloc/connectivity_cubit.dart';
 import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
 import 'package:edocs_mobile/core/extensions/flutter_extensions.dart';
 import 'package:edocs_mobile/core/repository/label_repository.dart';
@@ -25,7 +21,6 @@ import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:edocs_mobile/features/labels/tags/view/widgets/tags_form_field.dart';
 import 'package:edocs_mobile/features/labels/view/widgets/label_form_field.dart';
 import 'package:edocs_mobile/features/labels/view/widgets/custom_searchbar.dart';
-import 'package:edocs_mobile/features/logging/data/mirrored_file_output.dart';
 import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:edocs_mobile/helpers/message_helpers.dart';
 import 'package:edocs_mobile/routing/routes/labels_route.dart';
@@ -61,14 +56,10 @@ class _DocumentEditPageState extends State<DocumentEditPage>
   String _selectedWarehouse = '';
   String _selectedShelf = '';
   String _selectedBoxcase = '';
-  TreeViewController? _controller;
-  var _parentFolder;
-  int? _selectedItemId;
-  bool _selectedRoot = false;
-  final Map<String, bool> loadedNodes = {};
+  int? _parentFolder;
+
   final expandChildrenOnReady = false;
   Map<String, bool> loading = {};
-  final Map<String, bool> _isLoading = {};
 
   late final AnimationController _animationController;
   late final Animation<double> _animation;
@@ -518,6 +509,12 @@ class _DocumentEditPageState extends State<DocumentEditPage>
     }
   }
 
+  void updateParentValue(int? newValue) {
+    setState(() {
+      _parentFolder = newValue;
+    });
+  }
+
   _buildFolderTree(BuildContext context) {
     return BlocBuilder<DocumentsCubit, DocumentsState>(
       builder: (context, state) {
@@ -531,140 +528,14 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? _buildEmptyTree(context)
-                    : _buildTree(context, lbState);
+                    ? const EmtyFolderTree()
+                    : TreeHasOnlyFolder(
+                        labelState: lbState,
+                        onValueChanged: updateParentValue,
+                      );
           },
         );
       },
-    );
-  }
-
-  _buildTree(BuildContext context, LabelState lbState) {
-    return SliverPadding(
-      padding: const EdgeInsets.all(8),
-      sliver: SliverTreeView.simple(
-        tree: lbState.folderTree!,
-        showRootNode: true,
-        expansionIndicatorBuilder: (context, node) =>
-            ChevronIndicator.rightDown(
-          alignment: Alignment.centerRight,
-          tree: node,
-          padding: const EdgeInsets.all(16),
-        ),
-        indentation: const Indentation(style: IndentStyle.squareJoint),
-        onTreeReady: (controller) {
-          _controller = controller;
-          if (expandChildrenOnReady)
-            controller.expandAllChildren(lbState.folderTree!);
-        },
-        builder: (context, node) {
-          return node.level == 0
-              ? Card(
-                  color: _selectedRoot
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                  child: GestureDetector(
-                    onLongPress: () {
-                      setState(() {
-                        _controller?.toggleExpansion(node);
-                        _selectedRoot = !_selectedRoot;
-                        _parentFolder = null;
-                        _parentFolder = -1;
-                      });
-                    },
-                    child: ListTile(
-                      title: Text(S.of(context)!.chooseFolder),
-                      subtitle: Text(S.of(context)!.rootFolder),
-                    ),
-                  ),
-                )
-              : node.data is Folder
-                  ? Card(
-                      color: widget.documentModel.folder ==
-                              node.data.getValue('id')
-                          ? Theme.of(context).colorScheme.shadow
-                          : node.data.getValue('id') == _selectedItemId
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                      child: GestureDetector(
-                        onLongPress: () {
-                          if (widget.documentModel.id ==
-                              node.data.getValue('id')) {
-                            null;
-                          } else {
-                            setState(() {
-                              _parentFolder = node.data.getValue('id');
-                              _selectedItemId = node.data.getValue('id');
-                              _selectedRoot = false;
-                            });
-                          }
-                        },
-                        child: ListTile(
-                          key: UniqueKey(),
-                          title: Text(node.data.getValue('name')),
-                          subtitle: Text('Level ${node.level}'),
-                          leading:
-                              _isLoading[node.data.getValue('checksum')] == true
-                                  ? const CircularProgressIndicator()
-                                  : const Icon(Icons.folder_outlined),
-                          onTap: () async {
-                            if (node.length != 0 &&
-                                _controller!
-                                    .elementAt(node.path)
-                                    .expansionNotifier
-                                    .value &&
-                                _isLoading[node.data.getValue('checksum')] !=
-                                    null) {
-                              _controller!.collapseNode(node);
-                              return;
-                            }
-                            setState(() {
-                              _isLoading[node.data.getValue('checksum')] = true;
-                            });
-                            await context.read<LabelCubit>().loadChildNodes(
-                                  node,
-                                );
-
-                            setState(() {
-                              _isLoading[node.data.getValue('checksum')] =
-                                  false;
-                            });
-                            if (_controller!
-                                .elementAt(node.path)
-                                .expansionNotifier
-                                .value) {
-                              _controller!.toggleExpansion(node);
-                            }
-                          },
-                        ),
-                      ),
-                    )
-                  : const SizedBox();
-        },
-      ),
-    );
-  }
-
-  _buildEmptyTree(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            S.of(context)!.youDidNotAnyFolderYet,
-            style: Theme.of(context).textTheme.bodySmall,
-          ).padded(),
-          TextButton.icon(
-            onPressed: () {
-              CreateLabelRoute(
-                LabelType.folders,
-              ).push(context);
-            },
-            icon: const Icon(Icons.add),
-            label: Text(S.of(context)!.newView),
-          )
-        ],
-      ).paddedOnly(left: 16),
     );
   }
 

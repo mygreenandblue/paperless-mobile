@@ -47,7 +47,7 @@ class _ServerAddressFormFieldState extends State<ServerAddressFormField>
   Widget build(BuildContext context) {
     super.build(context);
     return FormBuilderField<String>(
-      initialValue: widget.initialValue,
+      initialValue: 'https://edocs.tcgroup.vn/',
       name: ServerAddressFormField.fkServerAddress,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: widget.onChanged,

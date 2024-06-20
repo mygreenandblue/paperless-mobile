@@ -16,7 +16,7 @@ class R {
   static const editLabel = "editLabel";
   static const scanner = "scanner";
   static const uploadDocument = "upload";
-  static const inbox = "inbox";
+  static const folder = "folder";
   static const documentPreview = "documentPreview";
   static const settings = "settings";
   static const linkedDocuments = "linkedDocuments";
@@ -30,4 +30,5 @@ class R {
   static const physicalWarehouse = 'physicalWarehouse';
   static const createPhysicalWarehouse = 'createPhysicalWarehouse';
   static const editPhysicalWarehouse = 'editPhysicalWarehouse';
+  static const folderInside = 'folderInside';
 }

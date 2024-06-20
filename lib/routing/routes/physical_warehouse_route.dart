@@ -5,14 +5,6 @@ import 'package:edocs_api/edocs_api.dart';
 
 import 'package:edocs_mobile/features/labels/view/pages/physical_warehouse_page.dart';
 
-import 'package:edocs_mobile/routing/navigation_keys.dart';
-
-class PhysicalWarehouseBranch extends StatefulShellBranchData {
-  static final GlobalKey<NavigatorState> $navigatorKey =
-      physicalWarehouseNavigatorKey;
-  const PhysicalWarehouseBranch();
-}
-
 class PhysicalWarehouseRoute extends GoRouteData {
   final String type;
   final String initialName;

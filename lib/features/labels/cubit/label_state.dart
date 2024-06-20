@@ -18,6 +18,5 @@ class LabelState with _$LabelState {
     @Default(false) bool isLoading,
     Warehouse? warehouse,
     TreeNode? folderTree,
-    TreeNode? node,
   }) = _LabelState;
 }

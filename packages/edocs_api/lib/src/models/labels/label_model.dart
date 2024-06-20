@@ -432,6 +432,7 @@ class Folder extends Label {
   static const pathFolderKey = 'path';
   final String? path;
   final String? checksum;
+  final int? childFolderCount;
 
   const Folder({
     required super.name,
@@ -446,6 +447,7 @@ class Folder extends Label {
     super.parentFolder,
     this.path,
     this.checksum,
+    this.childFolderCount,
   });
 
   factory Folder.fromJson(Map<String, dynamic> json) => _$FolderFromJson(json);
@@ -474,7 +476,8 @@ class Folder extends Label {
     bool? userCanChange,
     int? parentFolder,
     String? path,
-    final String? checksum,
+    String? checksum,
+    int? childFolderCount,
   }) {
     return Folder(
       id: id ?? this.id,
@@ -487,6 +490,7 @@ class Folder extends Label {
       parentFolder: parentFolder ?? parentFolder,
       path: type ?? this.path,
       checksum: checksum ?? checksum,
+      childFolderCount: childFolderCount ?? childFolderCount,
     );
   }
 
@@ -528,6 +532,8 @@ class Folder extends Label {
         return owner;
       case 'parent_folder':
         return parentFolder;
+      case 'child_folder_count':
+        return childFolderCount;
       default:
         return null;
     }

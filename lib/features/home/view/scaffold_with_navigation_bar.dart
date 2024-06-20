@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:edocs_api/edocs_api.dart';
 import 'package:edocs_mobile/features/app_drawer/view/app_drawer.dart';
-import 'package:edocs_mobile/features/inbox/cubit/inbox_cubit.dart';
+import 'package:edocs_mobile/features/folder_management/cubit/inbox_cubit.dart';
 import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:edocs_mobile/theme.dart';
 
@@ -51,6 +51,17 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
             ),
             _toggleDestination(
               NavigationDestination(
+                icon: const Icon(Icons.inbox_outlined),
+                selectedIcon: Icon(
+                  Icons.inbox,
+                  color: theme.colorScheme.primary,
+                ),
+                label: S.of(context)!.rootFolder,
+              ),
+              disableWhen: !widget.authenticatedUser.canViewFolder,
+            ),
+            _toggleDestination(
+              NavigationDestination(
                 icon: const Icon(Icons.description_outlined),
                 selectedIcon: Icon(
                   Icons.description,
@@ -81,38 +92,6 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
                 label: S.of(context)!.labels,
               ),
               disableWhen: !widget.authenticatedUser.canViewAnyLabel,
-            ),
-            _toggleDestination(
-              NavigationDestination(
-                icon: Builder(
-                  builder: (context) {
-                    return BlocBuilder<InboxCubit, InboxState>(
-                      builder: (context, state) {
-                        return Badge.count(
-                          isLabelVisible: state.itemsInInboxCount > 0,
-                          count: state.itemsInInboxCount,
-                          child: const Icon(Icons.inbox_outlined),
-                        );
-                      },
-                    );
-                  },
-                ),
-                selectedIcon: BlocBuilder<InboxCubit, InboxState>(
-                  builder: (context, state) {
-                    return Badge.count(
-                      isLabelVisible: state.itemsInInboxCount > 0 &&
-                          widget.authenticatedUser.canViewInbox,
-                      count: state.itemsInInboxCount,
-                      child: Icon(
-                        Icons.inbox,
-                        color: theme.colorScheme.primary,
-                      ),
-                    );
-                  },
-                ),
-                label: S.of(context)!.inbox,
-              ),
-              disableWhen: !widget.authenticatedUser.canViewInbox,
             ),
           ],
         ),
