@@ -13,7 +13,7 @@ class LabelCubit extends Cubit<LabelState> {
 
   LabelCubit(this.labelRepository) : super(const LabelState()) {
     labelRepository.addListener(_updateStateListener);
-    emit(state.copyWith(folderTree: TreeNode.root()));
+    emit(state.copyWith(folderTree: TreeNode.root(), node: TreeNode.root()));
   }
 
   void _updateStateListener() {
@@ -387,7 +387,6 @@ class LabelCubit extends Cubit<LabelState> {
     emit(state.copyWith(isLoading: true));
 
     Map<String, TreeNode> nodeMap = {};
-
     // Initialize folder nodes and check for duplicates
     for (var folder in labelRepository.folders.values) {
       String key = folder.id.toString();
@@ -395,7 +394,6 @@ class LabelCubit extends Cubit<LabelState> {
         nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
       } else {
         emit(state.copyWith(isLoading: false));
-
         return;
       }
     }
@@ -407,15 +405,11 @@ class LabelCubit extends Cubit<LabelState> {
         nodeMap[doc.checksum!] = TreeNode(key: key, data: doc);
       } else {
         emit(state.copyWith(isLoading: false));
-
         return;
       }
     }
 
-    // Clear the existing tree
     state.folderTree!.clear();
-
-    // Build the tree structure
     for (var checksum in labelRepository.folders.keys) {
       if (nodeMap[checksum] != null) {
         state.folderTree!.add(nodeMap[checksum]!);
@@ -429,6 +423,63 @@ class LabelCubit extends Cubit<LabelState> {
     if (state.folderTree!.length != 0) {
       emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
     }
+  }
+
+  Map<String, Folder> folders = {};
+  Map<String, DocumentModel> documents = {};
+
+  Future<void> buildChildTree(TreeNode node) async {
+    emit(state.copyWith(isLoading: true));
+
+    FolderDetails? folder =
+        await labelRepository.findFolder(node.data.getValue('id'));
+    if (folder == null || folder.folders == null) {
+      return;
+    }
+    Map<String, TreeNode> nodeMap = {};
+    folders = {
+      for (var folder in folder.folders as List<Folder>)
+        folder.checksum!: folder
+    };
+    documents = {
+      for (var doc in folder.documents as List<DocumentModel>)
+        doc.checksum!: doc
+    };
+
+    for (var folder in folders.values) {
+      String key = folder.id.toString();
+      if (uniqueKeys.add(key)) {
+        nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
+      } else {
+        emit(state.copyWith(isLoading: false));
+        return;
+      }
+    }
+
+    // Initialize document nodes and check for duplicates
+    for (var doc in documents.values) {
+      String key = doc.id.toString();
+      if (uniqueKeys.add(key)) {
+        nodeMap[doc.checksum!] = TreeNode(key: key, data: doc);
+      } else {
+        emit(state.copyWith(isLoading: false));
+        return;
+      }
+    }
+
+    state.node!.clear();
+    for (var checksum in folders.keys) {
+      if (nodeMap[checksum] != null) {
+        state.node!.add(nodeMap[checksum]!);
+      }
+    }
+    for (var checksum in documents.keys) {
+      if (nodeMap[checksum] != null) {
+        state.node!.add(nodeMap[checksum]!);
+      }
+    }
+
+    emit(state.copyWith(isLoading: false, node: state.node));
   }
 
   Future<void> addFolderToNode(
@@ -449,7 +500,7 @@ class LabelCubit extends Cubit<LabelState> {
     emit(state.copyWith(isLoading: false));
 
     parentNode.add(newFolderNode);
-    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    emit(state.copyWith(isLoading: false, folderTree: state.node));
   }
 
   Future<void> replaceNodeInTree(
@@ -469,10 +520,10 @@ class LabelCubit extends Cubit<LabelState> {
   Future<void> removeNodeInTree(TreeNode node) async {
     emit(state.copyWith(isLoading: true));
     // Check if the node to be replaced exists
-
     state.folderTree!.remove(node);
+
     // Emit the new state
-    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    emit(state.copyWith(isLoading: false));
   }
 
   Future<void> loadChildNodes(TreeNode node) async {
@@ -485,37 +536,26 @@ class LabelCubit extends Cubit<LabelState> {
 
     final folderList = folder.folders as List<Folder>;
     final documentList = folder.documents as List<DocumentModel>;
-    Set<String> uniqueKeys = {};
     Map<String, TreeNode> nodeMap = {};
 
     for (var folder in folderList) {
       String key = folder.id.toString();
-      if (!uniqueKeys.add(key)) {
-        print("Key: $key already exists. Please use unique strings as keys");
-        continue;
-      }
       TreeNode folderNode = TreeNode(key: key, data: folder);
       nodeMap[folder.checksum!] = folderNode;
     }
-
-    // Add document nodes
     for (var doc in documentList) {
       String key = doc.id.toString();
-      if (!uniqueKeys.add(key)) {
-        print("Key: $key already exists. Please use unique strings as keys");
-        continue;
-      }
       TreeNode docNode = TreeNode(key: key, data: doc);
       nodeMap[doc.checksum!] = docNode;
     }
 
-    node.clear();
-
+    state.node!.clear();
+    // Add loaded children nodes to the current node
     for (var checksum in nodeMap.keys) {
-      node.add(nodeMap[checksum]!);
+      state.node!.add(nodeMap[checksum]!);
     }
 
-    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    emit(state.copyWith(node: state.node));
   }
 
   Future<Folder> addFolder(Folder item) async {
@@ -531,9 +571,7 @@ class LabelCubit extends Cubit<LabelState> {
 
   Future<void> removeFolder(Folder item) async {
     assert(item.id != null);
-    if (labelRepository.folders.containsKey(item.checksum)) {
-      await labelRepository.deleteFolder(item);
-    }
+    await labelRepository.deleteFolder(item);
   }
 
   Future<void> buildTreeHasOnlyFolder() async {
@@ -553,10 +591,8 @@ class LabelCubit extends Cubit<LabelState> {
       }
     }
 
-    // Clear the existing tree
     state.folderTree!.clear();
 
-    // Build the tree structure
     for (var checksum in labelRepository.folders.keys) {
       if (nodeMap[checksum] != null) {
         state.folderTree!.add(nodeMap[checksum]!);

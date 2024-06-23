@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:edocs_mobile/features/landing/view/widgets/folder_tree.dart';
+import 'package:edocs_mobile/features/labels/folder/folder_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -41,6 +41,7 @@ class DocumentUploadPreparationPage extends StatefulWidget {
   final String? title;
   final String? filename;
   final String? fileExtension;
+  final int? initFolderId;
 
   const DocumentUploadPreparationPage({
     Key? key,
@@ -48,6 +49,7 @@ class DocumentUploadPreparationPage extends StatefulWidget {
     this.title,
     this.filename,
     this.fileExtension,
+    this.initFolderId,
   }) : super(key: key);
 
   @override
@@ -81,6 +83,11 @@ class _DocumentUploadPreparationPageState
       loading['shelf'] = false;
       loading['case'] = false;
     });
+    if (widget.initFolderId != null) {
+      setState(() {
+        _parentFolder = widget.initFolderId;
+      });
+    }
   }
 
   @override
@@ -367,9 +374,10 @@ class _DocumentUploadPreparationPageState
                           ].padded(),
                         ),
                         if (context
-                            .watch<LocalUserAccount>()
-                            .edocsUser
-                            .canViewFolder)
+                                .watch<LocalUserAccount>()
+                                .edocsUser
+                                .canViewFolder &&
+                            widget.initFolderId == null)
                           _buildFolderTree(context),
                         const SliverPadding(
                           padding: EdgeInsets.all(16),

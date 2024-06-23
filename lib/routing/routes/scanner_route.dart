@@ -8,7 +8,6 @@ import 'package:edocs_mobile/features/document_scan/view/scanner_page.dart';
 import 'package:edocs_mobile/features/document_upload/cubit/document_upload_cubit.dart';
 import 'package:edocs_mobile/features/document_upload/view/document_upload_preparation_page.dart';
 import 'package:edocs_mobile/routing/navigation_keys.dart';
-import 'package:edocs_mobile/routing/routes.dart';
 
 class ScannerBranch extends StatefulShellBranchData {
   static final GlobalKey<NavigatorState> $navigatorKey = scannerNavigatorKey;
@@ -32,12 +31,14 @@ class DocumentUploadRoute extends GoRouteData {
   final String? title;
   final String? filename;
   final String? fileExtension;
+  final int? initFolderID;
 
   const DocumentUploadRoute({
     required this.$extra,
     this.title,
     this.filename,
     this.fileExtension,
+    this.initFolderID,
   });
 
   @override
@@ -54,6 +55,7 @@ class DocumentUploadRoute extends GoRouteData {
         fileExtension: fileExtension,
         filename: filename,
         fileBytes: $extra,
+        initFolderId: initFolderID,
       ),
     );
   }

@@ -204,7 +204,7 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
       onDelete(context, label);
       showSnackBar(
         context,
-        S.of(context)!.documentSuccessfullyUploadedProcessing,
+        S.of(context)!.notiActionSuccess,
       );
 
       context.pop(true);
