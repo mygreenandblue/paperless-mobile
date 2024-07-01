@@ -105,6 +105,12 @@ class _LandingPageState extends State<LandingPage> {
                           S.of(context)!.personalMaterial,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
+                        IconButton(
+                          icon: const Icon(Icons.refresh_outlined),
+                          onPressed: () {
+                            context.read<LabelCubit>().reloadTree();
+                          },
+                        ).paddedOnly(right: 8),
                       ],
                     ),
                   ),
@@ -264,6 +270,8 @@ class _LandingPageState extends State<LandingPage> {
                     ? const EmtyFolderTree()
                     : FolderTree(
                         tree: lbState.folderTree!,
+                        type: 'root',
+                        expandChildrenOnReady: true,
                       );
           },
         );

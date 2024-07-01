@@ -56,7 +56,7 @@ class ScaffoldWithNavigationBarState extends State<ScaffoldWithNavigationBar> {
                   Icons.inbox,
                   color: theme.colorScheme.primary,
                 ),
-                label: S.of(context)!.rootFolder,
+                label: S.of(context)!.folder,
               ),
               disableWhen: !widget.authenticatedUser.canViewFolder,
             ),

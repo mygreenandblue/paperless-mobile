@@ -11,6 +11,8 @@ class LabelState with _$LabelState {
     @Default({}) Map<int, Warehouse> shelfs,
     @Default({}) Map<int, Warehouse> boxcases,
     @Default({}) Map<String, Folder> folders,
+    @Default({}) Map<int, Folder> childFolders,
+    @Default({}) Map<int, DocumentModel> documents,
     @Default('') String selectedShelf,
     @Default('') String selectedWarehouse,
     @Default(-1) int idShelf,

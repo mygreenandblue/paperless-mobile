@@ -1,6 +1,8 @@
-import 'package:animated_tree_view/tree_view/tree_node.dart';
+import 'package:edocs_api/edocs_api.dart';
 import 'package:edocs_mobile/features/folder_management/view/pages/folder_view.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:edocs_mobile/features/folder_management/view/pages/folder_page.dart';
 import 'package:edocs_mobile/routing/navigation_keys.dart';
@@ -19,13 +21,22 @@ class FolderViewRoute extends GoRouteData {
 }
 
 class FolderRoute extends GoRouteData {
-  final TreeNode<dynamic> $extra;
+  final int folderId;
+  final String folderName;
+  final Folder $extra;
 
-  FolderRoute(this.$extra);
+  FolderRoute(
+    this.$extra, {
+    required this.folderId,
+    required this.folderName,
+  });
+
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return FolderPage(
-      tree: $extra,
+      id: folderId,
+      name: folderName,
+      folder: $extra,
     );
   }
 }

@@ -573,7 +573,6 @@ class EdocsLabelApiImpl implements EdocsLabelsApi {
   @override
   Future<Folder> updateFolder(Folder folder) async {
     try {
-      print(folder);
       final response = await _client.put(
         '/api/folders/${folder.id}/',
         data: folder.toJson(),

@@ -457,7 +457,7 @@ class Folder extends Label {
 
   @override
   String toString() {
-    return 'Folder(name: $name, id: $id, path: $path, parent_folder: $parentFolder, document_count: $documentCount)';
+    return 'Folder(name: $name, id: $id, path: $path, parent_folder: $parentFolder, document_count: $documentCount, child_folder_count: $childFolderCount)';
   }
 
   @override

@@ -147,7 +147,18 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                 ),
               ),
             if (widget.type == 'Folder') _buildFolderTree(context, currentUser),
-            ...widget.additionalFields,
+            if (widget.additionalFields.isNotEmpty)
+              SliverPadding(
+                padding: const EdgeInsets.all(8),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return widget.additionalFields[index];
+                    },
+                    childCount: widget.additionalFields.length,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -253,7 +264,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                 : lbState.folderTree!.length == 0
                     ? const EmtyFolderTree()
                     : TreeHasOnlyFolder(
-                        labelState: lbState,
+                        folderTree: lbState.folderTree!,
                         onValueChanged: updateParentValue,
                       );
           },
@@ -296,7 +307,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           S.of(context)!.notiActionSuccess,
         );
 
-        context.pop(createdLabel);
+        Navigator.maybePop(context, createdLabel);
       } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on edocsFormValidationException catch (exception) {

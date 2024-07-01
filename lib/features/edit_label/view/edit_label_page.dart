@@ -123,10 +123,12 @@ class EditLabelForm<T extends Label> extends StatelessWidget {
         appBar: AppBar(
           title: Text(S.of(context)!.edit),
           actions: [
-            IconButton(
-              onPressed: canDelete ? () => _onDelete(context) : null,
-              icon: const Icon(Icons.delete),
-            ),
+            type == 'Warehouse' || type == 'Shelf' || type == 'Folder'
+                ? const SizedBox()
+                : IconButton(
+                    onPressed: canDelete ? () => _onDelete(context) : null,
+                    icon: const Icon(Icons.delete),
+                  ),
           ],
         ),
         body: LabelForm<T>(

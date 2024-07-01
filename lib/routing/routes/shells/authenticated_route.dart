@@ -39,7 +39,7 @@ part 'authenticated_route.g.dart';
       name: R.physicalWarehouse,
     ),
     TypedGoRoute<FolderRoute>(
-      path: "/folderInside",
+      path: "/folderInside/:folderId",
       name: R.folderInside,
     ),
     TypedGoRoute<SettingsRoute>(

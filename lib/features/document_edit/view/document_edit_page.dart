@@ -459,7 +459,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       IdsTagsQuery(include: var i) => i,
       _ => null,
     };
-
+    final parentFolder = _parentFolder ?? widget.documentModel.folder;
     final content = fkState.getRawValue<String?>(fkContent);
 
     return (
@@ -470,7 +470,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
       tags,
       created?.toDateTime(),
       content,
-      _parentFolder,
+      parentFolder,
     );
   }
 
@@ -530,7 +530,7 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                 : lbState.folderTree!.length == 0
                     ? const EmtyFolderTree()
                     : TreeHasOnlyFolder(
-                        labelState: lbState,
+                        folderTree: lbState.folderTree!,
                         onValueChanged: updateParentValue,
                       );
           },

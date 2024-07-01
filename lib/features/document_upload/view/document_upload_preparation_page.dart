@@ -420,7 +420,7 @@ class _DocumentUploadPreparationPageState
                 : lbState.folderTree!.length == 0
                     ? const EmtyFolderTree()
                     : TreeHasOnlyFolder(
-                        labelState: lbState,
+                        folderTree: lbState.folderTree!,
                         onValueChanged: updateParentValue,
                       );
           },
@@ -574,6 +574,7 @@ class _DocumentUploadPreparationPageState
           context,
           S.of(context)!.documentSuccessfullyUploadedProcessing,
         );
+        // context.read<LabelCubit>().reloadTree();
         context.pop(DocumentUploadResult(true, taskId));
       } on edocsFormValidationException catch (exception) {
         setState(() => _errors = exception.validationMessages);
