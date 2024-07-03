@@ -381,13 +381,15 @@ class LabelCubit extends Cubit<LabelState> {
     }
   }
 
-  Future<void> reloadTree() async {
+  Set<String> uniqueKeys = {};
+  Future<void> buildTree() async {
     emit(state.copyWith(isLoading: true));
+    Map<String, TreeNode> nodeMap = {};
     [
       await labelRepository.findAllFolders(),
       await labelRepository.findAllDocuments()
     ];
-    Map<String, TreeNode> nodeMap = {};
+
     for (var folder in labelRepository.folders.values) {
       String key = folder.checksum.toString();
       if (uniqueKeys.add(key)) {
@@ -419,50 +421,8 @@ class LabelCubit extends Cubit<LabelState> {
         state.folderTree!.add(nodeMap[checksum]!);
       }
     }
-    if (state.folderTree!.length != 0) {
-      emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
-    }
-  }
 
-  Set<String> uniqueKeys = {};
-  Future<void> buildTree() async {
-    emit(state.copyWith(isLoading: true));
-
-    Map<String, TreeNode> nodeMap = {};
-    for (var folder in labelRepository.folders.values) {
-      String key = folder.checksum.toString();
-      if (uniqueKeys.add(key)) {
-        nodeMap[folder.checksum!] = TreeNode(key: key, data: folder);
-      } else {
-        emit(state.copyWith(isLoading: false));
-        return;
-      }
-    }
-
-    for (var doc in labelRepository.documents.values) {
-      String key = doc.checksum.toString();
-      if (uniqueKeys.add(key)) {
-        nodeMap[doc.checksum!] = TreeNode(key: key, data: doc);
-      } else {
-        emit(state.copyWith(isLoading: false));
-        return;
-      }
-    }
-
-    state.folderTree!.clear();
-    for (var checksum in labelRepository.folders.keys) {
-      if (nodeMap[checksum] != null) {
-        state.folderTree!.add(nodeMap[checksum]!);
-      }
-    }
-    for (var checksum in labelRepository.documents.keys) {
-      if (nodeMap[checksum] != null) {
-        state.folderTree!.add(nodeMap[checksum]!);
-      }
-    }
-    if (state.folderTree!.length != 0) {
-      emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
-    }
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
 
   Future<void> loadFileAndFolder(int id) async {
@@ -515,10 +475,15 @@ class LabelCubit extends Cubit<LabelState> {
   }
 
   Future<void> removeNodeInTree(TreeNode node) async {
-    emit(state.copyWith(isLoading: true));
     state.folderTree!.remove(node);
 
-    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
+    emit(state.copyWith(folderTree: state.folderTree));
+  }
+
+  Future<void> removeNodeInChildNode(TreeNode node) async {
+    state.node!.remove(node);
+
+    emit(state.copyWith(node: state.node));
   }
 
   Future<void> loadChildNodes(int id, TreeNode node) async {
@@ -568,7 +533,6 @@ class LabelCubit extends Cubit<LabelState> {
   }
 
   Future<Folder> addFolder(Folder item) async {
-    assert(item.id == null);
     final addedItem = await labelRepository.createFolder(item);
     return addedItem;
   }
@@ -578,16 +542,45 @@ class LabelCubit extends Cubit<LabelState> {
     return updatedItem;
   }
 
+  Future<void> updateFolder(Folder updated) async {
+    emit(state.copyWith(
+      childFolders: {
+        ...state.childFolders,
+        updated.id!: updated,
+      },
+    ));
+  }
+
+  Future<void> loadAddedItemFolder(int id, Folder folder) async {
+    emit(state.copyWith(singleLoading: {id: true}));
+    final updated = await replaceFolder(folder);
+    if (state.childFolders.containsKey(id)) {
+      final updatedChildFolders = Map<int, Folder>.from(state.childFolders)
+        ..[id] = updated;
+
+      emit(state.copyWith(
+          childFolders: updatedChildFolders, singleLoading: {id: false}));
+    }
+  }
+
   Future<int> removeFolder(Folder item) async {
     assert(item.id != null);
     await labelRepository.deleteFolder(item);
     return item.id!;
   }
 
+  Future<void> removeItemFolder(id) async {
+    Map<int, Folder> childFolders = Map.from(state.childFolders);
+    childFolders.remove(id);
+    final Map<int, Folder> updatedUnmodifiableChildFolders =
+        Map.unmodifiable(childFolders);
+    emit(state.copyWith(childFolders: updatedUnmodifiableChildFolders));
+  }
+
   Future<void> buildTreeHasOnlyFolder() async {
     emit(state.copyWith(isLoading: true));
-
     Map<String, TreeNode> nodeMap = {};
+
     for (var folder in labelRepository.folders.values) {
       String key = folder.checksum.toString();
       if (uniqueKeys.add(key)) {
@@ -605,9 +598,7 @@ class LabelCubit extends Cubit<LabelState> {
       }
     }
 
-    if (labelRepository.folders.isNotEmpty) {
-      emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
-    }
+    emit(state.copyWith(isLoading: false, folderTree: state.folderTree));
   }
 
   Future<void> loadChildNodesHasOnlyFolder(int id, TreeNode node) async {

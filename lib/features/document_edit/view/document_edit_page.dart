@@ -528,7 +528,9 @@ class _DocumentEditPageState extends State<DocumentEditPage>
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? const EmtyFolderTree()
+                    ? const SliverToBoxAdapter(
+                        child: SizedBox(),
+                      )
                     : TreeHasOnlyFolder(
                         folderTree: lbState.folderTree!,
                         onValueChanged: updateParentValue,

@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
-import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -15,7 +14,6 @@ import 'package:edocs_mobile/core/widgets/dialog_utils/pop_with_unsaved_changes.
 import 'package:edocs_mobile/features/edit_label/view/label_form.dart';
 import 'package:edocs_mobile/features/labels/cubit/label_cubit.dart';
 import 'package:edocs_mobile/features/labels/view/widgets/countdown.dart';
-import 'package:edocs_mobile/features/logging/data/mirrored_file_output.dart';
 import 'package:edocs_mobile/generated/l10n/app_localizations.dart';
 import 'package:edocs_mobile/helpers/message_helpers.dart';
 

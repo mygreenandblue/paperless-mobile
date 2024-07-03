@@ -108,7 +108,7 @@ class _LandingPageState extends State<LandingPage> {
                         IconButton(
                           icon: const Icon(Icons.refresh_outlined),
                           onPressed: () {
-                            context.read<LabelCubit>().reloadTree();
+                            context.read<LabelCubit>().buildTree();
                           },
                         ).paddedOnly(right: 8),
                       ],
@@ -267,7 +267,7 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? const EmtyFolderTree()
+                    ? const EmtyFolderPage()
                     : FolderTree(
                         tree: lbState.folderTree!,
                         type: 'root',

@@ -154,7 +154,7 @@ class _FolderTreeState extends State<FolderTree> {
                                   folderId: node.data.getValue('id'),
                                   folderName: node.data.getValue('name'),
                                 ).push(context);
-                                context.read<LabelCubit>().loadChildNodes(
+                                await context.read<LabelCubit>().loadChildNodes(
                                     node.data.getValue('id'), node);
                               }
 
@@ -322,7 +322,7 @@ Future<void> showPopupMenu(
           leading: const Icon(Icons.edit),
           title: Text(S.of(context)!.edit),
           onTap: () async {
-            Navigator.of(context).pop(); // Close the popup menu
+            Navigator.of(context).pop();
             final updated = await EditLabelRoute(folder!).push(context);
             if (updated != null) {
               updated is bool && updated == true
@@ -345,8 +345,8 @@ Future<void> showPopupMenu(
             if (createdLabel != null) {
               await context
                   .read<LabelCubit>()
-                  .loadChildNodes(folder!.id!, node);
-              controller.collapseNode(node);
+                  .loadChildNodes(createdLabel!.parentFolder!, node);
+              controller.toggleExpansion(node);
             }
           },
         ),
@@ -357,7 +357,7 @@ Future<void> showPopupMenu(
         title: Text(S.of(context)!.upLoadFile),
         onTap: () async {
           Navigator.of(context).pop();
-          await _onUploadFromFilesystem(context, folder?.id);
+          await onUploadFromFilesystem(context, folder?.id);
         },
       )),
       PopupMenuItem(
@@ -376,7 +376,7 @@ Future<void> showPopupMenu(
                     folder.parentFolder!, node.parent as TreeNode);
                 node.remove(node);
               }
-              controller.toggleExpansion(node.parent as TreeNode);
+              controller.expandAllChildren(node.parent as TreeNode);
             },
           )),
     ],
@@ -441,8 +441,7 @@ Future<void> _onDelete(BuildContext context, Folder folder) async {
   }
 }
 
-Future<void> _onUploadFromFilesystem(
-    BuildContext context, int? folderId) async {
+Future<void> onUploadFromFilesystem(BuildContext context, int? folderId) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions:
@@ -474,9 +473,10 @@ Future<void> _onUploadFromFilesystem(
   }
 }
 
-class EmtyFolderTree extends StatelessWidget {
-  const EmtyFolderTree({super.key});
-
+class EmtyFolderPage extends StatelessWidget {
+  const EmtyFolderPage({super.key, this.folder, this.onAdd});
+  final Folder? folder;
+  final Function()? onAdd;
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -488,13 +488,9 @@ class EmtyFolderTree extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ).padded(),
           TextButton.icon(
-            onPressed: () {
-              CreateLabelRoute(
-                LabelType.folders,
-              ).push(context);
-            },
+            onPressed: onAdd ?? () {},
             icon: const Icon(Icons.add),
-            label: Text(S.of(context)!.newView),
+            label: Text(S.of(context)!.addFolder),
           )
         ],
       ).paddedOnly(left: 16),

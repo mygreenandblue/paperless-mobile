@@ -262,7 +262,9 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
                     ),
                   )
                 : lbState.folderTree!.length == 0
-                    ? const EmtyFolderTree()
+                    ? const SliverToBoxAdapter(
+                        child: SizedBox(),
+                      )
                     : TreeHasOnlyFolder(
                         folderTree: lbState.folderTree!,
                         onValueChanged: updateParentValue,
@@ -307,7 +309,7 @@ class _LabelFormState<T extends Label> extends State<LabelForm<T>> {
           S.of(context)!.notiActionSuccess,
         );
 
-        Navigator.maybePop(context, createdLabel);
+        context.pop(createdLabel);
       } on EdocsApiException catch (error, stackTrace) {
         showErrorMessage(context, error, stackTrace);
       } on edocsFormValidationException catch (exception) {

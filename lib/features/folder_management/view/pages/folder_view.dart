@@ -83,7 +83,7 @@ class _FolderViewState extends State<FolderView> {
                               ),
                             )
                           : lbState.folderTree!.length == 0
-                              ? const EmtyFolderTree()
+                              ? const EmtyFolderPage()
                               : FolderTree(
                                   tree: lbState.folderTree!,
                                   expandChildrenOnReady: true,

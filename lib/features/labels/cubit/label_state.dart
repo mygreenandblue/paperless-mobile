@@ -21,5 +21,6 @@ class LabelState with _$LabelState {
     Warehouse? warehouse,
     TreeNode? folderTree,
     TreeNode? node,
+    @Default({}) Map<int, bool> singleLoading,
   }) = _LabelState;
 }
