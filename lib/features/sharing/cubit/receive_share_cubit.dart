@@ -14,13 +14,13 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
 
   Future<void> get isInitialized => _restored.future;
 
-  Future<void> loadFromConsumptionDirectory({required String userId}) async {
-    pendingFiles = await _getCurrentFiles(userId);
-    if (!_restored.isCompleted) {
-      _restored.complete();
-    }
-    notifyListeners();
-  }
+  // Future<void> loadFromConsumptionDirectory({required String userId}) async {
+  //   pendingFiles = await _getCurrentFiles(userId);
+  //   if (!_restored.isCompleted) {
+  //     _restored.complete();
+  //   }
+  //   notifyListeners();
+  // }
 
   /// Creates a local copy of all shared files and reloads all files
   /// from the user's consumption directory. Returns the newly added files copied to the consumption directory.
@@ -43,7 +43,7 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
         localFiles.add(file);
       }
     }
-    await loadFromConsumptionDirectory(userId: userId);
+    // await loadFromConsumptionDirectory(userId: userId);
     return localFiles;
   }
 
@@ -57,21 +57,21 @@ class ConsumptionChangeNotifier extends ChangeNotifier {
     if (file.path.startsWith(consumptionDirectory.path)) {
       await file.delete();
     }
-    return loadFromConsumptionDirectory(userId: userId);
+    // return loadFromConsumptionDirectory(userId: userId);
   }
 
   /// Returns the next file to process of null if no file exists.
-  Future<File?> getNextFile({required String userId}) async {
-    final files = await _getCurrentFiles(userId);
-    if (files.isEmpty) {
-      return null;
-    }
-    return files.first;
-  }
+  // Future<File?> getNextFile({required String userId}) async {
+  //   final files = await _getCurrentFiles(userId);
+  //   if (files.isEmpty) {
+  //     return null;
+  //   }
+  //   return files.first;
+  // }
 
-  Future<List<File>> _getCurrentFiles(String userId) async {
-    final directory =
-        await FileService.instance.getConsumptionDirectory(userId: userId);
-    return await FileService.instance.getAllFiles(directory);
-  }
+  // Future<List<File>> _getCurrentFiles(String userId) async {
+  //   final directory =
+  //       await FileService.instance.getConsumptionDirectory(userId: userId);
+  //   return await FileService.instance.getAllFiles(directory);
+  // }
 }

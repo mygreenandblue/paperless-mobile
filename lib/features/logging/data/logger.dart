@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:edocs_mobile/features/logging/models/formatted_log_message.dart';
 
-late Logger logger;
+Logger logger = Logger();
 
 extension FormattedLoggerExtension on Logger {
   void ft(

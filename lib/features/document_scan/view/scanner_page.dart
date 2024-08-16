@@ -198,20 +198,20 @@ class _ScannerPageState extends State<ScannerPage>
       try {
         final globalSettings =
             Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
-        if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
-          final isGranted = await askForPermission(Permission.storage);
-          if (!isGranted) {
-            showSnackBar(
-              context,
-              "Please grant EDOCS Mobile permissions to access your filesystem.",
-              action: SnackBarActionConfig(
-                label: "OK",
-                onPressed: openAppSettings,
-              ),
-            );
-            return;
-          }
-        }
+        // if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
+        //   final isGranted = await askForPermission(Permission.storage);
+        //   if (!isGranted) {
+        //     showSnackBar(
+        //       context,
+        //       "Please grant EDOCS Mobile permissions to access your filesystem.",
+        //       action: SnackBarActionConfig(
+        //         label: "OK",
+        //         onPressed: openAppSettings,
+        //       ),
+        //     );
+        //     return;
+        //   }
+        // }
         await cubit.saveToFile(
           file.bytes,
           "$fileName.pdf",
@@ -229,7 +229,7 @@ class _ScannerPageState extends State<ScannerPage>
       return;
     }
     final file = await FileService.instance.allocateTemporaryFile(
-      edocsDirectoryType.scans,
+      edocsDirectoryType.documents,
       extension: 'jpeg',
       create: true,
     );

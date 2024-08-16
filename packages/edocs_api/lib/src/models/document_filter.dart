@@ -6,7 +6,7 @@ import 'package:edocs_api/src/models/query_parameters/date_range_queries/date_ra
 
 part 'document_filter.g.dart';
 
-@HiveType(typeId: edocsApiHiveTypeIds.documentFilter)
+@HiveType(typeId: EdocsApiHiveTypeIds.documentFilter)
 class DocumentFilter extends Equatable {
   static const DocumentFilter initial = DocumentFilter();
 

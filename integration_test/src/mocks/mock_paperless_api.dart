@@ -4,27 +4,25 @@ import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
 import 'package:mockito/annotations.dart';
 
 @GenerateNiceMocks([
-  MockSpec<edocsAuthenticationApi>(),
+  MockSpec<EdocsAuthenticationApi>(),
   MockSpec<EdocsDocumentsApi>(),
-  MockSpec<edocsLabelsApi>(),
-  MockSpec<edocsUserApi>(),
-  MockSpec<edocsServerStatsApi>(),
-  MockSpec<edocsSavedViewsApi>(),
+  MockSpec<EdocsLabelsApi>(),
+  MockSpec<EdocsUserApi>(),
+  MockSpec<EdocsServerStatsApi>(),
+  MockSpec<EdocsSavedViewsApi>(),
   MockSpec<EdocsTasksApi>(),
 ])
-import 'mock_edocs_api.mocks.dart';
-
 class MockEdocsApiFactory implements EdocsApiFactory {
-  final edocsAuthenticationApi authenticationApi = MockedocsAuthenticationApi();
+  final EdocsAuthenticationApi authenticationApi = EdocsAuthenticationApi();
   final EdocsDocumentsApi documentApi = MockEdocsDocumentsApi();
-  final edocsLabelsApi labelsApi = MockedocsLabelsApi();
-  final edocsUserApi userApi = MockedocsUserApi();
-  final edocsSavedViewsApi savedViewsApi = MockedocsSavedViewsApi();
-  final edocsServerStatsApi serverStatsApi = MockedocsServerStatsApi();
+  final EdocsLabelsApi labelsApi = MockEdocsLabelsApi();
+  final EdocsUserApi userApi = MockEdocsUserApi();
+  final EdocsSavedViewsApi savedViewsApi = MockEdocsSavedViewsApi();
+  final EdocsServerStatsApi serverStatsApi = MockEdocsServerStatsApi();
   final EdocsTasksApi tasksApi = MockEdocsTasksApi();
 
   @override
-  edocsAuthenticationApi createAuthenticationApi(Dio dio) {
+  EdocsAuthenticationApi createAuthenticationApi(Dio dio) {
     return authenticationApi;
   }
 
@@ -34,12 +32,12 @@ class MockEdocsApiFactory implements EdocsApiFactory {
   }
 
   @override
-  edocsLabelsApi createLabelsApi(Dio dio, {required int apiVersion}) {
+  EdocsLabelsApi createLabelsApi(Dio dio, {required int apiVersion}) {
     return labelsApi;
   }
 
   @override
-  edocsSavedViewsApi createSavedViewsApi(
+  EdocsSavedViewsApi createSavedViewsApi(
     Dio dio, {
     required int apiVersion,
   }) {
@@ -47,7 +45,7 @@ class MockEdocsApiFactory implements EdocsApiFactory {
   }
 
   @override
-  edocsServerStatsApi createServerStatsApi(Dio dio, {required int apiVersion}) {
+  EdocsServerStatsApi createServerStatsApi(Dio dio, {required int apiVersion}) {
     return serverStatsApi;
   }
 
@@ -57,7 +55,7 @@ class MockEdocsApiFactory implements EdocsApiFactory {
   }
 
   @override
-  edocsUserApi createUserApi(Dio dio, {required int apiVersion}) {
+  EdocsUserApi createUserApi(Dio dio, {required int apiVersion}) {
     return userApi;
   }
 }

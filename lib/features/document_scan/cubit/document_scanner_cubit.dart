@@ -28,21 +28,21 @@ class DocumentScannerCubit extends Cubit<DocumentScannerState> {
       className: runtimeType.toString(),
       methodName: "initialize",
     );
-    emit(const DocumentScannerState(status: LoadingStatus.loading));
-    final tempDir = FileService.instance.temporaryScansDirectory;
-    final allFiles = tempDir.list().whereType<File>();
-    final scans =
-        await allFiles.where((event) => event.path.endsWith(".jpeg")).toList();
-    logger.fd(
-      "Restored ${scans.length} scans.",
-      className: runtimeType.toString(),
-      methodName: "initialize",
-    );
-    emit(
-      scans.isEmpty
-          ? const DocumentScannerState()
-          : DocumentScannerState(scans: scans, status: LoadingStatus.loaded),
-    );
+    // emit(const DocumentScannerState(status: LoadingStatus.loading));
+    // final tempDir = FileService.instance.temporaryScansDirectory;
+    // final allFiles = tempDir.list().whereType<File>();
+    // final scans =
+    //     await allFiles.where((event) => event.path.endsWith(".jpeg")).toList();
+    // logger.fd(
+    //   "Restored ${scans.length} scans.",
+    //   className: runtimeType.toString(),
+    //   methodName: "initialize",
+    // );
+    // emit(
+    //   scans.isEmpty
+    //       ? const DocumentScannerState()
+    //       : DocumentScannerState(scans: scans, status: LoadingStatus.loaded),
+    // );
   }
 
   void addScan(File file) async {

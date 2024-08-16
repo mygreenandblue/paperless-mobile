@@ -17,7 +17,7 @@ sealed class UserModel {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-@HiveType(typeId: edocsApiHiveTypeIds.userModelv2)
+@HiveType(typeId: EdocsApiHiveTypeIds.userModelv2)
 class UserModelV2 extends UserModel {
   @override
   @HiveField(0)
@@ -42,7 +42,7 @@ class UserModelV2 extends UserModel {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-@HiveType(typeId: edocsApiHiveTypeIds.userModelv3)
+@HiveType(typeId: EdocsApiHiveTypeIds.userModelv3)
 class UserModelV3 extends UserModel {
   @override
   @HiveField(0)

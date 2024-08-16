@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:edocs_api/edocs_api.dart';
 
-class edocsApiHiveTypeIds {
-  edocsApiHiveTypeIds._();
+class EdocsApiHiveTypeIds {
+  EdocsApiHiveTypeIds._();
 
   static const int idQueryParameter = 101;
   static const int tagsQuery = 102;

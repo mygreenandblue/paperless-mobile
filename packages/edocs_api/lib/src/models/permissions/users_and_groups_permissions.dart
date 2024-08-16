@@ -5,7 +5,7 @@ import 'package:edocs_api/edocs_api.dart';
 part 'users_and_groups_permissions.freezed.dart';
 part 'users_and_groups_permissions.g.dart';
 
-@HiveType(typeId: edocsApiHiveTypeIds.usersAndGroupsPermissions)
+@HiveType(typeId: EdocsApiHiveTypeIds.usersAndGroupsPermissions)
 @freezed
 class UsersAndGroupsPermissions with _$UsersAndGroupsPermissions {
   const factory UsersAndGroupsPermissions({

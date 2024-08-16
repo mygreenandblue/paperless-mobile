@@ -87,12 +87,12 @@ class _DocumentShareButtonState extends State<DocumentShareButton> {
           break;
       }
 
-      if (Platform.isAndroid && androidInfo!.version.sdkInt < 30) {
-        final isGranted = await askForPermission(Permission.storage);
-        if (!isGranted) {
-          return;
-        }
-      }
+      // if (Platform.isAndroid && androidInfo!.version.sdkInt < 30) {
+      //   final isGranted = await askForPermission(Permission.storage);
+      //   if (!isGranted) {
+      //     return;
+      //   }
+      // }
       setState(() => _isDownloadPending = true);
       await context.read<DocumentDetailsCubit>().shareDocument(
             shareOriginal: original,

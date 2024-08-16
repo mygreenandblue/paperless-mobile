@@ -159,7 +159,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
         "if document information has not yet been loaded.",
       );
     }
-    final cacheDir = FileService.instance.temporaryDirectory;
+    final cacheDir = FileService.instance.documentsDirectory;
     final filePath = state.metaData!.mediaFilename.replaceAll("/", " ");
 
     final fileName = "${p.basenameWithoutExtension(filePath)}.pdf";
@@ -252,7 +252,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     String filePath = _buildDownloadFilePath(
       state.metaData!,
       shareOriginal,
-      FileService.instance.temporaryDirectory,
+      FileService.instance.documentsDirectory,
     );
     await _api.downloadToFile(
       state.document!.id,
@@ -279,7 +279,7 @@ class DocumentDetailsCubit extends Cubit<DocumentDetailsState> {
     final filePath = _buildDownloadFilePath(
       state.metaData!,
       false,
-      FileService.instance.temporaryDirectory,
+      FileService.instance.documentsDirectory,
     );
     await _api.downloadToFile(
       state.document!.id,

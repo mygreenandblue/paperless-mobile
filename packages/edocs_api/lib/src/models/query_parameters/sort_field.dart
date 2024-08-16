@@ -5,7 +5,7 @@ import 'package:edocs_api/config/hive/hive_type_ids.dart';
 part 'sort_field.g.dart';
 
 @JsonEnum(valueField: 'queryString')
-@HiveType(typeId: edocsApiHiveTypeIds.sortField)
+@HiveType(typeId: EdocsApiHiveTypeIds.sortField)
 enum SortField {
   @HiveField(0)
   archiveSerialNumber("archive_serial_number"),

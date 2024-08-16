@@ -57,7 +57,7 @@ class AnyAssignedIdQueryParameter extends IdQueryParameter {
   List<Object?> get props => [];
 }
 
-@HiveType(typeId: edocsApiHiveTypeIds.setIdQueryParameter)
+@HiveType(typeId: EdocsApiHiveTypeIds.setIdQueryParameter)
 class SetIdQueryParameter extends IdQueryParameter with EquatableMixin {
   @HiveField(0)
   final int id;

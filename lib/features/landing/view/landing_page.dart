@@ -32,33 +32,33 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final _searchBarHandle = SliverOverlapAbsorberHandle();
 
-  Future<bool> get _shouldShowChangelog async {
-    try {
-      final sp = await SharedPreferences.getInstance();
-      final currentBuild = packageInfo.buildNumber;
-      final _existingVersions =
-          sp.getStringList('changelogSeenForBuilds') ?? [];
-      if (_existingVersions.contains(currentBuild)) {
-        return false;
-      } else {
-        _existingVersions.add(currentBuild);
-        await sp.setStringList('changelogSeenForBuilds', _existingVersions);
-        return true;
-      }
-    } catch (e) {
-      return false;
-    }
-  }
+  // Future<bool> get _shouldShowChangelog async {
+  //   try {
+  //     final sp = await SharedPreferences.getInstance();
+  //     final currentBuild = packageInfo.buildNumber;
+  //     final _existingVersions =
+  //         sp.getStringList('changelogSeenForBuilds') ?? [];
+  //     if (_existingVersions.contains(currentBuild)) {
+  //       return false;
+  //     } else {
+  //       _existingVersions.add(currentBuild);
+  //       await sp.setStringList('changelogSeenForBuilds', _existingVersions);
+  //       return true;
+  //     }
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      if (await _shouldShowChangelog) {
-        ChangelogRoute().push(context);
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    //   if (await _shouldShowChangelog) {
+    //     ChangelogRoute().push(context);
+    //   }
+    // });
   }
 
   @override
@@ -271,7 +271,7 @@ class _LandingPageState extends State<LandingPage> {
                     : FolderTree(
                         tree: lbState.folderTree!,
                         type: 'root',
-                        expandChildrenOnReady: true,
+                        expandChildrenOnReady: false,
                       );
           },
         );

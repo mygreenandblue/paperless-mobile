@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:animated_tree_view/tree_view/tree_node.dart';
+import 'package:edocs_mobile/routing/routes/asynchronous_setting_route.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -45,6 +46,10 @@ part 'authenticated_route.g.dart';
     TypedGoRoute<SettingsRoute>(
       path: "/settings",
       name: R.settings,
+    ),
+    TypedGoRoute<SynchronousSettingRoute>(
+      path: "/syncSetting",
+      name: R.syncSetting,
     ),
     TypedGoRoute<UploadQueueRoute>(
       path: "/upload-queue",
@@ -178,8 +183,7 @@ class AuthenticatedRoute extends ShellRouteData {
             edocsApiVersion: authenticatedUser.apiVersion,
             edocsProviderFactory: apiFactory,
             child: ChangeNotifierProvider(
-              create: (context) => ConsumptionChangeNotifier()
-                ..loadFromConsumptionDirectory(userId: currentUserId),
+              create: (context) => ConsumptionChangeNotifier(),
               child: EventListenerShell(
                 child: navigator,
               ),

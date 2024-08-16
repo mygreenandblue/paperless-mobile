@@ -6,7 +6,7 @@ part 'group_model.freezed.dart';
 part 'group_model.g.dart';
 
 @freezed
-@HiveType(typeId: edocsApiHiveTypeIds.groupModel)
+@HiveType(typeId: EdocsApiHiveTypeIds.groupModel)
 class GroupModel with _$GroupModel {
   const factory GroupModel({
     @HiveField(0) required int id,

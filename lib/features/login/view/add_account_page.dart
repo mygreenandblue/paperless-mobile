@@ -208,7 +208,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                 TextSpan(
                   style: Theme.of(context).textTheme.labelLarge,
                   children: [
-                    TextSpan(text: S.of(context)!.version(packageInfo.version)),
+                    // TextSpan(text: S.of(context)!.version(packageInfo.version)),
                     WidgetSpan(child: SizedBox(width: 24)),
                     TextSpan(
                       style: TextStyle(

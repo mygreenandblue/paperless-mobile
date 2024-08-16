@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
@@ -5,7 +8,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:edocs_api/edocs_api.dart';
 import 'package:edocs_mobile/constants.dart';
-import 'package:edocs_mobile/core/bloc/transient_error.dart';
+import 'package:path/path.dart' as p;
 import 'package:edocs_mobile/core/database/hive/hive_config.dart';
 import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
 import 'package:edocs_mobile/core/database/tables/global_settings.dart';
@@ -68,7 +71,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       className: runtimeType.toString(),
       methodName: 'login',
     );
-
     // Define the timeout duration
     const authTimeoutDuration = Duration(seconds: 6);
 
@@ -106,6 +108,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
               AuthenticatingStage.persistingLocalUserData));
         },
       );
+      _headerApi = _sessionManager.client.options.headers['authorization'];
+      // await setupBackgroundService();
+
       isAuthCompleted = true;
     } on EdocsApiException catch (exception, stackTrace) {
       emit(
@@ -126,13 +131,46 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         Hive.box<GlobalSettings>(HiveBoxes.globalSettings).getValue()!;
     globalSettings.loggedInUserId = localUserId;
     await globalSettings.save();
-
     emit(AuthenticatedState(localUserId: localUserId));
     logger.fd(
       'User $redactedId successfully logged in.',
       className: runtimeType.toString(),
       methodName: 'login',
     );
+  }
+
+  int? _pid;
+  String pathPC = 'C:/';
+  String _headerApi = '';
+
+  Future<void> updatePathPC(String path) async {
+    print(path);
+    pathPC.replaceAll('\\', '/');
+    pathPC = path;
+
+    // setupBackgroundService();
+  }
+
+  // Future<void> setupBackgroundService() async {
+  //   print(pathPC);
+  //   String base64Code = base64.encode(utf8.encode(
+  //       '{ "path": "$pathPC", "url": "https://edocs.tcgroup.vn/api/documents/post_document/", "headers":{"authorization":"$_headerApi" }'));
+  //   final executablePath = p.join(
+  //     Directory.current.path,
+  //     'synchronus.exe',
+  //   );
+
+  //   if (Platform.isWindows) {
+  //     final a =
+  //         await Process.start(executablePath, [base64Code], runInShell: true);
+  //     _pid = a.pid;
+  //   }
+  // }
+
+  Future<void> killBackgroundService() async {
+    if (Platform.isWindows) {
+      Process.killPid(_pid!);
+    }
   }
 
   /// Switches to another account if it exists.
@@ -212,7 +250,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
             .get(localUserId)!,
         apiVersion,
       );
-
+      _headerApi = _sessionManager.client.options.headers['authorization'];
+      // await setupBackgroundService();
       emit(AuthenticatedState(localUserId: localUserId));
     });
   }
@@ -243,7 +282,8 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       clientCertificate,
       sessionManager,
     );
-
+    _headerApi = _sessionManager.client.options.headers['authorization'];
+    // await setupBackgroundService();
     return localUserId;
   }
 
@@ -257,9 +297,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     final userAccountBox = Hive.localUserAccountBox;
     final userAppStateBox = Hive.localUserAppStateBox;
 
-    await FileService.instance.clearUserData(userId: userId);
+    // await FileService.instance.clearUserData(userId: userId);
     await userAccountBox.delete(userId);
     await userAppStateBox.delete(userId);
+    await killBackgroundService();
     await withEncryptedBox<UserCredentials, void>(
         HiveBoxes.localUserCredentials, (box) {
       box.delete(userId);
@@ -343,6 +384,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         "User should be authenticated but no authentication information was found.",
       );
     }
+
+    _headerApi = authentication.token;
+
+    // await setupBackgroundService();
     logger.fd(
       "Credentials successfully retrieved.",
       className: runtimeType.toString(),
@@ -407,7 +452,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> logout([bool shouldRemoveAccount = false]) async {
+  Future<void> logout([bool shouldRemoveAccount = true]) async {
     emit(const LoggingOutState());
     final globalSettings = Hive.globalSettingsBox.getValue()!;
     final userId = globalSettings.loggedInUserId!;
@@ -424,9 +469,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     final otherAccountsExist = Hive.localUserAccountBox.length > 1;
     emit(UnauthenticatedState(redirectToAccountSelection: otherAccountsExist));
-    if (shouldRemoveAccount) {
-      await removeAccount(userId);
-    }
+    // if (shouldRemoveAccount) {
+    await removeAccount(userId);
+    // }
     globalSettings.loggedInUserId = null;
     await globalSettings.save();
 

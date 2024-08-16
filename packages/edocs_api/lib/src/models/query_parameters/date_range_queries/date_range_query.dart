@@ -33,7 +33,7 @@ class UnsetDateRangeQuery extends DateRangeQuery {
   List<Object?> get props => [];
 }
 
-@HiveType(typeId: edocsApiHiveTypeIds.relativeDateRangeQuery)
+@HiveType(typeId: EdocsApiHiveTypeIds.relativeDateRangeQuery)
 class RelativeDateRangeQuery extends DateRangeQuery {
   @HiveField(0)
   final int offset;
@@ -86,7 +86,7 @@ class RelativeDateRangeQuery extends DateRangeQuery {
 }
 
 @JsonSerializable()
-@HiveType(typeId: edocsApiHiveTypeIds.absoluteDateRangeQuery)
+@HiveType(typeId: EdocsApiHiveTypeIds.absoluteDateRangeQuery)
 class AbsoluteDateRangeQuery extends DateRangeQuery {
   @LocalDateTimeJsonConverter()
   @HiveField(0)

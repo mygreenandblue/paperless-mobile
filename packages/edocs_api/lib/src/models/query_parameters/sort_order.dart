@@ -5,7 +5,7 @@ import 'package:edocs_api/config/hive/hive_type_ids.dart';
 part 'sort_order.g.dart';
 
 @JsonEnum()
-@HiveType(typeId: edocsApiHiveTypeIds.sortOrder)
+@HiveType(typeId: EdocsApiHiveTypeIds.sortOrder)
 enum SortOrder {
   @HiveField(0)
   ascending(""),

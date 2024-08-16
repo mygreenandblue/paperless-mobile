@@ -15,23 +15,23 @@ class FileService {
   static FileService? _singleton;
 
   late Directory _logDirectory;
-  late Directory _temporaryDirectory;
+  // late Directory _temporaryDirectory;
   late Directory _documentsDirectory;
   late Directory _downloadsDirectory;
   late Directory _uploadDirectory;
-  late Directory _temporaryScansDirectory;
+  // late Directory _temporaryScansDirectory;
 
   Directory get logDirectory => _logDirectory;
-  Directory get temporaryDirectory => _temporaryDirectory;
+  // Directory get temporaryDirectory => _temporaryDirectory;
   Directory get documentsDirectory => _documentsDirectory;
   Directory get downloadsDirectory => _downloadsDirectory;
   Directory get uploadDirectory => _uploadDirectory;
-  Directory get temporaryScansDirectory => _temporaryScansDirectory;
+  // Directory get temporaryScansDirectory => _temporaryScansDirectory;
 
   Future<void> initialize() async {
     try {
-      await _initTemporaryDirectory();
-      await _initTemporaryScansDirectory();
+      // await _initTemporaryDirectory();
+      // await _initTemporaryScansDirectory();
       await _initUploadDirectory();
       await _initLogDirectory();
       await _initDownloadsDirectory();
@@ -65,8 +65,8 @@ class FileService {
   Directory getDirectory(edocsDirectoryType type) {
     return switch (type) {
       edocsDirectoryType.documents => _documentsDirectory,
-      edocsDirectoryType.temporary => _temporaryDirectory,
-      edocsDirectoryType.scans => _temporaryScansDirectory,
+      // edocsDirectoryType.temporary => _temporaryDirectory,
+      // edocsDirectoryType.scans => _temporaryScansDirectory,
       edocsDirectoryType.download => _downloadsDirectory,
       edocsDirectoryType.upload => _uploadDirectory,
       edocsDirectoryType.logs => _logDirectory,
@@ -106,10 +106,10 @@ class FileService {
       methodName: "clearUserData",
     );
 
-    final scanDirSize =
-        formatBytes(await getDirSizeInBytes(_temporaryScansDirectory));
-    final tempDirSize =
-        formatBytes(await getDirSizeInBytes(_temporaryDirectory));
+    // final scanDirSize =
+    // formatBytes(await getDirSizeInBytes(_temporaryScansDirectory));
+    // final tempDirSize =
+    // formatBytes(await getDirSizeInBytes(_temporaryDirectory));
     final consumptionDir = await getConsumptionDirectory(userId: userId);
     final consumptionDirSize =
         formatBytes(await getDirSizeInBytes(consumptionDir));
@@ -119,24 +119,24 @@ class FileService {
       className: runtimeType.toString(),
       methodName: "clearUserData",
     );
-    await _temporaryScansDirectory.clear();
-    logger.ft(
-      "Removed $scanDirSize...",
-      className: runtimeType.toString(),
-      methodName: "clearUserData",
-    );
+    // await _temporaryScansDirectory.clear();
+    // logger.ft(
+    //   "Removed $scanDirSize...",
+    //   className: runtimeType.toString(),
+    //   methodName: "clearUserData",
+    // );
     logger.ft(
       "Removing temporary files and cache content...",
       className: runtimeType.toString(),
       methodName: "clearUserData",
     );
 
-    await _temporaryDirectory.delete(recursive: true);
-    logger.ft(
-      "Removed $tempDirSize...",
-      className: runtimeType.toString(),
-      methodName: "clearUserData",
-    );
+    // await _temporaryDirectory.delete(recursive: true);
+    // logger.ft(
+    //   "Removed $tempDirSize...",
+    //   className: runtimeType.toString(),
+    //   methodName: "clearUserData",
+    // );
 
     logger.ft(
       "Removing files waiting for consumption...",
@@ -185,10 +185,10 @@ class FileService {
         .fold(0, (previous, element) => previous + element.statSync().size);
   }
 
-  Future<void> _initTemporaryDirectory() async {
-    _temporaryDirectory =
-        await getTemporaryDirectory().then((value) => value.create());
-  }
+  // Future<void> _initTemporaryDirectory() async {
+  //   _temporaryDirectory =
+  //       await getTemporaryDirectory().then((value) => value.create());
+  // }
 
   Future<void> _initializeDocumentsDirectory() async {
     if (Platform.isAndroid) {
@@ -251,17 +251,17 @@ class FileService {
     _uploadDirectory = await dir.create(recursive: true);
   }
 
-  Future<void> _initTemporaryScansDirectory() async {
-    _temporaryScansDirectory =
-        await Directory(p.join(_temporaryDirectory.path, 'scans'))
-            .create(recursive: true);
-  }
+  // Future<void> _initTemporaryScansDirectory() async {
+  //   _temporaryScansDirectory =
+  //       await Directory(p.join(_temporaryDirectory.path, 'scans'))
+  //           .create(recursive: true);
+  // }
 }
 
 enum edocsDirectoryType {
   documents,
-  temporary,
-  scans,
+  // temporary,
+  // scans,
   download,
   upload,
   logs;

@@ -1,3 +1,4 @@
+import 'package:edocs_mobile/features/settings/view/widgets/synchrounous_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +42,15 @@ class SettingsPage extends StatelessWidget {
           const DefaultShareFileTypeSetting(),
           const EnforcePdfUploadSetting(),
           const SkipDocumentPreprationOnShareSetting(),
-          _buildSectionHeader(context, S.of(context)!.storage),
-          const ClearCacheSetting(),
-          _buildSectionHeader(context, S.of(context)!.accessibility),
-          const DisableAnimationsSetting(),
-          _buildSectionHeader(context, S.of(context)!.misc),
-          const AppLogsTile(),
-          const ChangelogsTile(),
+          const SynchronousSetting(),
+
+          // _buildSectionHeader(context, S.of(context)!.storage),
+          // const ClearCacheSetting(),
+          // _buildSectionHeader(context, S.of(context)!.accessibility),
+          // const DisableAnimationsSetting(),
+          // _buildSectionHeader(context, S.of(context)!.misc),
+          // const AppLogsTile(),
+          // const ChangelogsTile(),
         ],
       ),
     );

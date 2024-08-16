@@ -250,7 +250,7 @@ class _AppDrawerState extends State<AppDrawer> {
       applicationIcon:
           const $AssetsLogosGen().onlyLogoPng.image(width: 32, height: 32),
       applicationName: 'EDOCS Mobile',
-      applicationVersion: '${packageInfo.version}+${packageInfo.buildNumber}',
+      applicationVersion: '1.0',
       children: [
         Text(S.of(context)!.developedBy('TC Group')),
       ],

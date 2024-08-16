@@ -19,7 +19,7 @@ import 'package:edocs_mobile/main.dart'
     show initializeDefaultParameters, AppEntrypoint;
 import 'package:path_provider/path_provider.dart';
 
-import 'src/mocks/mock_edocs_api.dart';
+import 'src/mocks/mock_paperless_api.dart';
 
 class MockConnectivityStatusService extends Mock
     implements ConnectivityStatusService {}

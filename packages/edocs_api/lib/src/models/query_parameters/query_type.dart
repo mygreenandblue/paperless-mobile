@@ -3,7 +3,7 @@ import 'package:edocs_api/config/hive/hive_type_ids.dart';
 
 part 'query_type.g.dart';
 
-@HiveType(typeId: edocsApiHiveTypeIds.queryType)
+@HiveType(typeId: EdocsApiHiveTypeIds.queryType)
 enum QueryType {
   @HiveField(0)
   title('title__icontains'),

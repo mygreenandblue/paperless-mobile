@@ -43,12 +43,14 @@ class ColorSchemeOptionSetting extends StatelessWidget {
                   ),
                 ),
               ],
-              footer: _isBelowAndroid12()
-                  ? HintCard(
-                      hintText: S.of(context)!.colorSchemeNotSupportedWarning,
-                      hintIcon: Icons.warning_amber,
-                    )
-                  : null,
+              footer:
+                  // _isBelowAndroid12()
+                  //     ?
+                  HintCard(
+                hintText: S.of(context)!.colorSchemeNotSupportedWarning,
+                hintIcon: Icons.warning_amber,
+              ),
+              // : null,
               initialValue: settings.preferredColorSchemeOption,
             ),
           ).then(
@@ -64,11 +66,11 @@ class ColorSchemeOptionSetting extends StatelessWidget {
     );
   }
 
-  bool _isBelowAndroid12() {
-    if (Platform.isAndroid) {
-      final int version = int.tryParse(androidInfo!.version.release) ?? 0;
-      return version < 12;
-    }
-    return false;
-  }
+  // bool _isBelowAndroid12() {
+  //   if (Platform.isAndroid) {
+  //     final int version = int.tryParse(androidInfo!.version.release) ?? 0;
+  //     return version < 12;
+  //   }
+  //   return false;
+  // }
 }

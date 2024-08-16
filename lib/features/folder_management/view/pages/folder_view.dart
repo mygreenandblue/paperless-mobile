@@ -86,7 +86,6 @@ class _FolderViewState extends State<FolderView> {
                               ? const EmtyFolderPage()
                               : FolderTree(
                                   tree: lbState.folderTree!,
-                                  expandChildrenOnReady: true,
                                 );
                     },
                   ),

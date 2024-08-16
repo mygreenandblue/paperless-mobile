@@ -7,7 +7,7 @@ import 'query_type.dart';
 
 part 'text_query.g.dart';
 
-@HiveType(typeId: edocsApiHiveTypeIds.textQuery)
+@HiveType(typeId: EdocsApiHiveTypeIds.textQuery)
 class TextQuery {
   @HiveField(0)
   final QueryType queryType;

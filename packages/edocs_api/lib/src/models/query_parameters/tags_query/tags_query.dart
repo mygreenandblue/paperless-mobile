@@ -10,7 +10,7 @@ sealed class TagsQuery with EquatableMixin {
   bool matches(Iterable<int> ids);
 }
 
-// @HiveType(typeId: edocsApiHiveTypeIds.notAssignedTagsQuery)
+// @HiveType(typeId: EdocsApiHiveTypeIds.notAssignedTagsQuery)
 class NotAssignedTagsQuery extends TagsQuery {
   const NotAssignedTagsQuery();
   @override
@@ -25,7 +25,7 @@ class NotAssignedTagsQuery extends TagsQuery {
   List<Object?> get props => [];
 }
 
-@HiveType(typeId: edocsApiHiveTypeIds.anyAssignedTagsQuery)
+@HiveType(typeId: EdocsApiHiveTypeIds.anyAssignedTagsQuery)
 class AnyAssignedTagsQuery extends TagsQuery {
   @HiveField(0)
   final List<int> tagIds;
@@ -56,7 +56,7 @@ class AnyAssignedTagsQuery extends TagsQuery {
   List<Object?> get props => [tagIds];
 }
 
-@HiveType(typeId: edocsApiHiveTypeIds.idsTagsQuery)
+@HiveType(typeId: EdocsApiHiveTypeIds.idsTagsQuery)
 class IdsTagsQuery extends TagsQuery {
   @HiveField(0)
   final List<int> include;
@@ -102,7 +102,7 @@ class IdsTagsQuery extends TagsQuery {
 
 class NotAssignedTagsQueryAdapter extends TypeAdapter<NotAssignedTagsQuery> {
   @override
-  final int typeId = edocsApiHiveTypeIds.notAssignedTagsQuery;
+  final int typeId = EdocsApiHiveTypeIds.notAssignedTagsQuery;
 
   @override
   NotAssignedTagsQuery read(BinaryReader reader) {

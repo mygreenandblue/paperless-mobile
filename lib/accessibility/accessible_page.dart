@@ -53,6 +53,17 @@ Page<T> accessiblePlatformPage<T>({
       restorationId: restorationId,
       title: title,
     );
+  } else if (Platform.isWindows) {
+    return MaterialPage(
+      child: child,
+      name: name,
+      restorationId: restorationId,
+      arguments: arguments,
+      allowSnapshotting: allowSnapshotting,
+      fullscreenDialog: fullscreenDialog,
+      key: key,
+      maintainState: maintainState,
+    );
   }
   throw UnsupportedError("The current platform is not supported.");
 }

@@ -82,13 +82,13 @@ class _DocumentDownloadButtonState extends State<DocumentDownloadButton> {
           break;
       }
 
-      if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
-        final isGranted = await askForPermission(Permission.storage);
-        if (!isGranted) {
-          return;
-          //TODO: Ask user to grant permissions
-        }
-      }
+      // if (Platform.isAndroid && androidInfo!.version.sdkInt <= 29) {
+      //   final isGranted = await askForPermission(Permission.storage);
+      //   if (!isGranted) {
+      //     return;
+      //     //TODO: Ask user to grant permissions
+      //   }
+      // }
 
       setState(() => _isDownloadPending = true);
       final userId = context.read<LocalUserAccount>().id;

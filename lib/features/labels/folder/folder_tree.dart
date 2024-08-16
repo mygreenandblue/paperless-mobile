@@ -55,6 +55,7 @@ class _FolderTreeState extends State<FolderTree> {
     return SliverPadding(
       padding: const EdgeInsets.all(16),
       sliver: SliverTreeView.simple(
+
         tree: widget.tree,
         showRootNode: true,
         expansionIndicatorBuilder: (context, node) =>

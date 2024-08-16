@@ -31,4 +31,5 @@ class R {
   static const createPhysicalWarehouse = 'createPhysicalWarehouse';
   static const editPhysicalWarehouse = 'editPhysicalWarehouse';
   static const folderInside = 'folderInside';
+  static const syncSetting = 'syncSetting';
 }

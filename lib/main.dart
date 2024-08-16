@@ -26,9 +26,6 @@ import 'package:edocs_mobile/core/bloc/my_bloc_observer.dart';
 import 'package:edocs_mobile/core/database/hive/hive_config.dart';
 import 'package:edocs_mobile/core/database/hive/hive_extensions.dart';
 import 'package:edocs_mobile/core/database/hive/hive_initialization.dart';
-import 'package:edocs_mobile/core/database/tables/global_settings.dart';
-import 'package:edocs_mobile/core/database/tables/local_user_account.dart';
-import 'package:edocs_mobile/core/database/tables/local_user_app_state.dart';
 import 'package:edocs_mobile/core/exception/server_message_exception.dart';
 import 'package:edocs_mobile/core/factory/edocs_api_factory.dart';
 import 'package:edocs_mobile/core/factory/edocs_api_factory_impl.dart';
@@ -60,6 +57,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 Locale get defaultPreferredLocale {
   // final deviceLocale = _stringToLocale(Platform.localeName);
@@ -83,61 +81,70 @@ Map<String, Future<void> Function()> _migrations = {
   },
 };
 
-Future<void> performMigrations() async {
-  final sp = await SharedPreferences.getInstance();
-  final currentVersion = packageInfo.version;
-  final migrationExists = _migrations.containsKey(currentVersion);
-  if (!migrationExists) {
-    return;
-  }
-  final migrationProcedure = _migrations[currentVersion]!;
-  final performedMigrations = sp.getStringList("performed_migrations") ?? [];
-  final requiresMigrationForCurrentVersion =
-      !performedMigrations.contains(currentVersion);
-  if (requiresMigrationForCurrentVersion) {
-    logger.fd(
-      "Applying migration scripts for version $currentVersion",
-      className: "",
-      methodName: "performMigrations",
-    );
-    await migrationProcedure();
-    await sp.setStringList(
-      'performed_migrations',
-      [...performedMigrations, currentVersion],
-    );
-  }
-}
+// Future<void> performMigrations() async {
+//   final sp = await SharedPreferences.getInstance();
+//   // final currentVersion = packageInfo.version;
+//   final migrationExists = _migrations.containsKey(currentVersion);
+//   if (!migrationExists) {
+//     return;
+//   }
+//   final migrationProcedure = _migrations[currentVersion]!;
+//   final performedMigrations = sp.getStringList("performed_migrations") ?? [];
+//   final requiresMigrationForCurrentVersion =
+//       !performedMigrations.contains(currentVersion);
+//   if (requiresMigrationForCurrentVersion) {
+//     logger.fd(
+//       "Applying migration scripts for version $currentVersion",
+//       className: "",
+//       methodName: "performMigrations",
+//     );
+//     await migrationProcedure();
+//     await sp.setStringList(
+//       'performed_migrations',
+//       [...performedMigrations, currentVersion],
+//     );
+//   }
+// }
 
-Future<void> initializeDefaultParameters() async {
-  Bloc.observer = MyBlocObserver();
-  await FileService.instance.initialize();
-  logger = l.Logger(
-    output: MirroredFileOutput(),
-    printer: FormattedPrinter(),
-    level: l.Level.trace,
-    filter: l.ProductionFilter(),
-  );
+// Future<void> initializeDefaultParameters() async {
+//   Bloc.observer = MyBlocObserver();
+//   await FileService.instance.initialize();
 
-  packageInfo = await PackageInfo.fromPlatform();
+//   packageInfo = await PackageInfo.fromPlatform();
 
-  if (Platform.isAndroid) {
-    androidInfo = await DeviceInfoPlugin().androidInfo;
-  }
-  if (Platform.isIOS) {
-    iosInfo = await DeviceInfoPlugin().iosInfo;
-  }
+//   if (Platform.isAndroid) {
+//     androidInfo = await DeviceInfoPlugin().androidInfo;
+//   }
+//   if (Platform.isIOS) {
+//     iosInfo = await DeviceInfoPlugin().iosInfo;
+//   }
 
-  await findSystemLocale();
-}
+//   await findSystemLocale();
+// }
+
+// Future<void> setupBackgroundService(String path) async {
+//   String sh =
+//       "{\"path\":\"C:/\",\"url\":\"https://edocs.tcgroup.vn/api/documents/post_document/\",\"headers\":{\"authorization\":\"Tokend4eba8d7c08a651bc71196ae553c68c8192eedd6\"}}";
+//   final executablePath = p.join(
+//     Directory.current.path,
+//     'synchronus.exe',
+//   );
+
+//   if (Platform.isWindows) {
+//     final a = await Process.start(executablePath, [sh], runInShell: true);
+//     print(a);
+//   }
+// }
 
 void main() async {
   runZonedGuarded(() async {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     final hiveDirectory = await getApplicationDocumentsDirectory();
     final defaultLocale = defaultPreferredLocale.languageCode;
-    await initializeDefaultParameters();
+    // await initializeDefaultParameters();
+
     await initHive(hiveDirectory, "vi");
-    await performMigrations();
+    // await performMigrations();
 
     final connectivityStatusService = ConnectivityStatusServiceImpl(
       Connectivity(),
@@ -180,6 +187,8 @@ void main() async {
       connectivityStatusService,
       localNotificationService,
     );
+
+    // await setupBackgroundService('sa');
     runApp(
       AppEntrypoint(
         sessionManager: sessionManager,
